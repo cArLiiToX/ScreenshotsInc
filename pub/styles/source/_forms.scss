@@ -1,0 +1,21 @@
+/*******************************************************************************
+* Forms & Input Elements
+*******************************************************************************/
+input[type="text"],
+input[type="password"],
+input[type="url"],
+input[type="tel"],
+input[type="search"],
+input[type="number"],
+input[type="datetime"],
+input[type="email"],
+textarea {
+  background: #fff;
+  border-radius: 2px;
+}
+
+/** Tablets */
+@media screen and (max-width: 768px) {}
+
+/** Mobile */
+@media screen and (max-width: 400px) {}

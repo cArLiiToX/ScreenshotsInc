@@ -1,0 +1,117 @@
+<div class="panel-body m-t-20" style="display: block;">
+    <div class="panel-heading padding-0">
+        <div class="panel-title">
+            <xe-translate text-value="Sizes">
+            </xe-translate>
+        </div>
+    </div>
+    <div ng-hide="sizeLoaded" class="modal-scroll">
+        <form id="form-personal" role="form" autocomplete="off">
+            <div class="row clearfix">
+                <div class="col-sm-1">
+                    <div class="checkbox check-success m-b-50" ng-repeat="productSize in productSizelist">
+                        <input type="checkbox" id="uplodPrint_{{ productSize.value }}" ng-model="productSizeData[$index]" ng-change="productSizeSelected(productSizeData[$index],$index)"/>
+                        <label for="uplodPrint_{{ productSize.value }}">
+                            {{ productSize.label }}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-11">
+                    <form id="form-personal" role="form" autocomplete="off">
+                        <div class="row clearfix" ng-repeat="productSizeView in productSizelist">
+                            <div class="col-sm-2">
+                                <div class="form-group form-group-default required"  ng-class="{'disabled':!productSizeData[$index]}" pg-form-group>
+                                    <label>
+                                        <xe-translate text-value="Name">
+                                        </xe-translate>
+                                    </label>
+                                    <input type="text" class="form-control" name="pName" ng-model="pName[$index]" required ng-disabled="!productSizeData[$index]"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group form-group-default required"  ng-class="{'disabled':!productSizeData[$index]}" pg-form-group>
+                                    <label>
+                                        <xe-translate text-value="Description">
+                                        </xe-translate>
+                                    </label>
+                                    <input type="text" class="form-control" name="pDescription" ng-model="pDescription[$index]" required ng-disabled="!productSizeData[$index]"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group form-group-default required"  ng-class="{'disabled':!productSizeData[$index]}" pg-form-group>
+                                    <label>
+                                        <xe-translate text-value="Short Description">
+                                        </xe-translate>
+                                    </label>
+                                    <input type="text" class="form-control" name="pSDescription" ng-model="pSDescription[$index]" required ng-disabled="!productSizeData[$index]"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="form-group form-group-default required"  ng-class="{'disabled':!productSizeData[$index]}" pg-form-group>
+                                    <label>
+                                        <xe-translate text-value="Price">
+                                        </xe-translate>
+                                    </label>
+                                    <input type="text" class="form-control" name="Price" ng-model="sizePrice[$index]" required ng-disabled="!productSizeData[$index]" price-only="price-only"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="form-group form-group-default required"  ng-class="{'disabled':!productSizeData[$index]}" pg-form-group>
+                                    <label>
+                                        <xe-translate text-value="Weight">
+                                        </xe-translate>
+                                    </label>
+                                    <input type="text" class="form-control" name="Weight" ng-model="sizeWeight[$index]" ng-disabled="!productSizeData[$index]" numbers-only="numbers-only"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div pg-form-group class="form-group form-group-default required" ng-class="{'disabled':!productSizeData[$index]}">
+                                    <label>
+                                        <xe-translate text-value="Sku">
+                                        </xe-translate>
+                                    </label>
+                                    <input type="text" class="form-control" name="Sku" ng-model="sizeSku[$index]"  ng-disabled="!productSizeData[$index]"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="form-group form-group-default required"  ng-class="{'disabled':!productSizeData[$index]}" pg-form-group>
+                                    <label>
+                                        <xe-translate text-value="Quantity">
+                                        </xe-translate>
+                                    </label>
+                                    <input type="text" class="form-control" name="Quantity" ng-model="sizeQuantity[$index]" ng-disabled="!productSizeData[$index]" numbers-only="numbers-only"/>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--preloader-->
+    <div class="row" ng-show="sizeLoaded">
+        <div class="col-lg-12 bg-white">
+            <div class="product-wrap-height">
+                <div class="panel-body text-center">
+                    <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/demo/progress.svg" alt="Progress"/>
+                    <span class="loader-label">
+                        <xe-translate text-value="Please wait product uploading">
+                        </xe-translate>
+                        ...
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix" ng-hide="sizeLoaded">
+        <div class="pull-right">
+            <button class="btn btn-primary btn-sm" type="button" ng-click="cancelUploadProduct()">
+                <xe-translate text-value="Cancel">
+                </xe-translate>
+            </button>
+            <button class="btn btn-primary btn-sm" type="button"  ng-click="saveProductSize('productUploadFinish')" ng-disabled="demoStatus" ng-class="{'disabled': !productSizeData}">
+                <xe-translate text-value="Next">
+                </xe-translate>
+            </button>
+        </div>
+    </div>

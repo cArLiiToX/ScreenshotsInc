@@ -1,0 +1,24 @@
+@import 'vars';
+@import 'functions';
+@import 'app';
+
+/* General UI */
+@import 'layout';
+@import 'typo';
+@import 'buttons';
+@import 'forms';
+
+/* Components */
+@import 'components/slider';
+
+/* Partials */
+@import 'partials/header';
+@import 'partials/navigation';
+@import 'partials/footer';
+
+/* Pages */
+@import 'pages/home';
+@import 'pages/about';
+@import 'pages/services';
+
+@import 'utilities';

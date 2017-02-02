@@ -1,0 +1,33 @@
+/*******************************************************************************
+* Grid & Layout
+*******************************************************************************/
+.columns {
+  position: relative;
+}
+
+.ss-block {
+  box-sizing: border-box;
+  .block-title {
+    display: block;
+    text-align: center;
+  }
+}
+
+.columns .column.main {
+  padding-bottom: 0;
+}
+
+.page-title-wrapper {
+  margin-bottom: 20px;
+}
+
+/*******************************************************************************
+* Sections
+*******************************************************************************/
+section {}
+
+/** Tablets */
+@media screen and (max-width: 768px) {}
+
+/** Mobile */
+@media screen and (max-width: 400px) {}

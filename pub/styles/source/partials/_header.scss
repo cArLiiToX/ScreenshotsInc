@@ -1,0 +1,19 @@
+.page-header {
+  .panel.wrapper {
+    background: #f8f8f8;
+    color: #959595;
+  }
+
+  a,
+  .header.panel > .header.links > li > a:visited {
+      color: #33755e;
+      &:visited { color: #33755e; }
+      &:hover { color: #024930; }
+      &:active { color: #024930; }
+  }
+
+  .minicart-wrapper .action.showcart:before {
+    font-family: FontAwesome;
+    content: '\f07a';
+  }
+}

@@ -1,0 +1,197 @@
+<?php 
+if($this->isCustomizeButton()) {
+	$_product = $this->getProduct();
+	if($_product->getXe_is_designer() == 1 || $_product->getXe_is_template() == 1) {
+		$productId = $_product->getId();
+		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+		$customerSession = $objectManager->get('Magento\Customer\Model\Session');
+		$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+		$eavConfig = $objectManager->get('\Magento\Eav\Model\Config');
+		$stockInterface = $objectManager->get('\Magento\CatalogInventory\Api\StockStateInterface');
+		$baseUrl = $storeManager->getStore()->getBaseUrl();
+		$cartUrl = $block->getUrl('checkout/cart', ['_secure' => true]);
+		$simpleCollection = $_product->getTypeInstance()->getUsedProducts($_product);
+		if(!empty($simpleCollection)){
+			foreach($simpleCollection as $simple){
+				$productStockObj = $objectManager->get('Magento\CatalogInventory\Api\StockRegistryInterface')->getStockItem($simple->getId());
+				$minimumQty = intval($productStockObj->getMinSaleQty());
+			}
+		}
+		$AllowAttributes=$_product->getTypeInstance(true)->getConfigurableAttributes($_product);
+		$attr = $eavConfig->getAttribute('catalog_product', 'xe_is_template');
+	    if(null === $attr->getId()) {
+	        $preDecoratedProduct = 0;
+	    }else{
+	        $preDecoratedProduct = boolval($_product->getData("xe_is_template"));
+	    }
+		?>
+		<?php if($_product->isSaleable() && $preDecoratedProduct):?>
+			<input type="button" name="templateaddtocart" id="templateaddtocart" class="action primary tocart" value="Add to Cart" style="width:242px; line-height:2.2rem; padding:14px 17px; font-size: 1.8rem;" onclick="template_product();"/><div style="float:left;" id="placehere"></div><br/>
+		<?php endif; ?>
+		<?php if($this->isCustomizeButton() && ($_product->getXe_is_designer()) == 1) { ?>
+			<input type="button" name="customize" id="customize" class="action primary tocart" style="width:242px; line-height:2.2rem; padding:14px 17px; font-size: 1.8rem;" value="Customize" onclick="customize_product();"/>
+		<?php } ?>
+
+		<script type="text/javascript">
+			var minimumQty = <?php echo $minimumQty;?>;
+			var ul = "<?php echo $baseUrl;?>";
+			var cartUl = "<?php echo $cartUrl;?>";
+			var apiurl = ul+'designer-tool/designer-api/index.php';
+			var preloaderUrl = ul+'designer-tool/designer-app/assets/images/progress.svg';
+			var storeId = 1;
+			var prntTypes = "";
+			var simplpid = '';
+			var rvno = ''
+			var refId = 0;
+			var strUrl = '';
+			require(['jquery', 'jquery/ui'], function($){
+			    jQuery('#customize').insertBefore('div.product-social-links');
+			    jQuery('#templateaddtocart').insertBefore('button.tocart');
+			    jQuery('#placehere').insertBefore('button.tocart');
+			    jQuery("#customize").prop('disabled', true);
+				//Store Add to cart button hide
+			    <?php if($preDecoratedProduct){ ?>
+			    	jQuery('button.tocart').hide();
+			    <?php } ?>
+			    // replace  xe_size, xe_color lable to size,color
+				jQuery( "#product-options-wrapper div label" ).each(function( index ) {
+					var labeltxt = jQuery( this ).html();
+					if(labeltxt.toLowerCase().indexOf("XE_Size")){
+						var replaced = jQuery( this ).html().replace('XE_Size','Size');
+						jQuery( this ).html(replaced);
+					}
+					if(labeltxt.toLowerCase().indexOf("XE_Color")) {
+						var replaced = jQuery( this ).html().replace('XE_Color','Color');
+						jQuery( this ).html(replaced);
+					}
+				});
+			    // get assigned print method(S)
+				jQuery.get(apiurl+"?reqmethod=getPrintMethodByProduct&pid="+<?php echo $_product->getId(); ?>,function(data){
+					if(typeof data != "object")	data = JSON.parse(data);
+					jQuery.each(data, function(i, item) {
+						if(prntTypes==''){
+							prntTypes = item.print_method_id;
+						}
+						else{
+							prntTypes = prntTypes+','+item.print_method_id;
+						}
+						if(data.length==i+1)
+							strUrl = strUrl + '&pt=' + prntTypes;
+					});
+					if(data.length>=1)
+					{
+						jQuery("#customize").prop('disabled', false);
+					}
+				});
+				//Get refId by productId
+				jQuery.get(apiurl+"?reqmethod=getRefId&pid="+<?php echo $productId; ?>,function(data){
+					refId = data;
+				});
+				// get latest rvn
+				jQuery.get(apiurl+"?reqmethod=getLatestRevision",function(data){
+					rvno = data;
+					//strUrl = strUrl + '&pt=' + prntTypes;
+					strUrl = strUrl+'&rvn='+rvno;
+				});
+		 	});
+			
+			function customize_product() {
+				<?php
+					$attr1 = 0;
+					foreach($AllowAttributes as $attribute) {
+					    $productAttribute = $attribute->getProductAttribute();
+					    $attrId = $productAttribute->getId();
+					    if($attr1 == 0){
+					    	$attr1 = $attrId;
+					    }
+					}
+				?>
+				var size = document.getElementById("attribute<?php echo $attrId;?>").value;
+				var color = document.getElementById("attribute<?php echo $attr1;?>").value;
+				var qty = '&qty='+document.getElementById('qty').value;
+				var url = "";
+				var store = '&store='+storeId;
+				var sid = '&ptid='+refId;
+				var customer = "";
+				var ischecklogin = "<?php echo $customerSession->getId()?> ";
+				customer = ischecklogin.trim();
+				if(ischecklogin>0)	customer = '&customer='+customer;
+				else customer = '&customer=0';
+			    var screenWidth = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+				if(color != '' && size != ''){
+					var data = {reqmethod:'getSimpleProductId',pid:<?php echo $_product->getId(); ?>,xe_size:size,xe_color:color};
+					jQuery.ajax({
+						url: apiurl,
+						type: "GET",
+						data: data,
+						success: function(result) {
+							 var simpleId = JSON.parse(result);
+							simplpid='';
+							simplpid =  simplpid+"&simplePdctId="+simpleId['simpleProductId'];
+							if(screenWidth < 1024){
+								url = ul+"designer-tool/designer-app/index.html?id=<?php echo $productId;?>"+strUrl+simplpid+store+qty+sid+customer;
+							}else{
+								url = ul+"product-designer?id=<?php echo $productId;?>"+strUrl+simplpid+store+qty+sid+customer;
+							}
+							window.location.href=url;
+						}
+					});
+				}else{
+					 if(screenWidth < 1024){
+						url = ul+"designer-tool/designer-app/index.html?id=<?php echo $productId;?>"+strUrl+store+qty+sid+customer;
+					}else{
+						url = ul+"product-designer?id=<?php echo $productId;?>"+strUrl+store+qty+sid+customer;
+					}
+					window.location.href=url;
+				}
+			}
+			//call add To Cart api
+			function template_product(){
+				<?php
+					$attr1 = 0;
+					foreach($AllowAttributes as $attribute) {
+					    $productAttribute = $attribute->getProductAttribute();
+					    $attrId = $productAttribute->getId();
+					    if($attr1 == 0){
+					    	$attr1 = $attrId;
+					    }
+					}
+				?>
+				var size = document.getElementById("attribute<?php echo $attrId;?>").value;
+				var color = document.getElementById("attribute<?php echo $attr1;?>").value;
+				var qty = document.getElementById("qty").value;
+				var preloaderImg = document.createElement("img");
+				preloaderImg.setAttribute("src", preloaderUrl);
+				preloaderImg.setAttribute("height", "30");
+				preloaderImg.setAttribute("width", "30");
+				preloaderImg.setAttribute("alt", "loading...");
+				if(color != ''){
+					if(size != ''){
+						if(qty >= minimumQty){
+							document.getElementById("placehere").appendChild(preloaderImg);
+							jQuery("#templateaddtocart").prop('disabled', true);
+							var data = {reqmethod:'addTemplateToCartById',pid:<?php echo $_product->getId(); ?>,xe_size:size,xe_color:color,orderQty:qty};
+						    jQuery.ajax({
+							    url: apiurl,
+							    type: "GET",
+							    data: data,
+							    success: function(result) {
+							    	window.location.href=cartUl+"?quoteId="+result['quoteId'];
+					    		}
+							});
+						}else{
+							jQuery('#qty').after('<div for="attribute<?php echo $attrId; ?>" generated="true" class="mage-error" id="minimumQty">The minimum quantity allowed for purchase is '+minimumQty+'.</div>');
+							jQuery("#minimumQty").fadeOut(6000);
+						}
+					}else{
+						jQuery('#attribute<?php echo $attrId;?>').after('<div for="attribute<?php echo $attrId; ?>" generated="true" class="mage-error" id="attribute<?php echo $attrId; ?>-error">This is a required field.</div>');
+						jQuery("#attribute<?php echo $attrId; ?>-error").fadeOut(3000);
+					}
+				}else{
+					jQuery('#attribute<?php echo $attr1;?>').after('<div for="attribute<?php echo $attr1; ?>" generated="true" class="mage-error" id="attribute<?php echo $attr1; ?>-error">This is a required field.</div>');
+					jQuery("#attribute<?php echo $attr1; ?>-error").fadeOut(3000);
+				}
+			}
+		</script>
+	<?php } ?>
+<?php } ?>

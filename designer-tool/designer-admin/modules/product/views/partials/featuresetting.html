@@ -1,0 +1,58 @@
+<div class="modal fade stick-up" id="featureModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header clearfix text-left">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <i class="pg-close fs-14">
+                    </i>
+                </button>
+                <h5>
+                    <span class="semi-bold">
+                        <xe-translate text-value="Configure Features">
+                        </xe-translate>
+                    </span>
+                </h5>
+                <p>
+                    <xe-translate text-value="Enabled and Disabled features">
+                    </xe-translate>
+                </p>
+            </div>
+            <div class="modal-body">
+                <hr/>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="checkbox check-success" ng-repeat="feature in featureList1">
+                            <input type="checkbox" id="feature_{{ feature.id }}" ng-model="status1" ng-change="changedFeatures(status1,feature)"  ng-checked="feature.status == '1'"/>
+                            <label for="feature_{{ feature.id }}">
+                                {{ feature.name }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="checkbox check-success" ng-repeat="feature in featureList2">
+                            <input type="checkbox" id="feature_{{ feature.id }}" ng-model="status2" ng-change="changedFeatures(status2,feature)" ng-checked="feature.status == '1'"/>
+                            <label for="feature_{{ feature.id }}">
+                                {{ feature.name }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <div class="m-t-20 text-center">
+                    <button type="button" class="btn btn-success btn-sm" ng-click="disableFeatuers()" ng-disabled="demoStatus">
+                        <span>
+                            <xe-translate text-value="Save">
+                            </xe-translate>
+                        </span>
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm" data-dismiss="modal" ng-click="cancelFeatureModal()">
+                        <span>
+                            <xe-translate text-value="Cancel">
+                            </xe-translate>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

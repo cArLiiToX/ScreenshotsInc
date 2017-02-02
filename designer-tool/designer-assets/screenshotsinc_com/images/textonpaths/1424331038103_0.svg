@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 120 120">
+  <defs/>
+  <g transform="translate(10,10)">
+    <path id="textPath" fill="none" d="M98.55 49.3 Q98.55 69.7 84.1 84.1 69.7 98.55 49.3 98.55 28.9 98.55 14.45 84.1 0.05 69.7 0.05 49.3 0.05 28.9 14.45 14.45 28.9 0.05 49.3 0.05 69.7 0.05 84.1 14.45 98.55 28.9 98.55 49.3"/>
+    <text fill="#000000" font-size="10" font-family="vinsdojo">
+		  <textPath xlink:href="#textPath">
+			The most certain way to succeed is always to try just one more time which you should keep in mind
+	  </textPath>
+	</text>
+  </g>
+</svg>

@@ -1,0 +1,45 @@
+<div class="modal fade slide-up disable-scroll" id="assignTemplateModal" tabindex="-1" role="dialog" aria-hidden="false">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrapper">
+            <div class="modal-content">
+                <div class="modal-body text-center m-t-20">
+                    <h5 class="no-margin p-b-20">
+                        {{ warningMessage }}
+                    </h5>
+                    <div>
+                        <img class="image-responsive-height demo-mw-30 " src="assets/img/progress/progress-circle-master.svg" alt="Progress" ng-show="templateStatus"/>
+                    </div>
+                    <a ng-click="selectedCatagory(0)" class="cursor-pointer">
+                        <xe-translate text-value="Back to all products">
+                        </xe-translate>
+                    </a>
+                    <div class="clearfix m-t-10">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default"  data-toggle="dropdown" style="width: 140px;" ng-disabled="templateStatus">
+                                {{ selectedTemplate }}
+                            </button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="templateStatus">
+                                <span class="caret">
+                                </span>
+                                <span class="sr-only">
+                                    Toggle Dropdown
+                                </span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" style="width: 167px;" ng-class="{'button-scroll':productTemplateDetails.length> 4}">
+                                <li ng-repeat="category in productTemplateDetails" ng-click="assignProductTemplate($index)">
+                                    <a href="">
+                                        {{ category.name }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <button type="button" class="btn btn-success btn-sm" ng-click="saveProductTemplate('true')" ng-disabled="demoStatus || noTemplate">
+                            <xe-translate text-value="Save">
+                            </xe-translate>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

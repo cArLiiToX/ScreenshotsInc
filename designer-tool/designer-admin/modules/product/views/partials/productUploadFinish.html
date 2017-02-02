@@ -1,0 +1,22 @@
+<div class="panel-body m-t-20" style="display: block;">
+    <div class="modal-scroll">
+        <div class="col-sm-3">
+            <head>
+                <xe-translate text-value="Product Uploaded Successfully">
+                </xe-translate>
+            </head>
+        </div>
+        <button ng-show="addcolorBtn" class="btn btn-primary btn-sm" type="button" ng-click="addNewColor('colorWizard')">
+            <xe-translate text-value="Add Another Color variant">
+            </xe-translate>
+        </button>
+    </div>
+</div>
+<div class="clearfix m-r-20 m-b-20">
+    <div class="pull-right">
+        <button class="btn btn-primary btn-sm" type="button"  ng-click="finishUpload()" ng-disabled="demoStatus">
+            <xe-translate text-value="Finish">
+            </xe-translate>
+        </button>
+    </div>
+</div>

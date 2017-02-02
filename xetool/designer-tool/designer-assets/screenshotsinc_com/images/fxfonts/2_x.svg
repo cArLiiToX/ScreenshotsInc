@@ -1,0 +1,8 @@
+<svg width="48.8px" height="48.5px" viewBox="0 0 48.8 48.5" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs/>
+  <g>
+    <path stroke="none" fill="#ad334a" d="M36.15 24.9 L24.65 48.5 12.45 24.1 24.1 0.05 36.15 24.9"/>
+    <path stroke="none" fill="#c04965" d="M36.15 24.9 L47.65 48.5 24.65 48.5 36.15 24.9 M12.45 24.1 L24.65 48.5 0.65 48.5 12.45 24.1"/>
+    <path stroke="none" fill="#999476" d="M12.45 24.1 L0 0 48.8 0 36.15 24.9 24.1 0.05 12.45 24.1"/>
+  </g>
+</svg>

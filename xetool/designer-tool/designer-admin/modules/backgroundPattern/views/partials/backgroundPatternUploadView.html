@@ -1,0 +1,177 @@
+<!--
+    preloader start
+-->
+<div class="panel panel-default" ng-hide="preloader">
+    <div class="graphics-wrap-height">
+        <div class="panel-body text-center">
+            <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/progress/progress-circle-master.svg" alt="Progress"/>
+        </div>
+    </div>
+</div>
+<!-- preloader end -->
+<div class="panel panel-default" ng-show="preloader">
+    <div class="loader-OnUpload" pg-portlet  on-refresh="refreshTest('.loader-OnUpload')">
+        <div class="panel-body">
+            <div class="col-sm-2">
+                <div class="panel-heading p-t-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Preview">
+                        </xe-translate>
+                    </div>
+                </div>
+                <div class="gallery-upload-thumb" ng-show="isUploadPatternVisible">
+                    <img class="img-responsive" ng-src="{{ uploadPattern.url }}"/>
+                </div>
+                <div class="gallery-upload-thumb" ng-show="isUploadFileCount">
+                    <span ng-show="isUploadFileCount">
+                        {{ uploadFileCount }} files selected
+                    </span>
+                </div>
+                <button class="btn btn-success btn-sm btn-cons m-t-9" multiple ng-file-select ng-file-change="upload($files)">
+                    <xe-translate text-value="Upload Pattern">
+                    </xe-translate>
+                </button>
+                <p class="small">
+                    png, jpeg, jpg, bmp
+                </p>
+                <p class="small text-danger" ng-show="showError">
+                    {{ showMsg }}
+                </p>
+            </div>
+            <div class="col-sm-5 b-r-light b-l-light">
+                <div class="panel-heading p-t-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Properties">
+                        </xe-translate>
+                    </div>
+                </div>
+                <form id="form-personal" role="form" autocomplete="off" class="p-l-20 p-r-20">
+                    <div class="row clearfix">
+                        <div class="col-sm-8">
+                            <div class="form-group form-group-default required" pg-form-group>
+                                <label>
+                                    <xe-translate text-value="Name">
+                                    </xe-translate>
+                                </label>
+                                <input type="text" class="form-control" name="Name" ng-model="uploadPattern.name" required/>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-default" pg-form-group>
+                                <label>
+                                    <xe-translate text-value="Price">
+                                    </xe-translate>
+                                </label>
+                                <input type="text" class="form-control" name="price" ng-model="uploadPattern.price" money/>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="row clearfix">
+                      <div class="col-sm-4">
+                        <div pg-form-group class="form-group form-group-default input-group nested-form-group">
+                          <label><xe-translate text-value="Actual Height"></xe-translate></label>
+                          <input type="text" class="form-control" name="price" ng-model="uploadBackground.height" price-Only="price-Only" style="width: 120px;">
+                          <span class="input-group-addon">{{printUnit}}</span>
+                        </div>
+                      </div>
+                      <div class="col-sm-4 m-l-30">
+                        <div pg-form-group class="form-group form-group-default input-group nested-form-group">
+                          <label><xe-translate text-value="Actual Width"></xe-translate></label>
+                          <input type="text" class="form-control" name="Name" ng-model="uploadBackground.width" price-Only="price-Only" style="width: 120px;">
+                          <span class="input-group-addon">{{printUnit}}</span>
+                        </div>
+                      </div>
+                    </div> -->
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <div pg-form-group class="form-group form-group-default">
+                                <label>
+                                    <xe-translate text-value="Tags">
+                                    </xe-translate>
+                                </label>
+                                <tags-input ng-model="uploadTags">
+                                </tags-input>
+                            </div>
+                        </div>
+                    </div>
+                    <!--   <div class="row clearfix">
+                        <div class="col-sm-4">
+                            <div class="checkbox check-success">
+                                <input type="checkbox" id="uploadScalable" ng-model="uploadBackground.scalable">
+                                <label for="uploadScalable"><xe-translate text-value="Scalability"></xe-translate></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-8" ng-show="NoOfColor">
+                          <div class="form-group form-group-default required" pg-form-group>
+                            <label><xe-translate text-value="No Of Color"></xe-translate></label>
+                            <input type="text" class="form-control" name="No Of Color" ng-model="uploadBackground.noColor" 
+                            numbers-only="numbers-only">
+                          </div>
+                        </div>
+                      </div> -->
+                    <div class="row clearfix">
+                        <div pg-portlet id="upload-msg">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-sm-5">
+                <div class="panel-heading p-t-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Assign Category">
+                        </xe-translate>
+                    </div>
+                </div>
+                <div class="clearfix p-l-20 p-r-20 m-t-10" ng-repeat="elem in categoryElms">
+                    <div class="btn-group pull-left m-r-20">
+                        <button type="button" class="btn btn-default text-ellipsis"  data-toggle="dropdown" style="width:145px">
+                            {{ elem.category }}
+                        </button>
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret">
+                            </span>
+                            <span class="sr-only">
+                                Toggle Dropdown
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" ng-class="{'button-scroll':bgPatternCategoryList.length> 4}" style="width:171px">
+                            <li ng-click="selectCategoryDefault('Category',$index)">
+                                <a href="">
+                                    <xe-translate text-value="Category">
+                                    </xe-translate>
+                                </a>
+                            </li>
+                            <li ng-repeat="categoryItem in bgPatternCategoryList" ng-click="uploadCategorySelected(categoryItem,$parent.$index)">
+                                <a href="">
+                                    {{ categoryItem.category_name }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="pull-right">
+                        <button class="btn btn-info btn-xs" type="button" ng-click="removeUploadCategoryElms($index)">
+                            <i class="fa fa-times">
+                            </i>
+                        </button>
+                    </div>
+                </div>
+                <button class="btn btn-success btn-xs m-r-20 pull-right" type="button" ng-click="addUploadCategoryElm()">
+                    <i class="fa fa-plus">
+                    </i>
+                </button>
+            </div>
+        </div>
+        <div class="panel-footer b-t-none clearfix">
+            <div class="pull-right">
+                <button class="btn btn-primary btn-sm" type="button"  ng-click="uploadBackgroundPattern()" ng-class="{'disabled': !uploadPattern.name || !uploadPattern.url || buttonStatus==false}" ng-disabled="demoStatus">
+                    <xe-translate text-value="Save">
+                    </xe-translate>
+                </button>
+                <button class="btn btn-primary btn-sm" type="button" ng-click="cancelUploadBackgroundPattern()">
+                    <xe-translate text-value="Cancel">
+                    </xe-translate>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

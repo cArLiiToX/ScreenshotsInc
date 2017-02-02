@@ -1,0 +1,615 @@
+// out: introLoader.css, compress: false
+// The row above is needed to Brakets editor extension "LESS AutoCompile" to compile this less file
+/*
+ *  jQueryIntroLoader
+ *  Animated intro loading pages
+ *  http://factory.brainleaf.eu/jqueryIntroLoader
+ *
+ *  Made by BRAINLEAF Communication (c)2014-2015
+ *  Under GNU/GPL License
+ */
+
+// ****************************************************************************** 
+// {less} VARIABLES */
+// ****************************************************************************** 
+
+// COLORSETS 
+// ================================ 
+
+// Colorset: light (default)
+@cset-light-1: #fff;
+@cset-light-2: #ccc;
+@cset-light-3: #555;
+@cset-light-4: #efefef;
+
+// Colorset: dark
+@cset-dark-1: #333;
+@cset-dark-2: #fff;
+@cset-dark-3: #555;
+@cset-dark-4: #121212;
+
+// Colorset: ocean
+@cset-ocean-1: #164761;
+@cset-ocean-2: #237199;
+@cset-ocean-3: #fff;
+@cset-ocean-4: #20B1EA;
+
+// Colorset: forest
+@cset-forest-1: #1F3608;
+@cset-forest-2: #5E5824;
+@cset-forest-3: #A59965;
+@cset-forest-4: #332A0B;
+
+// Colorset: fluoGreen
+@cset-fluoGreen-1: #67de0f;
+@cset-fluoGreen-2: #fff;
+@cset-fluoGreen-3: #dcff1b;
+@cset-fluoGreen-4: #53ba06;
+
+// Colorset: fluoMagenta
+@cset-fluoMagenta-1: #ff1bff;
+@cset-fluoMagenta-2: #fff;
+@cset-fluoMagenta-3: #ccc;
+@cset-fluoMagenta-4: #db07db;
+
+// Colorset: fluoYellow
+@cset-fluoYellow-1: #dcff1b;
+@cset-fluoYellow-2: #fff;
+@cset-fluoYellow-3: #67de0f;
+@cset-fluoYellow-4: #d5f816;
+
+/* ****************************************************************************** */
+/* PLUGIN STYLE */
+/* ****************************************************************************** */
+
+/* ============================================================================== */ 
+/* Global Style */
+/* ============================================================================== */ 
+.introLoader,
+.introLoading {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+.introLoading {
+    background-color: #fff;
+}
+
+.absolute.introLoader {
+    position: absolute;
+}
+
+body.introLoader_preventScroll {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+    margin: 0;
+	overflow: hidden;
+}
+
+/* ============================================================================== */ 
+/* Animations */
+/* ============================================================================== */
+
+/* *************************************************** */ 
+/* SimpleLoader Animation */
+/* *************************************************** */ 
+
+.absolute.introLoader.simpleLoader {
+    position: absolute;
+}
+
+/* SimpleLoader Animation Colors */
+/* -------------------------------------------- */
+// colorset: light 
+.theme-light.introLoader.simpleLoader {
+    background-color: @cset-light-1;
+}
+// colorset: dark 
+.theme-dark.introLoader.simpleLoader {
+    background-color: @cset-dark-1;
+}
+// colorset: ocean 
+.theme-ocean.introLoader.simpleLoader {
+    background-color: @cset-ocean-1;
+}
+// colorset: forest 
+.theme-forest.introLoader.simpleLoader {
+    background-color: @cset-forest-1;
+}
+// colorset: fluoGreen
+.theme-fluoGreen.introLoader.simpleLoader {
+    background-color: @cset-fluoGreen-1;
+}
+// colorset: fluoMagenta 
+.theme-fluoMagenta.introLoader.simpleLoader {
+    background-color: @cset-fluoMagenta-1;
+}
+// colorset: fluoYellow 
+.theme-fluoYellow.introLoader.simpleLoader {
+    background-color: @cset-fluoYellow-1;
+}
+
+
+/* *************************************************** */ 
+/* GifLoader Animation */
+/* *************************************************** */ 
+
+.introLoader.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-simple_light.gif);
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.introLoader.gifLoader .gifLoaderInnerCustom {
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+
+.introLoader.gifLoader .gifLoaderInner,
+.introLoader.gifLoader .gifLoaderInnerCustom {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.theme-light.gifLoader .gifLoaderInner {
+    background-color: @cset-light-1;
+}
+
+.theme-dark.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-simple_dark.gif);
+    background-color: @cset-dark-1;
+}
+
+.theme-ocean.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-simple_ocean.gif);
+    background-color: @cset-ocean-1;
+}
+
+.theme-forest.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-simple_forest.gif);
+    background-color: @cset-forest-1;
+}
+
+.theme-fluoGreen.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-simple_fluoGreen.gif);
+    background-color: @cset-fluoGreen-1;
+}
+
+.theme-fluoYellow.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-simple_fluoYellow.gif);
+    background-color: @cset-fluoYellow-1;
+}
+
+.theme-fluoMagenta.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-simple_fluoMagenta.gif);
+    background-color: @cset-fluoMagenta-1;
+}
+
+.theme-light.bubble.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-bub_light.gif);
+}
+
+.theme-dark.bubble.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-bub_dark.gif);
+}
+
+.theme-ocean.bubble.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-bub_ocean.gif);
+}
+
+.theme-forest.bubble.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-bub_forest.gif);
+}
+
+.theme-fluoGreen.bubble.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-bub_fluoGreen.gif);
+}
+
+.theme-fluoYellow.bubble.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-bub_fluoYellow.gif);
+}
+
+.theme-fluoMagenta.bubble.gifLoader .gifLoaderInner {
+    background-image: url(spinners/circle-bub_fluoMagenta.gif);
+}
+
+/* *************************************************** */ 
+/* CounterLoader Animation */
+/* *************************************************** */ 
+.introLoader.counterLoader .counterLoaderBox {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+    font-weight: bold;
+    -webkit-transform: translate(-50%,-50%);
+            transform: translate(-50%,-50%);
+} 
+
+// counter sizes
+.small.introLoader.counterLoader .counterLoaderBox {
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    font-size: 0.8em;
+}
+
+.medium.introLoader.counterLoader .counterLoaderBox {
+    width: 200px;
+    height: 200px;
+    line-height: 200px;
+    font-size: 2em;
+}
+
+.large.introLoader.counterLoader .counterLoaderBox {
+    width: 300px;
+    height: 300px;
+    line-height: 300px;
+    font-size: 3em;
+}
+
+// counter theme
+.circle.introLoader.counterLoader .counterLoaderBox {
+    border-radius: 50%;
+}
+
+
+/* CounterLoader Animation Colors */
+/* -------------------------------------------- */
+// colorset: light 
+.theme-light.introLoader.counterLoader  {
+    background-color: @cset-light-1;
+}
+
+.theme-light.introLoader.counterLoader .counterLoaderBox {
+    background-color: @cset-light-2;
+}
+
+// colorset: dark 
+.theme-dark.introLoader.counterLoader  {
+    background-color: @cset-dark-1;
+}
+
+.theme-dark.introLoader.counterLoader .counterLoaderBox {
+    background-color: @cset-dark-2;
+}
+
+// colorset: ocean 
+.theme-ocean.introLoader.counterLoader  {
+    background-color: @cset-ocean-1;
+}
+
+.theme-ocean.introLoader.counterLoader .counterLoaderBox {
+    background-color: @cset-ocean-2;
+    color: @cset-ocean-3;
+}
+
+// colorset: forest 
+.theme-forest.introLoader.counterLoader  {
+    background-color: @cset-forest-1;
+}
+
+.theme-forest.introLoader.counterLoader .counterLoaderBox {
+    background-color: @cset-forest-2;
+    color: @cset-forest-1;
+}
+
+// colorset: fluoGreen 
+.theme-fluoGreen.introLoader.counterLoader  {
+    background-color: @cset-fluoGreen-1;
+}
+
+.theme-fluoGreen.introLoader.counterLoader .counterLoaderBox {
+    background-color: @cset-fluoGreen-2;
+    color: @cset-fluoGreen-1;
+}
+
+// colorset: fluoMagenta 
+.theme-fluoMagenta.introLoader.counterLoader  {
+    background-color: @cset-fluoMagenta-1;
+}
+
+.theme-fluoMagenta.introLoader.counterLoader .counterLoaderBox {
+    background-color: @cset-fluoMagenta-2;
+    color: @cset-fluoMagenta-1;
+}
+
+// colorset: fluoYellow 
+.theme-fluoYellow.introLoader.counterLoader  {
+    background-color: @cset-fluoYellow-1;
+}
+
+.theme-fluoYellow.introLoader.counterLoader .counterLoaderBox {
+    background-color: @cset-fluoYellow-2;
+    color: @cset-fluoYellow-1;
+}
+
+/* *************************************************** */ 
+/* doubleLoader Animation */
+/* *************************************************** */ 
+
+.doubleLoader {
+    background: transparent!important;
+}
+.doubleLoaderTop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 50%;
+    background-color: #333;
+}
+.doubleLoaderBottom {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 50%;
+    background-color: #333;
+}
+.doubleLoaderProgBar {
+    position: absolute;
+    top: 50%;
+    margin-top: -10px;
+    width: 100%;
+    height: 20px;
+    background-color: #fff;
+    z-index: 9999999999999;
+}
+
+.doubleLoaderProgBar span {
+    display: block;
+    width: 0;
+    height: 20px;
+    background-color: #555;
+}
+
+/* DoubleLoader Animation Colors */
+/* -------------------------------------------- */
+
+// colorset: light 
+.doubleLoader.theme-light {
+    .doubleLoaderTop,
+    .doubleLoaderBottom {
+        background-color: @cset-light-4;
+    }
+    .doubleLoaderProgBar {
+        background-color: @cset-light-2;
+    }
+    .doubleLoaderProgBar span {
+        background-color: @cset-light-3;
+    }
+} // end theme-light
+
+.doubleLoader.theme-light.zebra {
+    .doubleLoaderTop {
+        background-color: @cset-light-1;
+    }
+    .doubleLoaderBottom {
+        background-color: @cset-light-4;
+    }
+    
+} // end theme-light.zebra
+
+// colorset: dark 
+.doubleLoader.theme-dark {
+    .doubleLoaderTop,
+    .doubleLoaderBottom {
+        background-color: @cset-dark-1;
+    }
+    .doubleLoaderProgBar {
+        background-color: @cset-dark-2;
+    }
+    .doubleLoaderProgBar span {
+        background-color: @cset-dark-3;
+    }
+} // end theme-dark
+
+.doubleLoader.theme-dark.zebra {
+    .doubleLoaderTop {
+        background-color: @cset-dark-1;
+    }
+    .doubleLoaderBottom {
+        background-color: @cset-dark-4;
+    } 
+} // end theme-dark.zebra
+
+// colorset: ocean 
+.doubleLoader.theme-ocean {
+    .doubleLoaderTop,
+    .doubleLoaderBottom {
+        background-color: @cset-ocean-1;
+    }
+    .doubleLoaderProgBar {
+        background-color: @cset-ocean-2;
+    }
+    .doubleLoaderProgBar span {
+        background-color: @cset-ocean-3;
+    }
+} // end theme-ocean
+
+.doubleLoader.theme-ocean.zebra {
+    .doubleLoaderTop {
+        background-color: @cset-ocean-1;
+    }
+    .doubleLoaderBottom {
+        background-color: @cset-ocean-4;
+    } 
+} // end theme-ocean.zebra
+
+// colorset: forest 
+.doubleLoader.theme-forest {
+    .doubleLoaderTop,
+    .doubleLoaderBottom {
+        background-color: @cset-forest-1;
+    }
+    .doubleLoaderProgBar {
+        background-color: @cset-forest-2;
+    }
+    .doubleLoaderProgBar span {
+        background-color: @cset-forest-3;
+    }
+} // end theme-forest
+
+.doubleLoader.theme-forest.zebra {
+    .doubleLoaderTop {
+        background-color: @cset-forest-1;
+    }
+    .doubleLoaderBottom {
+        background-color: @cset-forest-4;
+    } 
+} // end theme-ocean.forest
+
+// colorset: fluoGreen 
+.doubleLoader.theme-fluoGreen {
+    .doubleLoaderTop,
+    .doubleLoaderBottom {
+        background-color: @cset-fluoGreen-1;
+    }
+    .doubleLoaderProgBar {
+        background-color: @cset-fluoGreen-2;
+    }
+    .doubleLoaderProgBar span {
+        background-color: @cset-fluoGreen-3;
+    }
+} // end theme-fluoGreen
+
+.doubleLoader.theme-fluoGreen.zebra {
+    .doubleLoaderTop {
+        background-color: @cset-fluoGreen-1;
+    }
+    .doubleLoaderBottom {
+        background-color: @cset-fluoGreen-4;
+    } 
+} // end theme-ocean.fluoGreen
+
+// colorset: fluoMagenta
+.doubleLoader.theme-fluoMagenta {
+    .doubleLoaderTop,
+    .doubleLoaderBottom {
+        background-color: @cset-fluoMagenta-1;
+    }
+    .doubleLoaderProgBar {
+        background-color: @cset-fluoMagenta-2;
+    }
+    .doubleLoaderProgBar span {
+        background-color: @cset-fluoMagenta-3;
+    }
+} // end theme-fluoMagenta
+
+.doubleLoader.theme-fluoMagenta.zebra {
+    .doubleLoaderTop {
+        background-color: @cset-fluoMagenta-1;
+    }
+    .doubleLoaderBottom {
+        background-color: @cset-fluoMagenta-4;
+    } 
+} // end theme-ocean.fluoMagenta
+
+// colorset: fluoYellow
+.doubleLoader.theme-fluoYellow {
+    .doubleLoaderTop,
+    .doubleLoaderBottom {
+        background-color: @cset-fluoYellow-1;
+    }
+    .doubleLoaderProgBar {
+        background-color: @cset-fluoYellow-2;
+    }
+    .doubleLoaderProgBar span {
+        background-color: @cset-fluoYellow-3;
+    }
+} // end theme-fluoYellow
+
+.doubleLoader.theme-fluoYellow.zebra {
+    .doubleLoaderTop {
+        background-color: @cset-fluoYellow-1;
+    }
+    .doubleLoaderBottom {
+        background-color: @cset-fluoYellow-4;
+    } 
+} // end theme-ocean.fluoYellow
+
+
+/* *************************************************** */ 
+/* LettersLoader Animation */
+/* *************************************************** */ 
+
+.lettersLoader {
+    background: @cset-light-1;
+    color: @cset-light-3;
+    font-size: 3em;
+}
+
+.lettersLoaderRow {
+    display: none;
+    position: absolute;
+    width: 100%;
+    top: 45%;
+    text-align: center;
+
+}
+
+.lettersLoaderItem {
+    display: inline-block;
+    opacity: 0;
+}
+
+/* LettersLoader Animation Colors */
+/* -------------------------------------------- */
+
+// colorset: light
+.theme-light.lettersLoader {
+    background: @cset-light-1;
+    color: @cset-light-3;
+}
+
+// colorset: dark 
+.theme-dark.lettersLoader {
+    background: @cset-dark-1;
+    color: @cset-dark-2;
+}
+
+// colorset: ocean 
+.theme-ocean.lettersLoader {
+    background: @cset-ocean-1;
+    color: @cset-ocean-3;
+}
+
+// colorset: forest
+.theme-forest.lettersLoader {
+    background: @cset-forest-1;
+    color: @cset-forest-3;
+}
+
+// colorset: fluoGreen
+.theme-fluoGreen.lettersLoader {
+    background: @cset-fluoGreen-1;
+    color: @cset-fluoGreen-2;
+}
+
+// colorset: fluoMagenta
+.theme-fluoMagenta.lettersLoader {
+    background: @cset-fluoMagenta-1;
+    color: @cset-fluoMagenta-2;
+}
+
+// colorset: fluoYellow
+.theme-fluoGreen.lettersLoader {
+    background: @cset-fluoMagenta-1;
+    color: @cset-fluoMagenta-2;
+}
+

@@ -1,0 +1,26 @@
+/*******************************************************************************
+* Buttons and Actions
+*******************************************************************************/
+button,
+.btn,
+.action {
+  border-radius: 2px;
+  &.primary {
+    background-color: #024930;
+    border-color: #013925;
+    &:hover {
+      background-color: #035e3e;
+      border-color: #013925;
+    }
+  }
+}
+
+#customize {
+  margin-bottom: 20px;
+}
+
+/** Tablets */
+@media screen and (max-width: 768px) {}
+
+/** Mobile */
+@media screen and (max-width: 400px) {}

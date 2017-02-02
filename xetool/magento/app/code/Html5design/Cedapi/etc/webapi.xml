@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../app/code/Magento/Webapi/etc/webapi.xsd">
+
+<route url="/V1/product/getCategories" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="getCategories"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/getsubCategories" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="getsubCategories"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/getSizeArr/:store" method="GET">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="getSizeArr"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/getColorArr" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="getColorArr"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/getAllProducts" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="getAllProducts"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/getCategoriesByProduct" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="getCategoriesByProduct"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/getSimpleProduct" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="getSimpleProduct"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/getSizeAndQuantity" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="getSizeAndQuantity"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/getSizeVariants" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="getSizeVariants"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/getVariants" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="getVariants"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/storeVersion" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="storeVersion"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/getLiveQuoteRefIds" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="getLiveQuoteRefIds"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/checkDesignerTool" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="checkDesignerTool"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/addAttributeColorOptionValue" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="addAttributeColorOptionValue"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/editAttributeColorOptionValue" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="editAttributeColorOptionValue"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/addTemplateProducts" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="addTemplateProducts"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/checkDuplicateSku" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="checkDuplicateSku"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/getProductInfo" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="getProductInfo"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/product/getSimpleProductId" method="POST">
+	<service class="Html5design\Cedapi\Api\ProductInterface" method="getSimpleProductId"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/cart/getOrdersGraph" method="POST">
+	<service class="Html5design\Cedapi\Api\CartInterface" method="getOrdersGraph"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/cart/getOrders" method="POST">
+	<service class="Html5design\Cedapi\Api\CartInterface" method="getOrders"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/cart/getOrderDetails" method="POST">
+	<service class="Html5design\Cedapi\Api\CartInterface" method="getOrderDetails"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/cart/addToCart" method="POST">
+	<service class="Html5design\Cedapi\Api\CartInterface" method="addToCart"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/cart/updateItemStatus" method="POST">
+	<service class="Html5design\Cedapi\Api\CartInterface" method="updateItemStatus"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+</route>
+
+<route url="/V1/cart/getTotalCartItem" method="POST">
+	<service class="Html5design\Cedapi\Api\CartInterface" method="getTotalCartItem"/>
+	<resources>
+		<resource ref="anonymous"/>
+	</resources>
+	</route>
+</routes>

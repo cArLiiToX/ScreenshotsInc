@@ -1,0 +1,24 @@
+<div class="modal fade slide-up disable-scroll modal-bg" id="deletePatternCategoryModal" tabindex="-1" role="dialog" aria-hidden="false">
+    <div class="modal-dialog modal-sm custom-background-madal-pos">
+        <div class="modal-content-wrapper">
+            <div class="modal-content">
+                <div class="modal-body text-center m-t-20">
+                    <h5 class="no-margin p-b-20">
+                        {{ categoryWarningMessage }}
+                    </h5>
+                    <div class="clearfix">
+                        <button type="button" class="btn btn-info btn-sm" data-dismiss="modal" ng-click="onCategoryDeleteModalConfirm()">
+                            <xe-translate text-value="confirm" ng-disabled="demoStatus">
+                            </xe-translate>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">
+                            <xe-translate text-value="Cancel">
+                            </xe-translate>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+</div>

@@ -1,0 +1,72 @@
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-6">
+                <h4 class="user-head-title">
+                    <xe-translate text-value="Create New User">
+                    </xe-translate>
+                </h4>
+                <form class="" role="form">
+                    <div class="form-group form-group-default required ">
+                        <label>
+                            <xe-translate text-value="Name">
+                            </xe-translate>
+                        </label>
+                        <input type="name" ng-model="newUser.name"class="form-control" required/>
+                    </div>
+                    <div class="form-group form-group-default required ">
+                        <label>
+                            <xe-translate text-value="Email">
+                            </xe-translate>
+                        </label>
+                        <input type="email" ng-model="newUser.email"class="form-control" required  ng-pattern="/^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/"/>
+                    </div>
+                    <div class="form-group form-group-default required">
+                        <label>
+                            <xe-translate text-value="Password">
+                            </xe-translate>
+                        </label>
+                        <input type="password" ng-model="newUser.password" class="form-control" required/>
+                    </div>
+                </form>
+            </div>
+            <div ng-hide="userType == '0'"class="col-sm-6">
+                <h4 class="user-head-title">
+                    <xe-translate text-value="Enable Disable Privileges">
+                    </xe-translate>
+                </h4>
+                <div class="form-group no-border no-margin">
+                    <div class="col-sm-10">
+                        <div class="checkbox check-info pull-left w-250 m-t-0" ng-repeat="privilege in privilegesList">
+                            <input type="checkbox" value="{{ privilege.id }}" name="{{ privilege.name }}" id="{{ privilege.id }}" ng-model="privilegeStatus[$index]" ng-checked="privilegeStatus[$index] == true"/>
+                            <label for="{{ privilege.id }}">
+                                {{ privilege.name }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row preloader-box" ng-show="isPreloader">
+            <div class="col-lg-12 bg-white">
+                <div class="preloader-height">
+                    <div class="panel-body text-center">
+                        <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/demo/progress.svg" alt="Progress"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <div class="clearfix block">
+            <button class="btn btn-success pull-right" type="button" ng-click="cancelUser()">
+                <xe-translate text-value="Cancel">
+                </xe-translate>
+            </button>
+            <button class="btn btn-success pull-right m-r-10" type="button"  ng-click="saveNewUserPrivilege()">
+                <xe-translate text-value="Save">
+                </xe-translate>
+            </button>
+        </div>
+    </div>
+</div>

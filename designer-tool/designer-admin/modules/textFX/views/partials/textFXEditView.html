@@ -1,0 +1,76 @@
+<!--
+    preloader start
+-->
+<div class="panel panel-default" ng-hide="preloader">
+    <div class="graphics-wrap-height">
+        <div class="panel-body text-center">
+            <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/progress/progress-circle-master.svg" alt="Progress"/>
+        </div>
+    </div>
+</div>
+<!-- preloader end -->
+<div class="panel panel-default" ng-show="preloader">
+    <div class="loader-OnUpdate" pg-portlet on-refresh="refreshTest('.loader-OnUpdate')">
+        <div class="panel-body">
+            <div class="col-sm-9 b-r-light">
+                <div class="panel-heading padding-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Preview">
+                        </xe-translate>
+                    </div>
+                </div>
+                <div>
+                    <div class="textfx-view clearfix" ng-repeat="editFont in textFxEditFontList" ng-mouseenter="showCharEditCloseBtn[$index]=true" ng-mouseleave="showCharEditCloseBtn[$index]=false; showEditCharConfirmBtn[$index]=false">
+                        <div class="textfx-delete" ng-show="showCharEditCloseBtn[$index]" ng-click="editCharCloseBtnClick($index)" ng-if="textFxEditFontList.length> 1">
+                            <i class="fa fa-times">
+                            </i>
+                        </div>
+                        <div class="textfx-delete-confirm" ng-show="showEditCharConfirmBtn[$index]"  ng-click="deleteCharInEditView(editFont,$index)" ng-disabled="demoStatus">
+                            <xe-translate text-value="Confirm">
+                            </xe-translate>
+                        </div>
+                        <div class="textfx-view-thumb">
+                            <img ng-src="{{ editFontUrl+editFont.charecter }}.svg" class="img-responsive"/>
+                        </div>
+                        <div class="textfx-view-name">
+                            <input type="text" class="form-control input-sm" ng-model="textFxEditCharList[$index]"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="panel-heading padding-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Properties">
+                        </xe-translate>
+                    </div>
+                </div>
+                <form id="form-personal" role="form" autocomplete="off">
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <div class="form-group form-group-default required">
+                                <label>
+                                    <xe-translate text-value="Name">
+                                    </xe-translate>
+                                </label>
+                                <input type="text" class="form-control" name="Name" required ng-model="editTextFx.name"/>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer b-t-none clearfix">
+            <div class="pull-right">
+                <button class="btn btn-primary btn-sm" type="button" ng-click="saveEditTextFxFonts()" ng-disabled="demoStatus"  ng-class="{'disabled': !editTextFx.name}">
+                    <xe-translate text-value="Save">
+                    </xe-translate>
+                </button>
+                <button class="btn btn-primary btn-sm" type="button" ng-click="cancelEditTextFx()">
+                    <xe-translate text-value="Cancel">
+                    </xe-translate>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

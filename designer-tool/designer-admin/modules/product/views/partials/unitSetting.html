@@ -1,0 +1,97 @@
+<div class="modal fade stick-up" id="unitModal" pg-portlet tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xxl">
+        <div class="modal-content">
+            <div class="modal-header clearfix text-left">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <i class="pg-close fs-14">
+                    </i>
+                </button>
+                <!-- <h5><span class="semi-bold">
+                    Configure Custom Boundary Unit</span></h5> -->
+            </div>
+            <div class="modal-body" id="unitModalNoti">
+                <div class="pull-left m-l-10 m-b-10">
+                    <button type="button" class="btn btn-success btn-sm" ng-click="addNewUnit.status = true">
+                        <span>
+                            <xe-translate text-value="Add New Unit">
+                            </xe-translate>
+                        </span>
+                    </button>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 print-area-scroll">
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr ng-if="customBoundaryUnitList.length != 0 || addNewUnit.status">
+                                    <th>
+                                        Name
+                                    </th>
+                                    <th>
+                                        Price
+                                    </th>
+                                    <th>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-show="addNewUnit.status">
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="unitObject.name"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="unitObject.price"  price-only="price-only"/>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-success btn-xs" ng-click="saveUnit()" ng-disabled="demoStatus" ng-class="{'disabled':!unitObject.name || !unitObject.price}">
+                                            <span>
+                                                <i class="fa fa-floppy-o" aria-hidden="true">
+                                                </i>
+                                            </span>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-xs"  ng-click="addNewUnit.status = false;cancelUnitList()" ng-disabled="demoStatus">
+                                            <span>
+                                                <i class="fa fa-times" aria-hidden="true">
+                                                </i>
+                                            </span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr ng-repeat="unit in customBoundaryUnitList">
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="unit.name"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="unit.price" price-only="price-only"/>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-xs btn-danger" ng-disabled="demoStatus"  ng-click="deleteUnit(unit)">
+                                            <span>
+                                                <i class="fa fa-trash-o" aria-hidden="true">
+                                                </i>
+                                            </span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="m-t-20 clearfix" ng-if="customBoundaryUnitList.length != 0">
+                    <button type="button" class="btn btn-success btn-sm " ng-click="updateUnitList()" ng-disabled="demoStatus || addNewUnit.status">
+                        <span>
+                            <xe-translate text-value="Update">
+                            </xe-translate>
+                        </span>
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm" data-dismiss="modal" ng-click="cancelUnitList()">
+                        <span>
+                            <xe-translate text-value="Cancel">
+                            </xe-translate>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

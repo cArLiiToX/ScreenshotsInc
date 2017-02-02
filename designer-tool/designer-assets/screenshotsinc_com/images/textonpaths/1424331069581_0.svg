@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 135 135">
+    
+	<g>
+		<path id="myTextPath" fill="none" d="m69.949997,124.400002q8.450005,-0.650002 16.400002,-6.5q47.950005,-35.349998 49.250008,-76.25l0.099991,-2.75q0,-15.900002 -11.25,-27.150002q-11.25,-11.25 -27.149994,-11.25q-15.900002,0 -27.150002,11.25l-2.050003,2.2l-2.049995,-2.2q-11.250004,-11.25 -27.150002,-11.25q-15.900002,0 -27.150002,11.25q-11.25,11.25 -11.25,27.150002l0.1,2.75q1.3,40.900002 49.249998,76.25q7.950001,5.849998 16.400002,6.549995l1.849998,0.050003l1.849998,-0.099998m0,0.049995l-1.849998,0.050003"/>
+		<text x="0" y="0" fill="#000000" font-size="12" font-family="vinsdojo">
+		  <textPath xlink:href="#myTextPath">
+				The most certain way to succeed is always to try just one more time which you should keep in mind
+		  </textPath>
+		</text>
+	</g>
+</svg>

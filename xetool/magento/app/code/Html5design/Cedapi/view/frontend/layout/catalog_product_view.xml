@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<body>
+    <referenceContainer name="product.info.main">
+        <block class="Html5design\Cedapi\Block\Product\View\Customize"
+            name="product.view.customize"
+            template="Html5design_Cedapi::product/view/customize.phtml"
+            after="-">
+        </block>
+    </referenceContainer>
+</body>

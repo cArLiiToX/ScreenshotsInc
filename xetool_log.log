@@ -1,0 +1,36 @@
+
+2017-01-13 13:54:02: Error in 5th Step : domain_store_rel update failed:  : Update your domain_store_rel table in your inkXE database.
+
+
+2017-01-13 13:54:38: Error in 5th Step : domain_store_rel update failed: Can't create directory /var/www/html/var/generation/Magento/Framework/App/ResourceConnection/. : Update your domain_store_rel table in your inkXE database.
+
+
+2017-01-13 13:54:38: Error in 5th Step : domain_store_rel update failed: Can't create directory /var/www/html/var/generation/Magento/Framework/App/ResourceConnection/. : Update your domain_store_rel table in your inkXE database.
+
+
+2017-01-13 14:13:00: Error in 5th Step : domain_store_rel update failed: Invalid Document 
+Element 'type': Character content other than whitespace is not allowed because the content type is 'element-only'.
+Line: 6
+
+Element 'type': Character content other than whitespace is not allowed because the content type is 'element-only'.
+Line: 6
+ : Update your domain_store_rel table in your inkXE database.
+
+
+2017-01-13 14:14:46: Error in 5th Step : domain_store_rel update failed: Invalid Document 
+Element 'type': Character content other than whitespace is not allowed because the content type is 'element-only'.
+Line: 6
+
+Element 'type': Character content other than whitespace is not allowed because the content type is 'element-only'.
+Line: 6
+ : Update your domain_store_rel table in your inkXE database.
+
+
+2017-01-13 14:14:47: Error in 5th Step : domain_store_rel update failed: Invalid Document 
+Element 'type': Character content other than whitespace is not allowed because the content type is 'element-only'.
+Line: 6
+
+Element 'type': Character content other than whitespace is not allowed because the content type is 'element-only'.
+Line: 6
+ : Update your domain_store_rel table in your inkXE database.
+

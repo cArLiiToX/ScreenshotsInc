@@ -1,0 +1,77 @@
+<div class="modal fade stick-up" id="discountModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header clearfix text-left">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <i class="pg-close fs-14">
+                    </i>
+                </button>
+                <h5>
+                    <span class="semi-bold">
+                        <xe-translate text-value="Assign Product Discount">
+                        </xe-translate>
+                    </span>
+                </h5>
+                <p>
+                    <xe-translate text-value="Product Discount Description">
+                    </xe-translate>
+                </p>
+            </div>
+            <div class="modal-body" id="discountSettingModal">
+                <hr/>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <ul class="discount-modal" ng-repeat="item in pDiscountList">
+                            <li>
+                                <span>
+                                    {{ item.printName }}
+                                </span>
+                            </li>
+                            <li>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default"  data-toggle="dropdown" style="width:147px">
+                                        {{ item.discount_name == null?'None':item.discount_name }}
+                                    </button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="caret">
+                                        </span>
+                                        <span class="sr-only">
+                                            Toggle Dropdown
+                                        </span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu" ng-class="{'button-scroll':DiscountList.length> 4}" style="width:174px">
+                                        <li ng-click="onSelectedDiscount('',$index)">
+                                            <a href="">
+                                                {{ defaultDiscount }}
+                                            </a>
+                                        </li>
+                                        <li ng-repeat="d in DiscountList" ng-click="onSelectedDiscount(d,$parent.$index)">
+                                            <a href="">
+                                                {{ d.discount_name }}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <hr/>
+                <div class="m-t-20 text-center">
+                    <button type="button" class="btn btn-success btn-sm" ng-click="saveDiscountOnProduct()" ng-disabled="demoStatus">
+                        <span>
+                            <xe-translate text-value="Save">
+                            </xe-translate>
+                        </span>
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm" data-dismiss="modal" ng-click="cancelDiscount()">
+                        <span>
+                            <xe-translate text-value="Cancel">
+                            </xe-translate>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,21 @@
+.service-block {
+  display: inline-block;
+  width: 33.3%;
+  box-sizing: border-box;
+  padding: 12px;
+  float: left;
+  &.large {
+    width: 100%;
+  }
+
+  .service-type {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 12px;
+    h2 {
+      border-bottom: 1px solid #f23f3f;
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+    }
+  }
+}

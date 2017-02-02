@@ -1,0 +1,149 @@
+<div class="panel-body m-t-20" style="display: block;">
+    <div class="col-sm-2" ng-hide="colorLoader">
+        <div class="panel-heading padding-0">
+            <div class="panel-title">
+                <xe-translate text-value="Product Image">
+                </xe-translate>
+            </div>
+        </div>
+        <div class="gallery-upload-thumb" ng-show="isUploadConfigureProductVisible">
+            <img class="img-responsive" ng-src="{{ uploadConfigureProduct.url }}"/>
+        </div>
+        <button class="btn btn-success btn-sm btn-cons m-t-10" name="configFile"  id="filename" type="file" multiple multiple accept=".svg,.png,.jpg,.jpeg,.bmp" ng-file-select ng-file-change="browseConfigureProduct($files)">
+            <xe-translate text-value="Upload Product">
+            </xe-translate>
+        </button>
+    </div>
+    <div class="modal-scroll" ng-hide="colorLoader">
+        <div class="col-sm-5 b-r-light">
+            <div class="panel-heading p-l-20">
+                <div class="panel-title">
+                    <xe-translate text-value="Properties">
+                    </xe-translate>
+                </div>
+            </div>
+            <form id="form-personal" role="form" autocomplete="off" class="p-l-20 p-r-20">
+                <div class="row clearfix">
+                    <div class="col-sm-12">
+                        <div class="form-group form-group-default required" pg-form-group>
+                            <label>
+                                <xe-translate text-value="Name">
+                                </xe-translate>
+                            </label>
+                            <input type="text" class="form-control" name="Name" ng-model="uploadProduct.name" required/>
+                        </div>
+                        <div class="form-group form-group-default required" pg-form-group>
+                            <label>
+                                <xe-translate text-value="Description">
+                                </xe-translate>
+                            </label>
+                            <!-- <input type="text" class="form-control" name="Description" ng-model="uploadProduct.desc"> -->
+                            <textarea class="form-control" ng-model="uploadProduct.desc" placeholder="Briefly Describe your Product" style="margin-top: 0px; margin-bottom: 0px; height: 52px;">
+                            </textarea>
+                        </div>
+                        <div pg-form-group class="form-group form-group-default required">
+                            <label>
+                                <xe-translate text-value="Short Description">
+                                </xe-translate>
+                            </label>
+                            <!-- <input type="text" class="form-control" name="Short Description" ng-model="uploadProduct.shortDesc"> -->
+                            <textarea class="form-control" ng-model="uploadProduct.shortDesc" placeholder="Briefly Describe your Product" style="margin-top: 0px; margin-bottom: 0px; height: 52px;">
+                            </textarea>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-3 b-r-light">
+            <div class="panel-heading padding-0">
+                <div class="panel-title">
+                    <xe-translate text-value="Configure Product">
+                    </xe-translate>
+                </div>
+            </div>
+            <form id="form-personal" role="form" autocomplete="off" class="p-l-20 p-r-20">
+                <div class="row clearfix">
+                    <div class="col-sm-12">
+                        <div class="form-group form-group-default required" pg-form-group>
+                            <label>
+                                <xe-translate text-value="Price">
+                                </xe-translate>
+                            </label>
+                            <input type="text" class="form-control" name="Price" ng-model="uploadConfigureProduct.price" price-only="price-only" required/>
+                        </div>
+                        <div class="form-group form-group-default required" pg-form-group>
+                            <label>
+                                <xe-translate text-value="Weight">
+                                </xe-translate>
+                            </label>
+                            <input numbers-only="numbers-only" type="number" min="1" class="form-control" name="Weight" ng-model="uploadConfigureProduct.weight"/>
+                        </div>
+                        <div class="form-group form-group-default required" pg-form-group>
+                            <label>
+                                <xe-translate text-value="Quantity">
+                                </xe-translate>
+                            </label>
+                            <input numbers-only="numbers-only" type="number" class="form-control" min="1" name="Quantity" ng-model="uploadConfigureProduct.qty"/>
+                        </div>
+                        <div pg-form-group class="form-group form-group-default required">
+                            <label>
+                                <xe-translate text-value="Sku">
+                                </xe-translate>
+                            </label>
+                            <input type="text" class="form-control" name="Sku" ng-model="uploadConfigureProduct.sku"/>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-2" ng-hide="colorLoader">
+            <div class="panel-heading padding-0">
+                <div class="panel-title">
+                    <xe-translate text-value="Category">
+                    </xe-translate>
+                </div>
+            </div>
+            <!-- dropdown start -->
+            <div class="col-sm-8">
+                <form id="form-personal" role="form" autocomplete="off" class="p-l-20 p-r-20">
+                    <div class="row clearfix">
+                        <div class="col-sm-8">
+                            <div class="checkbox check-success" ng-repeat="category in categoryList" ng-show="!$first">
+                                <input type="checkbox" id="upload_{{ category.id }}" ng-model="uploadCategoryType[$index]"/>
+                                <label for="upload_{{ category.id }}">
+                                    {{ category.name }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-show="colorLoader">
+        <div class="col-lg-12 bg-white">
+            <div class="product-wrap-height">
+                <div class="panel-body text-center">
+                    <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/demo/progress.svg" alt="Progress"/>
+                    <span class="loader-label">
+                        <xe-translate text-value="Please wait product color loading">
+                        </xe-translate>
+                        ...
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clearfix m-r-20 m-b-20" ng-hide="colorLoader">
+    <div class="pull-right">
+        <button class="btn btn-primary btn-sm" type="button" ng-click="cancelUploadProduct()">
+            <xe-translate text-value="Cancel">
+            </xe-translate>
+        </button>
+        <button class="btn btn-primary btn-sm" type="button"  ng-click="saveCofigureProduct('colorWizard')" ng-disabled="demoStatus" ng-class="{'disabled': !uploadProduct.name || !uploadProduct.desc || !uploadProduct.shortDesc || !uploadConfigureProduct.sku || !uploadConfigureProduct.price || !uploadConfigureProduct.weight || !uploadConfigureProduct.qty || !uploadConfigureProduct.url}">
+            <xe-translate text-value="Next">
+            </xe-translate>
+        </button>
+    </div>
+</div>

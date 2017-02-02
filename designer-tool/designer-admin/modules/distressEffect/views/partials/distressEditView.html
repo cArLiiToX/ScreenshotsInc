@@ -1,0 +1,57 @@
+<!--
+    preloader start
+-->
+<div class="panel panel-default" ng-hide="preloader">
+    <div class="graphics-wrap-height">
+        <div class="panel-body text-center">
+            <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/progress/progress-circle-master.svg" alt="Progress"/>
+        </div>
+    </div>
+</div>
+<!-- preloader end -->
+<div class="panel panel-default" ng-show="preloader">
+    <div class="loader-OnUpdate" pg-portlet on-refresh="refreshTest('.loader-OnUpdate')">
+        <div class="panel-body">
+            <div class="col-sm-4 b-r-light">
+                <div class="panel-heading padding-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Preview">
+                        </xe-translate>
+                    </div>
+                </div>
+                <div class="pull-left" ng-show="isSelectedDistressVisible">
+                    <div class="gallery-upload-thumb">
+                        <img class="img-responsive" ng-src="{{ editDistress.url }}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <div class="panel-heading p-l-20 p-r-20 p-t-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Properties">
+                        </xe-translate>
+                    </div>
+                </div>
+                <div class="form-group form-group-default required m-l-20" pg-form-group>
+                    <label>
+                        <xe-translate text-value="Name">
+                        </xe-translate>
+                    </label>
+                    <input type="text" class="form-control" name="Name" ng-model="editDistress.name" required/>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer b-t-none clearfix">
+            <div class="pull-right">
+                <button class="btn btn-primary btn-sm" type="button" ng-click="updateDistressDetails()"  ng-class="{'disabled': !editDistress.name}" ng-disabled="demoStatus">
+                    <xe-translate text-value="Save">
+                    </xe-translate>
+                </button>
+                <button class="btn btn-primary btn-sm" type="button" ng-click="cancelEditDistress()">
+                    <xe-translate text-value="Cancel">
+                    </xe-translate>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

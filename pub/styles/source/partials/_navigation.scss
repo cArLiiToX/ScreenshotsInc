@@ -1,0 +1,16 @@
+.navigation {
+  background: #f8f8f8;
+  box-shadow: 0 0 2px #999;
+  font-size: 15px;
+  font-weight: 400;
+
+  .level0 > .level-top {
+    line-height: 40px;
+  }
+
+  .level0.level-top {
+    &:hover {
+      background: #e8e8e8;
+    }
+  }
+}

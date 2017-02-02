@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd"> 
+     <event name="checkout_onepage_controller_success_action">
+		<observer name="checkout_success" instance="Html5design\Cedapi\Observer\CheckoutSuccess"/>
+    </event>
+	
+	<event name="controller_action_predispatch_checkout_cart_index">
+		<observer name="html5design_cedapi_predispatch_checkout_cart" instance="Html5design\Cedapi\Observer\PredispatchCheckoutCart"/>
+    </event>
+	
+	<event name="sales_quote_collect_totals_after">
+		<observer name="html5design_cedapi_quote_collect_total_after" instance="Html5design\Cedapi\Observer\AddQuoteAfter"/>
+    </event>
+	
+	<event name="catalog_product_load_after">
+		<observer name="html5design_cedapi_load_after" instance="Html5design\Cedapi\Observer\AddPostData"/>
+    </event>
+</config>

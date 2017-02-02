@@ -1,0 +1,16 @@
+/*******************************************************************************
+* Global Styles
+*******************************************************************************/
+html,body {
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+body {
+  font-size: 1.6rem;
+}
+
+/** Tablets */
+@media screen and (max-width: $breakpoint-med) {}
+
+/** Mobile */
+@media screen and (max-width: breakboint-sm) {}

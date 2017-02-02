@@ -1,0 +1,26 @@
+/*******************************************************************************
+* Utility and Helper Classes
+*******************************************************************************/
+.rimg {
+  width: 100%;
+  height: auto;
+}
+
+.rounded {
+  border-radius: 2px;
+}
+
+.shadowed {
+  box-shadow: 0px 2px 2px #888;
+}
+
+.clearfix {
+  &:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+}
