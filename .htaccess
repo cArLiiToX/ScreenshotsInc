@@ -5,6 +5,7 @@
 # SetEnv MAGE_MODE default # or production or developer
   SetEnv MAGE_MODE production
 
+
 ############################################
 ## uncomment these lines for CGI mode
 ## make sure to specify the correct cgi php binary file name

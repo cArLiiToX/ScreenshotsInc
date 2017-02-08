@@ -1,10 +1,82 @@
 @font-face {
-								font-family: 'Lintsec';
-								src: url('Lintsec.ttf')  format('truetype');
-							}@font-face {
-								font-family: 'ChunkFive_Roman';
-								src: url('ChunkFive_Roman.ttf')  format('truetype');
-							}@font-face {
-							font-family: 'Action_Is';
-							src: url('Action_Is.ttf')  format('truetype');
-						}
+						font-family: "Varsity";
+						src: url("Varsity.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Stahls Tiffany - 2000";
+						src: url("Stahls_Tiffany_-_2000.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Rockwell";
+						src: url("Rockwell.ttf")  format("truetype");
+					}@font-face {
+						font-family: "PrincetownD";
+						src: url("PrincetownD.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Machine BT";
+						src: url("Machine_BT.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Jersey M54";
+						src: url("Jersey_M54.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Freshman";
+						src: url("Freshman.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Athletic";
+						src: url("Athletic.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Aachen";
+						src: url("Aachen.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Wendy Medium";
+						src: url("Wendy_Medium.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Silk Script";
+						src: url("Silk_Script.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Script MT Bold";
+						src: url("Script_MT_Bold.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Philly Sport";
+						src: url("Philly_Sport.ttf")  format("truetype");
+					}@font-face {
+						font-family: "MurrayHill Bd BT";
+						src: url("MurrayHill_Bd_BT.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Mistral";
+						src: url("Mistral.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Kaufmann";
+						src: url("Kaufmann.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Edwardian Script ITC";
+						src: url("Edwardian_Script_ITC.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Brush Script MT";
+						src: url("Brush_Script_MT.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Bickham Script Std";
+						src: url("Bickham_Script_Std.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Tahoma";
+						src: url("Tahoma.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Swis721 BT";
+						src: url("Swis721_BT.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Square721 BT";
+						src: url("Square721_BT.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Parade";
+						src: url("Parade.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Arial";
+						src: url("Arial.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Action_Is";
+						src: url("Action_Is.ttf")  format("truetype");
+					}@font-face {
+						font-family: "ChunkFive_Roman";
+						src: url("ChunkFive_Roman.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Lintsec";
+						src: url("Lintsec.ttf")  format("truetype");
+					}

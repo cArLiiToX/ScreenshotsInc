@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config_detail>
    <url_detail>
-	   <appname/>
+	   <appname></appname>
 	   <base_url>http://screenshotsinc.com/</base_url>
    </url_detail>
    <Integration_detail>
