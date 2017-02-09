@@ -1,28 +1,21 @@
 @font-face {
-  font-family: 'open_sansbold';
-  src: url('../assets/fonts/opensans-bold-webfont.eot');
-  src: url('../assets/fonts/opensans-bold-webfont.eot?#iefix') format('embedded-opentype'), url('../assets/fonts/opensans-bold-webfont.woff2') format('woff2'), url('../assets/fonts/opensans-bold-webfont.woff') format('woff'), url('../assets/fonts/opensans-bold-webfont.ttf') format('truetype'), url('../assets/fonts/opensans-bold-webfont.svg#open_sansbold') format('svg');
-  font-weight: normal;
+  font-family: 'Open Sans';
+  src: url('../assets/fonts/OpenSans-Light.eot');
+  src: url('../assets/fonts/OpenSans-Light.eot?#iefix') format('embedded-opentype'), url('../assets/fonts/OpenSans-Light.woff') format('woff'), url('../assets/fonts/OpenSans-Light.ttf') format('truetype');
+  font-weight: 300;
   font-style: normal;
 }
 @font-face {
-  font-family: 'open_sanslight';
-  src: url('../assets/fonts/opensans-light-webfont.eot');
-  src: url('../assets/fonts/opensans-light-webfont.eot?#iefix') format('embedded-opentype'), url('../assets/fonts/opensans-light-webfont.woff2') format('woff2'), url('../assets/fonts/opensans-light-webfont.woff') format('woff'), url('../assets/fonts/opensans-light-webfont.ttf') format('truetype'), url('../assets/fonts/opensans-light-webfont.svg#open_sanslight') format('svg');
-  font-weight: normal;
+  font-family: 'Open Sans';
+  src: url('../assets/fonts/OpenSans-Bold.eot');
+  src: url('../assets/fonts/OpenSans-Bold.eot?#iefix') format('embedded-opentype'), url('../assets/fonts/OpenSans-Bold.woff') format('woff'), url('../assets/fonts/OpenSans-Bold.ttf') format('truetype');
+  font-weight: bold;
   font-style: normal;
 }
 @font-face {
-  font-family: 'open_sansregular';
-  src: url('../assets/fonts/opensans-regular-webfont.eot');
-  src: url('../assets/fonts/opensans-regular-webfont.eot?#iefix') format('embedded-opentype'), url('../assets/fonts/opensans-regular-webfont.woff2') format('woff2'), url('../assets/fonts/opensans-regular-webfont.woff') format('woff'), url('../assets/fonts/opensans-regular-webfont.ttf') format('truetype'), url('../assets/fonts/opensans-regular-webfont.svg#open_sansregular') format('svg');
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'open_sanssemibold';
-  src: url('../assets/fonts/opensans-semibold-webfont.eot');
-  src: url('../assets/fonts/opensans-semibold-webfont.eot?#iefix') format('embedded-opentype'), url('../assets/fonts/opensans-semibold-webfont.woff2') format('woff2'), url('../assets/fonts/opensans-semibold-webfont.woff') format('woff'), url('../assets/fonts/opensans-semibold-webfont.ttf') format('truetype'), url('../assets/fonts/opensans-semibold-webfont.svg#open_sanssemibold') format('svg');
+  font-family: 'Open Sans';
+  src: url('../assets/fonts/OpenSans.eot');
+  src: url('../assets/fonts/OpenSans.eot?#iefix') format('embedded-opentype'), url('../assets/fonts/OpenSans.woff') format('woff'), url('../assets/fonts/OpenSans.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -8644,7 +8637,7 @@ pre {
   position: relative;
 }
 .pos-stc {
-  position: static;
+  position: static!important;
 }
 .pos-abt {
   position: absolute;
@@ -9532,7 +9525,7 @@ pre {
 body {
   background-color: #ffffff !important;
   overflow-x: hidden;
-  font-family: 'open_sansregular';
+  font-family: 'Open Sans';
   color: #000000;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -9902,11 +9895,8 @@ textarea {
   z-index: 999;
 }
 .template-list-thumb > ul > li > a > img {
-  width: 25px;
-  height: 25px;
-  top: 50px;
-  left: 50px;
-  position: absolute;
+  width: 136px;
+  height: 136px;
 }
 .my-image-list {
   margin-top: 10px;
@@ -9959,13 +9949,10 @@ textarea {
 .user-slot-list > ul > li {
   background-color: #ffffff;
   display: inline-block;
-  height: 140px;
-  width: 140px;
   list-style: none outside none;
   margin: 4px 4px;
   cursor: pointer;
   position: relative;
-  padding: 4px 0;
 }
 .user-slot-list > ul > li > .delete-icon {
   position: absolute;
@@ -9977,6 +9964,9 @@ textarea {
   text-decoration: none;
   background-color: #ffffff;
   padding: 4px 6px;
+  height: 140px;
+  width: 140px;
+  display: block;
 }
 .user-slot-list > ul > li > a > svg {
   position: absolute;
@@ -9986,13 +9976,13 @@ textarea {
   -o-transform: scale3d(0.2, 0.2, 0.2);
   left: -184px;
   top: -180px;
-  z-index: 999;
+  pointer-events: none;
 }
 .user-slot-list > ul > li > a > img {
-  width: 25px;
-  height: 25px;
-  top: 50px;
-  left: 50px;
+  width: 140px;
+  height: 140px;
+  top: 0px;
+  left: 0px;
   position: absolute;
 }
 .user-slot-list > ul > li > .list-button-update {
@@ -10285,7 +10275,7 @@ textarea {
 .image-mask {
   position: relative;
   margin-top: 5px;
-  padding: 0px 15px;
+  padding: 0px 15px 10px;
 }
 .image-mask > .mask-list {
   display: block;
@@ -10593,6 +10583,7 @@ textarea {
   position: absolute;
   bottom: -2px;
   right: -1px;
+  z-index: 999;
 }
 .icon-horizontal > ul {
   margin: 0;
@@ -10674,7 +10665,7 @@ textarea {
 }
 .wordcloud_list {
   width: 70px;
-  height: 240px;
+  height: 210px;
   overflow-x: hidden;
   position: relative;
   float: left;
@@ -11979,7 +11970,7 @@ fieldset[disabled] .i-checks input + i:before {
   margin: 28px 10px 0 5px;
   color: #666;
   font-weight: bold;
-  font-family: 'open_sansregular';
+  font-family: 'Open Sans';
 }
 .draginput label#resolution_label,
 .draginput label#seg_type_label {
@@ -12020,7 +12011,7 @@ fieldset[disabled] .i-checks input + i:before {
     padding: 0 5px;
     color: #333;
     z-index: 10;
-    font-family: 'open_sansregular';
+    font-family: 'Open Sans';
     font-weight: bold;
     text-align: right;
     padding-right: 10px;
@@ -13018,7 +13009,6 @@ div#workarea {
 }
 .shopify-style-category {
   float: right;
-  margin-right: 30px;
   margin-top: 0px!important;
 }
 .shopify-style-preloader {
@@ -13465,7 +13455,7 @@ div#workarea {
   width: 300px;
   min-height: 180px;
   top: 0px;
-  left: 30px;
+  left: 36px;
 }
 .color-picker-xs-top {
   width: 250px;
@@ -13511,6 +13501,12 @@ div#workarea {
   background: #fff;
   padding: 10px;
   border-radius: 3px;
+}
+.border_fill_color {
+  padding: 2px 2px 0px 2px;
+  width: 38px;
+  position: relative;
+  background-color: #ffffff;
 }
 .btn {
   font-weight: 500;
@@ -14427,10 +14423,6 @@ fieldset[disabled] .btn-black.active {
   .xe-cart-section > li > i {
     font-size: 20px!important;
   }
-  .xe-measure-section {
-    position: relative;
-    padding: 0px;
-  }
   .xs-share-wrap-ftr > .btn-black > i {
     display: block;
   }
@@ -14443,6 +14435,9 @@ fieldset[disabled] .btn-black.active {
   }
   .xe-checkout-modal .xe-checkout-btn {
     position: fixed;
+  }
+  .xe-checkout-modal .xe-checkout-btn > .btn-lg {
+    padding: 7px 20px!important;
   }
   .xe-filter-img {
     height: 80px!important;
@@ -14466,6 +14461,11 @@ fieldset[disabled] .btn-black.active {
   }
   .xe-leftbar-contentbox {
     width: 280px!important;
+  }
+  .xe-measure-section {
+    position: relative;
+    padding: 0px;
+    bottom: 60px!important;
   }
   .xe-measure-section > li > .form-group > .input-group {
     width: 80px!important;
@@ -14523,7 +14523,7 @@ fieldset[disabled] .btn-black.active {
     padding: 10px 8px!important;
   }
   .browse-img {
-    height: 340px!important;
+    height: 350px!important;
     overflow: hidden;
   }
   .browse-img > .imageEdit-editor-svg {
@@ -14543,6 +14543,9 @@ fieldset[disabled] .btn-black.active {
   }
   .xe-cart-section > li > .xe-price-cart > h3 {
     font-size: 16px!important;
+  }
+  .icon-horizontal {
+    bottom: 5px!important;
   }
   .icon-horizontal > ul > li > a {
     padding: 5px!important;
@@ -14574,7 +14577,7 @@ fieldset[disabled] .btn-black.active {
     width: 128px!important;
   }
   .xe-layer-container {
-    width: 280px!important;
+    width: 330px!important;
   }
   .picker-xl {
     width: 260px!important;
@@ -14586,8 +14589,33 @@ fieldset[disabled] .btn-black.active {
   .xe-head-nav {
     border-bottom: 1px solid #d8dde0 !important;
   }
-  .browse-content-overite {
+  .browse-content-wrap .browse-content-overite {
     margin: -30px -27px 10px !important;
+  }
+  .browse-content-wrap .browse-content-overite ul > li {
+    margin-right: 10px!important;
+    margin-left: 10px;
+    margin-top: 6px;
+  }
+  .browse-content-wrap .browse-content-overite ul > li > i {
+    font-size: 24px!important;
+  }
+  .browse-content-wrap .browse-content-overite ul > li > a span {
+    display: none;
+  }
+  .xe-cart-btn-popup {
+    left: 0%!important;
+  }
+  .xe-cart-btn-popup > .btn-lg {
+    padding: 8px 18px!important;
+  }
+  .img-setting-pan-icons {
+    top: 1px!important;
+    left: 1px!important;
+  }
+  .xe-img-setting .img-setting-icons {
+    top: 1px!important;
+    right: 1px!important;
   }
   .col-margin {
     margin-left: 15px;
@@ -14711,10 +14739,8 @@ fieldset[disabled] .btn-black.active {
     height: 90px!important;
   }
   .browse-content-wrap .browse-content-overite ul > li {
-    margin-right: 10px!important;
-  }
-  .browse-content-wrap .browse-content-overite ul > li > i {
-    font-size: 24px!important;
+    margin-left: 0px;
+    margin-top: 0px;
   }
   .gallery-image-list ul > li img {
     width: 85px!important;
@@ -14728,6 +14754,9 @@ fieldset[disabled] .btn-black.active {
   }
   .xe-modal-dialog {
     margin: 0px!important;
+  }
+  .color-picker-sm-bottom {
+    left: 0px!important;
   }
 }
 .row {
@@ -15010,6 +15039,7 @@ label {
   height: auto !important;
   min-height: 630px;
   position: relative;
+  z-index: 999;
 }
 .xe-leftbar-sidenav {
   background-color: #ffffff;
@@ -15076,9 +15106,9 @@ label {
   width: auto;
   min-width: 100%;
   bottom: 30px;
-  z-index: 999;
   left: 0;
   right: 0;
+  z-index: 99;
 }
 .xe-measure-section > li {
   display: inline-block;
@@ -15201,8 +15231,8 @@ label {
   z-index: 1;
   position: absolute;
   top: 4px;
-  left: 0;
-  right: 0;
+  left: 8%;
+  right: 8%;
 }
 .xe-product-thumb > ul {
   margin: 0;
@@ -15287,6 +15317,7 @@ label {
   margin: auto;
   top: 0;
   bottom: 0;
+  padding: 1px;
 }
 .xe-stage-wrapper > .canvas-preloader {
   position: absolute;
@@ -15461,7 +15492,7 @@ label {
 .xe-img-footer-wrap {
   display: block;
   border-top: 1px solid #d8dde0;
-  padding: 20px 0px;
+  padding: 15px 0px;
   margin-top: 30px;
 }
 .xe-img-footer-wrap > p {
@@ -15875,8 +15906,7 @@ label {
 }
 .xe-filter-img {
   display: block;
-  height: 260px;
-  overflow-y: auto;
+  height: 218px;
 }
 .xe-filter-img > ul {
   display: block;
@@ -15894,8 +15924,31 @@ label {
   padding: 2px;
 }
 .xe-filter-img > ul > li > a > img {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
+}
+.xe-mask-img {
+  display: block;
+  height: 180px;
+}
+.xe-mask-img > ul {
+  display: block;
+  margin: 20px 0px;
+  padding: 0px;
+}
+.xe-mask-img > ul > li {
+  display: inline-block;
+  list-style: none;
+  margin: 2px;
+}
+.xe-mask-img > ul > li > a {
+  background-color: #f2f3f5;
+  display: inline-block;
+  padding: 2px;
+}
+.xe-mask-img > ul > li > a > img {
+  width: 56px;
+  height: 56px;
 }
 .w-120 {
   width: 120px;
@@ -15965,7 +16018,7 @@ label {
   background: #f2f3f5;
   margin: 0px;
   position: absolute;
-  z-index: 999;
+  z-index: 9999;
 }
 .xe-template-lock-section {
   display: block;
@@ -16088,7 +16141,6 @@ label {
 .imgEdit-custom-block {
   display: block;
   margin-top: 8px;
-  margin-bottom: 8px;
 }
 .imgEdit-custom-block .select-style select {
   height: 30px!important;
@@ -16270,7 +16322,7 @@ label {
 }
 .xe-wordcloud-stage {
   width: 100%!important;
-  height: 215px!important;
+  height: 210px!important;
   background: #ffffff;
   overflow: hidden;
   border: 2px dotted #d8dde0;
@@ -16805,6 +16857,50 @@ div[xe-stepper] input {
   color: #8c8c8c;
 }
 .xe-img-setting .img-setting-icons > ul > li:last-child {
+  border-bottom: none;
+}
+.xe-img-setting .img-setting-pan-icons {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 30px;
+}
+.xe-img-setting .img-setting-pan-icons > ul {
+  margin: 0px 0px 8px;
+  padding: 0px;
+  border: 1px solid #dee2e5;
+}
+.xe-img-setting .img-setting-pan-icons > ul > li {
+  list-style-type: none;
+  display: block;
+  border-bottom: 1px solid #eff1f2;
+}
+.xe-img-setting .img-setting-pan-icons > ul > li > .grid-btn {
+  padding: 5px;
+  font-size: 16px;
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  line-height: 24px;
+  text-align: center;
+  background-color: #ffffff;
+  border: none;
+}
+.xe-img-setting .img-setting-pan-icons > ul > li > .grid-btn:hover {
+  background: #01b61b;
+  color: #ffffff;
+}
+.xe-img-setting .img-setting-pan-icons > ul > li > .disabled {
+  background: #f2f3f5;
+  border-bottom: none;
+  color: #8c8c8c;
+}
+.xe-img-setting .img-setting-pan-icons > ul > li > .disabled:hover {
+  background: #f2f3f5;
+  color: #000000;
+  color: #8c8c8c;
+}
+.xe-img-setting .img-setting-pan-icons > ul > li:last-child {
   border-bottom: none;
 }
 .xe-img-setting-wrap {
