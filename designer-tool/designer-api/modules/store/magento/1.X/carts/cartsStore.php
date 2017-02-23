@@ -41,6 +41,7 @@ class CartsStore extends UTIL
                 $designData = $this->_request['designData'];
                 $productDataJSON = $this->_request['productData'];
             }
+			$designData = base64_decode($designData);
             $cartArr = json_decode($productDataJSON, true);
             if ($isTemplate == 0) {
                 $refid = $this->saveDesignStateCart($apikey, $refid, $designData); // private

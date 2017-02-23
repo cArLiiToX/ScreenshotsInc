@@ -23,9 +23,9 @@ class Design extends UTIL
             if (isset($this->_request['printId']) && ($this->_request['printId']) != '') {
                 $catagoryArray = array();
                 $sql = "SELECT dc.id,dc.category_name FROM " . TABLE_PREFIX . "des_cat dc join " . TABLE_PREFIX . "design_category_printmethod_rel dcppr
-				 on dcppr.design_category_id =dc.id where dcppr.print_method_id='" . $this->_request['printId'] . "' ";
+				 on dcppr.design_category_id =dc.id where dcppr.print_method_id='" . $this->_request['printId'] . "' order by category_name ";
             } else {
-                $sql = "SELECT id,category_name FROM " . TABLE_PREFIX . "des_cat";
+                $sql = "SELECT id,category_name FROM " . TABLE_PREFIX . "des_cat order by category_name";
             }
             $categoryDetail = array();
             $rows = $this->executeGenericDQLQuery($sql);
@@ -253,8 +253,10 @@ class Design extends UTIL
     {
         $sql = "select sc.id as id, sc.name as sub_category from " . TABLE_PREFIX . "des_sub_cat sc JOIN " . TABLE_PREFIX . "des_cat_sub_cat_rel cscr ON sc.id = cscr.sub_category_id JOIN " . TABLE_PREFIX . "des_cat c ON c.id = cscr.category_id";
         if (isset($this->_request['selectedCategory']) && $this->_request['selectedCategory']) {
-            $sql .= ' where c.id =' . $this->_request['selectedCategory'];
-        }
+            $sql .= " where c.id = ".$this->_request['selectedCategory']." order by sc.name";
+        }else{
+			$sql .= "order by sc.name";
+		}
         $rows = $this->executeGenericDQLQuery($sql);
         $sub_category_detail = array();
         for ($i = 0; $i < sizeof($rows); $i++) {

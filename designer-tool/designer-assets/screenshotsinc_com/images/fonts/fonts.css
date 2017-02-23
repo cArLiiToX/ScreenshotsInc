@@ -1,4 +1,172 @@
 @font-face {
+						font-family: "WillyWonka";
+						src: url("WillyWonka.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Star Jedi";
+						src: url("Star_Jedi.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Pieces of Eight";
+						src: url("Pieces_of_Eight.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Loki Cola";
+						src: url("Loki_Cola.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Jurassic";
+						src: url("Jurassic.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Harry P";
+						src: url("Harry_P.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Alice in Wonderland";
+						src: url("Alice_in_Wonderland.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Staccato555 BT";
+						src: url("Staccato555_BT.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Formal";
+						src: url("Formal.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Hobo";
+						src: url("Hobo.ttf")  format("truetype");
+					}@font-face {
+						font-family: "BrodyD";
+						src: url("BrodyD.ttf")  format("truetype");
+					}@font-face {
+						font-family: "BlacklightD";
+						src: url("BlacklightD.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Balloon";
+						src: url("Balloon.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Advert MF";
+						src: url("Advert_MF.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Accent";
+						src: url("Accent.ttf")  format("truetype");
+					}@font-face {
+						font-family: "WoodLook";
+						src: url("WoodLook.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Tango";
+						src: url("Tango.ttf")  format("truetype");
+					}@font-face {
+						font-family: "SnowtopCaps";
+						src: url("SnowtopCaps.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Ravie";
+						src: url("Ravie.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Patriot";
+						src: url("Patriot.ttf")  format("truetype");
+					}@font-face {
+						font-family: "OldEnglish";
+						src: url("OldEnglish.ttf")  format("truetype");
+					}@font-face {
+						font-family: "MandarinD";
+						src: url("MandarinD.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Magnolia Sky";
+						src: url("Magnolia_Sky.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Magneto";
+						src: url("Magneto.ttf")  format("truetype");
+					}@font-face {
+						font-family: "LcdD";
+						src: url("LcdD.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Kids";
+						src: url("Kids.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Kidskratch";
+						src: url("Kidskratch.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Ireland";
+						src: url("Ireland.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Curlz MT";
+						src: url("Curlz_MT.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Bonzai";
+						src: url("Bonzai.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Angelic War";
+						src: url("Angelic_War.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Abaddon!"";
+						src: url("Abaddon!".ttf")  format("truetype");
+					}@font-face {
+						font-family: "URWWoodTypD";
+						src: url("URWWoodTypD.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Saddlebag";
+						src: url("Saddlebag.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Playbill";
+						src: url("Playbill.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Lariat";
+						src: url("Lariat.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Cottage";
+						src: url("Cottage.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Carnivalee Freakshow";
+						src: url("Carnivalee_Freakshow.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Burnstown Dam";
+						src: url("Burnstown_Dam.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Bleeding Cowboys";
+						src: url("Bleeding_Cowboys.ttf")  format("truetype");
+					}@font-face {
+						font-family: "1873 Winchester";
+						src: url("1873_Winchester.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Times New Roman";
+						src: url("Times_New_Roman.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Stencil";
+						src: url("Stencil.ttf")  format("truetype");
+					}@font-face {
+						font-family: "SerpentineDBol";
+						src: url("SerpentineDBol.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Wide Latin";
+						src: url("Wide_Latin.ttf")  format("truetype");
+					}@font-face {
+						font-family: "CopprplGoth Bd BT";
+						src: url("CopprplGoth_Bd_BT.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Cooper Black";
+						src: url("Cooper_Black.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Clarendon";
+						src: url("Clarendon.ttf")  format("truetype");
+					}@font-face {
+						font-family: "AlgerianD";
+						src: url("AlgerianD.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Adelon";
+						src: url("Adelon.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Shatter";
+						src: url("Shatter.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Marcelle Script";
+						src: url("Marcelle_Script.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Creepy";
+						src: url("Creepy.ttf")  format("truetype");
+					}@font-face {
+						font-family: "Chiller";
+						src: url("Chiller.ttf")  format("truetype");
+					}@font-face {
+						font-family: "CasablancaAntique";
+						src: url("CasablancaAntique.ttf")  format("truetype");
+					}@font-face {
+						font-family: "28 Days Later";
+						src: url("28_Days_Later.ttf")  format("truetype");
+					}@font-face {
 						font-family: "Varsity";
 						src: url("Varsity.ttf")  format("truetype");
 					}@font-face {

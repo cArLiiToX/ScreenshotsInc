@@ -21,10 +21,10 @@ class Font extends UTIL
     {
         try {
             if (isset($this->_request['printId']) && ($this->_request['printId']) != '') {
-                $query = "SELECT distinct * FROM " . TABLE_PREFIX . "font_category fc join " . TABLE_PREFIX . "font_category_printmethod_rel fcppr
-				 on fcppr.font_category_id =fc.id where fcppr.print_method_id='" . $this->_request['printId'] . "'";
+                $query = "SELECT distinct category_name FROM " . TABLE_PREFIX . "font_category fc join " . TABLE_PREFIX . "font_category_printmethod_rel fcppr
+				 on fcppr.font_category_id =fc.id where fcppr.print_method_id='" . $this->_request['printId'] . "' order by category_name";
             } else {
-                $query = "SELECT distinct * FROM " . TABLE_PREFIX . "font_category";
+                $query = "SELECT distinct * FROM " . TABLE_PREFIX . "font_category order by category_name";
             }
             $categoryArray = array();
             $allTags = $this->executeGenericDQLQuery($query);
@@ -79,7 +79,7 @@ class Font extends UTIL
 					left join " . TABLE_PREFIX . "font_category_printmethod_rel fcpr  on fcr.category_id = fcpr.font_category_id
 					where f.is_delete='0' and fcpr.print_method_id='" . $print_method . "'";
                 }
-                $query .= " ORDER BY f.id DESC";
+                $query .= " ORDER BY f.font_name";
                 $count = $this->executeGenericCountQuery($query);
                 $query .= " LIMIT $start, $range";
 

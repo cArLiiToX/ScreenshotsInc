@@ -97,7 +97,9 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
         $collection->addAttributeToSelect('name', 'id')
             ->addIsActiveFilter(true)
             ->addAttributeToFilter('path', array('like' => "1/{$rootCategoryId}/%"))
-            ->addLevelFilter(2);
+            ->addLevelFilter(2)
+            ->addAttributeToSort('position');
+            //->addAttributeToSort('name', ASC); for category name sorting
         foreach ($collection as $category) {
             $categories[] = array(
                 'id' => $category->getId(),
@@ -123,24 +125,24 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
             $_subCategory = $this->_categoryFactory->load($subCatid);
             if ($_subCategory->getIsActive()) {
                 $subcategories[] = array('id' => $_subCategory->getId(), 'name' => $_subCategory->getName());
-            }
-            $subCat = $this->_categoryFactory->load($_subCategory->getId());
-            $subSubcats = $subCat->getChildren();
-            if (count($subSubcats) > 0) {
-                foreach (explode(',', $subSubcats) as $subSubcatid) {
-                    $_subSubCategory = $this->_categoryFactory->load($subSubcatid);
-                    if ($_subSubCategory->getIsActive()) {
-                        $subcategories[] = array('id' => $_subSubCategory->getId(), 'name' => $_subSubCategory->getName());
+                $subCat = $this->_categoryFactory->load($_subCategory->getId());
+                $subSubcats = $subCat->getChildren();
+                if (!empty($subSubcats) && count($subSubcats) > 0) {
+                    foreach (explode(',', $subSubcats) as $subSubcatid) {
+                        $_subSubCategory = $this->_categoryFactory->load($subSubcatid);
+                        if ($_subSubCategory->getIsActive()) {
+                            $subcategories[] = array('id' => $_subSubCategory->getId(), 'name' => $_subSubCategory->getName());
+                        }
                     }
-                }
-            }
-            $subsubCat = $this->_categoryFactory->load($_subSubCategory->getId());
-            $subSubSubcats = $subsubCat->getChildren();
-            if (count($subSubSubcats) > 0) {
-                foreach (explode(',', $subSubSubcats) as $subSubSubcatid) {
-                    $_subSubSubCategory = $this->_categoryFactory->load($subSubSubcatid);
-                    if ($_subSubSubCategory->getIsActive()) {
-                        $subcategories[] = array('id' => $_subSubSubCategory->getId(), 'name' => $_subSubSubCategory->getName());
+                    $subsubCat = $this->_categoryFactory->load($_subSubCategory->getId());
+                    $subSubSubcats = $subsubCat->getChildren();
+                    if (!empty($subSubSubcats) && count($subSubSubcats) > 0) {
+                        foreach (explode(',', $subSubSubcats) as $subSubSubcatid) {
+                            $_subSubSubCategory = $this->_categoryFactory->load($subSubSubcatid);
+                            if ($_subSubSubCategory->getIsActive()) {
+                                $subcategories[] = array('id' => $_subSubSubCategory->getId(), 'name' => $_subSubSubCategory->getName());
+                            }
+                        }
                     }
                 }
             }
@@ -262,7 +264,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                     ->addAttributeToFilter('xe_is_template', array(array('null' => true), array('neq' => 1)), 'left')
                     ->setCurPage($offset)
                     ->load();
-            }else{
+            } else {
                 $collection = $this->_productCollectionFactory->create()
                     ->addAttributeToSelect('*')
                     ->addAttributeToFilter('type_id', 'configurable')
@@ -275,7 +277,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                     ->setCurPage($offset)
                     ->load();
             }
-        } else{
+        } else {
             if ($categoryid && $categoryid != '') {
                 $collection = $this->_productCollectionFactory->create()
                     ->addAttributeToSelect('*')
@@ -288,7 +290,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                     ->addAttributeToFilter('name', array('like' => '%' . $searchstring . '%'))
                     ->setCurPage($offset)
                     ->load();
-            }else{
+            } else {
                 $collection = $this->_productCollectionFactory->create()
                     ->addAttributeToSelect('*')
                     ->addAttributeToFilter('type_id', 'configurable')
@@ -375,6 +377,8 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
         }
         if ($simpleProduct) {
             $qty = $this->_stockInterface->getStockQty($simpleProduct->getId(), $simpleProduct->getStore()->getWebsiteId());
+			$stockObject = $this->_objectManager->get('Magento\CatalogInventory\Api\StockRegistryInterface')->getStockItem($simpleProduct->getId());
+			$minimumQuantity = $stockObject->getMinSaleQty();
             $productImages = $simpleProduct->getMediaGalleryImages()->setOrder('position', 'ASC');
             $productImagesLength = $productImages->getSize();
             if ($productImagesLength > 0) {
@@ -421,6 +425,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                 'xe_color_id' => $attr->getSource()->getOptionId($simpleProduct->getAttributeText('xe_color')),
                 'xe_size_id' => $attr1->getSource()->getOptionId($simpleProduct->getAttributeText('xe_size')),
                 'quanntity' => (int) $qty,
+				'minQuantity' => (int) $minimumQuantity,
                 'price' => $simpleProduct->getFinalPrice(),
                 'tierPrices' => $tier,
                 'taxrate' => $percent,
@@ -499,9 +504,9 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                             }
                         }
                     }
-                    $productStock = $this->getStockItem($productColl->getId());
-                    $qty = $productStock->getQty();
-                    $minimumQuantity = $productStock->getMinSaleQty();
+                    $productStockObj = $this->_objectManager->get('Magento\CatalogInventory\Api\StockRegistryInterface')->getStockItem($productColl->getId());
+                    $qty = $productStockObj->getQty();
+                    $minimumQuantity = $productStockObj->getMinSaleQty();
                     $variant[] = array(
                         'simpleProductId' => $productColl->getId(),
                         'xe_color' => $color,
@@ -573,9 +578,9 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                         }
                     }
                 }
-                $productStock = $this->getStockItem($productColl->getId());
-                $qty = $productStock->getQty();
-                $minimumQuantity = $productStock->getMinSaleQty();
+                $productStockObj = $this->_objectManager->get('Magento\CatalogInventory\Api\StockRegistryInterface')->getStockItem($productColl->getId());
+                $qty = $productStockObj->getQty();
+                $minimumQuantity = $productStockObj->getMinSaleQty();
                 $variant[] = array(
                     'simpleProductId' => $productColl->getId(),
                     'xe_color' => $color,
@@ -1117,9 +1122,9 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
         $filename = md5($img . strtotime('now')) . '.' . $image_type; //give a new name, you can modify as per your requirement
         $mediaDir = $objectManager->get('Magento\Framework\App\Filesystem\DirectoryList')->getPath('media'); //E:/xampp/htdocs/magento20_0407/pub/mediaaa4b3115617ae70c17e01bc353c20bee.png
         if (!file_exists($mediaDir)) {
-            @mkdir($mediaDir, 0777, true);
+            mkdir($mediaDir, 0777, true);
         } else {
-            @chmod($mediaDir, 0777);
+            chmod($mediaDir, 0777);
         }
         $filepath = $mediaDir . '/' . $filename; //path for temp storage folder: pub/media
         file_put_contents($filepath, file_get_contents(trim($img))); //store the image from external url to the temp storage folder

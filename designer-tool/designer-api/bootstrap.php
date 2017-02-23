@@ -1,4 +1,5 @@
-<?php
+<?php 
+	header('Access-Control-Allow-Origin: *'); 
 if (!defined('accessUser')) {
     die("Error");
 }

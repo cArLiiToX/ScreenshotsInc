@@ -5562,7 +5562,8 @@ class Component extends ComponentStore
                     }                    
 
                 } else {
-                    $result[] = $v;
+					if($v !='undefined')
+						$result[] = $v;
                 }
             }
         }
