@@ -145,6 +145,8 @@
 
     Options +FollowSymLinks
     RewriteEngine on
+    RewriteCond %{HTTPS} off
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
 
 ############################################
 ## you can put here your magento root folder
@@ -317,7 +319,7 @@ ErrorDocument 403 /pub/errors/404.php
 <IfModule mod_headers.c>
 
     Header set X-UA-Compatible "IE=edge"
-
+	Header set Access-Control-Allow-Origin *
     # `mod_headers` cannot match based on the content-type, however,
     # the `X-UA-Compatible` response header should be send only for
     # HTML documents and not for the other resources.
