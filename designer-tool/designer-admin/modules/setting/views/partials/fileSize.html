@@ -1,0 +1,79 @@
+<div class="panel-heading separator p-t-0">
+    <div class="panel-title">
+        <h4 class ="xe-panel-title">
+            <xe-translate text-value="File Image Setting">
+            </xe-translate>
+        </h4>
+    </div>
+</div>
+<div class="panel-body m-t-20">
+    <form class="form-horizontal" role="form" autocomplete="off">
+        <div class="form-group">
+
+            <div class="col-sm-10 clearfix">
+                <div class="form-group no-border no-margin">
+                    <label class="col-sm-2 control-label">
+                        <xe-translate text-value="Max File Size">
+                        </xe-translate>
+                    </label>
+                    <div class="col-sm-2">
+                        <div pg-form-group class="form-group form-group-default input-group nested-form-group">
+                            <label>
+                                <xe-translate text-value="File Size">
+                                </xe-translate>
+                            </label>
+                            <input type="text"  ng-model="addToCartSetting.max_file_size"  class="form-control input-sm" placeholder="Enter Size" style="width: 120px;" price-only="price-only"/>
+                            <span class="input-group-addon">
+                                MB
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            <!-- </div>-->
+                <div class="form-group no-border no-margin">
+                    <label class="col-sm-2 control-label">
+                        <xe-translate text-value="Max Image Width">
+                        </xe-translate>
+                    </label>
+                    <div class="col-sm-2">
+                        <div pg-form-group class="form-group form-group-default input-group nested-form-group">
+                            <label>
+                                <xe-translate text-value="Width">
+                                </xe-translate>
+                            </label>
+                            <input type="text"  ng-model="addToCartSetting.image_width"  class="form-control input-sm" placeholder="Enter Width" style="width: 120px;" price-only="price-only"/>
+                            <span class="input-group-addon">
+                                {{ printUnit }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group no-border no-margin">
+                    <label class="col-sm-2 control-label">
+                        <xe-translate text-value="Max Image Height">
+                        </xe-translate>
+                    </label>
+                    <div class="col-sm-2">
+                        <div pg-form-group class="form-group form-group-default input-group nested-form-group">
+                             <label>
+                                <xe-translate text-value="Height">
+                                </xe-translate>
+                            </label>
+                            <input type="text"  ng-model="addToCartSetting.image_height"  class="form-control input-sm" placeholder="Enter Height" style="width: 120px;" price-only="price-only"/>
+                            <span class="input-group-addon">
+                                {{ printUnit }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="panel-footer wizard-ftr bg-white">
+    <button class="btn btn-sm btn-info pull-left m-r-10" ng-click="updateGeneralSetting()" ng-disabled="demoStatus">
+        <xe-translate text-value="Save">
+        </xe-translate>
+    </button>
+</div>

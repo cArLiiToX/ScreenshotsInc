@@ -1,0 +1,157 @@
+<div class="container-fluid" ng-init="init()" ng-controller="dashBoardController">
+    <!-- START PANEL -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading ">
+                            <div class="panel-title">
+                                <xe-translate text-value="Shortcuts">
+                                </xe-translate>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <ul class="shortcut-link">
+                                <li ng-repeat="dashboard in dashBoardLinkList">
+                                    <a href="" ng-click="clickOnShortcut(dashboard.name,dashboard.module,dashboard.id)" class="no-underline">
+                                        <xe-translate text-value="{{ dashboard.label }}">
+                                        </xe-translate>
+                                    </a>
+                                </li>
+                                <li>
+                                    &nbsp;
+                                </li>
+                                <li ng-repeat="setting in settingLink">
+                                    <a href="#" ng-click="clickOnShortcut(setting.name,setting.module,setting.id)"  class="no-underline">
+                                        <xe-translate text-value="{{ setting.label }}">
+                                        </xe-translate>
+                                    </a>
+                                </li>
+                                <li>
+                                    &nbsp;
+                                </li>
+                                <li>
+                                    <a href="" id="printProfile" ng-click="clickOnShortcut('printSettingWizard','Print Profile','')" class="no-underline">
+                                        <xe-translate text-value="Print Profile">
+                                        </xe-translate>
+                                    </a>
+                                </li>
+                                <li>
+                                    &nbsp;
+                                </li>
+                                <!-- <li><a href="#">Miscellaneous Settings</a></li>  -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <!-- <div class="col-md-12">
+                
+                  <div class="panel panel-default">
+                    <div class="panel-heading ">
+                      <div class="panel-title">Notifications</div>
+                    </div>
+                    <div class="panel-body">
+                      <div class="alert alert-danger" role="alert">
+                        <button class="close" data-dismiss="alert"></button>
+                        <strong>Danger: </strong>The daily report has failed
+                      </div>
+                      <div class="alert alert-warning" role="alert">
+                        <button class="close" data-dismiss="alert"></button>
+                        <strong>Warning: </strong>Bandwidth limit exceeded
+                      </div>
+                      <div class="alert alert-success" role="alert">
+                        <button class="close" data-dismiss="alert"></button>
+                        <strong>Success: </strong>The page has been added.
+                      </div>
+                      <div class="alert alert-info" role="alert">
+                        <button class="close" data-dismiss="alert"></button>
+                        <strong>Info: </strong>The page has been added.
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div> -->
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading ">
+                            <div class="panel-title">
+                                <xe-translate text-value="Print Profile">
+                                </xe-translate>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <ul class="print-type-box">
+                                <li ng-repeat="print in printMethodList">
+                                    <a ng-href="#" name="whatever" ng-click="clickOnPrintProfile($index)">
+                                        <img class="print-method-image" fallback-src="{{ defaultImg }}" ng-src="{{ printImageUrl+print.image }}"/>
+                                        <span>
+                                            {{ print.name }}
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <!--   <div class="col-md-12">
+                    <div class="panel panel-default">
+                      <div class="panel-heading ">
+                        <div class="panel-title">Order Graphs</div>
+                      </div>
+                      <div class="panel-body">
+                        <img class="img-responsive" src="assets/img/order-graph.jpg" class="brand" data-src="assets/img/order-graph.jpg">
+                      </div>
+                    </div>
+                  </div> -->
+                <!-- <div class="col-md-12">
+                                <div class="panel panel-default">
+                                  <div class="panel-heading ">
+                                    <div class="panel-title">Other Links</div>
+                                  </div>
+                                  <div class="panel-body">
+                                    <ul class="shortcut-link">
+                                      <li><a href="http://inkxe.com/support/kb/faq.php?cid=3" target="blank">FAQs</a></li>
+                                      <li><a href="http://inkxe.com/support/kb/faq.php?cid=1" target="blank">Installation</a></li>
+                                      <li><a href="http://inkxe.com/support/kb/faq.php?cid=5" target="blank">Knowledgebase - Admin</a></li>
+                                      <li><a href="http://inkxe.com/support/kb/faq.php?cid=4" target="blank">Server Requirement</a></li>
+                                      <li><a href="http://inkxe.com/support/kb/faq.php?cid=2" target="blank">Troubleshoot</a></li>
+                
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div> -->
+                <div class="col-md-12 ordergraph">
+                    <div class="panel-title m-b-20">
+                        <xe-translate text-value="Orders Chart">
+                        </xe-translate>
+                    </div>
+                    <div class="ordergraphmsg" ng-show="showGraphNoResultMsg">
+                        <xe-translate text-value="No Orders">
+                        </xe-translate>
+                    </div>
+                    <div linear-chart chart-data="salesData" ng-hide="showGraphNoResultMsg">
+                    </div>
+                    <div class="row preloader-box-draft" ng-show="isGraphPreLoader">
+                        <div class="col-lg-12">
+                            <div class="preloader-height bg-white">
+                                <div class="panel-body text-center">
+                                    <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/demo/progress.svg" alt="Progress"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END PANEL -->
+</div>

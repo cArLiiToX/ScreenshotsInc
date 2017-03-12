@@ -4,16 +4,36 @@
     color: #959595;
   }
 
-  a,
-  .header.panel > .header.links > li > a:visited {
-      color: #33755e;
-      &:visited { color: #33755e; }
-      &:hover { color: #024930; }
-      &:active { color: #024930; }
+  a {
+      color: #33755e !important;
+      &:visited { color: #33755e !important; }
+      &:hover { color: #024930 !important; }
+      &:active { color: #024930 !important; }
   }
 
   .minicart-wrapper .action.showcart:before {
     font-family: FontAwesome;
     content: '\f07a';
+  }
+
+  .header.links {
+    width: 100%;
+    text-align: right;
+
+    a:visited {
+      color: #024930;
+    }
+  }
+}
+
+.ss-top-contacts {
+  font-size: 14px;
+  float: left;
+
+  span {
+    margin-right: 6px;
+    i {
+      margin-right: 4px;
+    }
   }
 }

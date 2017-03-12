@@ -70,7 +70,7 @@
                                     <xe-translate text-value="Actual Height">
                                     </xe-translate>
                                 </label>
-                                <input type="text" class="form-control" name="price" ng-model="editDesign.height" price-Only="price-Only" style="width: 120px;"/>
+                                <input type="text" class="form-control" name="price" ng-model="editDesign.height" price-Only="price-Only" style="width: 120px;" ng-keyup="onChangeClipArtHeightWidth(editDesign.height , 'h' , 'edit')"/>
                                 <span class="input-group-addon">
                                     {{ printUnit }}
                                 </span>
@@ -82,7 +82,7 @@
                                     <xe-translate text-value="Actual Width">
                                     </xe-translate>
                                 </label>
-                                <input type="text" class="form-control" name="Name" ng-model="editDesign.width" price-Only="price-Only" style="width: 120px;"/>
+                                <input type="text" class="form-control" name="Name" ng-model="editDesign.width" price-Only="price-Only" style="width: 120px;" ng-keyup="onChangeClipArtHeightWidth(editDesign.width , 'w' , 'edit')"/>
                                 <span class="input-group-addon">
                                     {{ printUnit }}
                                 </span>

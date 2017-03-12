@@ -1,0 +1,130 @@
+<!-- <div  class="container w-xxl w-auto-xs">
+  <a href class="navbar-brand block m-t">{{app.name}}</a>
+  <div class="m-b-lg">
+    <div class="wrapper text-center">
+      <strong>Sign in to manage Designer App</strong>
+    </div>
+    <form name="form" class="form-validation">
+      <div class="text-danger text-center error-msg">
+          {{authError}}
+      </div>
+      <div class="list-group list-group-sm">
+        <div class="list-group-item">
+          <input type="text" placeholder="Email" class="form-control no-border" ng-model="user.email">
+        </div>
+        <div class="list-group-item">
+           <input type="password" placeholder="Password" class="form-control no-border" ng-model="user.password">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-lg btn-primary btn-block" ng-click="login()">Log in</button>
+      <div class="text-center m-t m-b"><a ng-click="forgotPwdLink()">Forgot Password?</a></div>
+  </form>
+  </div>
+        <ng-include src="'views/partials/footer.html'"></ng-include>
+</div> -->
+<div class="login-wrapper" style="background:#3e4155;">
+    <!-- START Login Background Pic Wrapper-->
+    <div class="bg-pic">
+        <!-- START Background Pic-->
+        <img alt="" src="assets/img/login-bg.png"/>
+        <!-- END Background Pic-->
+        <!-- START Background Caption-->
+        <div class="bg-caption pull-bottom sm-pull-bottom text-white p-l-20 m-b-20">
+            <!-- <img src="http://inkxe.com/images/logo.png" alt="logo" /> -->
+            <img alt="" src="assets/img/inkxe-logo.png" width="180"/>
+            <h2 class="semi-bold text-white">
+                <xe-translate text-value="inkXE Product Design Tool Admin">
+                </xe-translate>
+            </h2>
+            <!-- <xe-translate text-value="Existing Clients"></xe-translate> -->
+            <p>
+                <span class="hint-text">
+                    Copyright © {{year}}
+                </span>
+                <span class="font-montserrat">
+                    inkXE
+                </span>
+                .
+                <span class="hint-text">
+                    All rights reserved.
+                </span>
+                <span class="sm-block">
+                    <a class="m-l-10 m-r-10" href="http://inkxe.com/blog/category/blog/knowledge-base/" target="_blank">
+                        Knowledge Base
+                    </a>
+                </span>
+            </p>
+        </div>
+        <!-- END Background Caption-->
+    </div>
+    <!-- END Login Background Pic Wrapper-->
+    <!-- START Login Right Container-->
+    <div class="login-container bg-white">
+        <div class="p-l-50 m-l-20 p-r-50 m-r-20 p-t-50 m-t-30 sm-p-l-15 sm-p-r-15 sm-p-t-40">
+            <p class="p-t-35">
+                <xe-translate text-value="Sign into your pages account">
+                </xe-translate>
+            </p>
+            <!-- START Login Form -->
+            <form class="p-t-15" id="form-login" role="form">
+                <!-- <div class="text-danger text-center error-msg">
+          {{authError}}
+        </div> -->
+                <!-- START Form Control-->
+                <div class="form-group form-group-default">
+                    <label>
+                        <xe-translate text-value="User Name">
+                        </xe-translate>
+                    </label>
+                    <div class="controls">
+                        <input class="form-control" name="username" ng-model="user.email" placeholder="Enter email" type="text">
+                        </input>
+                    </div>
+                </div>
+                <!-- END Form Control-->
+                <!-- START Form Control-->
+                <div class="form-group form-group-default">
+                    <label>
+                        <xe-translate text-value="Password">
+                        </xe-translate>
+                    </label>
+                    <div class="controls">
+                        <input class="form-control" name="password" ng-model="user.password" placeholder="Enter password" type="password">
+                        </input>
+                    </div>
+                </div>
+                <div class="error-msg" ng-class="cssClass">
+                    {{authError}}
+                </div>
+                <!-- START Form Control-->
+                <div class="row">
+                    <div class="col-md-6 no-padding">
+                        <!-- <div class="checkbox ">
+              <input type="checkbox" value="1" id="checkbox1">
+              <label for="checkbox1">Keep Me Signed in</label>
+            </div> -->
+                        <button class="btn btn-primary btn-cons m-t-10" ng-click="login()" ng-disabled="loginProcess" type="submit">
+                            <xe-translate text-value="Sign in">
+                            </xe-translate>
+                        </button>
+                        <img alt="Progress" class="image-responsive-height demo-mw-30 m-t-10" ng-show="loginProcess" src="assets/img/demo/progress.svg">
+                        </img>
+                    </div>
+                    <div class="col-md-6 m-t-5 text-right">
+                        <a class="text-info small" href="http://inkxe.com/support/" target="_blank">
+                            <xe-translate text-value="Help">
+                            </xe-translate>
+                        </a>
+                        <a class="pull-right m-t-5" href="#" ng-click="forgotPwdLink()">
+                            <xe-translate text-value="Forgot Password">
+                            </xe-translate>
+                        </a>
+                    </div>
+                </div>
+                <!-- END Form Control-->
+            </form>
+            <!--END Login Form-->
+        </div>
+    </div>
+    <!-- END Login Right Container-->
+</div>

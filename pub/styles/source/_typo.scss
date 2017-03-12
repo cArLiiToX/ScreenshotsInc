@@ -7,7 +7,7 @@
 * Headings
 *******************************************************************************/
 h1,h2,h3,h4,h5,h6 {
-  margin: 20px 0;
+  margin: 0;
 }
 
 h1,h2 {
@@ -33,6 +33,12 @@ a {
   &:visited { color: #024930; }
   &:hover { color: #33755e; }
   &:active { color: #33755e; }
+}
+
+.page-title-wrapper {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  margin: 20px 0;
 }
 
 /** Tablets */

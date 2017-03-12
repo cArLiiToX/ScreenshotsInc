@@ -1,0 +1,32 @@
+<div class="panel-heading separator p-t-0">
+    <div class="panel-title">
+        <h4 class ="xe-panel-title">
+            <xe-translate text-value="Manage Features">
+            </xe-translate>
+        </h4>
+    </div>
+</div>
+<div class="panel-body m-t-20">
+    <form class="form-horizontal" role="form" autocomplete="off">
+        <div class="form-group">
+            <div class="col-sm-10">
+                <div class="checkbox check-info pull-left w-250" ng-repeat="feature in featureList">
+                    <input type="checkbox" value="{{ feature.id }}" name="{{ feature.name }}" id="{{ feature.id }}" ng-model="status" ng-change="changedFeatures(status,feature)" ng-checked="feature.status == '1'"/>
+                    <label for="{{ feature.id }}">
+                        {{ feature.name }}
+                        <a ng-href="#" name="socialImage" ng-show= "feature.type == 'socialImage' && feature.status == '1' && featureStatus[$index] == 1"  ng-click="editSocialImage()"  class="inline-icons">
+                            <i class="fa fa-pencil text-info">
+                            </i>
+                        </a>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="panel-footer wizard-ftr bg-white">
+    <button class="btn btn-sm btn-info pull-left m-r-10" ng-click="updateFeatureElementSetting()" ng-disabled="demoStatus">
+        <xe-translate text-value="Save">
+        </xe-translate>
+    </button>
+</div>

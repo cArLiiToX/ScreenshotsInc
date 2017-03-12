@@ -1,0 +1,96 @@
+<div class="custom-dropdown-btn-wrap" click-out>
+    <div class="custom-dropdown-btn" ng-click="customDropDown.status = true">
+        <div class="text-wrap" ng-show="boundary.name == 'bound'">
+            <h4>
+                Rectangle Printing Area
+            </h4>
+            <p>
+                Set rectangle printing areas.
+            </p>
+        </div>
+        <div class="text-wrap" ng-show="boundary.name == 'mask'">
+            <h4>
+                Shape Printing Area
+            </h4>
+            <p>
+                Set shape printing areas.
+            </p>
+        </div>
+        <div class="text-wrap" ng-show="boundary.name == 'customBoundry'">
+            <h4>
+                Variable Rectangle Printing Area
+            </h4>
+            <p>
+                Set variable rectangle printing areas.
+            </p>
+        </div>
+        <div class="text-wrap" ng-show="boundary.name == 'variableMask'">
+            <h4>
+                Variable Shape Printing Area
+            </h4>
+            <p>
+                Set variable shape printing areas.
+            </p>
+        </div>
+        <div class="text-wrap" ng-show="boundary.name == 'multipleBoundary'">
+            <h4>
+                Multiple Printing Area
+            </h4>
+            <p>
+                Set multiple printing areas.
+            </p>
+        </div>
+    </div>
+    <ul ng-show="customDropDown.status">
+        <li ng-click="changeMaskBoundary('bound')">
+            <div class="text-wrap">
+                <h4>
+                    Rectangle Printing Area
+                </h4>
+                <p>
+                    Set rectangle printing areas.
+                </p>
+            </div>
+        </li>
+        <li ng-click="changeMaskBoundary('mask')">
+            <div class="text-wrap">
+                <h4>
+                    Shape Printing Area
+                </h4>
+                <p>
+                    Set shape printing areas.
+                </p>
+            </div>
+        </li>
+        <li ng-click="changeMaskBoundary('customBoundry')">
+            <div class="text-wrap">
+                <h4>
+                    Variable Rectangle Printing Area
+                </h4>
+                <p>
+                    Set variable rectangle printing areas.
+                </p>
+            </div>
+        </li>
+        <li ng-click="changeMaskBoundary('variableMask')">
+            <div class="text-wrap">
+                <h4>
+                    Variable Shape Printing Area
+                </h4>
+                <p>
+                    Set variable shape printing areas.
+                </p>
+            </div>
+        </li>
+        <li ng-click="changeMaskBoundary('multipleBoundary')">
+            <div class="text-wrap">
+                <h4>
+                    Multiple Printing Area
+                </h4>
+                <p>
+                    Set multiple printing areas.
+                </p>
+            </div>
+        </li>
+    </ul>
+</div>

@@ -2,29 +2,39 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header clearfix text-left">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    <i class="pg-close fs-14">
-                    </i>
-                </button>
-                <h5>
-                    <span class="semi-bold">
-                        <xe-translate text-value="Add and Configure Custom Size">
-                        </xe-translate>
-                    </span>
-                </h5>
+                 <div class="row">
+                    <div class="col-sm-6 text-left">
+                        <h5>
+                            <span class="semi-bold">
+                               <xe-translate text-value="Add and Configure Custom Size">
+                               </xe-translate>
+                            </span>
+                        </h5>
+                        
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="m-t-10">
+                             <div class="pull-right m-r-40">
+                                <button type="button" class="btn btn-info btn-cons btn-sm" ng-click="addNewSize.status = true">
+                                    <span>
+                                        <xe-translate text-value="Add New Size">
+                                        </xe-translate>
+                                    </span>
+                                </button>
+                            </div>
+                            <div class="pull-right m-r-10">
+                                <input type="text" placeholder="Search here" class="form-control input-sm" ng-model="find.name"/>
+                            </div>
+                            <button type="button" class="close custom-modal-close" data-dismiss="modal" aria-hidden="true">
+                                <i class="pg-close fs-14"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                
             </div>
             <div class="modal-body" id="customSizeModal">
-                <div class="pull-left m-l-10 m-b-10">
-                    <button type="button" class="btn btn-success btn-sm" ng-click="addNewSize.status = true">
-                        <span>
-                            <xe-translate text-value="Add New Size">
-                            </xe-translate>
-                        </span>
-                    </button>
-                </div>
-                <div class="pull-left m-l-10 m-b-10">
-                    <input type="text" placeholder="Search here" class="form-control" ng-model="find.name"/>
-                </div>
                 <div class="row">
                     <div class="col-sm-12" ng-if="printSizeListDefault.length != 0">
                         <table class="table table-bordered table-sm custom-size-head">
@@ -35,14 +45,13 @@
                                         </xe-translate>
                                     </th>
                                     <th width="300">
-                                        <xe-translate text-value="Height">
-                                        </xe-translate>
-                                    </th>
-                                    <th width="300">
                                         <xe-translate text-value="Width">
                                         </xe-translate>
                                     </th>
-                                    <!-- <th><xe-translate text-value="Unit"></xe-translate></th> -->
+                                    <th width="300">
+                                        <xe-translate text-value="Height">
+                                        </xe-translate>
+                                    </th>
                                     <th width="139">
                                     </th>
                                 </tr>
@@ -50,39 +59,32 @@
                             <tbody>
                                 <tr ng-show="addNewSize.status">
                                     <td width="250">
-                                        <input type="text" class="form-control" ng-model="print.sizeName" remove-spl-chars="remove-spl-chars"/>
+                                        <input type="text" class="form-control input-sm" ng-model="print.sizeName" remove-spl-chars="remove-spl-chars"/>
                                     </td>
                                     <td width="251">
-                                        <!-- <input type="text" class="form-control" ng-model="custom.height" 
-                                           price-only="price-only"> -->
-                                        <div class="form-group form-group-sm input-group w-md" pg-form-group>
-                                            <input type="text" class="autonumeric form-control usd h-35" ng-model="custom.height" price-only="price-only"/>
+                                        <div class="form-group form-group-sm input-group w-md m-b-0" pg-form-group>
+                                            <input type="text" class="autonumeric form-control usd input-sm" ng-model="custom.width" price-only="price-only"/>
                                             <span class="input-group-addon">
-                                                {{ printUnit }}
+                                                {{ productUnit }}
                                             </span>
                                         </div>
                                     </td>
                                     <td width="250">
-                                        <!-- <input type="text" class="form-control" ng-model="custom.width" 
-                                        price-only="price-only"> -->
-                                        <div class="form-group form-group-sm input-group w-md" pg-form-group>
-                                            <input type="text" class="autonumeric form-control usd h-35" ng-model="custom.width" price-only="price-only"/>
+                                        <div class="form-group form-group-sm input-group w-md m-b-0" pg-form-group>
+                                            <input type="text" class="autonumeric form-control usd input-sm" ng-model="custom.height" price-only="price-only"/>
                                             <span class="input-group-addon">
-                                                {{ printUnit }}
+                                                {{ productUnit }}
                                             </span>
                                         </div>
                                     </td>
-                                    <!--  <td class="text-u font-bold"> 
-                                        {{printUnit}}
-                                    </td> -->
                                     <td width="97">
-                                        <button type="button" class="btn btn-success btn-xs" ng-click="saveCustomSize()" ng-disabled="demoStatus" ng-class="{'disabled':!custom.height || !custom.width || !print.sizeName || saveSizeButton}">
+                                        <button type="button" class="btn btn-info btn-xs" ng-click="saveCustomSize()" ng-disabled="demoStatus" ng-class="{'disabled':!custom.height || !custom.width || !print.sizeName || saveSizeButton}">
                                             <span>
                                                 <i class="fa fa-floppy-o" aria-hidden="true">
                                                 </i>
                                             </span>
                                         </button>
-                                        <button type="button" class="btn btn-danger btn-xs"  ng-click="addNewSize.status = false;cancelPrintAreaList()" ng-disabled="demoStatus">
+                                        <button type="button" class="btn btn-default btn-xs"  ng-click="addNewSize.status = false;cancelPrintAreaList()" ng-disabled="demoStatus">
                                             <span>
                                                 <i class="fa fa-times" aria-hidden="true">
                                                 </i>
@@ -92,40 +94,31 @@
                                 </tr>
                                 <tr ng-repeat="printArea in printSizeListDefault | filter:find:strict">
                                     <td width="250">
-                                        <input type="text" class="form-control" ng-model="printArea.name"  ng-disabled="printArea.is_user_defined != 1"  remove-spl-chars="remove-spl-chars"/>
+                                        <input type="text" class="form-control input-sm" ng-model="printArea.name"  ng-disabled="printArea.is_user_defined != 1"  remove-spl-chars="remove-spl-chars"/>
                                     </td>
                                     <td width="251">
-                                        <!-- <input type="text" class="form-control" ng-model="printArea.height" 
-                                          ng-disabled="printArea.is_user_defined != 1" 
-                                          price-only="price-only"> -->
-                                        <div class="form-group form-group-sm input-group w-md" pg-form-group>
-                                            <input type="text" class="autonumeric form-control usd h-35" ng-model="printArea.height" price-only="price-only"  ng-disabled="printArea.is_user_defined != 1"/>
+                                        <div class="form-group form-group-sm input-group w-md m-b-0" pg-form-group>
+                                            <input type="text" class="autonumeric form-control usd input-sm" ng-model="printArea.width" price-only="price-only"  ng-disabled="printArea.is_user_defined != 1"/>
                                             <span class="input-group-addon">
-                                                {{ printUnit }}
+                                                {{ productUnit }}
                                             </span>
                                         </div>
                                     </td>
                                     <td width="250">
-                                        <!-- <input type="text" class="form-control" ng-model="printArea.width" 
-                                        ng-disabled="printArea.is_user_defined != 1" 
-                                        price-only="price-only"> -->
-                                        <div class="form-group form-group-sm input-group w-md" pg-form-group>
-                                            <input type="text" class="autonumeric form-control usd h-35" ng-model="printArea.width" price-only="price-only"  ng-disabled="printArea.is_user_defined != 1"/>
+                                        <div class="form-group form-group-sm input-group w-md m-b-0" pg-form-group>
+                                            <input type="text" class="autonumeric form-control usd input-sm" ng-model="printArea.height" price-only="price-only"  ng-disabled="printArea.is_user_defined != 1"/>
                                             <span class="input-group-addon">
-                                                {{ printUnit }}
+                                                {{ productUnit }}
                                             </span>
                                         </div>
                                     </td>
-                                    <!-- <td class="text-u font-bold"> 
-                                        {{printUnit}}
-                                    </td> -->
-                                    <td width="97">
-                                        <button class="btn btn-xs btn-danger" ng-disabled="demoStatus"  ng-click="closebtnClick($index)"  ng-show="printArea.is_user_defined == '1'">
-                                            <span>
+                                    <td width="97 text-center">
+                                        <div class="t-w-80 text-center">
+                                            <span class="trash-icon-style" ng-click="closebtnClick($index)" ng-show="printArea.is_user_defined == '1'">
                                                 <i class="fa fa-trash-o" aria-hidden="true">
                                                 </i>
                                             </span>
-                                        </button>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -133,18 +126,19 @@
                     </div>
                 </div>
                 <div class="m-t-20 clearfix">
-                    <button type="button" class="btn btn-success btn-sm " ng-click="updateCustomSize()" ng-disabled="demoStatus || addNewSize.status">
+                    <a class="blank-btn m-r-20" href="" data-dismiss="modal" ng-click="cancelPrintAreaList()">
+                        <span>
+                            <xe-translate text-value="Cancel">
+                            </xe-translate>
+                        </span>
+                    </a>
+                    <button type="button" class="btn btn-info btn-sm" ng-click="updateCustomSize()" ng-disabled="demoStatus || addNewSize.status">
                         <span>
                             <xe-translate text-value="Update">
                             </xe-translate>
                         </span>
                     </button>
-                    <button type="button" class="btn btn-success btn-sm" data-dismiss="modal" ng-click="cancelPrintAreaList()">
-                        <span>
-                            <xe-translate text-value="Cancel">
-                            </xe-translate>
-                        </span>
-                    </button>
+
                 </div>
             </div>
         </div>

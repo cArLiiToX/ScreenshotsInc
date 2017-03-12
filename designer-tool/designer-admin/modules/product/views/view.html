@@ -1,11 +1,11 @@
-<div class="container-fluid" ng-init="init()" ng-controller="ProductController">
+<div class="clearfix" ng-init="init()" ng-controller="ProductController">
     <!-- <xe-translate text-value="PRODUCT"></xe-translate> -->
-    <div class="panel panel-transparent">
+    <div class="panel panel-transparent" ng-hide="productData">
         <div class="panel-body">
             <!-- <ng-include src="'modules/product/views/partials/productAddition.html'" 
                  ng-show="isUploadViewActive"> -->
-            <ng-include src="'modules/product/views/partials/productAddWizard.html'">
-            </ng-include>
+            <!-- <ng-include src="'modules/product/views/partials/productAddWizard.html'">
+            </ng-include> -->
             <!--category list dropdown-->
             <div class="btn-group" ng-show="categoryDropDown">
                 <button type="button" class="btn btn-default text-ellipsis"  data-toggle="dropdown" style="width: 180px;" ng-disabled="!dataLoaded">
@@ -85,7 +85,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="product in productList" ng-click="selectedProduct($index)">
+                            <tr ng-repeat="product in productList track by $index" ng-click="selectedProduct($index)">
                                 <td class="v-align-middle semi-bold">
                                     <a href="" class="v-align-middle pull-left no-margin">
                                         <img class="w-70" ng-src="{{ product.thumbnail }}"/>
@@ -154,24 +154,12 @@
     <!--Selected product view-->
     <ng-include src="'modules/product/views/partials/selectedproduct.html'" ng-show="productData">
     </ng-include>
-    <!-- <ng-include src="'modules/product/views/partials/featuresetting.html'"></ng-include> -->
-    <ng-include src="'modules/product/views/partials/additionalprice.html'">
-    </ng-include>
-    <!-- <ng-include src="'modules/product/views/partials/assignTemplate.html'"></ng-include> -->
-    <ng-include src="'modules/product/views/partials/printtypesetting.html'">
-    </ng-include>
     <ng-include src="'modules/product/views/partials/addCustomSize.html'">
-    </ng-include>
-    <ng-include src="'modules/product/views/partials/sizevariantprice.html'">
     </ng-include>
     <ng-include src="'modules/product/views/partials/addCustomMask.html'">
     </ng-include>
-    <ng-include src="'modules/product/views/partials/discountSetting.html'">
-    </ng-include>
-    <ng-include src="'modules/product/views/partials/whitebaseSetting.html'">
-    </ng-include>
     <ng-include src="'modules/product/views/partials/templateAssignModal.html'">
     </ng-include>
-    <ng-include src="'modules/product/views/partials/unitSetting.html'">
-    </ng-include>
+  <!--   <ng-include src="'modules/product/views/partials/unitSetting.html'">
+    </ng-include> -->
 </div>

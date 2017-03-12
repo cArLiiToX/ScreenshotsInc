@@ -1,0 +1,142 @@
+<div class="modal fade stick-up" id="languagemodal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header clearfix text-left">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <i class="pg-close fs-14">
+                    </i>
+                </button>
+                <h5>
+                    <span class="semi-bold">
+                        {{ languageModalLabel }}
+                    </span>
+                </h5>
+            </div>
+            <div class="modal-body" id="languageModal">
+                <hr/>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <div class="panel-title">
+                                            <xe-translate text-value="Select Language">
+                                            </xe-translate>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <p class="small">
+                                            <xe-translate text-value="Select language to download">
+                                            </xe-translate>
+                                        </p>
+                                        <div class="m-t-15">
+                                            <div class="form-group no-border no-margin">
+                                                <div class="col-sm-8">
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-default"  data-toggle="dropdown" style="width: 116px;">
+                                                            {{ selectedLang }}
+                                                        </button>
+                                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <span class="caret">
+                                                            </span>
+                                                            <span class="sr-only">
+                                                                Toggle Dropdown
+                                                            </span>
+                                                        </button>
+                                                        <ul class="dropdown-menu" role="menu" style="width: 143px;" ng-class="{'button-scroll':languages.length> 4}">
+                                                            <li ng-repeat="language in languages" ng-click="languageSelectedOnModal(language)">
+                                                                <a href="">
+                                                                    {{ language.name }}
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <button type="button" ng-click="downloadLanguageFile()" class="btn btn-primary btn-sm pull-right" ng-disabled="demoStatus">
+                                                        <xe-translate text-value="Download File">
+                                                        </xe-translate>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div class="row m-t-10" ng-show="newLangStatus">
+                                            <div class="col-sm-12">
+                                                <div class="form-group no-border no-margin">
+                                                    <label class="col-sm-4 control-label">
+                                                        <xe-translate text-value="Name">
+                                                        </xe-translate>
+                                                    </label>
+                                                    <div class="col-sm-5">
+                                                        <div pg-form-group class="form-group">
+                                                            <input type="text"  ng-model="language.name"  class="form-control" placeholder="Enter Name"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-3 m-t-10 padding-0">
+                                                        Ex: English
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" ng-show="newLangStatus">
+                                            <div class="col-sm-12">
+                                                <div class="form-group no-border no-margin">
+                                                    <label class="col-sm-4 m-t-5 control-label">
+                                                        <xe-translate text-value="Language Code">
+                                                        </xe-translate>
+                                                    </label>
+                                                    <div class="col-sm-5">
+                                                        <div pg-form-group class="form-group">
+                                                            <input type="text"  ng-model="language.code"  class="form-control" placeholder="Enter code"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-3 m-t-10 padding-0">
+                                                        Ex: en
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="form-group no-border no-margin">
+                                                    <label class="col-sm-4 control-label">
+                                                        <xe-translate text-value="Upload File">
+                                                        </xe-translate>
+                                                    </label>
+                                                    <div class="col-sm-8">
+                                                        <input type="file" id="fileinput" name="languageFile"/>
+                                                    </div>
+                                                    <p class="small">
+                                                        (
+                                                        <xe-translate text-value="Language file format">
+                                                        </xe-translate>
+                                                        )
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="m-t-20 text-center">
+                            <button type="button" class="btn btn-success btn-sm" ng-click="AddUpdateLanguage()" ng-disabled="demoStatus || buttonStatus">
+                                <span>
+                                    <xe-translate text-value="Save">
+                                    </xe-translate>
+                                </span>
+                            </button>
+                            <button type="button" class="btn btn-success btn-sm" data-dismiss="modal" ng-click="cancelLanguageModal()">
+                                <span>
+                                    <xe-translate text-value="Cancel">
+                                    </xe-translate>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>

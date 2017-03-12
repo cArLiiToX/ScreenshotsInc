@@ -10,15 +10,20 @@
 
 /* Components */
 @import 'components/slider';
+@import 'components/designer';
 
 /* Partials */
 @import 'partials/header';
 @import 'partials/navigation';
+@import 'partials/banner';
 @import 'partials/footer';
 
 /* Pages */
 @import 'pages/home';
 @import 'pages/about';
 @import 'pages/services';
+@import 'pages/contact';
+@import 'pages/vendor-catalogs';
+@import 'pages/product';
 
 @import 'utilities';

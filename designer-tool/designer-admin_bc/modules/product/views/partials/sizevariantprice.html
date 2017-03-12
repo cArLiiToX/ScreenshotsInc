@@ -1,0 +1,65 @@
+<div class="modal fade stick-up" id="sizevariantprice" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header clearfix text-left">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <i class="pg-close fs-14">
+                    </i>
+                </button>
+                <h5>
+                    <span class="semi-bold">
+                        <xe-translate text-value="Manage SizeVariant Price">
+                        </xe-translate>
+                    </span>
+                </h5>
+            </div>
+            <div class="modal-body" id="sizePriceModal">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <tr>
+                            <td width="10">
+                                <xe-translate text-value="Size">
+                                </xe-translate>
+                            </td>
+                            <td ng-repeat="item in prntMethodByProduct">
+                                <span>
+                                    {{ item.name }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr ng-repeat="sizeprice in sizeAdditionalPrice track by $index">
+                            <td>
+                                <span>
+                                    {{ sizeprice.sizeName }}
+                                </span>
+                            </td>
+                            <td ng-repeat="p in sizeprice.sizePrice track by $index">
+                                <div class="form-group form-group-sm input-group w-md" pg-form-group>
+                                    <input type="text" class="autonumeric form-control usd h-35" ng-model="p.percentage" percent-only="percent-only"/>
+                                    <span class="input-group-addon">
+                                        %
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="m-t-20 clearfix">
+                    <button type="button" class="btn btn-success btn-sm " ng-click="updateVariantPrice()" ng-disabled="demoStatus">
+                        <span>
+                            <xe-translate text-value="Save">
+                            </xe-translate>
+                        </span>
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm" data-dismiss="modal"  ng-click="cancelPriceModal()">
+                        <span>
+                            <xe-translate text-value="Cancel">
+                            </xe-translate>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

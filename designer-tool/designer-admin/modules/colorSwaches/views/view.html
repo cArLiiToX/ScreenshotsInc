@@ -67,10 +67,10 @@
                                         <td>
                                             <!-- <div style="float:left; width: 45px; height: 45px; position: relative; padding: 0px; margin: 0px;">
                                             											<img class="img-responsive" ng-src="{{option.swatchImage+randomValue}}" fallback-src="{{defaultColorImage}}" style="width: 40px; height: 40px;"/></div> -->
-                                            <div style="float:left; width: 45px; height: 45px; position: relative; padding: 0px; margin: 0px;" ng-style="option.swatchImage !='' ? {'background-image': 'url('+option.swatchImage+randomValue+')'} : {'background-color':option.hexCode}">
+                                            <div style="float:left; width: 35px; height: 35px; position: relative; padding: 0px; margin: 0px;" ng-style="option.swatchImage !='' ? {'background-image': 'url('+option.swatchImage+randomValue+')'} : {'background-color':option.hexCode}">
                                             </div>
                                             <div class="pull-left m-l-30">
-                                                <button class="btn btn-info btn-sm m-t-5" type="button" ng-class="{'disabled': isPreLoader}"  ng-click="editattributevalue(option)">
+                                                <button class="btn btn-info btn-sm" type="button" ng-class="{'disabled': isPreLoader}"  ng-click="editattributevalue(option)">
                                                     <i class="fa fa-paste">
                                                     </i>
                                                     <xe-translate text-value="Edit">
@@ -93,7 +93,7 @@
             </div>
             <div ng-show="isLoadMore" class="panel-footer b-t-none">
                 <div class="text-center">
-                    <button type="button" class="btn btn-success btn-sm btn-cons" ng-click="loadMore()" ng-disabled="isPreLoader" ng-show="isLoadMore">
+                    <button type="button" class="btn btn-info btn-sm btn-cons" ng-click="loadMore()" ng-disabled="isPreLoader" ng-show="isLoadMore">
                         <span>
                             <xe-translate text-value="Load More">
                             </xe-translate>

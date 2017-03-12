@@ -1,0 +1,905 @@
+<div class="row">
+    <div class="col-md-12">
+        <button type="button" ng-disabled="isPrintMethodPresent" class="btn btn-success btn-sm pull-right m-b-10 m-r-15"  ng-click="createTemplate()" ng-hide="isPreDecorated">
+            <span>
+                <xe-translate text-value="Create Template">
+                </xe-translate>
+            </span>
+        </button>
+    </div>
+    <div class="col-md-12">
+        <div class="scroll-wrapper">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
+                        <!--product thumb and large image-->
+                        <div class="panel panel-default">
+                            <a href="">
+                                <div class="product-thumb" ng-class="{'active': $index == selectedThumbIndex }" ng-repeat="thumb in thumbSides" ng-click="changeThumbSide($index)">
+                                    <!-- <img class="img-responsive" ng-src="{{thumb}}" ng-if="!isLoadVariantAsBgColor"> -->
+                                    <div id="pThumb_{{ $index }}" ng-click="changeThumbSide($index)">
+                                        <img src="assets/img/demo/progress.svg" width="30" height="30" style="vertical-align:middle"/>
+                                    </div>
+                                    <!-- <img id="side{{$index+1}}" class="img-responsive" 
+                                        ng-src="assets/images/product/side{{$index+1}}.png" 
+                                        ng-image-on-load ng-if="isLoadVariantAsBgColor" /> -->
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-body text-center">
+                                <canvas id="canvas_main" width="500" height="500" style="left:27px !important;">
+                                </canvas>
+                                <div class="progress-circle-indeterminate product-loader" ng-hide="isProductLoad">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="panel">
+                    <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
+                        <li ng-class="{'active':tabModel == 'boundary'}" ng-click="changeTab('boundary')">
+                            <a href="" data-toggle="tab" pg-tab="" role="tab" aria-expanded="false">
+                                <xe-translate text-value="Boundary">
+                                </xe-translate>
+                            </a>
+                        </li>
+                        <li ng-class="{'active':tabModel == 'setting'}" ng-click="changeTab('setting')">
+                            <a href="" data-toggle="tab" pg-tab="" role="tab" aria-expanded="false">
+                                <xe-translate text-value="Settings">
+                                </xe-translate>
+                            </a>
+                        </li>
+                        <li ng-class="{'active':tabModel == 'variant'}" ng-click="changeTab('variant')">
+                            <a href="" data-toggle="tab" pg-tab="" role="tab" aria-expanded="true">
+                                <xe-translate text-value="Whitebase">
+                                </xe-translate>
+                            </a>
+                        </li>
+                        <!-- <li ng-class="{'active':tabModel == 'discount'}" ng-click="changeTab('discount')">
+                            <a href="" data-toggle="tab" pg-tab="" role="tab" aria-expanded="true">
+                                <xe-translate text-value="Discount"></xe-translate></a>
+                        </li> -->
+                        <li ng-class="{'active':tabModel == 'info'}" ng-click="changeTab('info')">
+                            <a href="" data-toggle="tab" pg-tab="" role="tab" aria-expanded="true">
+                                <xe-translate text-value="Info">
+                                </xe-translate>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- END -->
+                    <div class="tab-content over-init">
+                        <!--boundary-->
+                        <div class="tab-pane" ng-class="{'active':tabModel == 'boundary'}">
+                            <div class="panel-body">
+                                <div class="radio radio-success m-t-5">
+                                    <input type="radio" name="boundary" value="bound" id="bound" ng-model="boundary.name" ng-checked="boundary.name == 'bound'" ng-change="changeMaskBoundary()"/>
+                                    <label for="bound">
+                                        <xe-translate text-value="Boundary">
+                                        </xe-translate>
+                                    </label>
+                                    <input type="radio" value="mask" name="boundary" id="mask" ng-model="boundary.name" ng-checked="boundary.name == 'mask'" ng-change="changeMaskBoundary()"/>
+                                    <label for="mask">
+                                        <xe-translate text-value="Mask">
+                                        </xe-translate>
+                                    </label>
+                                    <input type="radio" value="customBoundry" name="boundary" id="customBoundry" ng-model="boundary.name" ng-checked="boundary.name == 'customBoundry'" ng-change="changeMaskBoundary()"/>
+                                    <label for="customBoundry">
+                                        <xe-translate text-value="Custom Boundary">
+                                        </xe-translate>
+                                    </label>
+                                    <input type="radio" value="variableMask" name="boundary" id="variableMask" ng-model="boundary.name" ng-checked="boundary.name == 'variableMask'" ng-change="changeMaskBoundary()"/>
+                                    <label for="variableMask">
+                                        <xe-translate text-value="Variable Mask">
+                                        </xe-translate>
+                                    </label>
+                                </div>
+                                <div class="panel panel-default" ng-show="boundary.name == 'bound'">
+                                    <div class="panel-heading">
+                                        <div class="panel-title">
+                                            <xe-translate text-value="Set product Boundary">
+                                            </xe-translate>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <p class="small">
+                                            <xe-translate text-value="product Boundary">
+                                            </xe-translate>
+                                        </p>
+                                        <div class="clearfix m-t-15">
+                                            <div class="btn-group pull-left m-r-20">
+                                                <button type="button" class="btn btn-success text-ellipsis"  data-toggle="dropdown" style="width:178px">
+                                                    {{ selectedSize }}
+                                                </button>
+                                                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <span class="caret">
+                                                    </span>
+                                                    <span class="sr-only">
+                                                        Toggle Dropdown
+                                                    </span>
+                                                </button>
+                                                <ul class="dropdown-menu" role="menu" ng-class="{'button-scroll':printSizeList.length> 4}" style="width:200px">
+                                                    <li ng-repeat="sizes in printSizeList" ng-click="selectPrintSize($index)">
+                                                        <a href="">
+                                                            {{ sizes.name }}
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="radio radio-success pull-left m-t-5">
+                                                <input type="radio" value="Portrait" name="optionyes" id="yes" ng-model="orientation.name" ng-checked="orientation.name == 'Portrait'" ng-change="selectOrientation()"/>
+                                                <label for="yes">
+                                                    <xe-translate text-value="Portrait">
+                                                    </xe-translate>
+                                                </label>
+                                                <input type="radio" checked="checked" value="landscape" name="optionyes" id="no" ng-model="orientation.name" ng-checked="orientation.name == 'landscape'" ng-change="selectOrientation()"/>
+                                                <label for="no">
+                                                    <xe-translate text-value="landscape">
+                                                    </xe-translate>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="clearfix">
+                                            <div class="m-t-5">
+                                                {{ actualSize }}
+                                                <span ng-if="actualSize">
+                                                    {{ printUnit }}
+                                                </span>
+                                            </div>
+                                            <div class="m-r-10 clearfix" ng-show="TransitionView">
+                                                <!-- {{actualSize}} 
+                                                <span ng-if="actualSize != ''">{{printUnit}}</span> -->
+                                                <div class="checkbox check-success pull-left">
+                                                    <input type="checkbox" value="checked" id="checked" ng-model="print.is_Transition"                           ng-change="selectTransitionStatus(print.is_Transition)"/>
+                                                    <label for="checked">
+                                                        <xe-translate text-value="Enable transition for">
+                                                        </xe-translate>
+                                                        {{ transitionSize }}
+                                                    </label>
+                                                </div>
+                                                <i class="fa fa-info-circle m-t-10" tooltip= "{{ transitionMessage }}" tooltip-placement="right">
+                                                </i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default" ng-show="boundary.name == 'bound'">
+                                    <div class="panel-heading">
+                                        <div class="panel-title">
+                                            <xe-translate text-value="Custom boundary">
+                                            </xe-translate>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <p class="small">
+                                            <xe-translate text-value="Custom boundary description">
+                                            </xe-translate>
+                                        </p>
+                                        <div class="m-t-15">
+                                            <!-- <div class="clearfix m-t-10">
+                                              <button type="button" 
+                                                    class="btn btn-success btn-sm" ng-click="setDefaultPrintArea()" 
+                                                    ng-disabled="demoStatus">
+                                                    <span><xe-translate text-value="Set Default Print Area"></xe-translate></span>
+                                                </button>
+                                                <i class="fa fa-info-circle m-l-10 m-t-10" tooltip = "{{defaultPrintMessage}}" tooltip-placement = "right"></i>
+                                            </div> -->
+                                            <div class="clearfix m-t-10">
+                                                <button type="button" class="btn btn-success btn-sm" ng-click="openCustomSizeSetting()">
+                                                    <span>
+                                                        <xe-translate text-value="Configure custom boundary">
+                                                        </xe-translate>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default" ng-show="boundary.name == 'mask'">
+                                    <div class="panel-heading">
+                                        <div class="panel-title">
+                                            <xe-translate text-value="Set Product Mask">
+                                            </xe-translate>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <!-- <p class="small"><xe-translate text-value="custom boundary description"></xe-translate></p> -->
+                                        <div class="btn-group pull-left m-r-20">
+                                            <button type="button" class="btn btn-success text-ellipsis"  data-toggle="dropdown" style="width:170px">
+                                                {{ selectedMaskName }}
+                                            </button>
+                                            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <span class="caret">
+                                                </span>
+                                                <span class="sr-only">
+                                                    Toggle Dropdown
+                                                </span>
+                                            </button>
+                                            <ul class="dropdown-menu" role="menu" ng-class="{'button-scroll':printSizeList.length> 4}" style="width:195px">
+                                                <li ng-repeat="mask in allCustomMaskData" ng-disabled="true" ng-click="selectMaskSize(mask,$index)">
+                                                    <a href="">
+                                                        {{ mask.name }}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix">
+                                        <div class="m-t-5">
+                                            {{ actualMaskSize }}
+                                            <span ng-if="actualMaskSize">
+                                                {{ printUnit }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default" ng-show="boundary.name == 'mask'">
+                                    <div class="panel-heading">
+                                        <div class="panel-title">
+                                            <xe-translate text-value="Custom mask">
+                                            </xe-translate>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <p class="small">
+                                            <xe-translate text-value="Custom mask description">
+                                            </xe-translate>
+                                        </p>
+                                        <div class="pull-left">
+                                            <button type="button" class="btn btn-success btn-sm" ng-click="openCustomMaskSetting()">
+                                                <span>
+                                                    <xe-translate text-value="Configure custom mask">
+                                                    </xe-translate>
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <div class="panel panel-default" ng-show="boundary.name == 'mask'">
+                                                                        <div class="panel-heading">
+                                                                            <div class="panel-title">
+                                                                              <xe-translate text-value="Set Unit"></xe-translate>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="panel-body">
+                                                                            <p class="small">
+                                                                            <xe-translate text-value="Unit description"></xe-translate>
+                                                                                </p>
+                                                                            <div class="row">
+                                                                                <div  class=" col-sm-12 m-b-20">
+                                
+                                                                                  <div class="btn-group">
+                                                                                    <button type="button" class="btn btn-default" 
+                                                                                            data-toggle="dropdown" style="width: 126px;">{{selectedScaleUnit.name}}</button>
+                                                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                      <span class="caret"></span>
+                                                                                      <span class="sr-only">Toggle Dropdown</span>
+                                                                                    </button>
+                                                                                    <ul class="dropdown-menu" role="menu" ng-class="{'button-scroll':scaleUnitList.length>4}" style="width:152px">
+                                                                                      <li ng-repeat="unit in scaleUnitList" ng-disabled="true" ng-click="selectedUnit($index)">
+                                                                                            <a href="">{{unit.name}}</a>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                  </div>
+                                
+                                                                               </div>
+                                                                            </div> -->
+                                <!-- <div class="row">
+                                    <div class="col-sm-6">
+                                        <div pg-form-group="" class="form-group form-group-default">
+                                            <label><xe-translate text-value="Mask Price"></xe-translate></label>
+                                            <input type="text" 
+                                                ng-model="maskUploadPrice[selectedThumbIndex]" 
+                                                class="form-control" required="" 
+                                                placeholder="(Enter Price)" money>
+                                        </div>
+                                    </div>
+                                </div> -->
+                                <!--    </div>
+                                </div> -->
+                                <div class="panel panel-default" ng-show="boundary.name == 'customBoundry' || boundary.name == 'variableMask'">
+                                    <div class="panel-heading" ng-if="boundary.name == 'variableMask'">
+                                        <div class="panel-title">
+                                            <xe-translate text-value="Set Product Mask">
+                                            </xe-translate>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body" ng-if="boundary.name == 'variableMask'">
+                                        <div class="btn-group pull-left m-r-20">
+                                            <button type="button" class="btn btn-success text-ellipsis"  data-toggle="dropdown" style="width:170px">
+                                                {{ selectedMaskName }}
+                                            </button>
+                                            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <span class="caret">
+                                                </span>
+                                                <span class="sr-only">
+                                                    Toggle Dropdown
+                                                </span>
+                                            </button>
+                                            <ul class="dropdown-menu" role="menu" ng-class="{'button-scroll':printSizeList.length> 4}" style="width:195px">
+                                                <li ng-repeat="mask in allCustomMaskData" ng-disabled="true" ng-click="selectMaskSize(mask,$index)">
+                                                    <a href="">
+                                                        {{ mask.name }}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="pull-left" ng-if="boundary.name == 'variableMask'">
+                                            <button type="button" class="btn btn-success btn-sm" ng-click="openCustomMaskSetting()">
+                                                <span>
+                                                    <xe-translate text-value="Configure custom mask">
+                                                    </xe-translate>
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <p class="small">
+                                        </p>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label>
+                                                        Default Width
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <!-- <input type="text" class="form-control"> -->
+                                                        <input type="text"  id ="width" ng-model="customDesignDefaultDataWidth[selectedThumbIndex]" class="form-control" required=""  ng-keyup="drawCustomBoundry(customDesignDefaultDataWidth,'w')" price-Only="price-Only" ng-if="boundary.name == 'customBoundry'"/>
+                                                        <input type="text"  id ="width" ng-model="variableMaskDefaultDataWidth[selectedThumbIndex]" class="form-control" required=""  ng-keyup="getCustomMaskData(variableMaskDefaultDataWidth,'w')" price-Only="price-Only" ng-if="boundary.name == 'variableMask'"/>
+                                                        <span class="input-group-addon">
+                                                            {{ selectedScaleUnit.name }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <p class="small text-danger" ng-show="width_ErrorMsg">
+                                                    <xe-translate text-value="Invalid Width">
+                                                    </xe-translate>
+                                                </p>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label class="block">
+                                                        Unit
+                                                    </label>
+                                                    <div class="btn-group btn-flex">
+                                                        <button type="button" class="btn btn-default w-full text-left"  data-toggle="dropdown" ng-if="boundary.name == 'customBoundry'">
+                                                            {{ selectedScaleUnit.name }}
+                                                        </button>
+                                                        <button type="button" class="btn btn-default w-full text-left"  data-toggle="dropdown" ng-if="boundary.name == 'variableMask'">
+                                                            {{ selectedScaleUnit.name }}
+                                                        </button>
+                                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <span class="caret">
+                                                            </span>
+                                                            <span class="sr-only">
+                                                                Toggle Dropdown
+                                                            </span>
+                                                        </button>
+                                                        <ul class="dropdown-menu w-full" role="menu" ng-class="{'button-scroll':scaleUnitList.length> 4}">
+                                                            <li ng-repeat="unit in scaleUnitList" ng-disabled="true" ng-click="selectedUnit($index,true)" ng-if="boundary.name == 'customBoundry'">
+                                                                <a href="">
+                                                                    {{ unit.name }}
+                                                                </a>
+                                                            </li>
+                                                            <li ng-repeat="unit in scaleUnitList" ng-disabled="true" ng-click="selectedUnit($index,true)" ng-if="boundary.name == 'variableMask'">
+                                                                <a href="">
+                                                                    {{ unit.name }}
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label>
+                                                        Default Height
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <!-- <input type="text" class="form-control"> -->
+                                                        <input type="text" id ="height" ng-model="customDesignDefaultDataHeight[selectedThumbIndex]" class="form-control" required=""   ng-keyup="drawCustomBoundry(customDesignDefaultDataHeight,'h')" price-Only="priceOnly" ng-if="boundary.name == 'customBoundry'"/>
+                                                        <input type="text" id ="height" ng-model="variableMaskDefaultDataHeight[selectedThumbIndex]" class="form-control" required=""   ng-keyup="getCustomMaskData(variableMaskDefaultDataHeight,'h')" price-Only="priceOnly" ng-if="boundary.name == 'variableMask'"/>
+                                                        <span class="input-group-addon">
+                                                            {{ selectedScaleUnit.name }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <p class="small text-danger" ng-show="height_ErrorMsg">
+                                                    <xe-translate text-value="Invalid Height">
+                                                    </xe-translate>
+                                                </p>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label>
+                                                        Price per {{ selectedScaleUnit.name }}
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <!-- <input type="text" class="form-control"> -->
+                                                        <input type="text" ng-model="customBoundreyPricePerUnit[selectedThumbIndex]" class="form-control" required="" ng-keyup="drawCustomBoundry(customBoundreyPricePerUnit,'unitPrice')" price-Only="price-Only" ng-if="boundary.name == 'customBoundry'"/>
+                                                        <input type="text" ng-model="variableMaskPricePerUnit[selectedThumbIndex]" class="form-control" required="" ng-keyup="getCustomMaskData(variableMaskPricePerUnit,'unitPrice')" price-Only="price-Only" ng-if="boundary.name == 'variableMask'"/>
+                                                        <span class="input-group-addon">
+                                                            {{ appCurrency }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <div class="panel panel-default" ng-show="boundary.name == 'customBoundry'">
+                                    <div class="panel-heading">
+                                        <div class="panel-title">
+                                            Unit
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                            <p class="small"> </p>       
+                                        <div class="row">
+                                           <div  class=" col-sm-6 m-b-20">
+                                             <label></label>
+                                              <div class="btn-group">
+                                                <button type="button" class="btn btn-default" 
+                                                        data-toggle="dropdown" style="width: 126px;">{{currentCustomUnit.name}}</button>
+                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                  <span class="caret"></span>
+                                                  <span class="sr-only">Toggle Dropdown</span>
+                                                </button>
+                                                <ul class="dropdown-menu" role="menu" ng-class="{'button-scroll':customBoundaryUnitList.length>4}" style="width:152px">
+                                                  <li ng-repeat="unit in customBoundaryUnitList" ng-disabled="true" ng-click="assignUnitToCustomBoundary($index)">
+                                                        <a href="">{{unit.name}}</a>
+                                                    </li>
+                                                </ul>
+                                              </div>
+                                        </div>
+                                         <div class="col-sm-6 clearfix">                                     
+                                             <button type="button" class="btn btn-success btn-sm" ng-click="openUnitModal()">
+                                                <span>
+                                                  <xe-translate text-value="Configure Unit"></xe-translate>
+                                                </span>
+                                              </button>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div> -->
+                                <div class="panel panel-default" ng-show="boundary.name == 'customBoundry' || boundary.name == 'variableMask'">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label>
+                                                        Minimum width
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <!-- <input type="text" class="form-control"> -->
+                                                        <input type="text" ng-model="customBoundreyUploadMinWidth[selectedThumbIndex]" class="form-control" required=""  ng-keyup="drawCustomBoundry(customBoundreyUploadMinWidth,'minW')" price-Only="price-Only" ng-if = "boundary.name == 'customBoundry'"/>
+                                                        <input type="text" ng-model="variableMaskUploadMinWidth[selectedThumbIndex]" class="form-control" required=""  ng-keyup="getCustomMaskData(variableMaskUploadMinWidth,'minW')" price-Only="price-Only" ng-if = "boundary.name == 'variableMask'"/>
+                                                        <span class="input-group-addon">
+                                                            {{ selectedScaleUnit.name }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <p class="small text-danger" ng-show="min_width_ErrorMsg">
+                                                    <xe-translate text-value="Invalid Minimum Width">
+                                                    </xe-translate>
+                                                </p>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label>
+                                                        Maximum width
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <!-- <input type="text" class="form-control"> -->
+                                                        <input type="text" ng-model="customBoundreyUploadMaxWidth[selectedThumbIndex]" class="form-control" required=""  ng-keyup="drawCustomBoundry(customBoundreyUploadMaxWidth,'maxW')" price-Only="price-Only" ng-if = "boundary.name == 'customBoundry'"/>
+                                                        <input type="text" ng-model="variableMaskUploadMaxWidth[selectedThumbIndex]" class="form-control" required=""  ng-keyup="getCustomMaskData(variableMaskUploadMaxWidth,'maxW')" price-Only="price-Only" ng-if = "boundary.name == 'variableMask'"/>
+                                                        <span class="input-group-addon">
+                                                            {{ selectedScaleUnit.name }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <p class="small text-danger" ng-show="max_width_ErrorMsg">
+                                                    <xe-translate text-value="Invalid Maximum Width">
+                                                    </xe-translate>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label>
+                                                        Minimum Height
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <!-- <input type="text" class="form-control"> -->
+                                                        <input type="text" ng-model="customBoundreyUploadMinHeight[selectedThumbIndex]"class="form-control" required=""  ng-keyup="drawCustomBoundry(customBoundreyUploadMinHeight,'minH')" price-Only="price-Only" ng-if = "boundary.name == 'customBoundry'"/>
+                                                        <input type="text" ng-model="variableMaskUploadMinHeight[selectedThumbIndex]"class="form-control" required=""  ng-keyup="getCustomMaskData(variableMaskUploadMinHeight,'minH')" price-Only="price-Only" ng-if = "boundary.name == 'variableMask'"/>
+                                                        <span class="input-group-addon">
+                                                            {{ selectedScaleUnit.name }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <p class="small text-danger" ng-show="min_height_ErrorMsg">
+                                                    <xe-translate text-value="Invalid Minimum Height">
+                                                    </xe-translate>
+                                                </p>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label>
+                                                        Maximium height
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <!-- <input type="text" class="form-control"> -->
+                                                        <input type="text" ng-model="customBoundreyUploadMaxHeight[selectedThumbIndex]" class="form-control" required=""  ng-keyup="drawCustomBoundry(customBoundreyUploadMaxHeight,'maxH')" price-Only="price-Only" ng-if = "boundary.name == 'customBoundry'"/>
+                                                        <input type="text" ng-model="variableMaskUploadMaxHeight[selectedThumbIndex]" class="form-control" required=""  ng-keyup="getCustomMaskData(variableMaskUploadMaxHeight,'maxH')" price-Only="price-Only" ng-if = "boundary.name == 'variableMask'"/>
+                                                        <span class="input-group-addon">
+                                                            {{ selectedScaleUnit.name }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <p class="small text-danger" ng-show="max_height_ErrorMsg">
+                                                    <xe-translate text-value="Invalid maximum Height">
+                                                    </xe-translate>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="checkbox check-success m-b-20" ng-show="boundary.name == 'customBoundry'">
+                                    <input type="checkbox" id="enableBorder_{{ selectedThumbIndex }}" ng-model="isBorderEnable[selectedThumbIndex]" ng-change = "borderEnabled(isBorderEnable[selectedThumbIndex],selectedThumbIndex)" ng-checked = "isBorderEnable[selectedThumbIndex] == '1'"/>
+                                    <label for = "enableBorder_{{ selectedThumbIndex }}">
+                                        <xe-translate text-value = "Enable Border">
+                                        </xe-translate>
+                                    </label>
+                                </div>
+                                <div class="checkbox check-success m-b-20">
+                                    <input type="checkbox" id="bleedMark_{{ selectedThumbIndex }}" ng-model="isBleedMark[selectedThumbIndex]" ng-checked="isBleedMark[selectedThumbIndex] == '1'" ng-change="enableBleed(isBleedMark[selectedThumbIndex],selectedThumbIndex)"/>
+                                    <label for="bleedMark_{{ selectedThumbIndex }}">
+                                        <xe-translate text-value="Enable Bleed Mark">
+                                        </xe-translate>
+                                    </label>
+                                </div>
+
+                                <div class="panel panel-default" ng-show="isBleedMark[selectedThumbIndex]">
+                                    <div class="panel-heading">
+                                        <div class="panel-title">
+                                            <xe-translate text-value="Bleed Mark">
+                                            </xe-translate>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <p class="small">
+                                            <xe-translate text-value="Bleed Mark Description">
+                                            </xe-translate>
+                                        </p>
+                                        <form id="form-personal" role="form" autocomplete="off" class="bleedmark-box" ng-show = "isBleedMark[selectedThumbIndex]">
+                                            <div class="row clearfix">
+                                                <div class="col-sm-3">
+                                                    <div class="checkbox check-success m-b-20">
+                                                        <input type="checkbox" id="uplodPrint1_{{ productSize.value }}" ng-model="isCropMark[selectedThumbIndex]" ng-checked="isCropMark[selectedThumbIndex]=='1'" ng-change="changeCropMark(isCropMark[selectedThumbIndex],selectedThumbIndex)"/>
+                                                        <label for="uplodPrint1_{{ productSize.value }}">
+                                                            <xe-translate text-value="Crop Mark">
+                                                            </xe-translate>
+                                                        </label>
+                                                    </div>
+                                                    <div class="checkbox check-success m-b-20">
+                                                        <input type="checkbox" ng-checked="isSafeZone[selectedThumbIndex]=='1'" ng-model="isSafeZone[selectedThumbIndex]" id="uplodPrint2_{{ productSize.value }}" ng-change="changeSafeZone(isSafeZone[selectedThumbIndex],selectedThumbIndex)"/>
+                                                        <label for="uplodPrint2_{{ productSize.value }}">
+                                                            <xe-translate text-value="Safe Zone">
+                                                            </xe-translate>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    <form id="form-personal" role="form" autocomplete="off" class="p-l-20 p-r-20">
+                                                        <div class="row clearfix">
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group form-group-default" pg-form-group>
+                                                                    <input ng-model="cropMark[selectedThumbIndex]" type="text" class="form-control" price-Only="priceOnly" name="pName"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-6 m-t-5">
+                                                                <span ng-show="boundary.name == 'customBoundry' || boundary.name == 'variableMask'">
+                                                                    {{ selectedScaleUnit.name }}
+                                                                </span>
+                                                                <span ng-hide="boundary.name == 'customBoundry' || boundary.name == 'variableMask'">
+                                                                    {{ printUnit }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row clearfix">
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group form-group-default" pg-form-group>
+                                                                    <input type="text" ng-model="safeZone[selectedThumbIndex]" class="form-control" price-Only="priceOnly" name="pName"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-6 m-t-5">
+                                                                <span ng-show="boundary.name == 'customBoundry' || boundary.name == 'variableMask'">
+                                                                    {{ selectedScaleUnit.name }}
+                                                                </span>
+                                                                <span ng-hide="boundary.name == 'customBoundry' || boundary.name == 'variableMask'">
+                                                                    {{ printUnit }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="checkbox check-success m-b-20" ng-show="boundary.name == 'customBoundry' || boundary.name == 'variableMask'">
+                                    <input type="checkbox" id="addSides_{{ selectedThumbIndex }}" ng-model="isSidesAdded[selectedThumbIndex]" ng-checked="isSidesAdded[selectedThumbIndex] == '1'" ng-change="enableAddSides(isSidesAdded[selectedThumbIndex],selectedThumbIndex)"/>
+                                    <label for="addSides_{{ selectedThumbIndex }}">
+                                        <xe-translate text-value="Add Sides Description">
+                                        </xe-translate>
+                                    </label>
+                                </div>
+
+                                <div class="panel panel-default" ng-show="isSidesAdded[selectedThumbIndex] && (boundary.name == 'customBoundry' || boundary.name == 'variableMask')">
+                                    <div class="panel-body">
+                                        <div class="panel-title">
+                                            <xe-translate text-value="Add Sides">
+                                            </xe-translate>
+                                        </div>
+                                        <form id="form-personal" role="form" autocomplete="off" class="bleedmark-box" ng-show = "isSidesAdded[selectedThumbIndex]">
+                                            <div class="row clearfix">
+                                                
+                                                <div class="col-sm-9">
+                                                    <form id="form-personal" role="form" autocomplete="off" class="p-l-20 p-r-20">
+                                                        <div class="row clearfix">
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group form-group-default" pg-form-group>
+                                                                    <input ng-model="sidesAllowed[selectedThumbIndex]" ng-keyup ="sideValidate(sidesAllowed[selectedThumbIndex])"  type="text" class="form-control" price-Only="priceOnly" name="pName"/>
+                                                                </div>
+                                                                <p class="small text-danger" ng-show = "issideAddedValid == false" style = "margin-left: 0px;">
+                                                                        {{ ErrMsg }}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+
+                                <button type="button" class="btn btn-success btn-sm"  ng-click="saveMaskBoundary()" ng-disabled="demoStatus">
+                                    <span>
+                                        <xe-translate text-value="Save">
+                                        </xe-translate>
+                                    </span>
+                                </button>
+                                <label class="error">
+                                    {{ error_msg }}
+                                </label>
+                            </div>
+                        </div>
+                        <!--setting-->
+                        <div class="tab-pane" ng-class="{'active':tabModel == 'setting'}">
+                            <!-- product setting loader -->
+                            <div class="row">
+                                <div class="col-lg-12" ng-show="productLoad">
+                                    <div class="product-setting-loader">
+                                        <div class="panel-body text-center">
+                                            <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/demo/progress.svg" alt="Progress"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default" ng-hide="productLoad || isPreDecorated">
+                                <div class="panel-heading">
+                                    <div class="panel-title">
+                                        <xe-translate text-value="Assign print type to product">
+                                        </xe-translate>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <!-- <p class="small"><xe-translate text-value="Select print types"></xe-translate></p> -->
+                                    <div class="m-t-15">
+                                        <button type="button" class="btn btn-success btn-sm" ng-click="openprintTypeSetting()" ng-disabled="productLoad">
+                                            <span>
+                                                <xe-translate text-value="Assign Print Type">
+                                                </xe-translate>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default" ng-hide="productLoad">
+                                <div class="panel-heading">
+                                    <div class="panel-title">
+                                        <xe-translate text-value="Set Additional Price">
+                                        </xe-translate>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <!-- <p class="small">
+                                        <xe-translate text-value="Specify additional print price"></xe-translate></p> -->
+                                    <div class="m-t-15">
+                                        <button type="button" class="btn btn-success btn-sm" ng-click="openPriceSetting()" ng-disabled="productLoad">
+                                            <span>
+                                                <xe-translate text-value="Set Additional Price Button">
+                                                </xe-translate>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default" ng-hide="productLoad">
+                                <div class="panel-heading">
+                                    <div class="panel-title">
+                                        <xe-translate text-value="Set Sizevariant price">
+                                        </xe-translate>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <!-- <p class="small"><xe-translate text-value="Specify Variant price for respective product"></xe-translate></p> -->
+                                    <div class="m-t-15">
+                                        <button type="button" class="btn btn-success btn-sm" ng-click="openVariantPriceSetting()" ng-disabled="productLoad">
+                                            <span>
+                                                <xe-translate text-value="Set Variant Price">
+                                                </xe-translate>
+                                            </xe-translate>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default" ng-hide="productLoad">
+                            <div class="panel-heading">
+                                <div class="panel-title">
+                                    <xe-translate text-value="Set Product Template">
+                                    </xe-translate>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <!-- <p class="small"><xe-translate text-value="Specify Variant price for respective product"></xe-translate></p> -->
+                                <div class="m-t-15">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default"  data-toggle="dropdown" style="width: 180px;">
+                                            {{ selectedTemplate }}
+                                        </button>
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="caret">
+                                            </span>
+                                            <span class="sr-only">
+                                                Toggle Dropdown
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu" style="width: 207px;height: 150px;" ng-class="{'button-scroll':productTemplateDetails.length> 4}">
+                                            <li ng-repeat="template in productTemplateDetails" ng-click="assignProductTemplate($index)">
+                                                <a href="">
+                                                    {{ template.name }}
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <button type="button" class=" m-l-10 btn btn-success btn-sm"  ng-click="saveProductTemplate('false')" ng-disabled="demoStatus || templateStatus || productTemplateDetails.length==1">
+                                        <span>
+                                            <xe-translate text-value="Save">
+                                            </xe-translate>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--information-->
+                    <div class="tab-pane" ng-class="{'active':tabModel == 'info'}">
+                        <div class="panel-body">
+                            <p class="bold text-uppercase font-montserrat ">
+                                <xe-translate text-value="Product Information">
+                                </xe-translate>
+                            </p>
+                            <xe-translate text-value="Name">
+                            </xe-translate>
+                            : {{ name }}
+                            <br/>
+                            <xe-translate text-value="Category">
+                            </xe-translate>
+                            : {{ category }}
+                            <br/>
+                            <!-- <xe-translate text-value="Price"></xe-translate> :{{appCurrency}}{{price}} -->
+                            <hr/>
+                            <p class="bold text-uppercase font-montserrat ">
+                                <xe-translate text-value="Size and Quantity">
+                                </xe-translate>
+                            </p>
+                            <span ng-repeat="val in data" class="clearfix">
+                                {{ val.xe_size }}: {{ val.quantity }}
+                            </span>
+                            <br/>
+                        </div>
+                    </div>
+                    <div class="tab-pane" ng-class="{'active':tabModel == 'discount'}">
+                        <div class="row">
+                            <div class="col-lg-12" ng-show="productLoad">
+                                <div class="product-setting-loader">
+                                    <div class="panel-body text-center">
+                                        <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/demo/progress.svg" alt="Progress"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default" ng-hide="productLoad">
+                            <div class="panel-heading">
+                                <div class="panel-title">
+                                    <xe-translate text-value="Assign Product Discount">
+                                    </xe-translate>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <!-- <p class="small"><xe-translate text-value="Specify Discount for respective product"></xe-translate></p> -->
+                                <div class="m-t-15">
+                                    <button type="button" class="btn btn-success btn-sm" ng-click="openProductDiscountView()" ng-disabled="productLoad">
+                                        <span>
+                                            <xe-translate text-value="Set Discount">
+                                            </xe-translate>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" ng-class="{'active':tabModel == 'variant'}">
+                        <div class="row">
+                            <div class="col-lg-12" ng-show="productLoad">
+                                <div class="product-setting-loader">
+                                    <div class="panel-body text-center">
+                                        <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/demo/progress.svg" alt="Progress"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body" ng-hide="productLoad">
+                            <!-- <p class="bold text-uppercase font-montserrat "><xe-translate text-value="Color Variants"></xe-translate> </p>
+                            <div class="product-variant">
+                                <div ng-repeat="variant in variants track by $index">
+                                    <span style="background-size: contain; background-repeat:no-repeat;" class="pull-left w-20 " ng-style="variant.colorUrl && variant.colorUrl!='' ? {'background-image': 'url('+variant.colorUrl+')'} : {'background-color':variant.xeColor}">
+                                    </span>
+                                </div>
+                            </div> -->
+                            <div class="panel panel-default" ng-hide="productLoad">
+                                <div class="panel-heading">
+                                    <div class="panel-title">
+                                        <xe-translate text-value="Assign Whitebase on color variants">
+                                        </xe-translate>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <!-- <p class="small">
+                                    <xe-translate text-value="Apply Whitebase for color variants description"></xe-translate>
+                                      </p> -->
+                                    <div class="m-t-15">
+                                        <button type="button" class="btn btn-success btn-sm" ng-click="openWhitebaseSetting()" ng-disabled="productLoad">
+                                            <span>
+                                                <xe-translate text-value="Assign Whitebase">
+                                                </xe-translate>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <hr/>    -->
+                            <!-- <button class="btn btn-success btn-sm" type="button" 
+                                        ng-click="addNewColor('colorWizard')">
+                                    <xe-translate text-value="Add Another Color variant"></xe-translate>
+                            </button>   -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

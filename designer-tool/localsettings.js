@@ -37,5 +37,6 @@ RIAXEAPP.localSettings = {
 	"zoom_step_percent" : 50,
 	"revision" : 520,
 	"image_quality_multiplier" : true,
-	"decimal_to_comma" : true
+	"decimal_to_comma" : true,
+	"default_product_category" : ""
 };

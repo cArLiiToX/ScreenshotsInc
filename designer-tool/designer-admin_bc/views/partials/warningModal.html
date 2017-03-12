@@ -1,0 +1,24 @@
+<div aria-hidden="false" class="modal fade slide-up disable-scroll" id="warningModalSmall" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrapper">
+            <div class="modal-content">
+                <div class="modal-body text-center m-t-20">
+                    <h5 class="no-margin p-b-20">
+                        {{warningMessage}}
+                    </h5>
+                    <div class="clearfix">
+                        <button class="btn btn-success btn-cons pull-left" data-dismiss="modal" ng-click="onWarningModalConfirm()" ng-disabled="demoStatus" type="button">
+                            <xe-translate text-value="confirm">
+                            </xe-translate>
+                        </button>
+                        <button class="btn btn-danger btn-cons m-r-0" data-dismiss="modal" type="button">
+                            <xe-translate text-value="Cancel">
+                            </xe-translate>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+</div>

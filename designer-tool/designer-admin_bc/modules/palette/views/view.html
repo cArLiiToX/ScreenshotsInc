@@ -1,0 +1,162 @@
+<div class="container-fluid" ng-controller="PaletteController">
+    <div class="row" ng-init="init()">
+        <div class="col-sm-12">
+            <div class="panel panel-transparent">
+                <div class="panel-body padding-0">
+                    <button type="button" class="btn btn-info btn-sm btn-cons" ng-click="addNewPalette()">
+                        <span>
+                            <xe-translate text-value="Add New Palette">
+                            </xe-translate>
+                        </span>
+                    </button>
+                    <button type="button" class="btn btn-info btn-sm btn-cons pull-right" ng-click="managePaletteCategory()">
+                        <span>
+                            <xe-translate text-value="Manage Categories">
+                            </xe-translate>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <ng-include src="'modules/palette/views/partials/paletteEditView.html'"  ng-show="isEditViewActive">
+            </ng-include>
+            <ng-include src="'modules/palette/views/partials/paletteUploadView.html'"  ng-show="isUploadViewActive">
+            </ng-include>
+            <div class="panel panel-default">
+                <div class="panel-heading separator">
+                    <div class="w-full">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="m-r-10 m-t-n-5 pull-left">
+                                    <div class="checkbox check-success ">
+                                        <input type="checkbox"  id="selectAllPalette" ng-model="allChecked" ng-change="selectAllChecked(allChecked)"/>
+                                        <label for="selectAllPalette">
+                                            <xe-translate text-value="Select All">
+                                            </xe-translate>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="m-r-10 pull-left">
+                                    <button type="button" class="btn btn-default btn-sm btn-cons"  ng-class="{'disabled': fileCount < 1}" ng-click="editSelectedPalette()">
+                                        <span>
+                                            <xe-translate text-value="Edit Selected">
+                                            </xe-translate>
+                                        </span>
+                                    </button>
+                                </div>
+                                <div class="m-r-10 pull-left">
+                                    <button type="button" class="btn btn-default btn-sm btn-cons"  ng-class="{'disabled': fileCount < 1}" ng-click="deleteSelectedPalette()" ng-disabled="demoStatus">
+                                        <span>
+                                            <xe-translate text-value="Delete Selected">
+                                            </xe-translate>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="pull-right">
+                                    <!-- <div class="m-r-10 pull-left">
+                                        <input type="text" placeholder="Search by tag" class="form-control input-sm">
+                                    </div> -->
+                                    <div class="btn-group pull-left m-r-20">
+                                        <button type="button" class="btn btn-default text-ellipsis"  data-toggle="dropdown" style="width:146px">
+                                            {{ selectedColorType }}
+                                        </button>
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="caret">
+                                            </span>
+                                            <span class="sr-only">
+                                                Toggle Dropdown
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu" ng-class="{'button-scroll':paletteType.length> 4}" style="width:173px">
+                                            <li ng-repeat="type in paletteType"  ng-click="colorTypeSelected(type)">
+                                                <a href="">
+                                                    {{ type.name }}
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="btn-group pull-left m-r-20">
+                                        <button type="button" class="btn btn-default text-ellipsis"  data-toggle="dropdown" style="width:137px">
+                                            {{ selectedCategory.category_name }}
+                                        </button>
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="caret">
+                                            </span>
+                                            <span class="sr-only">
+                                                Toggle Dropdown
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu" ng-class="{'button-scroll':paletteCategoryList.length> 4}" style="width:163px">
+                                            <li ng-click="categorySelected('')">
+                                                <a href="">
+                                                    <xe-translate text-value="All Categories">
+                                                    </xe-translate>
+                                                </a>
+                                            </li>
+                                            <li ng-repeat="category in paletteCategoryList"  ng-click="categorySelected(category)">
+                                                <a href="">
+                                                    {{ category.category_name }}
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body m-t-20">
+                    <!--preloader-->
+                    <div class="row">
+                        <div class="col-lg-12 bg-white" ng-hide="dataLoaded">
+                            <div class="product-wrap-height">
+                                <div class="panel-body text-center">
+                                    <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/demo/progress.svg" alt="Progress"/>
+                                    <span class="loader-label">
+                                        <xe-translate text-value="Loading color palettes">
+                                        </xe-translate>
+                                        ...
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-hide="dataList" class="palette-box-wrap palette-list">
+                        <div class="palette-box pos-rlt" ng-repeat="palette in paletteList">
+                            <label class="no-margin cursor-pointer" for="palette_{{ palette.id }}">
+                                <div class="padding-5">
+                                    <img ng-if="palette.is_pattern == 1" class="img-thumb"  ng-src="{{ palettePath+palette.value }}" width="100" height="100"/>
+                                    <div ng-if="palette.is_pattern == 0 || palette.is_pattern == 2" style="background-color:{{ palette.value }};width:45px;height:45px;">
+                                    </div>
+                                </div>
+                            </label>
+                            <div class="checkbox check-success palette-check">
+                                <input type="checkbox" id="palette_{{ palette.id }}"  ng-model="paletteCheck[$index]"  ng-change="paletteSelected(paletteCheck[$index])"/>
+                                <label for="palette_{{ palette.id }}">
+                                </label>
+                            </div>
+                        </div>
+                        <span ng-show="noData">
+                            <p class="font-normal text-lg text-center m-t-150">
+                                <xe-translate text-value="No Color Palette found">
+                                </xe-translate>
+                            </p>
+                        </span>
+                    </div>
+                </div>
+                <div class="panel-footer text-center b-t-none" ng-show="isLoadMore">
+                    <button type="button" class="btn btn-success btn-sm btn-cons" ng-click="loadMore()" ng-show="isLoadMore">
+                        <span>
+                            <xe-translate text-value="Load More">
+                            </xe-translate>
+                        </span>
+                    </button>
+                    <img class="image-responsive-height demo-mw-30 " src="assets/img/progress/progress-circle-master.svg" alt="Progress" ng-show="isLoadMorePreloader"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ng-include src="'modules/palette/views/partials/paletteCategoryModal.html'">
+    </ng-include>
+</div>

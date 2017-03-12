@@ -1,0 +1,38 @@
+<div class="panel-heading separator p-t-0">
+    <div class="panel-title">
+        <h4 class ="xe-panel-title">
+            <xe-translate text-value="Direct Cart Post">
+            </xe-translate>
+        </h4>
+    </div>
+</div>
+<div class="panel-body m-t-20">
+    <form class="form-horizontal" role="form" autocomplete="off">
+        <div class="form-group">
+            <div class="form-group no-border no-margin">
+                <div class="col-md-4">
+                    <div class="radio radio-success m-b-15">
+                        <input type="radio" value="1" id="enable2" ng-model="addToCartSetting.is_direct_cart"  ng-checked="addToCartSetting.is_direct_cart == 1" ng-change="directCartPosting()"/>
+                        <label  for="enable2">
+                            <xe-translate text-value="Enabled">
+                            </xe-translate>
+                        </label>
+                        <input type="radio" value="0" id="disable2" ng-model="addToCartSetting.is_direct_cart" ng-checked="addToCartSetting.is_direct_cart == 0" ng-change="addToCartSetting.is_direct_cart = 0"/>
+                        <label for="disable2">
+                            <xe-translate text-value="Disabled">
+                            </xe-translate>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<div class="panel-footer wizard-ftr bg-white">
+    <button class="btn btn-sm btn-info pull-left m-r-10" ng-click="updateGeneralSetting()" ng-disabled="demoStatus">
+        <xe-translate text-value="Save">
+        </xe-translate>
+    </button>
+</div>

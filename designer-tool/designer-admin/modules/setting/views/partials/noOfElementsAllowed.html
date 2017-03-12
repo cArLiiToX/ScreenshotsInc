@@ -1,0 +1,35 @@
+<div class="panel-heading separator p-t-0">
+    <div class="panel-title">
+        <h4 class ="xe-panel-title">
+            <xe-translate text-value="Allowed On Stage">
+            </xe-translate>
+        </h4>
+    </div>
+</div>
+<div class="panel-body m-t-20">
+    <form class="form-horizontal" role="form" autocomplete="off">
+        <div class="form-group">
+            <div class="form-group no-border no-margin">
+                <div class="col-sm-10">
+                    <div class="row">
+                        <div class="col-md-4 m-b-10" ng-repeat="item in itemList">
+                            <div class="form-group form-group-default input-group nested-form-group w-full" pg-form-group>
+                                <label>
+                                    {{ item.name }}
+                                </label>
+                                <input type="text" placeholder="Set Item range" class="form-control" ng-model="itemValues[$index]" numbers-only="numbers-only" ng-keyup="itemValues[$index]=checkRange(itemValues[$index],$index)"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="panel-footer wizard-ftr bg-white">
+    <button class="btn btn-sm btn-info pull-left m-r-10" ng-click="updateElementLoadedOnStage()" ng-disabled="demoStatus">
+        <xe-translate text-value="Save">
+        </xe-translate>
+    </button>
+</div>

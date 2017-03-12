@@ -1,0 +1,299 @@
+<?php
+/** @var $block \Magento\Checkout\Block\Cart\Item\Renderer */
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$customerSession = $objectManager->get('Magento\Customer\Model\Session');
+$eavConfig = $objectManager->get('\Magento\Eav\Model\Config');
+$productManager = $objectManager->get('\Magento\Catalog\Model\Product');
+$baseUrl = $storeManager->getStore()->getBaseUrl();
+$_item = $block->getItem();
+$product = $_item->getProduct();
+$isVisibleProduct = $product->isVisibleInSiteVisibility();
+/** @var \Magento\Msrp\Helper\Data $helper */
+$helper = $this->helper('Magento\Msrp\Helper\Data');
+$canApplyMsrp = $helper->isShowBeforeOrderConfirm($product) && $helper->isMinimalPriceLessMsrp($product);
+$refid = 0;
+if($_item->getCustom_design()){
+    $refid = $_item->getCustom_design();
+}
+$productModel = $productManager->load($_item->getProductId());
+$attr = $eavConfig->getAttribute('catalog_product', 'xe_is_template');
+if(null === $attr->getId()) {
+    $preDecoratedProduct = 0;
+}else{
+    $preDecoratedProduct = boolval($productModel->getData("xe_is_template"));
+}
+?>
+<script type="text/javascript">
+require(['jquery'],function($){
+	jQuery("#shopping-cart-table tbody tr td dt").each(function(index) {
+		var labeltxt = jQuery(this).html();
+		jQuery(this).next('dd').addClass("variation-"+labeltxt);
+		if (labeltxt.toLowerCase().indexOf("XE_Size")) {
+			var replaced = jQuery(this).html().replace('XE_Size', 'Size');
+			jQuery(this).html(replaced);
+		}
+		if (labeltxt.toLowerCase().indexOf("XE_Color")) {
+			var replaced = jQuery(this).html().replace('XE_Color', 'Color');
+			jQuery(this).html(replaced);
+		}
+	});
+    ul = "<?php echo $baseUrl;?>";
+    // var url = '';
+    var url = ul+'designer-tool/designer-api/index.php';
+    var refids="";
+    var progressSvg = ul+'designer-tool/designer-app/assets/images/progress.svg';
+    require(['jquery', 'jquery/ui'], function($){
+        jQuery(".loading").html('<img src="'+progressSvg+'" alt="Loading" style="text-align: center; vertical-align: middle;" /> ');
+        <?php
+            $refid = 0;
+            if($_item->getCustom_design()){
+                $refid = $_item->getCustom_design();
+            }
+            if($refid){
+        ?>
+            var getPreviewUrl = url+'?reqmethod=getCustomPreviewImages&refids='+"<?php echo $refid; ?>";
+            jQuery.get(getPreviewUrl, function(data, status){
+                if(status == 'success'){
+                    if(data != ''){
+                        var jsonObj = data;
+						 var size = new Array();		
+						var elem1 = jQuery("#shopping-cart-table tbody tr td dd.variation-Size");
+						var i = 0;
+						elem1.each(function(ind) {							
+							size[i] = jQuery(this).text();
+							i++;						
+						});
+                        jQuery("a.product-item-photo").each(function(index) {
+                            jQuery("a.product-item-photo").css('width', '100%');
+                            jQuery(".action").css('display', 'inline');
+                            var sid = jQuery(this).find("input").attr('rel');
+                            var obj = jQuery(this);
+                            if(sid!=undefined){
+                                jQuery.each(jsonObj,function(key, val){
+                                    if(key==sid && val.length>0){
+                                        var count=0;
+                                        var print_id= val[0].printid;
+										var sizeId = size[index];
+                                        jQuery(obj).find('.printid').val(print_id)
+                                        if (val[0].nameAndNumber == 1) {
+                                            jQuery("a.edit" + sid).css('display', 'none');
+                                        }else{
+											jQuery("a.info" + sid).css('display', 'none');
+										}
+										jQuery(obj).find('.sizeid').val(sizeId)
+                                        jQuery.each(val,function(imgKey, imgObj){
+                                            count++;
+                                            if(count==1){
+                                                jQuery(obj).find("img").remove();
+                                            }
+                                            var newElement = '<a href="javascript:void(0)" title="" class="product-image product-thumb customize-image" style="float:left;width:80px"><img src="'+imgObj['customImageUrl']+'" width="75" height="75" alt="" rel="'+"<?php echo $refid; ?>"+'" style="display:block;" class="previewimg"></a>';
+                                            jQuery(obj).append(newElement);
+                                        });
+                                    }
+                                });
+                            }
+                            jQuery("a.product-item-photo").parent().find('.loading').hide();
+                            jQuery("a.product-item-photo").show();
+                      });
+                    }
+                }
+            });
+        <?php }?>
+		});
+	});
+    function myFunction(refid, id) {
+        var print_id = document.getElementById(refid).value;
+	var sizeId = document.getElementById("sizeid"+id).value;
+        var refid =  refid;
+        var url = '';
+        var ischecklogin = "<?php echo $customerSession->getId()?> ";
+        customer = ischecklogin.trim();
+        if(ischecklogin>0)  customer = '&customer='+customer;
+        else customer = '&customer=0';
+        var storeId = 1;
+        var store = '&store='+storeId;
+		var sizeValue = '&attr='+sizeId;
+        var screenWidth = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+        if(screenWidth < 1024){
+            url = ul+"designer-tool/designer-app/index.html?sid="+refid+"&pt="+print_id+customer+store+sizeValue;
+        }else{
+            url = ul+"product-designer?sid="+refid+"&pt="+print_id+customer+store+sizeValue;
+        }   
+        window.location = url;
+    }
+	function nameAndNumberInfo(refid, id){
+		var ul = "<?php echo $baseUrl;?>";
+		var url = ul+'designer-tool/designer-api/index.php';
+		jQuery.get(url + "?reqmethod=getNameAndNumberByRefId&refId=" + refid+"&pid="+id, function(data) { 
+		   if(data.nameNumberData !=''){
+				var div = "<div id='name-number' style='display:none;'><table ><thead><tr><th style='border: 2px solid #f6f6f6;'></th><th colspan='2' style='text-align: center;border: 2px solid #f6f6f6;'>Front</th><th colspan='2' style='text-align: center;border: 2px solid #f6f6f6;'>Back</th></tr> <tr><th style='border: 2px solid #f6f6f6;'>Size</th><th style='border: 2px solid #f6f6f6;'>Name</th><th style='border: 2px solid #f6f6f6;'>Number</th> <th style='border: 2px solid #f6f6f6;'>Name</th><th style='border: 2px solid #f6f6f6;'>Number</th></tr></thead><tbody>";
+				jQuery.each(data.nameNumberData, function(i, result) {
+					div += "<tr><td style='border: 2px solid #f6f6f6;'>"+result.size+"</td><td style='border: 2px solid #f6f6f6;'>"+result.front.name+"</td><td style='border: 2px solid #f6f6f6;'>"+result.front.number+"</td><td style='border: 2px solid #f6f6f6;'>"+result.back.name+"</td><td style='border: 2px solid #f6f6f6;'>"+result.back.number+"</td></tr>";
+				});
+				div += "</tbody></table></div>";
+				var divData = jQuery('#name-number');
+				if(divData.length) divData.remove();
+				jQuery('body').append(div);
+				addDiv();
+			}
+		});
+	}
+	function addDiv(){
+		require(
+        [
+            'jquery',
+            'Magento_Ui/js/modal/modal'
+        ],
+        function(
+            $,
+            modal
+        ) {
+            var options = {
+                type: 'popup',
+                responsive: true,
+                innerScroll: true,
+                title: 'Name And Number Details',
+                buttons: [{
+                    text: $.mage.__('Continue'),
+                    class: '',
+                    click: function () {
+                        this.closeModal();
+                    }
+                }]
+            };
+            var popup = modal(options, $('#name-number'));
+            $('#name-number').modal('openModal');   
+        }
+        );
+	}	
+</script>
+<tbody class="cart item">
+    <tr class="item-info">
+        <td data-th="<?php echo $block->escapeHtml(__('Item')); ?>" class="col item">
+            <?php if ($block->hasProductUrl()):?>
+                <a href="<?php /* @escapeNotVerified */ echo $block->getProductUrl() ?>"
+                   title="<?php echo $block->escapeHtml($block->getProductName()) ?>"
+                   tabindex="-1"
+                   class="product-item-photo">
+            <?php else:?>
+                <span class="product-item-photo">
+            <?php endif;?>
+            <input type="hidden"  class="printid" id="<?php echo $refid ; ?>" rel="<?php echo $refid ?>" value="" />
+	    <input type="hidden"  class="sizeid" id="<?php echo "sizeid".$this->getItem()->getId(); ?>" value="" />
+            <?php echo $block->getImage($block->getProductForThumbnail(), 'cart_page_product_thumbnail')->toHtml(); ?>
+            <?php if ($block->hasProductUrl()):?>
+                </a>
+            <?php else: ?>
+                </span>
+            <?php endif; ?>
+            <div class="product-item-details" style="display: table-caption;">
+                <strong class="product-item-name">
+                    <?php if ($block->hasProductUrl()):?>
+                        <a href="<?php /* @escapeNotVerified */ echo $block->getProductUrl() ?>"><?php echo $block->escapeHtml($block->getProductName()) ?></a>
+                    <?php else: ?>
+                        <?php echo $block->escapeHtml($block->getProductName()) ?>
+                    <?php endif; ?>
+                </strong>
+                <?php if ($_options = $block->getOptionList()):?>
+                    <dl class="item-options">
+                        <?php foreach ($_options as $_option) : ?>
+                        <?php $_formatedOptionValue = $block->getFormatedOptionValue($_option) ?>
+                        <?php if($_option['label'] != 'line_item_separate'): ?>
+                        <dt><?php echo $block->escapeHtml($_option['label']) ?></dt>
+                        <dd<?php if (isset($_formatedOptionValue['full_view'])): ?> class="truncated"<?php endif; ?>><?php echo $_formatedOptionValue['value'] ?>
+                            <?php if (isset($_formatedOptionValue['full_view'])): ?>
+                        <div class="truncated_full_value">
+                            <dl class="item-options">
+                                <dt><?php echo $block->escapeHtml($_option['label']) ?></dt>
+                                <dd><?php echo $_formatedOptionValue['full_view'] ?></dd>
+                            </dl>
+                        </div>
+                            <?php endif; ?>
+                        </dd>
+                         <?php endif; ?>
+                        <?php endforeach; ?>
+                    </dl>
+                <?php endif;?>
+                <?php if ($messages = $block->getMessages()): ?>
+                    <?php foreach ($messages as $message): ?>
+                        <div class="cart item message <?php /* @escapeNotVerified */ echo $message['type'] ?>"><div><?php echo $block->escapeHtml($message['text']) ?></div></div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                <?php $addInfoBlock = $block->getProductAdditionalInformationBlock(); ?>
+                <?php if ($addInfoBlock): ?>
+                    <?php echo $addInfoBlock->setItem($_item)->toHtml() ?>
+                <?php endif;?>
+            </div>
+        </td>
+        <?php if ($canApplyMsrp): ?>
+            <td class="col msrp" data-th="<?php echo $block->escapeHtml(__('Price')); ?>">
+                <span class="pricing msrp">
+                    <span class="msrp notice"><?php /* @escapeNotVerified */ echo __('See price before order confirmation.'); ?></span>
+                    <?php $helpLinkId = 'cart-msrp-help-' . $_item->getId(); ?>
+                    <a href="#" class="action help map" id="<?php /* @escapeNotVerified */ echo($helpLinkId); ?>" data-mage-init='{"addToCart":{"helpLinkId": "#<?php /* @escapeNotVerified */ echo $helpLinkId;?>","productName": "<?php /* @escapeNotVerified */ echo $product->getName(); ?>","showAddToCart": false}}'>
+                        <span><?php /* @escapeNotVerified */ echo __("What's this?"); ?></span>
+                    </a>
+                </span>
+            </td>
+        <?php else: ?>
+            <td class="col price" data-th="<?php echo $block->escapeHtml(__('Price')); ?>">
+                <?php echo $block->getUnitPriceHtml($_item); ?>
+            </td>
+        <?php endif; ?>
+        <td class="col qty" data-th="<?php echo $block->escapeHtml(__('Qty')); ?>">
+            <div class="field qty">
+                <label class="label" for="cart-<?php /* @escapeNotVerified */ echo $_item->getId() ?>-qty">
+                    <span><?php /* @escapeNotVerified */ echo __('Qty') ?></span>
+                </label>
+				<span class="control qty" style="font-weight:bold"><?php echo $block->getQty() ?></span>
+            </div>
+        </td>
+        <td width="13%" class="col qty" data-th="<?php echo $block->escapeHtml(__('Subtotal'));?>">
+            <?php if ($canApplyMsrp): ?>
+                <span class="">--</span>
+            <?php else: ?>
+                <?php /* echo $block->getRowTotalHtml($_item); */
+				   $price_str = $block->getUnitPriceHtml($_item);
+				   $cleanStr = preg_replace('/([^0-9\.,])/i', '', $price_str);
+				   $getNumber = preg_replace('/([^0-9])/i', '', $price_str);
+				   $eraseCount = strlen($cleanStr) - strlen($getNumber) - 1;
+				   $sanitisePrice = preg_replace('/([,\.])/', '', $cleanStr, $eraseCount);
+				   $price = preg_replace('/(\.|,)(?=[0-9]{3,}$)/', '',  $sanitisePrice);
+                   $currency = str_replace($price,"",$price_str);
+				   $qty = $block->getQty();
+				   $subTotal = number_format($price*$qty,2);
+				?>
+				<span class="control price" style="font-weight:bold"><?php echo $currency.$subTotal;?></span> 
+            <?php endif; ?>
+        </td>
+    </tr>
+    <tr class="item-actions"> 
+        <td colspan="100">
+            <div class="actions-toolbar">
+                <?php if($refid && !$preDecoratedProduct){?>
+                    <a href="javascript:void(0)" class="edit<?php echo $refid; ?>" onclick="myFunction(<?php echo $refid; echo ','; echo $this->getItem()->getId(); ?>)" title="Edit item parameters">Redesign</a>
+					<a id="showinfo" href="javascript:void(0)" class="info<?php echo $refid; ?>" onclick="nameAndNumberInfo(<?php echo $refid; echo ','; $simpleProduct=$productManager->loadByAttribute('sku', $_item->getSku());echo $simpleProduct->getId(); ?>)" title="item info">Info</a>
+                <?php } ?>
+                
+				<?php /* @escapeNotVerified */ echo $block->getActions($_item) ?>
+            </div>
+        </td>
+    </tr>
+	<tr class="item-actions"> 
+        <td colspan="100">
+            <div class="actions-toolbar">
+				<a onclick="nameAndNumberInfo(<?php echo $refid; echo ','; $simpleProduct=$productManager->loadByAttribute('sku', $_item->getSku());echo $simpleProduct->getId(); ?>)"></a>
+            </div>
+        </td>
+    </tr>
+</tbody>
+
+<style>
+.price-including-tax, .price-excluding-tax {
+    display: inline-block!important;
+}
+.cart.table-wrapper .col > .price {
+	color: #656161;
+}
+</style>

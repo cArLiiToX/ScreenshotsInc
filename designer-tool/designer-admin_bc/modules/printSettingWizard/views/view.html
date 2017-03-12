@@ -1,0 +1,144 @@
+<div class="container-fluid" ng-init="init()" ng-controller="PrintWizardController">
+    <div class="row">
+        <div class="col-md-12">
+            <div ng-show="printMethodListView" class="panel panel-default">
+                <div class="panel-heading separator">
+                    <div class="panel-title">
+                        <xe-translate text-value="Print Type">
+                        </xe-translate>
+                    </div>
+                </div>
+                <div class="panel-body m-t-20">
+                    <div class="row">
+                        <div class="col-lg-12 bg-white" ng-show="showPreloader">
+                            <div class="full-height">
+                                <div class="panel-body text-center">
+                                    <img class="image-responsive-height demo-mw-50" src="assets/img/demo/progress.svg" alt="Progress"/>
+                                    <span style="position: absolute;top:75%;right: 0;left: 0;">
+                                        <xe-translate text-value="Loading">
+                                        </xe-translate>
+                                        ...
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-5" ng-show="!showPreloader">
+                            <h3>
+                                <xe-translate text-value="What is a Print Profile">
+                                </xe-translate>
+                                :
+                            </h3>
+                            <p>
+                                <xe-translate text-value="Print Profile Description">
+                                </xe-translate>
+                                <!--
+                                    <a href="http://inkxe.com/support/kb/faq.php?id=22" target="blank">
+                                        Click here
+                                    </a>
+                                    to know more.
+                                -->
+                            </p>
+                        </div>
+                        <div class="col-sm-7 b-l-light" ng-show="!showPreloader">
+                            <div class="clearfix" id="print_method_list" ng-show="!showPreloader">
+                                <div id="list_view_{{ $index }}" class="pull-left print-wizard" ng-repeat="print in printMethods track by $index">
+                                    <div class="checkbox check-info">
+                                        <input type="checkbox" id="printSetting_{{ print.id }}" ng-model="print.status" ng-change="printMethodChanged(print,print.status,$index)"  ng-checked="print.is_enable == '1'" ng-disabled="print.is_default==1"/>
+                                        <label for="printSetting_{{ print.id }}" class="m-t-5 wizard-text-ellipsis" ng-class="{'disabled':print.is_default==1}">
+                                            {{ print.name }}
+                                        </label>
+                                        <div class="pull-right ">
+                                            <a ng-href="#" name="whatever" ng-click="editSelectedPrintProfile(print,$index)" class="inline-icons">
+                                                <i class="fa fa-pencil text-info">
+                                                </i>
+                                            </a>
+                                            <a href="" ng-click="deletePrintMethod(print.id)"  class="inline-icons">
+                                                <i class="fa fa-times text-danger" ng-hide="print.is_default==1">
+                                                </i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix m-t-10" ng-show="!showPreloader">
+                                <button type="button" class="btn btn-success btn-sm pull-left m-r-10" ng-click="addPrintProfile('addPrintProfileView')" ng-disabled="demoStatus">
+                                    <span>
+                                        <xe-translate text-value="Add">
+                                        </xe-translate>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer padding-10 b-t-none clearfix" ng-show="!showPreloader">
+                        <button type="button" class="btn btn-success btn-sm pull-left m-r-10" ng-click="updatePrintMethods()" ng-show="showSaveBtn" ng-disabled="demoStatus">
+                            <span>
+                                <xe-translate text-value="Save">
+                                </xe-translate>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="printWizard" class="panel panel-transparent">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs nav-tabs-linetriangle nav-tabs-left w-225">
+                    <li>
+                        <a ng-click="backToPrintList()">
+                            <span class="font-bold font-medium">
+                                <xe-translate text-value="Print Profiles">
+                                </xe-translate>
+                            </span>
+                        </a>
+                    </li>
+                    <li ng-repeat="tab in printTabList" ng-class="getCurrentStep($index)">
+                        <a ng-click="goToStep($index)">
+                            <span>
+                                <xe-translate text-value="{{ tab.name }}">
+                                </xe-translate>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content bg-white">
+                    <div class="tab-pane active" id="home">
+                        <div class="row column-seperation">
+                            <div class="col-md-12">
+                                <div class="row" ng-show="wizardLoader">
+                                    <div class="col-lg-12 bg-white">
+                                        <div class="print-loader-height">
+                                            <div class="panel-body text-center">
+                                                <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/demo/progress.svg" alt="Progress"/>
+                                                <span style="position: absolute;top:50%;right: 0;left: 55px;">
+                                                    <xe-translate text-value="Loading print profiles setting">
+                                                    </xe-translate>
+                                                    ...
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div ng-hide="wizardLoader" class="panel-body m-h-500" style="display: block;">
+                                    <ng-include src="'modules/printSettingWizard/views/partials/'+nextPage+'.html'">
+                                    </ng-include>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ng-include src="'modules/printSettingWizard/views/partials/palleteListModal.html'">
+        </ng-include>
+        <ng-include src="'modules/printSettingWizard/views/partials/warningModal.html'">
+        </ng-include>
+        <ng-include src="'modules/printSettingWizard/views/partials/okWarningModal.html'">
+        </ng-include>
+        <ng-include src="'modules/printSettingWizard/views/partials/maskPriceTable.html'">
+        </ng-include>
+        <ng-include src="'modules/printSettingWizard/views/partials/setMaxSelectColor.html'">
+        </ng-include>
+    </div>

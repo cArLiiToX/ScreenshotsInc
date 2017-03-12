@@ -1,13 +1,22 @@
-/*******************************************************************************
-* Static Blocks
-*******************************************************************************/
+.cms-home,
+.cms-index-index {
+  h1, h2, h3 {
+    margin: 20px 0;
+  }
+
+  .block,
+  .widget {
+    margin-bottom: 0;
+  }
+}
+
 .home-additional-products {
   background: #eee;
   padding: 20px;
   width: 100%;
-  position: relative;
-  left: -20px;
-  right: 0;
+  box-sizing: border-box;
+  margin-bottom: 40px;
+
 
   h3 {
     background-color: #888;
@@ -29,6 +38,22 @@
       height: auto;
       margin: 0 auto 20px auto;
       border-radius: 50%;
+    }
+  }
+}
+
+.ss-brands {
+  margin: 40px 0;
+
+  .ss-block {
+    width: 20%;
+    float: left;
+    box-sizing: border-box;
+    padding: 10px;
+    text-align: center;
+
+    img {
+      max-width: 120px;
     }
   }
 }
