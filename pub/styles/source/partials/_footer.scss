@@ -2,6 +2,7 @@
   background: url('/pub/images/screenshots-printing.jpg');
   color: #cccccc;
   padding: 20px;
+  border-top: 2px solid #ef2b2d;
 }
 
 .footer.content {
@@ -44,12 +45,13 @@
 }
 
 .ss-subfooter {
-  background: #eee;
-  padding: 0 20px;
+  background: #dd2729;
+  padding: 6px 20px;
   width: 100%;
   position: relative;
   left: -20px;
   right: 0;
+  border-radius: 3px 3px 0 0;
 
   ul {
     width: 100%;
@@ -75,9 +77,15 @@
         padding: 0 6px;
         float: left;
         width: 85%;
+        color: #fff;
+        font-weight: 900;
 
         span {
           display: block;
+          margin-top: 3px;
+          border-top: 1px solid #cd2628;
+          padding: 3px;
+          font-weight: 500;
         }
       }
     }
