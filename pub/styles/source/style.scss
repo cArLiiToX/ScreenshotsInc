@@ -3,27 +3,26 @@
 @import 'app';
 
 /* General UI */
-@import 'layout';
-@import 'typo';
 @import 'buttons';
 @import 'forms';
-
-/* Components */
-@import 'components/slider';
-@import 'components/designer';
+@import 'typo';
+@import 'layout';
 
 /* Partials */
 @import 'partials/header';
 @import 'partials/navigation';
-@import 'partials/banner';
 @import 'partials/footer';
+
+/* Components */
+@import 'components/designer';
+@import 'components/slider';
 
 /* Pages */
 @import 'pages/home';
 @import 'pages/about';
 @import 'pages/services';
 @import 'pages/portfolio';
-@import 'pages/customdesignservice';
 @import 'pages/contact';
-@import 'pages/vendor-catalogs';
 @import 'pages/product';
+@import 'pages/vendor-catalogs';
+@import 'pages/customdesignservice';
