@@ -1,0 +1,57 @@
+<?php
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+/**
+ * Top menu for store
+ *
+ * @var $block \Magento\Theme\Block\Html\Topmenu
+ */
+?>
+<?php $columnsLimit = $block->getColumnsLimit() ?: 0; ?>
+<?php $_menu = $block->getHtml('level-top', 'submenu', $columnsLimit) ?>
+
+<nav class="navigation" data-action="navigation">
+  <ul data-mage-init='{"menu":{"responsive":true, "expanded":true, "position":{"my":"left top","at":"left bottom"}}}'>
+    <?php /* @escapeNotVerified */ echo $_menu; ?>
+    <?php /* @escapeNotVerified */ echo $block->getChildHtml(); ?>
+    <li class="level0 level-top ui-menu-item">
+      <a class="level-top ui-corner-all" href="/vendor-catalogs">Vendor Catalogs</a>
+    </li>
+    <li class="level0 level-top ui-menu-item">
+      <a class="level-top ui-corner-all" href="http://www.codestr.com" target="_blank">Web Design</a>
+    </li>
+    <li class="level0 level-top parent ui-menu-item">
+      <a class="level-top ui-corner-all" href="/about">About Us</a>
+      <ul class="level0 submenu ui-menu ui-widget ui-widget-content ui-corner-all">
+        <li class="level1 first ui-menu-item">
+          <a class="ui-corner-all" href="/about">About ScreenShots</a>
+        </li>
+        <li class="level1 first ui-menu-item">
+          <a class="ui-corner-all" href="/services">Services</a>
+        </li>
+        <li class="level1 first ui-menu-item">
+          <a class="ui-corner-all" href="/portfolio">Portfolio</a>
+        </li>
+        <li class="level1 first ui-menu-item">
+          <a class="ui-corner-all" href="/custom-design-service">Custom Design Service</a>
+        </li>
+        <li class="level1 first ui-menu-item">
+          <a class="ui-corner-all" href="/wholesaler-info-requests">Wholesaler Info & Requests</a>
+        </li>
+        <li class="level1 first ui-menu-item">
+          <a class="ui-corner-all" href="http://screenshotsinc.yourartpages.com/en-US/Home/CategoryDetails" target="_blank">Clip Art for Download</a>
+        </li>
+      </ul>
+    </li>
+    <li class="level0 level-top ui-menu-item">
+      <a class="level-top ui-corner-all" href="/contact">Contact Us</a>
+    </li>
+  </ul>
+</nav>

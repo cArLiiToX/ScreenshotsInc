@@ -1,0 +1,38 @@
+<?php
+namespace Aheadworks\Rbslider\Test\Unit\Model\Source;
+
+use Aheadworks\Rbslider\Model\Source\AnimationEffect;
+use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+
+/**
+ * Test for \Aheadworks\Rbslider\Model\Source\AnimationEffect
+ */
+class AnimationEffectTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * @var AnimationEffect|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $model;
+
+    /**
+     * Init mocks for tests
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        $objectManager = new ObjectManager($this);
+        $this->model = $objectManager->getObject(
+            AnimationEffect::class,
+            []
+        );
+    }
+
+    /**
+     * Testing of toOptionArray method
+     */
+    public function testToOptionArray()
+    {
+        $this->assertTrue(is_array($this->model->toOptionArray()));
+    }
+}
