@@ -1,0 +1,62 @@
+.cms-custom-design-service {
+  .service-type {
+    border-bottom: 1px solid #ddd;
+    h2, h3 {
+      color: #aaa;
+      border-bottom: 1px solid #f23f3f;
+      font-size: 22px;
+      display: inline-block;
+      margin: 0;
+      padding: 3px 0;
+      text-shadow: none;
+    }
+  }
+
+  .service-block {
+    display: block;
+    margin-bottom: 20px;
+    padding: 12px;
+    background: #f8f8f8;
+    box-shadow: 0px 0px 2px #aaa;
+    box-sizing: border-box;
+
+    p {
+      display: inline-block;
+      margin: 10px 0;
+      width: calc(100% - 210px);
+    }
+
+    .serivce-banner {
+      display: inline-block;
+      width: 100px;
+      height: auto;
+    }
+    .service-banner-logo,
+    .service-banner-branding {
+      margin-top: 10px;
+      float: right;
+    }
+    .service-banner-graphics {
+      margin-top: 10px;
+      float: left;
+    }
+  }
+
+  .pricing-details {
+    margin: 40px auto 10px auto;
+    width: auto;
+    max-width: 500px;
+    text-align: center;
+    font-size: 10pt;
+    text-transform: uppercase;
+    color: #aaa;
+    padding: 16px;
+    border: 2px solid #aaa;
+    border-radius: 3px;
+    box-sizing: border-box;
+  }
+}
+
+@media screen and (max-width: $screen-md) {
+
+}

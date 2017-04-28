@@ -10,7 +10,7 @@ body {
 }
 
 /** Tablets */
-@media screen and (max-width: $breakpoint-med) {}
+@media screen and (max-width: $screen-md) {}
 
 /** Mobile */
-@media screen and (max-width: breakboint-sm) {}
+@media screen and (max-width: $screen-sm) {}

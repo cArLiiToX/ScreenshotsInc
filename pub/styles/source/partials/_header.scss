@@ -1,7 +1,11 @@
 .page-header {
   .panel.wrapper {
-    background: #f8f8f8;
+    background: #efefef;
     color: #959595;
+
+    .greet.welcome {
+      float: left;
+    }
   }
 
   a {

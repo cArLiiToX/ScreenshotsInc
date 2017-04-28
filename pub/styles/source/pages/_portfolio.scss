@@ -1,0 +1,99 @@
+
+.ss-folio-tabs {
+  margin: 20px 0 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    width: 25%;
+    padding: 6px 0;
+    background: #eee;
+    display: inline-block;
+    float: left;
+    text-align: center;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    box-sizing: border-box;
+    &:first-of-type {
+      border-radius: 3px 0 0 3px;
+    }
+    &:last-of-type {
+      border-radius: 0 3px 3px 0;
+    }
+  }
+
+  .active {
+    background: #ef2b2d;
+    color: #fff;
+    transition: all .2s ease-in-out;
+  }
+}
+
+.ss-folio {
+  display: block;
+  margin: 0;
+  padding: 0;
+
+  li {
+    width: 20%;
+    float: left;
+    display: inline-block;
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+    box-sizing: border-box;
+
+    img {
+      width: 100%;
+      height: auto;
+      cursor: pointer;
+      box-sizing: border-box;
+      &:hover {
+        border: 1px solid #024930;
+      }
+    }
+  }
+}
+
+#ss-folio-apparel {
+  display: block;
+}
+
+#ss-folio-signs,
+#ss-folio-vinyl,
+#ss-folio-other {
+  display: none;
+}
+
+.ss-folio-modal {
+  display: none;
+  position: absolute;
+  top: 0;
+  box-sizing: border-box;
+  width: 80%;
+  left: 50%;
+  margin-left: -250px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 3px;
+  max-width: 500px;
+  box-shadow: 0 0 2px 2px #ccc;
+
+  i {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: red;
+    cursor: pointer;
+  }
+
+  img {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+  }
+}

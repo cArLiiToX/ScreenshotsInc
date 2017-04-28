@@ -1,21 +1,26 @@
-.service-block {
-  display: inline-block;
-  width: 33.3%;
-  box-sizing: border-box;
-  padding: 12px;
-  float: left;
-  &.large {
-    width: 100%;
-  }
+.cms-services {
+  .service-block {
+    display: inline-block;
+    width: 33.3%;
+    box-sizing: border-box;
+    padding: 12px;
+    float: left;
+    &.large {
+      width: 100%;
+    }
 
-  .service-type {
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 12px;
-    h2 {
-      border-bottom: 1px solid #f23f3f;
-      display: inline-block;
-      margin: 0;
-      padding: 0;
+    .service-type {
+      border-bottom: 1px solid #999;
+      margin-bottom: 12px;
+      h2 {
+        color: #f23f3f;
+        border-bottom: 1px solid #f23f3f;
+        font-size: 22px;
+        display: inline-block;
+        margin: 0;
+        padding: 3px 0;
+        text-shadow: none;
+      }
     }
   }
 }

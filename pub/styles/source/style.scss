@@ -1,5 +1,5 @@
 @import 'vars';
-@import 'functions';
+@import 'utilities';
 @import 'app';
 
 /* General UI */
@@ -22,8 +22,8 @@
 @import 'pages/home';
 @import 'pages/about';
 @import 'pages/services';
+@import 'pages/portfolio';
+@import 'pages/customdesignservice';
 @import 'pages/contact';
 @import 'pages/vendor-catalogs';
 @import 'pages/product';
-
-@import 'utilities';
