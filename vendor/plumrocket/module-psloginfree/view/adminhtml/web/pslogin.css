@@ -30,24 +30,24 @@
 	padding-top: 0;
 }
 
-#sortable-visible { 
+#sortable-visible {
 	background-color: #FFFFFF;
 }
 
-#sortable-hidden { 
+#sortable-hidden {
 	background: #EAEAEA;
 	margin-left: 2%;
 }
 
 .soc-networks {
 	list-style-type: none;
-	margin: 0; 
-	padding: 0; 
-	float: left; 
+	margin: 0;
+	padding: 0;
+	float: left;
 	padding: 0px;
-	width: 49%; 
-	box-sizing: border-box;	
-	height: 110px;			
+	width: 49%;
+	box-sizing: border-box;
+	height: 110px;
 	overflow-x: hidden;
 	overflow-y: auto;
 	border: 1px solid #aaa;
@@ -102,7 +102,7 @@
 	height: 16px;
 }
 
-#sortable-visible li, #sortable-hidden li { 
+#sortable-visible li, #sortable-hidden li {
 	margin: 0px;
 	padding: 5px;
 	font-size: 13px;
@@ -265,8 +265,8 @@
 .psloginfree-form ul li.reddit .soc-li-icon { background-color: #337fb9; }
 .psloginfree-form ul li.reddit .soc-li-icon { background-position: -102px -102px; }
 
-.psloginfree-form ul li.odesk .soc-li-icon { background-color: #7ac043; }
-.psloginfree-form ul li.odesk .soc-li-icon { background-position: -1px -119px; }
+.psloginfree-form ul li.odesk .soc-li-icon { background-color: #6fda44; }
+.psloginfree-form ul li.odesk .soc-li-icon { background-position: -84px -136px; }
 
 .psloginfree-form ul li.teamviewer .soc-li-icon { background-color: #0171b9; }
 .psloginfree-form ul li.teamviewer .soc-li-icon { background-position: -17px -119px; }
@@ -283,7 +283,7 @@
 
 .psloginfree-form ul li.imgur .soc-li-icon { background-color: #312e2f; }
 .psloginfree-form ul li.imgur .soc-li-icon { background-position: -84px -119px; }
- 
+
 .psloginfree-form ul li.intuit .soc-li-icon { background-color: #B8B8B8; }
 .psloginfree-form ul li.intuit .soc-li-icon { background-position: -102px -119px; }
 
@@ -298,9 +298,18 @@
 
 .psloginfree-form ul li.goodreads .soc-li-icon { background-color: #743900; }
 .psloginfree-form ul li.goodreads .soc-li-icon { background-position: -51px -136px; }
- 
+
 .psloginfree-form ul li.lastfm .soc-li-icon { background-color: #c02c0c; }
 .psloginfree-form ul li.lastfm .soc-li-icon { background-position: -68px -136px; }
+
+.psloginfree-form ul li.alipay .soc-li-icon { background-color: #00a0e9; }
+.psloginfree-form ul li.alipay .soc-li-icon { background-position: -101px -136px; }
+
+.psloginfree-form ul li.wechat .soc-li-icon { background-color: #4ec034; }
+.psloginfree-form ul li.wechat .soc-li-icon { background-position: -1px -153px; }
+
+.psloginfree-form ul li.naver .soc-li-icon { background-color: #4ec034; }
+.psloginfree-form ul li.naver .soc-li-icon { background-position: -17px -153px;
 
 .entry-edit-head.psloginfree-notinstalled-section {
 	/*background: #BDBDBD;*/

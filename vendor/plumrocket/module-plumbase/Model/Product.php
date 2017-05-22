@@ -232,8 +232,7 @@ class Product extends \Magento\Framework\Model\AbstractModel
         }
         catch (\Exception $e) {
             if ($this->_test) {
-                echo $e->getMessage();
-                exit();
+                throw new \Exception($e->getMessage(), 1);
             }
         }
         $this->setSession($session);
@@ -300,8 +299,7 @@ class Product extends \Magento\Framework\Model\AbstractModel
         }
         catch (\Exception $e) {
             if ($this->_test) {
-                echo $e->getMessage();
-                exit();
+                throw new \Exception($e->getMessage(), 1);
             }
             $status = $this->getSimpleStatus();
         }
@@ -337,7 +335,7 @@ class Product extends \Magento\Framework\Model\AbstractModel
     public function getSimpleStatus()
     {
         $session = $this->getSession();
-        return (strlen($session) == 32 && $session{9} == $this->_name{2} && $session{20} == $this->_name{3}) ? 500 : 201;
+        return (strlen($session) == 32 && $session{9} == $this->_name{2} && (strlen($this->_name) < 4 || $session{20} == $this->_name{3})) ? 500 : 201;
     }
 
 
@@ -441,8 +439,7 @@ class Product extends \Magento\Framework\Model\AbstractModel
             }
             catch (\Exception $e) {
                 if ($this->_test) {
-                    echo $e->getMessage();
-                    exit();
+                    throw new \Exception($e->getMessage(), 1);
                 }
                 $statuses = [];
                 foreach ($products as $name => $product) {

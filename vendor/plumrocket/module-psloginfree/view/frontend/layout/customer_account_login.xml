@@ -24,8 +24,5 @@
             </action>
             <block class="Plumrocket\SocialLoginFree\Block\Buttons" name="pslogin.customer.form.login.buttons" as="pslogin_buttons" template="Plumrocket_SocialLoginFree::customer/form/login/buttons.phtml" />
         </referenceBlock>
-        <referenceContainer name="before.body.end">
-        	<block class="Magento\Framework\View\Element\Template" template="Plumrocket_SocialLoginFree::footer.phtml" />
-        </referenceContainer>
     </body>
 </page>

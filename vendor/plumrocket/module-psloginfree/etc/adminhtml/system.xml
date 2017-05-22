@@ -571,6 +571,13 @@
                 </field>
             </group>
 
+            <group id="naver" translate="label" type="text" sortOrder="700" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>NAVER</label>
+                <field id="version" translate="label comment" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <frontend_model>Plumrocket\SocialLoginFree\Block\Adminhtml\System\Config\Form\Notinstalled</frontend_model>
+                </field>
+            </group>
+
         </section>
     </system>
 </config>

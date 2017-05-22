@@ -10,7 +10,7 @@
     "require": {
         "magento/product-community-edition": "2.1.2",
         "composer/composer": "@alpha",
-        "plumrocket/module-psloginfree": "2.1.0",
+        "plumrocket/module-psloginfree": "2.1.1",
         "aheadworks/module-rbslider": "1.1.1"
     },
     "require-dev": {

@@ -66,11 +66,7 @@ class Base extends \Magento\Framework\App\Helper\AbstractHelper
                 "<td>{$_stack["function"]}</td></tr>";
         }
         $output .=  "</table></div><hr /></p>";
-        if ($echo) {
-            echo $output;
-        } else {
-            return $output;
-        }
+        return $output;
     }
 
     public function moduleExists($moduleName)

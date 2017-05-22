@@ -33,8 +33,7 @@ define(
 
         var self = null;
 
-        var showPopup  = $.cookieStorage.get('pslogin_show_popup');
-        /*showPopup = 1;*/
+        var showPopup  = ($.cookieStorage.get('pslogin_show_popup')) ? $.cookieStorage.get('pslogin_show_popup') : 0;
         if (showPopup) {
             $.cookieStorage.set('pslogin_show_popup', 0);
             $('html').css('overflow', 'hidden');

@@ -122,7 +122,7 @@ return array(
     '1158fd4355efa1508f87cf82bdcd70ac' => $vendorDir . '/magento/module-admin-notification/registration.php',
     'ecb8e9b41f51c277a87468608b694cd4' => $vendorDir . '/magento/module-marketplace/registration.php',
     '95435becb051bfba5f78913ac1bf122f' => $vendorDir . '/plumrocket/module-plumbase/registration.php',
-    '7ef27f112ee0701d0e616c4b0b76c840' => $vendorDir . '/plumrocket/module-psloginfree/registration.php',
     '5dabdfafb2b9f8fbb44c546b5c0fb38b' => $vendorDir . '/aheadworks/module-rbslider/registration.php',
+    '7ef27f112ee0701d0e616c4b0b76c840' => $vendorDir . '/plumrocket/module-psloginfree/registration.php',
     'b4cf39431a4b949eea8aa69ebb3d39da' => $baseDir . '/app/etc/NonComposerComponentRegistration.php',
 );

@@ -17,7 +17,7 @@
 
 namespace Plumrocket\SocialLoginFree\Model\Config\Source;
 
-class ShareUrl implements \Magento\Framework\Option\ArrayInterface
+class Shareurl implements \Magento\Framework\Option\ArrayInterface
 {
 
     protected $_options = null;

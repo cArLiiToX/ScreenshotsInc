@@ -51,7 +51,7 @@ if(!$helper->moduleEnabled()) {
 </script>
 
 <form style="display:none;" class="form"
-              action="<?php /* @escapeNotVerified */ echo $block->getUrl('pslogin/account/loginPost') ?>"
+              action="<?php /* @escapeNotVerified */ echo $block->getUrl('pslogin/account/loginPost', ['_secure' => true]) ?>"
               method="post"
               id="pslogin-login-form"
               >

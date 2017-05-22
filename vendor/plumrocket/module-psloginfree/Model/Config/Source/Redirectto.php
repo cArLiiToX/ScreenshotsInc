@@ -17,7 +17,7 @@
 
 namespace Plumrocket\SocialLoginFree\Model\Config\Source;
 
-class RedirectTo implements \Magento\Framework\Option\ArrayInterface
+class Redirectto implements \Magento\Framework\Option\ArrayInterface
 {
 
     protected $_options = null;

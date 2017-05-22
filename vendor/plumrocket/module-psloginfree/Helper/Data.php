@@ -181,8 +181,8 @@ class Data extends Main
         $url = $storeManager->getStore($defaultStoreId)->getUrl('pslogin/account/login', ['type' => $provider, 'key' => null, '_nosid' => true]);
 
         $url = str_replace(
-            $this->_objectManager->get('Magento\Backend\Helper\Data')->getAreaFrontName() . '/',
-            '',
+            '/' . $this->_objectManager->get('Magento\Backend\Helper\Data')->getAreaFrontName() . '/',
+            '/',
             $url
         );
 

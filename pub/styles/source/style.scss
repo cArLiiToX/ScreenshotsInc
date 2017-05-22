@@ -1,12 +1,11 @@
 @import 'vars';
-@import 'utilities';
-@import 'app';
+@import 'functions';
 
 /* General UI */
+@import 'app';
 @import 'buttons';
 @import 'forms';
 @import 'typo';
-@import 'layout';
 
 /* Partials */
 @import 'partials/header';
@@ -25,4 +24,10 @@
 @import 'pages/contact';
 @import 'pages/product';
 @import 'pages/vendor-catalogs';
-@import 'pages/customdesignservice';
+@import 'pages/custom-design-service';
+@import 'pages/screen-printing-service';
+@import 'pages/sign-and-banner-service';
+@import 'pages/promotional-items-service';
+@import 'pages/printing-service';
+@import 'pages/vinyl-service';
+@import 'pages/art-guide';

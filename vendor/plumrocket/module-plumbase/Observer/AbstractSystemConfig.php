@@ -75,7 +75,10 @@ abstract class AbstractSystemConfig implements ObserverInterface
     protected function _isPlumSection($section)
     {
         $data = $section->getData();
-        return (string) $data['tab'] == 'plu' . 'mroc' . 'ket';
+        if (isset($data['tab'])) {
+            return (string) $data['tab'] == 'plu' . 'mroc' . 'ket';
+        }
+        return false;
     }
 
 
