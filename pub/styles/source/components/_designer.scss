@@ -1,0 +1,16 @@
+#tshirtIFrame {
+	border: 0;
+	box-shadow: none;
+    margin-top: 20px;
+
+    .btn-primary {
+    	background-color: #024930 !important;
+    	&:hover,
+    	&:active {
+    		background-color: #33755e !important;
+    	}
+    	&:visited {
+    		background-color: #024930 !important;
+    	}
+    }
+}

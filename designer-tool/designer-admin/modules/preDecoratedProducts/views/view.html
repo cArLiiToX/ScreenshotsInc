@@ -70,7 +70,7 @@
                                     <img src="assets/img/demo/progress.svg" width="30" height="30" style="height:200px; vertical-align:middle;"/>
                                 </div>
                             </label>
-                            <div class="checkbox check-success gallery-check">
+                            <div class="checkbox check-info gallery-check">
                                 <input type="checkbox" value="{{ data.id }}" id="{{ data.id }}"  ng-model="tempCheck[$index]"  ng-change="pTemplateSelected(tempCheck[$index],$index)"/>
                                 <label for="{{ data.id }}">
                                 </label>
@@ -85,7 +85,7 @@
                     </div>
                 </div>
                 <div ng-show="isLoadMore" class="panel-footer text-center b-t-none">
-                    <button type="button" class="btn btn-success btn-sm btn-cons from-top" ng-click="loadMore()" ng-show="isLoadMore" ng-disabled="isLoadMorePreloader">
+                    <button type="button" class="btn btn-info btn-sm btn-cons from-top" ng-click="loadMore()" ng-show="isLoadMore" ng-disabled="isLoadMorePreloader">
                         <span>
                             <xe-translate text-value="Load More">
                             </xe-translate>

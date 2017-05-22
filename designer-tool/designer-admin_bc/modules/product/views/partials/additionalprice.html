@@ -1,0 +1,64 @@
+<div class="modal fade stick-up" id="additionalPriceModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header clearfix text-left">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <i class="pg-close fs-14">
+                    </i>
+                </button>
+                <h5>
+                    <span class="semi-bold">
+                        <xe-translate text-value="Manage Additional Print Prices">
+                        </xe-translate>
+                    </span>
+                </h5>
+            </div>
+            <div class="modal-body" id="additionalPModal">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <tr>
+                            <td width="10">
+                                <xe-translate text-value="Variants">
+                                </xe-translate>
+                            </td>
+                            <td ng-repeat="item in prntMethodByProduct">
+                                <span>
+                                    {{ item.name }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr ng-repeat="price in additionalPrice track by $index">
+                            <td width="10px">
+                                <div  ng-style="variants[$index].colorUrl && variants[$index].colorUrl.indexOf('#') == -1 ? {'background-image': 'url('+variants[$index].colorUrl+')'} : {'background-color':variants[$index].colorUrl}" class="variant-thumb">
+                                </div>
+                            </td>
+                            <td ng-repeat="item in price.price track by $index">
+                                <div class="form-group form-group-sm input-group w-90" pg-form-group>
+                                    <input type="text" class="autonumeric form-control usd h-35" ui-jq="autoNumeric" aria-invalid="false" ng-model="item.prntmthdprice" price-only="price-only"/>
+                                    <span class="input-group-addon">
+                                        {{ appCurrency }}
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="m-t-20 clearfix">
+                    <button type="button" class="btn btn-success btn-sm " ng-click="updateAdditionalPrice()" ng-disabled="demoStatus">
+                        <span>
+                            <xe-translate text-value="Save">
+                            </xe-translate>
+                        </span>
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm" data-dismiss="modal"  ng-click="cancelPriceModal()">
+                        <span>
+                            <xe-translate text-value="Cancel">
+                            </xe-translate>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

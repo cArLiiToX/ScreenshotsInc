@@ -1,0 +1,30 @@
+.cms-contact,
+.contact-index-index {
+	.ss-contact-details {
+		padding: 40px 0;
+		border-bottom: 1px solid #eee;
+		&:first-of-type {
+			padding-top: 0;
+		}
+		&:last-of-type {
+			margin-bottom: 20px;
+			border-bottom: 0;
+		}
+
+		h3 {
+			margin: 0;
+		}
+
+		.ss-block {
+			width: 25%;
+			display: inline-block;
+			float: left;
+			box-sizing: border-box;
+			padding: 0 10px;
+		}	
+
+		.ss-block-half {
+			width: 50%;
+		}
+	}
+}

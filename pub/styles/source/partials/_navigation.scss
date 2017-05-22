@@ -1,16 +1,61 @@
-.navigation {
-  background: #f8f8f8;
-  box-shadow: 0 0 2px #999;
-  font-size: 15px;
-  font-weight: 400;
+@media screen and (min-width: $screen-md) {
+  .nav-sections {
+    background: #024930;
+    box-shadow: 0 0 2px #999;
+    font-size: 15px;
+    font-weight: 400;
+    margin-bottom: 0;
 
-  .level0 > .level-top {
-    line-height: 40px;
-  }
+    .navigation {
+      background: none;
 
-  .level0.level-top {
-    &:hover {
-      background: #e8e8e8;
+      .level0 > .level-top {
+        line-height: 40px;
+        color: #f8f8f8;
+        font-weight: 300;
+        font-family: Roboto;
+        font-size: 14px;
+        cursor: pointer;
+
+        a {
+          color: #f8f8f8;
+          &:hover {
+            color: #fff;
+          }
+        }
+      }
+
+      .level0 {
+        cursor: pointer;
+        &:hover {
+          background: #023a26;
+        }
+
+        &.parent {
+          &:after {
+            content: "\f0d7";
+            font-family: FontAwesome;
+            color: #f8f8f8;
+            position: relative;
+            right: 9px;
+            top: -1px;
+            font-size: 10px;
+          }
+        }
+
+        .submenu {
+          background: #fff;
+        }
+      }
+
+      .level0.active > .level-top, .navigation .level0.has-active > .level-top {
+        border-color: #fff;
+      }
     }
   }
+
+  .breadcrumbs {
+    margin-top: 20px;
+  }
+
 }

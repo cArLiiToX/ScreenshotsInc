@@ -1,0 +1,22 @@
+.cms-custom-design-service,
+.cms-design-services {
+  .pricing-details {
+    margin: 40px auto 10px auto;
+    width: auto;
+    max-width: 500px;
+    text-align: center;
+    font-size: 10pt;
+    text-transform: uppercase;
+    color: #aaa;
+    padding: 16px;
+    border: 2px solid #aaa;
+    border-radius: 3px;
+    box-sizing: border-box;
+  }
+}
+
+/** Tablets ------------------------------------------------------------------*/
+@media screen and (max-width: $screen-md) {}
+
+/** Mobile -------------------------------------------------------------------*/
+@media screen and (max-width: $screen-sm) {}

@@ -320,7 +320,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                 $products[$counter] = array(
                     'id' => $productData->getId(),
                     'name' => $productData->getName(),
-                    'description' => strip_tags($productData->getDescription()),
+                    'description' => '',//strip_tags($productData->getDescription()),
                     'price' => $price,
                     'thumbnail' => (string) $img,
                     'category' => $productData->getCategoryIds(),

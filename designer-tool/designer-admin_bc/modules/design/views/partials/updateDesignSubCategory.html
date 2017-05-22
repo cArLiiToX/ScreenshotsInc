@@ -1,0 +1,38 @@
+<div class="modal fade slide-up disable-scroll modal-bg" id="designSubCategoryUpdateModal" tabindex="-1" role="dialog" aria-hidden="false">
+    <div class="modal-dialog modal-sm custom-design-madal-pos">
+        <div class="modal-content-wrapper">
+            <div class="modal-content">
+                <div class="modal-body text-center m-t-20">
+                    <!-- <h5 class="no-margin p-b-20">{{warningMessage}}</h5> -->
+                    <!-- <div class="pull-left m-l-10">
+                        <input type="text" placeholder="{{subCatPlaceHolder}}"
+                                     class="form-control input-sm" ng-model="subCatDetail.name">
+                    </div>
+                    <div class="m-t-10">
+                        <button type="button" class="btn btn-sm btn-info"
+                                        ng-click="updateSubCategory()" 
+                                        ng-disabled="demoStatus" ng-class="{'disabled': !subCatDetail.name}">
+                        <span><xe-translate text-value="Save"></xe-translate></span>
+                        </button>
+                    </div> -->
+                    <input type="text" placeholder="{{ subCatPlaceHolder }}" class="form-control input-sm pull-left m-l-10" ng-model="subCatDetail.name"/>
+                    <div class="clearfix">
+                        <button type="button" class="btn btn-sm btn-info m-t-10" ng-click="updateSubCategory()"  ng-disabled="demoStatus" ng-class="{'disabled': !subCatDetail.name}">
+                            <span>
+                                <xe-translate text-value="Save">
+                                </xe-translate>
+                            </span>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm m-t-10" data-dismiss="modal">
+                            <span>
+                                <xe-translate text-value="Cancel">
+                                </xe-translate>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+</div>

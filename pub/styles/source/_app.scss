@@ -9,8 +9,173 @@ body {
   font-size: 1.6rem;
 }
 
-/** Tablets */
-@media screen and (max-width: $breakpoint-med) {}
+/*******************************************************************************
+* Grid & Layout
+*******************************************************************************/
+.columns {
+  position: relative;
+}
 
-/** Mobile */
-@media screen and (max-width: breakboint-sm) {}
+.ss-block {
+  box-sizing: border-box;
+  .block-title {
+    display: block;
+    text-align: center;
+  }
+}
+
+.columns .column.main {
+  padding-bottom: 0;
+}
+
+.page-title-wrapper {
+  margin-bottom: 20px;
+}
+
+/*******************************************************************************
+* Sections
+*******************************************************************************/
+section {}
+
+/*******************************************************************************
+* Content Blocks
+*******************************************************************************/
+.block-title--main {
+  border-bottom: 1px solid #ddd;
+  h2, h3 {
+    color: #aaa;
+    border-bottom: 1px solid #f23f3f;
+    font-size: 22px;
+    display: inline-block;
+    margin: 0;
+    padding: 3px 0;
+    text-shadow: none;
+  }
+}
+
+.block-content--main {
+  display: block;
+  margin-bottom: 40px;
+  padding: 0;
+  background: #f8f8f8;
+  box-shadow: 0px 0px 2px #aaa;
+  box-sizing: border-box;
+  border-radius: 0 3px 3px 3px;
+
+  p {
+    display: inline-block;
+    margin: 0;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    &.small {
+      width: calc(100% - 210px);
+    }
+  }
+
+  .block-content-image {
+    display: inline-block;
+    width: 160px;
+    height: auto;
+    margin: 20px;
+    box-sizing: border-box;
+  }
+  .block-content-image-right {
+    float: right;
+  }
+  .block-content-image-left {
+    float: left;
+  }
+}
+
+.block-title--red {
+  padding: 20px;
+  background: #f23f3f;
+  display: block;
+  border: 0;
+  border-radius: 3px 3px 0 0;
+
+  h2 {
+    text-align: center;
+    color: #f8f8f8;
+    text-shadow: 0px 2px 1px #d32527;
+  }
+}
+
+.block-content--visual {
+  margin-bottom: 40px;
+  padding: 20px;
+  display: block;
+  color: #f8f8f8;
+  background: url('');
+  background-size: cover;
+  background-position: center center;
+  border-radius: 0 0 3px 3px;
+}
+
+/*******************************************************************************
+* List Styles
+*******************************************************************************/
+ul.bulleted {
+  margin: 0 20px;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: inline-block;
+    width: 50%;
+    float: left;
+    text-indent: 7px;
+    &:before {
+      content: "\f105";
+      font-family: FontAwesome;
+      color: #ef2b2d;
+      margin-right: 7px;
+    }
+  }
+}
+
+/*******************************************************************************
+* Utility and Helper Classes
+*******************************************************************************/
+.rimg {
+  width: 100%;
+  height: auto;
+}
+
+.rounded {
+  border-radius: 2px;
+}
+
+.shadowed {
+  box-shadow: 0px 2px 2px #888;
+}
+
+.clearfix {
+  &:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+}
+
+/*******************************************************************************
+* Spacers
+*******************************************************************************/
+.spcr-top-20 {
+  margin-top: 20px;
+}
+
+.spcr-bot-20 {
+  margin-bottom: 20px;
+}
+
+
+/** Tablets ------------------------------------------------------------------*/
+@media screen and (max-width: $screen-md) {}
+
+/** Mobile -------------------------------------------------------------------*/
+@media screen and (max-width: $screen-sm) {}

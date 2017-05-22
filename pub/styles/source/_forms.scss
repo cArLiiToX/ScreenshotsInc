@@ -14,8 +14,12 @@ textarea {
   border-radius: 2px;
 }
 
+.product-add-form {
+	display: none;
+}
+
 /** Tablets */
-@media screen and (max-width: 768px) {}
+@media screen and (max-width: $screen-md) {}
 
 /** Mobile */
-@media screen and (max-width: 400px) {}
+@media screen and (max-width: $screen-sm) {}

@@ -1,0 +1,58 @@
+.cms-screen-printing-services {
+  .block-content--visual {
+    background: url('/pub/images/screen-printing-process.jpg');
+    ul.screenprinting-process {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+
+      li {
+        display: inline-block;
+        width: 25%;
+        float: left;
+        box-sizing: border-box;
+        padding: 20px;
+
+        i {
+          display: block;
+          margin: 0 0 30px 0;
+          text-align: center;
+          font-size: 44px;
+          text-shadow: 0px 4px 16px #f8f8f8;
+          color: #d32527;
+        }
+      }
+    }
+  }
+
+  .pricing-details {
+    margin: 40px auto 10px auto;
+    width: auto;
+    max-width: 500px;
+    text-align: center;
+    font-size: 10pt;
+    text-transform: uppercase;
+    color: #aaa;
+    padding: 16px;
+    border: 2px solid #aaa;
+    border-radius: 3px;
+    box-sizing: border-box;
+  }
+}
+
+/** Tablets ------------------------------------------------------------------*/
+@media screen and (max-width: $screen-md) {
+  .cms-screen-printing-services {
+    ul.screenprinting-process {
+      li {
+        display: block;
+        width: 100%;
+      }
+    }
+  }
+}
+
+/** Mobile -------------------------------------------------------------------*/
+@media screen and (max-width: $screen-sm) {}

@@ -1,70 +1,30 @@
-<div class="modal fade stick-up" id="printtypeModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header clearfix text-left">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    <i class="pg-close fs-14">
-                    </i>
-                </button>
-                <h5>
-                    <span class="semi-bold">
-                        <xe-translate text-value="Configure Print Type">
-                        </xe-translate>
-                    </span>
-                </h5>
-                <p>
-                    <xe-translate text-value="Enabled Disabled print">
+<div class="row">
+    <div class="col-sm-6">
+        <div class="checkbox check-info" ng-repeat="printmthd in printMthdList1">
+            <input type="checkbox" id="printmthd_{{ printmthd.id }}" ng-model="status1" ng-change="changePrintMethod(status1,printmthd)"  ng-checked="printmthd.status"  ng-disabled="printmthd.fetched_from == 'category'"/>
+            <label for="printmthd_{{ printmthd.id }}" ng-class="{'disabled':printmthd.fetched_from=='category'}">
+                {{ printmthd.name }}
+                <span ng-show="printmthd.fetched_from == 'category'">
+                    (
+                    <xe-translate text-value="Category">
                     </xe-translate>
-                </p>
-            </div>
-            <div class="modal-body" id="printTypeSettingModal">
-                <hr/>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="checkbox check-success" ng-repeat="printmthd in printMthdList1">
-                            <input type="checkbox" id="printmthd_{{ printmthd.id }}" ng-model="status1" ng-change="changePrintMethod(status1,printmthd)"  ng-checked="printmthd.status"  ng-disabled="printmthd.fetched_from == 'category'"/>
-                            <label for="printmthd_{{ printmthd.id }}" ng-class="{'disabled':printmthd.fetched_from=='category'}">
-                                {{ printmthd.name }}
-                                <span ng-show="printmthd.fetched_from == 'category'">
-                                    (
-                                    <xe-translate text-value="Category">
-                                    </xe-translate>
-                                    )
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="checkbox check-success" ng-repeat="printmthd in printMthdList2">
-                            <input type="checkbox" id="printmthd_{{ printmthd.id }}" ng-model="status2" ng-change="changePrintMethod(status2,printmthd)" ng-checked="printmthd.status"  ng-disabled="printmthd.fetched_from == 'category'"/>
-                            <label for="printmthd_{{ printmthd.id }}" ng-class="{'disabled':printmthd.fetched_from=='category'}">
-                                {{ printmthd.name }}
-                                <span ng-show="printmthd.fetched_from == 'category'">
-                                    (
-                                    <xe-translate text-value="Category">
-                                    </xe-translate>
-                                    )
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <hr/>
-                <div class="m-t-20 clearfix">
-                    <button type="button" class="btn btn-success btn-sm" ng-click="savePrintMethod()" ng-disabled="demoStatus">
-                        <span>
-                            <xe-translate text-value="Save">
-                            </xe-translate>
-                        </span>
-                    </button>
-                    <button type="button" class="btn btn-success btn-sm" data-dismiss="modal" ng-click="cancelPrintMethod()">
-                        <span>
-                            <xe-translate text-value="Cancel">
-                            </xe-translate>
-                        </span>
-                    </button>
-                </div>
-            </div>
+                    )
+                </span>
+            </label>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="checkbox check-info" ng-repeat="printmthd in printMthdList2">
+            <input type="checkbox" id="printmthd_{{ printmthd.id }}" ng-model="status2" ng-change="changePrintMethod(status2,printmthd)" ng-checked="printmthd.status"  ng-disabled="printmthd.fetched_from == 'category'"/>
+            <label for="printmthd_{{ printmthd.id }}" ng-class="{'disabled':printmthd.fetched_from=='category'}">
+                {{ printmthd.name }}
+                <span ng-show="printmthd.fetched_from == 'category'">
+                    (
+                    <xe-translate text-value="Category">
+                    </xe-translate>
+                    )
+                </span>
+            </label>
         </div>
     </div>
 </div>

@@ -1,24 +1,33 @@
 @import 'vars';
 @import 'functions';
-@import 'app';
 
 /* General UI */
-@import 'layout';
-@import 'typo';
+@import 'app';
 @import 'buttons';
 @import 'forms';
-
-/* Components */
-@import 'components/slider';
+@import 'typo';
 
 /* Partials */
 @import 'partials/header';
 @import 'partials/navigation';
 @import 'partials/footer';
 
+/* Components */
+@import 'components/designer';
+@import 'components/slider';
+
 /* Pages */
 @import 'pages/home';
 @import 'pages/about';
 @import 'pages/services';
-
-@import 'utilities';
+@import 'pages/portfolio';
+@import 'pages/contact';
+@import 'pages/product';
+@import 'pages/vendor-catalogs';
+@import 'pages/custom-design-service';
+@import 'pages/screen-printing-service';
+@import 'pages/sign-and-banner-service';
+@import 'pages/promotional-items-service';
+@import 'pages/printing-service';
+@import 'pages/vinyl-service';
+@import 'pages/art-guide';

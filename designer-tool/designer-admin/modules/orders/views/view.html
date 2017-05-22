@@ -44,55 +44,55 @@
         <!-- <img class="image-responsive-height demo-mw-30 " src="assets/img/progress/progress-circle-master.svg" alt="Progress" ng-show="isrefreshloader"> -->
         <div  class="col-sm-12" ng-init="init()">
             <div class="custom-table" ng-show="isOrderList">
-                <table class="table table-bordered">
+                <table class="table table-bordered table-fixedheader">
                     <thead>
                         <tr>
                             <th width="5%">
                                 <input type="checkbox" value="allChecked" id="allChecked" ng-model="allChecked" ng-change="selectAllChecked(allChecked)" ng-click = "allCheckedClicked(allChecked)"/>
                             </th>
-                            <th>
+                            <th width="20%">
                                 <xe-translate text-value="Order id">
                                 </xe-translate>
                             </th>
-                            <th>
+                            <th width="20%">
                                 <xe-translate text-value="Customer name">
                                 </xe-translate>
                             </th>
-                            <th>
+                            <th width="20%">
                                 <xe-translate text-value="order date time">
                                 </xe-translate>
                             </th>
-                            <th>
+                            <th width="15%">
                                 <xe-translate text-value="Status">
                                 </xe-translate>
                             </th>
-                            <th width="100px">
+                            <th width="20%">
                                 <xe-translate text-value="Print Status">
                                 </xe-translate>
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="order-admin-box-wrap">
                         <tr ng-repeat="order in orderList">
                             <td width="5%">
                                 <input type="checkbox" value="{{ order.order_id }}" id="{{ order.order_id }}"  ng-model="orderCheck[$index]" ng-change = "downLoadButtonDisabled(orderCheck[$index])"/>
                                 <label for="{{ order.id }}">
                                 </label>
                             </td>
-                            <td>
+                            <td width="20%">
                                 {{ order.order_incremental_id }}
                             </td>
-                            <td>
+                            <td width="20%">
                                 {{ order.customer_name }}
                             </td>
-                            <td>
+                            <td width="20%">
                                 {{ order.order_date.substr(0,order.order_date.indexOf(" ")) }}&nbsp;&nbsp;
                                 {{ order.order_date.substr(order.order_date.indexOf(" ")+1) }}
                             </td>
-                            <td>
+                            <td width="15%">
                                 {{ order.order_status }}
                             </td>
-                            <td width="160px">
+                            <td width="20%">
                                 <span class="pull-left m-r-sm">
                                 </span>
                                 <xe-switchbox ng-model="selectedStatus[$index]"checked="switchCbx[$index]" on-click="statusDetails(selectedStatus[$index],$index,order.order_incremental_id)">

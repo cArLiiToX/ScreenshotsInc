@@ -1,0 +1,82 @@
+<!--
+    preloader start
+-->
+<div class="panel panel-default" ng-hide="preloader">
+    <div class="graphics-wrap-height">
+        <div class="panel-body text-center">
+            <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/progress/progress-circle-master.svg" alt="Progress"/>
+        </div>
+    </div>
+</div>
+<!-- preloader end -->
+<div class="panel panel-default" ng-show="preloader">
+    <div class="loader-OnUpdate" pg-portlet on-refresh="refreshTest('.loader-OnUpdate')">
+        <div class="panel-body">
+            <div class="col-sm-6 b-r-light">
+                <div class="panel-heading padding-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Preview">
+                        </xe-translate>
+                    </div>
+                </div>
+                <div class="pull-left m-r-10" ng-show="isSelectedMaskVisible">
+                    <div class="gallery-upload-thumb">
+                        <img class="img-responsive" ng-src="{{ editMask.svgUrl }}"/>
+                    </div>
+                    <button class="btn btn-success btn-sm m-t-10" ng-file-select ng-file-change="changeMask($files)">
+                        <xe-translate text-value="Change Mask">
+                        </xe-translate>
+                    </button>
+                    <p class="small">
+                        .svg
+                    </p>
+                    <p class="small text-danger" ng-show="showError1">
+                        {{ showMsg }}
+                    </p>
+                </div>
+                <div class="pull-left" ng-show="isSelectedMaskVisible">
+                    <div class="gallery-upload-thumb">
+                        <img class="img-responsive" ng-src="{{ editMask.imgUrl }}"/>
+                    </div>
+                    <button class="btn btn-success btn-sm m-t-10" ng-file-select ng-file-change="changeImage($files)">
+                        <xe-translate text-value="Change Image">
+                        </xe-translate>
+                    </button>
+                    <p class="small">
+                        .png .jpeg .jpg .bmp
+                    </p>
+                    <p class="small text-danger" ng-show="showError2">
+                        {{ showMsg }}
+                    </p>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <div class="panel-heading p-t-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Properties">
+                        </xe-translate>
+                    </div>
+                </div>
+                <div class="form-group form-group-default required m-l-20" pg-form-group>
+                    <label>
+                        <xe-translate text-value="Name">
+                        </xe-translate>
+                    </label>
+                    <input type="text" class="form-control" name="Name" ng-model="editMask.name" ng-change="changeName(editMask.name)"  required/>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer b-t-none clearfix">
+            <div class="pull-right">
+                <button class="btn btn-primary btn-sm" type="button" ng-click="updateMaskDetails()"  ng-class="{'disabled': !editMask.name}" ng-disabled="demoStatus">
+                    <xe-translate text-value="Save">
+                    </xe-translate>
+                </button>
+                <button class="btn btn-primary btn-sm" type="button" ng-click="cancelEditMask()">
+                    <xe-translate text-value="Cancel">
+                    </xe-translate>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

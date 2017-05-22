@@ -1,0 +1,83 @@
+<!--
+    preloader start
+-->
+<div class="panel panel-default" ng-hide="preloader">
+    <div class="graphics-wrap-height">
+        <div class="panel-body text-center">
+            <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/progress/progress-circle-master.svg" alt="Progress"/>
+        </div>
+    </div>
+</div>
+<!-- preloader end -->
+<div class="panel panel-default" ng-show="preloader">
+    <div class="loader-OnUpload" pg-portlet on-refresh="refreshTest('.loader-OnUpload')">
+        <div class="panel-body">
+            <div class="col-sm-2 b-r-light">
+                <div class="panel-heading padding-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Preview">
+                        </xe-translate>
+                    </div>
+                </div>
+                <div class="gallery-upload-thumb" ng-show="isUploadFileCount">
+                    <span ng-show="isUploadFileCount">
+                        {{ uploadFileCount }}
+                        <xe-translate text-value="files selected">
+                        </xe-translate>
+                    </span>
+                </div>
+                <div class="gallery-upload-thumb" ng-show="isUploadWordCloudVisible">
+                    <img class="img-responsive" ng-src="{{ uploadWordCloud.imgUrl }}"/>
+                </div>
+                <!--  <button type="button" class="btn btn-success btn-sm btn-cons btn-animated from-top fa fa-upload m-t-10">
+                     <span>Upload WordCloud</span>
+                 </button> -->
+                <button class="btn btn-success btn-sm btn-cons m-t-10" multiple accept=".png,.jpeg,.jpg,.bmp" ng-file-select ng-file-change="browseWordCloud($files)">
+                    <xe-translate text-value="Upload Wordcloud">
+                    </xe-translate>
+                </button>
+                <p class="small">
+                    png, jpg, jpeg, bmp
+                </p>
+                <p class="small text-danger" ng-show="showError">
+                    {{ showMsg }}
+                </p>
+            </div>
+            <div class="col-sm-5">
+                <div class="panel-heading p-l-20 p-r-20 p-t-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Properties">
+                        </xe-translate>
+                    </div>
+                </div>
+                <form id="form-personal" role="form" autocomplete="off" class="p-l-20 p-r-20">
+                    <div class="row clearfix">
+                        <div class="col-sm-8">
+                            <div class="form-group form-group-default required" pg-form-group>
+                                <label>
+                                    <xe-translate text-value="Name">
+                                    </xe-translate>
+                                </label>
+                                <input type="text" class="form-control" ng-model="uploadWordCloud.name" required/>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-sm-5">
+            </div>
+        </div>
+        <div class="panel-footer b-t-none clearfix">
+            <div class="pull-right">
+                <button class="btn btn-primary btn-sm" type="button"  ng-click="uploadWordCloudToServer()"  ng-class="{'disabled': !uploadWordCloud.name|| !base64List}" ng-disabled="demoStatus">
+                    <xe-translate text-value="Save">
+                    </xe-translate>
+                </button>
+                <button class="btn btn-primary btn-sm" type="button" ng-click="cancelWordCloudUploadView()">
+                    <xe-translate text-value="Cancel">
+                    </xe-translate>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

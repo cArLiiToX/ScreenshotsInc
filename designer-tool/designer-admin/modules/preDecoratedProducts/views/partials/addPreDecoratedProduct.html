@@ -64,7 +64,7 @@
             <div class="col-sm-3 m-t-25">
                 <form id="form-personal" name="myform2" role="form" autocomplete="off" class="p-r-20">
                     <div class="row b-t-light clearfix">
-                        <div pg-form-group class="form-group form-group-default required"  ng-class="{'has-error':submitted && !myform2.shortDesc.$valid}">
+                        <div pg-form-group class="form-group form-group-default required m-t-10"  ng-class="{'has-error':submitted && !myform2.shortDesc.$valid}">
                             <label>
                                 <xe-translate text-value="Short Description">
                                 </xe-translate>
@@ -168,11 +168,11 @@
 </div>
 <div class="clearfix m-r-20 m-b-20" ng-show="addpreloader">
     <div class="pull-right">
-        <button class="btn btn-primary btn-sm" type="button"  ng-click="saveTemplateAsProduct(myform,myform2);submitted=true" ng-disabled="demoStatus">
+        <button class="btn btn-info btn-sm" type="button"  ng-click="saveTemplateAsProduct(myform,myform2);submitted=true" ng-disabled="demoStatus">
             <xe-translate text-value="Save">
             </xe-translate>
         </button>
-        <button class="btn btn-primary btn-sm" type="button" ng-click="cancelTemplate()">
+        <button class="btn btn-info btn-sm" type="button" ng-click="cancelTemplate()">
             <xe-translate text-value="Cancel">
             </xe-translate>
         </button>

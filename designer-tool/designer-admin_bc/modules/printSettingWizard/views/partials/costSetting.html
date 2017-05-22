@@ -1,0 +1,381 @@
+<div class="panel-heading separator p-t-0">
+    <div class="panel-title">
+        <h4>
+            <xe-translate text-value="Price Settings">
+            </xe-translate>
+        </h4>
+    </div>
+</div>
+<div class="panel-body m-t-20">
+    <form class="form-horizontal" role="form" autocomplete="off">
+        <!-- <div class="form-group"> -->
+        <!-- <div class="help-me small"><a href="http://inkxe.com/support/kb/faq.php?id=22" target="_blank">
+            <xe-translate text-value="What is this"></xe-translate></a>
+        </div> -->
+        <!-- <label class="col-sm-2 control-label"><xe-translate text-value="White Base Price"></xe-translate></label>
+            <div class="col-sm-10">
+                <div class="radio radio-success m-b-15">
+                    <input type="radio" value="1" id="enable2" ng-model="printSettings.is_white_base" 
+                        ng-checked="printSettings.is_white_base == 1" ng-change="printSettings.is_white_base = 1">
+                    <label for="enable2"><xe-translate text-value="Enabled"></xe-translate></label>
+                    <input type="radio" value="0" id="disable2" ng-model="printSettings.is_white_base"
+                        ng-checked="printSettings.is_white_base == 0" ng-change="printSettings.is_white_base = 0">
+                    <label for="disable2"><xe-translate text-value="Disabled"></xe-translate></label>
+                </div>
+                <div class="row" ng-show="printSettings.is_white_base == 1">
+                    <div class="col-md-5">
+                        <div class="form-group form-group-default input-group nested-form-group" pg-form-group>
+                            <label><xe-translate text-value="Price"></xe-translate></label>
+                            <input type="text" class="form-control usd" aria-invalid="false" placeholder="Enter price"
+                                ng-model="printSettings.white_base_price" price-only="price-only" >
+                                <span class="input-group-addon">{{appCurrency}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <div class="form-group">
+            <!-- <div class="help-me small"><a href="http://inkxe.com/support/kb/faq.php?id=22" target="_blank">
+                <xe-translate text-value="What is this"></xe-translate></a>
+            </div> -->
+            <label class="col-sm-2 control-label">
+                <xe-translate text-value="SETUP Cost">
+                </xe-translate>
+            </label>
+            <div class="col-sm-10">
+                <div class="checkbox check-info m-b-15">
+                    <input type="checkbox" id="is_setup_cost" ng-model="printSettings.is_setup_cost" ng-true-value="1" ng-false-value="0" ng-checked="printSettings.is_setup_cost == 1"ng-change="changeSetupCost(printSettings.is_setup_cost)"/>
+                    <label for="is_setup_cost">
+                        <xe-translate text-value="Enabled">
+                        </xe-translate>
+                    </label>
+                </div>
+                <div class="row" ng-show="printSettings.is_setup_cost == 1">
+                    <div class="col-md-5">
+                        <div class="form-group form-group-default input-group nested-form-group" pg-form-group>
+                            <label>
+                                <xe-translate text-value="Price">
+                                </xe-translate>
+                            </label>
+                            <input type="text" class="form-control usd" aria-invalid="false" placeholder="Set Price for additional printing cost" ng-model="printSettings.setup_cost" price-only="price-only"/>
+                            <span class="input-group-addon">
+                                {{ appCurrency }}
+                            </span>
+                        </div>
+                        <div class="radio radio-success m-t-10">
+                            <input type="radio" value="1" id="productSide" ng-model="printSettings.is_product_side"  ng-checked="printSettings.is_product_side == 1" ng-change="printSettings.is_product_side = 1"/>
+                            <label for="productSide">
+                                <xe-translate text-value="Per Product Side">
+                                </xe-translate>
+                            </label>
+                            <input type="radio" value="0" id="totalSide" ng-model="printSettings.is_product_side" ng-checked="printSettings.is_product_side == 0" ng-change="printSettings.is_product_side = 0"/>
+                            <label for="totalSide">
+                                <xe-translate text-value="Per Product">
+                                </xe-translate>
+                            </label>
+                        </div>
+                        <div class="radio radio-success">
+                            <input type="radio" value="1" id="singleOrder" ng-model="printSettings.is_single_order"  ng-checked="printSettings.is_single_order == 1" ng-change="printSettings.is_single_order = 1"/>
+                            <label for="singleOrder">
+                                <xe-translate text-value="Single Order">
+                                </xe-translate>
+                            </label>
+                            <input type="radio" value="0" id="multipleOrder" ng-model="printSettings.is_single_order" ng-checked="printSettings.is_single_order == 0" ng-change="printSettings.is_single_order = 0"/>
+                            <label for="multipleOrder">
+                                <xe-translate text-value="Multiple Order">
+                                </xe-translate>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <!-- <div class="help-me small"><a href="http://inkxe.com/support/kb/faq.php?id=22" target="_blank">
+                <xe-translate text-value="What is this"></xe-translate></a>
+            </div> -->
+            <label class="col-sm-2 control-label">
+                <xe-translate text-value="Price for Scaling">
+                </xe-translate>
+            </label>
+            <div class="col-sm-10">
+                <div class="checkbox check-info m-b-15">
+                    <input type="checkbox" id="is_scalling" ng-model="printSettings.is_scalling" ng-true-value="1" ng-false-value="0" ng-checked="printSettings.is_scalling == 1"ng-change="changeScalingPrice(printSettings.is_scalling)"/>
+                    <label for="is_scalling">
+                        <xe-translate text-value="Enabled">
+                        </xe-translate>
+                    </label>
+                </div>
+                <div class="row" ng-show="printSettings.is_scalling == 1">
+                    <div class="col-md-5">
+                        <div class="form-group form-group-default input-group nested-form-group" pg-form-group>
+                            <label>
+                                <xe-translate text-value="Price per squre unit">
+                                </xe-translate>
+                            </label>
+                            <input type="text" class="form-control usd" aria-invalid="false" placeholder="Enter price" ng-model="printSettings.scalling_price" price-only="price-only"/>
+                            <span class="input-group-addon">
+                                {{ appCurrency }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <!-- <div class="help-me small"><a href="http://inkxe.com/support/kb/faq.php?id=22" target="_blank">
+                <xe-translate text-value="What is this"></xe-translate></a>
+            </div> -->
+            <label class="col-sm-2 control-label">
+                <xe-translate text-value="Clipart Price">
+                </xe-translate>
+            </label>
+            <div class="col-sm-10">
+                <div class="checkbox check-info">
+                    <input type="checkbox" id="is_clip_art" ng-model="printSettings.is_clip_art" ng-true-value="1" ng-false-value="0" ng-checked="printSettings.is_clip_art == 1" ng-change="changeClipArt(printSettings.is_clip_art)"/>
+                    <label for="is_clip_art">
+                        <xe-translate text-value="Enabled">
+                        </xe-translate>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">
+                <xe-translate text-value="Background Price">
+                </xe-translate>
+            </label>
+            <div class="col-sm-10">
+                <div class="checkbox check-info">
+                    <input type="checkbox" id="is_background" ng-model="printSettings.is_background" ng-true-value="1" ng-false-value="0" ng-checked="printSettings.is_background == 1" ng-change="changeBackGround(printSettings.is_background)"/>
+                    <label for="is_background">
+                        <xe-translate text-value="Enabled">
+                        </xe-translate>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <!-- <div class="help-me small"><a href="http://inkxe.com/support/kb/faq.php?id=22" target="_blank">
+                <xe-translate text-value="What is this"></xe-translate></a>
+            </div> -->
+            <label class="col-sm-2 control-label">
+                <xe-translate text-value="Font Price">
+                </xe-translate>
+            </label>
+            <div class="col-sm-10">
+                <div class="checkbox check-info">
+                    <input type="checkbox" id="is_font" ng-model="printSettings.is_font" ng-true-value="1" ng-false-value="0" ng-checked="printSettings.is_font == 1"  ng-change="changeFont(printSettings.is_font)"/>
+                    <label for="is_font">
+                        <xe-translate text-value="Enabled">
+                        </xe-translate>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <!-- <div class="help-me small"><a href="http://inkxe.com/support/kb/faq.php?id=22" target="_blank">
+                <xe-translate text-value="What is this"></xe-translate></a>
+            </div> -->
+            <label class="col-sm-2 control-label">
+                <xe-translate text-value="Palette Price">
+                </xe-translate>
+            </label>
+            <div class="col-sm-10">
+                <div class="checkbox check-info">
+                    <input type="checkbox" id="is_palette" ng-model="printSettings.is_palette" ng-true-value="1" ng-false-value="0" ng-checked="printSettings.is_palette == 1"  ng-change="changePalette(printSettings.is_palette)"/>
+                    <label for="is_palette">
+                        <xe-translate text-value="Enabled">
+                        </xe-translate>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <!-- <div class="help-me small"><a href="http://inkxe.com/support/kb/faq.php?id=22" target="_blank">
+                <xe-translate text-value="What is this"></xe-translate></a>
+            </div> -->
+            <label class="col-sm-2 control-label">
+                <xe-translate text-value="Additional Price">
+                </xe-translate>
+            </label>
+            <div class="col-sm-10">
+                <div class="checkbox check-info m-b-15">
+                    <input type="checkbox" id="is_additional_price" ng-model="printSettings.is_additional_price" ng-true-value="1" ng-false-value="0"  ng-checked="printSettings.is_additional_price == 1"  ng-change="changeAdditinalPrice(printSettings.is_additional_price)"/>
+                    <label for="is_additional_price">
+                        <xe-translate text-value="Enabled">
+                        </xe-translate>
+                    </label>
+                </div>
+                <div class="row" ng-show="printSettings.is_additional_price == 1">
+                    <div class="col-md-5">
+                        <div class="form-group form-group-default input-group nested-form-group" pg-form-group>
+                            <label>
+                                <xe-translate text-value="Price">
+                                </xe-translate>
+                            </label>
+                            <input type="text" class="form-control usd" aria-invalid="'0'" placeholder="Set Price for additional printing cost" ng-model="printSettings.additional_price" price-only="price-only"/>
+                            <span class="input-group-addon">
+                                {{ appCurrency }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Image Upload Price Area -->
+        <div class="form-group">
+            <!-- <div class="help-me small"><a href="http://inkxe.com/support/kb/faq.php?id=22" target="_blank">
+                <xe-translate text-value="What is this"></xe-translate></a>
+            </div> -->
+            <label class="col-sm-2 control-label">
+                <xe-translate text-value="Image Upload Price">
+                </xe-translate>
+            </label>
+            <div class="col-sm-10">
+                <div class="checkbox check-info m-b-15">
+                    <input type="checkbox" id="is_image_upload_price" ng-model="printSettings.is_image_upload_price" ng-true-value="1" ng-false-value="0" ng-checked="printSettings.is_image_upload_price == 1"ng-change="changeImageUploadCost(printSettings.is_image_upload_price)"/>
+                    <label for="is_image_upload_price">
+                        <xe-translate text-value="Enabled">
+                        </xe-translate>
+                    </label>
+                </div>
+                <div class="row" ng-show="printSettings.is_image_upload_price == 1">
+                    <!--  <div class="form-group form-group-default input-group nested-form-group" pg-form-group>
+                         <label><xe-translate text-value="Price"></xe-translate></label>
+                         <input type="text" class="form-control usd" aria-invalid="false" placeholder="Set Price for additional printing cost" ng-model="printSettings.image_upload_price" price-only="price-only">
+                         <span class="input-group-addon">{{appCurrency}}</span>
+                     </div> -->
+                    <!-- Multi Price Check -->
+                    <div class="panel panel-default m-t-20">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div calss="clearfix m-t-20 pull-left m-b-10">
+                                    <label class="pull-left m-r-10 m-t-5">
+                                        <xe-translate text-value="Number Of Sides">
+                                        </xe-translate>
+                                    </label>
+                                    <div>
+                                        <input type="text" class="input-sm form-control w-md pull-left m-r-10" pg-form-group="" ng-model="img_Upload_Price.allowed_sides" number-only="number-only"/>
+                                    </div>
+                                    <button class="btn btn-sm btn-default" ng-click="addNewSidePriceLines()"  ng-class="{'disabled':img_Upload_Price.allowed_sides == 0}">
+                                        <xe-translate text-value="Update">
+                                        </xe-translate>
+                                    </button>
+                                </div>
+                            </div>
+                            <hr/>
+                            <div class="row" ng-repeat="imgPrice in img_Upload_Price.image_price track by $index">
+                                <div class="clearfix m-t-10 pull-left m-b-10">
+                                    <label class="pull-left m-r-10  m-t-5">
+                                        SIDE-{{ $index+1 }}
+                                    </label>
+                                    <div class="form-group-sm input-group w-md pull-left m-r-10" pg-form-group>
+                                        <input type="text" class="autonumeric form-control usd h-35" ui-jq="autoNumeric" aria-invalid="false" ng-model="img_Upload_Price.image_price[$index]" price-only="price-only"/>
+                                        <span class="input-group-addon">
+                                            {{ appCurrency }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="radio radio-success ">
+                        <input type="radio" value="0" id="calculateOncePerSide" ng-model="printSettings.is_calulate_multiple_side"  ng-checked="printSettings.is_calulate_multiple_side == 0" ng-change="printSettings.is_calulate_multiple_side = 0"/>
+                        <label for="calculateOncePerSide">
+                            <xe-translate text-value="Calculate Once Per Side">
+                            </xe-translate>
+                        </label>
+                        <input type="radio" value="1" id="calculateMultiplePerSide" ng-model="printSettings.is_calulate_multiple_side" ng-checked="printSettings.is_calulate_multiple_side == 1" ng-change="printSettings.is_calulate_multiple_side = 1"/>
+                        <label for="calculateMultiplePerSide">
+                            <xe-translate text-value="Calculate Multiple Per Side">
+                            </xe-translate>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group price-wizard-margin">
+            <label class="col-sm-2 control-label">
+                <xe-translate text-value="Text Line Price">
+                </xe-translate>
+            </label>
+            <div class="col-sm-10">
+                <!-- <div calss="clearfix m-t-20 pull-left m-b-10">
+                    <div class="radio radio-success">
+                        <input type="radio" value="1" id="enable8" ng-model="printSettings.is_multiline_text_price" 
+                            ng-checked="printSettings.is_multiline_text_price == 1" ng-change="printSettings.is_multiline_text_price = 1">
+                        <label for="enable8"><xe-translate text-value="Enabled"></xe-translate></label>
+                        <input type="radio" value="0" id="disable8" ng-model="printSettings.is_multiline_text_price"
+                            ng-checked="printSettings.is_multiline_text_price == 0" ng-change="printSettings.is_multiline_text_price = 0">
+                        <label for="disable8"><xe-translate text-value="Disabled"></xe-translate></label>
+                    </div>
+                </div> -->
+                <div class="checkbox check-info m-b-15">
+                    <input type="checkbox" id="is_multiline_text_price"  ng-model="printSettings.is_multiline_text_price" ng-true-value="1" ng-false-value="0"  ng-checked="printSettings.is_multiline_text_price == 1"  ng-change="changeMultiLineText(printSettings.is_multiline_text_price)"/>
+                    <label for="is_multiline_text_price">
+                        <xe-translate text-value="Enabled">
+                        </xe-translate>
+                    </label>
+                </div>
+                <div class="panel panel-default m-t-20" ng-show="printSettings.is_multiline_text_price == 1">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div calss="clearfix m-t-20 pull-left m-b-10">
+                                <label class="pull-left m-r-10 m-t-5">
+                                    <xe-translate text-value="Allowed Line">
+                                    </xe-translate>
+                                </label>
+                                <div>
+                                    <input type="text" class="input-sm form-control w-md pull-left m-r-10" pg-form-group="" ng-model="text_Price.allowded_lines" number-only="number-only"/>
+                                </div>
+                                <button class="btn btn-sm btn-default" ng-click="addNewTextLine()"  ng-class="{'disabled':text_Price.allowded_lines==0}">
+                                    <xe-translate text-value="Update">
+                                    </xe-translate>
+                                </button>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="row" ng-repeat="textPrice in text_Price.line_price track by $index">
+                            <div class="clearfix m-t-10 pull-left m-b-10">
+                                <label class="pull-left m-r-10  m-t-5">
+                                    Line-{{ $index+1 }}
+                                </label>
+                                <div class="form-group-sm input-group w-md pull-left m-r-10" pg-form-group>
+                                    <input type="text" class="autonumeric form-control usd h-35" ui-jq="autoNumeric" aria-invalid="false" ng-model="text_Price.line_price[$index]" price-only="price-only"/>
+                                    <span class="input-group-addon">
+                                        {{ appCurrency }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="row">
+                             <div class="clearfix pull-left m-b-10">
+                                     <div class="pull-left m-l-10">
+                                         <div class="checkbox check-info">
+                                             <input type="checkbox" id="all" ng-model="text_Price.is_onwards"
+                                                 ng-change="setAllColor(is_onwards)">
+                                             <label for="all">onWards</label>
+                                         </div>
+                                 </div>
+                             </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="panel-footer wizard-ftr bg-white">
+        <button class="btn btn-sm btn-success pull-left m-r-10" ng-click="backPrintSettings(selectedIndex)" ng-disabled="demoStatus">
+            <xe-translate text-value="Back">
+            </xe-translate>
+        </button>
+        <button ng-show="!statusMode" class="btn btn-sm btn-success pull-left m-r-10" ng-click="updateCostSetting('')" ng-disabled="demoStatus">
+            <xe-translate text-value="Save">
+            </xe-translate>
+        </button>
+        <button class="btn btn-sm btn-success pull-left m-r-10" ng-click="updateCostSetting('priceTableSetting')" ng-disabled="demoStatus">
+            <xe-translate text-value="Save And Continiue">
+            </xe-translate>
+        </button>
+    </div>

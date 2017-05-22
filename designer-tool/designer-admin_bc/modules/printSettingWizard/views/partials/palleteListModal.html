@@ -1,0 +1,24 @@
+<div class="modal fade stick-up" id="print_pallete_list_Modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrapper">
+            <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <i class="pg-close fs-14">
+                    </i>
+                </button>
+                <div class="container-xs-height full-height">
+                    <div class="row-xs-height">
+                        <div class="modal-body col-xs-height col-middle text-center">
+                            <div class="clearfix">
+                                <div class="cursor-pointer" ng-repeat="palette in allPrintPalette"  >
+                                    <div ng-click="selectedPalette($index)"  ng-class="{ 'selected': $index == selectedPaletteIndex}"  ng-if="palette.is_pattern == 0 || palette.is_pattern == 2"  class="color-pick m-b-5"  ng-style="{'background-color':palette.value}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
