@@ -63,4 +63,13 @@ interface CartInterface
      * @return string No of cart qty.
      */
     public function getTotalCartItem($quoteId, $store, $customerId);
+
+    /**
+     * @api
+     * @param int $lastOrderId
+     * @param int $range
+     * @param int $store
+     * @return string No of cart qty.
+     */
+    public function orderIdFromStore($lastOrderId, $range, $store);
 }

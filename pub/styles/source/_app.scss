@@ -10,26 +10,14 @@ body {
 }
 
 /*******************************************************************************
-* Grid & Layout
+* Grid
 *******************************************************************************/
 .columns {
   position: relative;
 }
 
-.ss-block {
-  box-sizing: border-box;
-  .block-title {
-    display: block;
-    text-align: center;
-  }
-}
-
 .columns .column.main {
   padding-bottom: 0;
-}
-
-.page-title-wrapper {
-  margin-bottom: 20px;
 }
 
 /*******************************************************************************
@@ -38,8 +26,21 @@ body {
 section {}
 
 /*******************************************************************************
-* Content Blocks
+* Blocks
 *******************************************************************************/
+.ss-block {
+  box-sizing: border-box;
+
+  .block-title {
+    display: block;
+    text-align: center;
+  }
+}
+
+.page-title-wrapper {
+  margin-bottom: 20px;
+}
+
 .block-title--main {
   border-bottom: 1px solid #ddd;
   h2, h3 {
@@ -114,7 +115,7 @@ section {}
 }
 
 /*******************************************************************************
-* List Styles
+* Lists
 *******************************************************************************/
 ul.bulleted {
   margin: 0 20px;
@@ -136,7 +137,7 @@ ul.bulleted {
 }
 
 /*******************************************************************************
-* Utility and Helper Classes
+* Utility Classes
 *******************************************************************************/
 .rimg {
   width: 100%;

@@ -8,10 +8,17 @@ button,
   &.primary {
     background-color: #024930;
     border-color: #013925;
+    color: #eee;
     &:hover {
       background-color: #035e3e;
       border-color: #013925;
+      color: #fff;
+      text-decoration: none;
     }
+  }
+
+  &.large {
+    padding: 10px 20px;
   }
 }
 

@@ -505,4 +505,45 @@ class Cart extends \Magento\Framework\Model\AbstractModel implements CartInterfa
 		$url= ($quoteId > 0)? $url.'?quoteId='.$quoteId : $url;
         return json_encode(array('is_Fault' => 0, 'totalCartItem' => $itemQty, 'checkoutURL' => $url), JSON_UNESCAPED_SLASHES);
     }
+    
+    /**
+     * @api
+     * @param int $lastOrderId
+     * @param int $range
+     * @param int $store
+     * @return string No of cart qty.
+     */
+    public function orderIdFromStore($lastOrderId, $range, $store)
+    {
+        $orders = $this->_orderModel->getCollection();
+        $orders->join(array('item' => 'sales_order_item'), 'main_table.entity_id = item.order_id AND item.custom_design>0 AND main_table.store_id=' . $store . ' ');
+        $orders->getSelect()->group('main_table.entity_id');
+        $orders->getSelect()->order('main_table.created_at ASC');
+        $orders->addAttributeToFilter('entity_id', array('gt' => $lastOrderId));
+        $range = intval($range);
+        $orders->getSelect()->limit($range);
+        $order_array = array();
+        $i = 0;
+        if ($range) {
+            foreach ($orders as $order) {
+                $i = ($i < 0) ? 0 : $i;
+                $order_array[$i] = array(
+                    'order_id' => $order->getId(),
+                    'order_incremental_id' => $order->getIncrementId(),
+                );
+                $i++;
+                $range--;
+            }
+        } else {
+            foreach ($orders as $order) {
+                $i = ($i < 0) ? 0 : $i;
+                $order_array[$i] = array(
+                    'order_id' => $order->getId(),
+                    'order_incremental_id' => $order->getIncrementId(),
+                );
+                $i++;
+            }
+        }
+        return json_encode(array('is_Fault' => 0, 'order_list' => $order_array));
+    }
 }
