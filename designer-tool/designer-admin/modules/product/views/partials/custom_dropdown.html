@@ -32,7 +32,7 @@
                 Set variable shape printing areas.
             </p>
         </div>
-        <div class="text-wrap" ng-show="boundary.name == 'multipleBoundary'">
+        <div class="text-wrap" ng-show="boundary.name == 'multipleBoundary'" ng-if = "isMultiplePrint">
             <h4>
                 Multiple Printing Area
             </h4>
@@ -82,7 +82,7 @@
                 </p>
             </div>
         </li>
-        <li ng-click="changeMaskBoundary('multipleBoundary')">
+        <li ng-click="changeMaskBoundary('multipleBoundary')" ng-show = "isMultiplePrint == true">
             <div class="text-wrap">
                 <h4>
                     Multiple Printing Area

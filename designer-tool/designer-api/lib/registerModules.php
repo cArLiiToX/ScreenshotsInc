@@ -50,6 +50,7 @@ $defineModules = array(
     'savePaletteDetails' => 'colorPallete',
     'assignPrinttypeAndCategoryToPallet' => 'colorPallete',
     'updateMaxPalettes' => 'colorPallete',
+    'updatePalleteDragCategoryList' => 'colorPallete',
 
     /*template*/
     'getTemplateCategory' => 'template',
@@ -105,6 +106,7 @@ $defineModules = array(
     'getShapeSvgPath' => 'font',
     'getWebfontsTtfPath' => 'font',
     'addFontCategory' => 'font',
+    'updateFontDragCategoryList' => 'font',
 
     /*design*/
     'allDesignCatagory' => 'design',
@@ -142,6 +144,10 @@ $defineModules = array(
     'updateDesignData' => 'design',
     'unMapDesignFromRelTable' => 'design',
     'removeAppImage' => 'design',
+    'updateDragCategoryList' => 'design',
+    'updateDragSubCategoryList' => 'design',
+	'setDefaultCatSubcat' => 'design',
+	'getDefaultCatSubcat' => 'design',
 
     /*imageEdit*/
     'getMaskImageList' => 'imageEdit',
@@ -202,7 +208,7 @@ $defineModules = array(
     'getUser_privileges' => 'user',
     'getSecurityQuestions' => 'user',
     'forgotPassword' => 'user',
-    'changePassword' => 'user',	
+    'changePassword' => 'user',
     'userLogout' => 'user',
     'isUserLoggedIn' => 'user',
 
@@ -257,6 +263,10 @@ $defineModules = array(
     'downloadOrderDetail' => 'orders',
     'downloadSvg' => 'orders',
     'customizeOrder' => 'orders',
+    'getRefIdByOrderDetailId' => 'orders',
+    'downloadSingleOrderZipApp' => 'orders',
+    'getPendingOrdersCount' => 'orders',
+    'orderGenerate' => 'orders',
 
     /*printProfile*/
     'getAllPrintMethods' => 'printProfile',
@@ -294,6 +304,8 @@ $defineModules = array(
     'addNewPrintSize' => 'printProfile',
     'updatePrintSizeArea' => 'printProfile',
     'deletePrintArea' => 'printProfile',
+    'getMaxmNumberOfSelectColor' => 'printProfile',
+    'addUpdateNameNumberExtraSidePrice' => 'printProfile',
 
     /*setting*/
     'fetchCustomMaskData' => 'setting',
@@ -335,10 +347,12 @@ $defineModules = array(
     'removeLanguage' => 'setting',
     'getThemeColors' => 'setting',
     'fetchTabDetails' => 'setting',
-	'addSocialImageDetails' => 'setting',
-	'updateSocialImageDetails' => 'setting',
-	'getSocialImageDetails' => 'setting',
-
+    'addSocialImageDetails' => 'setting',
+    'updateSocialImageDetails' => 'setting',
+    'getSocialImageDetails' => 'setting',
+    'updateStyleCss' => 'setting',
+    'getStyleCss' => 'setting',
+    'getStoreAttributes' => 'setting',
 
     /*upgrade*/
     'versionUpgrade' => 'upgrade',
@@ -380,6 +394,16 @@ $defineModules = array(
     'getDesignState' => 'carts',
     'getTotalCartItem' => 'carts',
     'addTemplateToCart' => 'carts',
+    'getNameAndNumberByRefId' => 'carts',
+    'getVariantId' => 'carts',
+
+    /*multipleBoundary */
+    'getMultipleBoundaryList' => 'multipleBoundary',
+    'getMultiBoundMaskData' => 'multipleBoundary',
+    'updateMultipleBoundary' => 'multipleBoundary',
+    'deleteMultipleBoundary' => 'multipleBoundary',
+    'saveMultipleBoundary' => 'multipleBoundary',
+    'getMultiBoundPrintMethods' => 'multipleBoundary',
 
     /*products*/
     'getProductAdditionalPrice' => 'products',
@@ -435,20 +459,23 @@ $defineModules = array(
     'installModule' => 'products',
     'isCustomizable' => 'products',
     'getSimpleProductId' => 'products',
-	
-	/* Authentication */
-	
-	'authenticateUser' => 'authentication',
-	'authorizeUser' => 'authentication',
+    'editCustomProduct' => 'products',
+
+    /* Authentication */
+
+    'authenticateUser' => 'authentication',
+    'authorizeUser' => 'authentication',
+
 );
 
 /* Initialize restricted modules and mtthods */
 $restrictedModules = array(
-	'getOrders' => 'orders',
+    'getOrders' => 'orders',
     'getOrdersGraph' => 'orders',
     'getOrderDetails' => 'orders',
     'downloadOrdersZipApp' => 'orders',
-    'downloadSvg' => 'orders'
+    'getPendingOrdersCount' => 'orders',
+    'downloadSvg' => 'orders',
 );
 
 $defineArray = array_unique($defineModules);

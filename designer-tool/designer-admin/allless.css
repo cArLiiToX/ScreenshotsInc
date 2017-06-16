@@ -865,15 +865,15 @@
 }
 .range-delete-icon {
   position: absolute;
-  left: -33px;
+  left: -20px;
   z-index: 99;
   background-color: #F0F0F0;
   color: #fff;
-  height: 48px;
-  width: 48px;
-  margin-top: -8px;
+  height: 36px;
+  width: 36px;
+  margin-top: 0px;
   text-align: center;
-  line-height: 45px;
+  line-height: 33px;
   border-radius: 5px 0 0 5px;
 }
 .range-delete-icon:hover {

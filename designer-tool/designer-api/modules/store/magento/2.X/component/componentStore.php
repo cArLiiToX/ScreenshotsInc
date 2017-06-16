@@ -34,6 +34,8 @@ class ComponentStore
     const CLEAR_ZIP_DURATION = 1; //1 Day
     const CLEAR_USERSLOT_DURATION = 2; //In Day(s)
     const HTML5_BACKGROUND_PATTERN_DIR = HTML5_BACKGROUND_PATTERN_DIR;
+    const HTML5_MULTIPLE_BOUNDARY_DIR = HTML5_MULTIPLE_BOUNDARY_DIR;
+	const ADMIN_LANGUAGE_DIR = ADMIN_LANGUAGE_DIR;
 
     /**
      * Check soap connection to magento
@@ -70,7 +72,7 @@ class ComponentStore
         }*/
         return '57567567567567fghgf565'; //$result;
     }
-    
+
     public function apiCall($model, $service, $param)
     {
         $path = $_SERVER['DOCUMENT_ROOT'] . '/' . TOOL_CONTAINER_DIR . '/';
@@ -162,8 +164,10 @@ class ComponentStore
                     $sql = "Select image,thumbnail,type,customer_id from  " . TABLE_PREFIX . "image_data where refid=" . $refid;
                 }
 
-                if($uid!="" || $uid!='0')
-                $sql = "Select image,thumbnail,type,customer_id,uid from  " . TABLE_PREFIX."image_data where uid='". $uid."'"; 
+                if ($uid != "" || $uid != '0') {
+                    $sql = "Select image,thumbnail,type,customer_id,uid from  " . TABLE_PREFIX . "image_data where uid='" . $uid . "'";
+                }
+
                 if ($customerId && $customerId > 0) {
                     $sql = "Select image,thumbnail,type,customer_id,uid from  " . TABLE_PREFIX . "image_data where customer_id=" . $customerId;
                 }
@@ -222,7 +226,7 @@ class ComponentStore
         $result = array();
         try {
             if ($user_id && $user_id > 0) {
-                $sql = "Select slot_id, user_id, status, slot_image, uid from " . TABLE_PREFIX . "user_slot where user_id=" . $user_id;
+                $sql = "Select slot_id, user_id, json_data, status, slot_image, uid from " . TABLE_PREFIX . "user_slot where user_id=" . $user_id;
                 //$sql .= ($user_id && $user_id>0)?"where user_id=".$user_id:"where uid='". $uid."'";
                 $result = $this->executeFetchAssocQuery($sql);
             }
@@ -230,15 +234,30 @@ class ComponentStore
             if (!empty($result)) {
                 $slotBasePath = $this->getSlotsPreviewURL();
                 foreach ($result as $rows) {
+		    $CapturedImageUrl=$this->getCapturedImageUrl();
                     $imageURL = ($rows['user_id'] && $rows['user_id'] > 0) ? $slotBasePath . $rows['user_id'] . '/' . $rows['slot_image'] : $slotBasePath . $rows['uid'] . '/' . $rows['slot_image'];
-                    $responseData[] = array(
-                        "slotImage" => $rows['slot_image'],
-                        "slotImageUrl" => $imageURL,
-                        "slotId" => $rows['slot_id'],
-                        "userId" => $rows['user_id'],
-                        "status" => $rows['status'],
-                        "uid" => $rows['uid'],
-                    );
+                    if (preg_match('|^http(s)?://|i', $this->formatJSONToArray($rows['json_data'], false)->captureSlot)) {
+					    $responseData[] = array(
+							"slotImage" => $rows['slot_image'],
+							"slotImageUrl" => $imageURL,
+							"slotId" => $rows['slot_id'],
+							"userId" => $rows['user_id'],
+							"status" => $rows['status'],
+							"uid" => $rows['uid'],
+							"captureSlot" => $this->formatJSONToArray($rows['json_data'], false)->captureSlot
+						);
+					} else {
+						$responseData[] = array(
+							"slotImage" => $rows['slot_image'],
+							"slotImageUrl" => $imageURL,
+							"slotId" => $rows['slot_id'],
+							"userId" => $rows['user_id'],
+							"status" => $rows['status'],
+							"uid" => $rows['uid'],
+							"captureSlot" => $CapturedImageUrl.$this->formatJSONToArray($rows['json_data'], false)->captureSlot
+						);
+					}	
+					$CapturedImageUrl=null;
                 }
             } else {
                 $responseData = array("status" => "nodata");
@@ -264,5 +283,27 @@ class ComponentStore
     {
         $arr = json_decode($data, $returnArr);
         return $arr;
+    }
+
+    /**
+     *
+     *date created (dd-mm-yy)
+     *date modified 02-09-2017 (dd-mm-yy)
+     *get Format Json Array
+     *
+     *@return boolean
+     */
+    public function checkSendQuote()
+    {
+        //if(APPNAME != '')$url = $this->getCurrentUrl().'/designer-tool/localsettings.js';
+        $url = $this->getCurrentUrl() . '/designer-tool/localsettings.js';
+        $tarray = array(" ", "\n", "\r");
+        $contents = $this->getFileContents($url);
+        $contents = trim(str_replace($tarray, "", $contents));
+        $contents = substr($contents, 0, -1);
+        $contents = explode("localSettings=", $contents);
+        $contents = json_decode($contents['1'], true);
+        $isQuote = $contents['is_send_a_quote'];
+        return $isQuote;
     }
 }

@@ -10,7 +10,7 @@
                         <div class="form-group input-group">
                             <input class="form-control" 
                             ng-model="tempMaskData[selectedThumbIndex].customsize.width" 
-                            placeholder="width" ng-keyup="drawBoundary()" type="text"/>
+                            placeholder="width" ng-keyup="setDefaultDimension(tempMaskData[selectedThumbIndex].customsize.width,'width')" type="text"/>
                             <span class="input-group-addon" ng-bind="productUnit">
                                 <!-- inch -->
                             </span>
@@ -24,7 +24,7 @@
                     <div class="form-group input-group">
                         <input class="form-control" 
                         ng-model="tempMaskData[selectedThumbIndex].customsize.height"
-                        placeholder="height" ng-keyup="drawBoundary()" type="text"/>
+                        placeholder="height" ng-keyup="setDefaultDimension(tempMaskData[selectedThumbIndex].customsize.height,'height')" type="text"/>
                         <span class="input-group-addon" ng-bind="productUnit">
                             <!-- inch -->
                         </span>
@@ -40,7 +40,7 @@
                 <div class="form-group input-group">
                     <input class="form-control" 
                     ng-model="tempMaskData[selectedThumbIndex].custom_min_width"
-                    placeholder="width" type="text"/>
+                    placeholder="width" type="text" ng-keyup="setMinDimension(tempMaskData[selectedThumbIndex].custom_min_width,'width')"/>
                     <span class="input-group-addon" ng-bind="productUnit">
                         <!-- inch -->
                     </span>
@@ -54,7 +54,7 @@
             <div class="form-group input-group">
                 <input class="form-control" 
                 ng-model="tempMaskData[selectedThumbIndex].custom_min_height"
-                placeholder="height" type="text"/>
+                placeholder="height" type="text" ng-keyup="setMinDimension(tempMaskData[selectedThumbIndex].custom_min_height,'height')"/>
                 <span class="input-group-addon" ng-bind="productUnit">
                     <!-- inch -->
                 </span>
@@ -70,7 +70,7 @@
         <div class="form-group input-group">
             <input class="form-control" 
             ng-model="tempMaskData[selectedThumbIndex].custom_max_width"
-            placeholder="width" type="text"/>
+            placeholder="width" type="text" ng-keyup="setMaxDimension(tempMaskData[selectedThumbIndex].custom_max_width,'width')"/>
             <span class="input-group-addon" ng-bind="productUnit">
                 <!-- inch -->
             </span>
@@ -84,7 +84,7 @@
     <div class="form-group input-group">
         <input class="form-control" 
         ng-model="tempMaskData[selectedThumbIndex].custom_max_height"
-        placeholder="height" type="text"/>
+        placeholder="height" type="text" ng-keyup="setMaxDimension(tempMaskData[selectedThumbIndex].custom_max_height,'height')"/>
         <span class="input-group-addon" ng-bind="productUnit">
             <!-- inch -->
         </span>

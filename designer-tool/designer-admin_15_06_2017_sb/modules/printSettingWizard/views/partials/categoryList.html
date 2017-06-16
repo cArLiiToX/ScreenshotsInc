@@ -1,0 +1,211 @@
+<div class="panel-heading separator p-t-0">
+    <div class="panel-title">
+        <h4>
+            <xe-translate text-value="Assign to the Following">
+            </xe-translate>
+        </h4>
+    </div>
+</div>
+<div class="panel-body m-t-20">
+    <form class="form-horizontal" role="form" autocomplete="off">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <xe-translate text-value="Products">
+                    </xe-translate>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12">
+                    <div class="checkbox check-info pull-left m-r-10" ng-repeat="pCategory in productCategory1">
+                        <input type="checkbox" value="pro_{{ pCategory.id }}" name="pro_{{ pCategory.name }}" id="pro_{{ pCategory.id }}" ng-model="pCategory.status" ng-change="productCategoryChanged(pCategory.status,pCategory,$index)"/>
+                        <label for="pro_{{ pCategory.id }}">
+                            {{ pCategory.name }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <xe-translate text-value="Graphics">
+                    </xe-translate>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12">
+                    <div class="checkbox check-info pull-left m-r-10"  ng-repeat="clipArtCategory in clipArtCategory1">
+                        <input type="checkbox" value="clip_{{ clipArtCategory.id }}" name="clip_{{ clipArtCategory.name }}" id="clip_{{ clipArtCategory.id }}" ng-model="status" ng-change="designCategoryChanged(status,clipArtCategory,$index)"  ng-checked="clipArtCategory.status == '1'"/>
+                        <label for="clip_{{ clipArtCategory.id }}">
+                            {{ clipArtCategory.category_name }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <xe-translate text-value="Pallete Category">
+                    </xe-translate>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12">
+                    <div ng-repeat="category in palleteCategory1">
+                        <div class="checkbox check-info pull-left m-r-10">
+                            <input type="checkbox" id="pall_printColorCategory_{{ category.id }}" ng-model="status1" ng-change="palleteCategoryChanged(status1,category,$index)" ng-checked="category.status"/>
+                            <label for="pall_printColorCategory_{{ category.id }}">
+                                {{ category.category_name }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <xe-translate text-value="Template">
+                    </xe-translate>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12">
+                    <div class="checkbox check-info pull-left m-r-10" ng-repeat="tCategory in templateCategory1">
+                        <input type="checkbox" value="temp_{{ tCategory.id }}" name="temp_{{ tCategory.name }}" id="temp_{{ tCategory.id }}" ng-model="status" ng-change="templateCategoryChanged(status,tCategory,$index)"  ng-checked="tCategory.status == '1'"/>
+                        <label for="temp_{{ tCategory.id }}">
+                            {{ tCategory.name }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <xe-translate text-value="Background">
+                    </xe-translate>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12">
+                    <div class="checkbox check-info pull-left m-r-10" ng-repeat="bCategory in backgroundCategory1">
+                        <input type="checkbox" value="back_{{ bCategory.id }}" name="back_{{ bCategory.category_name }}" id="back_{{ bCategory.id }}" ng-model="status" ng-change="backgroundCategoryChanged(status,bCategory,$index)"  ng-checked="bCategory.status == '1'"/>
+                        <label for="back_{{ bCategory.id }}">
+                            {{ bCategory.category_name }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <xe-translate text-value="Background Patterns">
+                    </xe-translate>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12">
+                    <div class="checkbox check-info pull-left m-r-10" ng-repeat="patternCategory in backgroundPatternCategory1">
+                        <input type="checkbox" value="patt_{{ patternCategory.id }}" name="patt_{{ patternCategory.category_name }}" id="patt_{{ patternCategory.id }}" ng-model="status" ng-change="backgroundPatternCategoryChanged(status,patternCategory,$index)"  ng-checked="patternCategory.status == '1'"/>
+                        <label for="patt_{{ patternCategory.id }}">
+                            {{ patternCategory.category_name }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <xe-translate text-value="Web fonts">
+                    </xe-translate>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12 m-b-20">
+                    <div class="checkbox check-info pull-left m-r-10" ng-repeat="fCategory in fontCategory1">
+                        <input type="checkbox" value="font_{{ fCategory.id }}" name="font_{{ fCategory.name }}" id="font_{{ fCategory.id }}" ng-model="status" ng-change="webFontCategoryChanged(status,fCategory,$index)"  ng-checked="fCategory.status == '1'"/>
+                        <label for="font_{{ fCategory.id }}">
+                            {{ fCategory.category_name }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="form-group">
+            <label class="col-sm-2 control-label"><xe-translate text-value="Product Category"></xe-translate></label>
+            <div class="col-sm-10">
+                <div class="checkbox check-info pull-left m-r-10" ng-repeat="pCategory in productCategory1">
+                    <input type="checkbox" value="pro_{{pCategory.id}}" name="pro_{{pCategory.name}}" id="pro_{{pCategory.id}}"
+                        ng-model="pCategory.status" ng-change="productCategoryChanged(pCategory.status,pCategory,$index)">
+                    <label for="pro_{{pCategory.id}}">{{pCategory.name}}</label>
+                </div>
+            </div>
+        </div> -->
+        <!-- <div class="form-group">
+            <label class="col-sm-2 control-label"><xe-translate text-value="Graphics Category"></xe-translate></label>
+                <div class="col-sm-10">
+                    <div class="checkbox check-info pull-left m-r-10" 
+                        ng-repeat="clipArtCategory in clipArtCategory1">
+                        <input type="checkbox" value="clip_{{clipArtCategory.id}}" name="clip_{{clipArtCategory.name}}" id="clip_{{clipArtCategory.id}}"
+                            ng-model="status" ng-change="designCategoryChanged(status,clipArtCategory,$index)" 
+                            ng-checked="clipArtCategory.status == '1'">
+                        <label for="clip_{{clipArtCategory.id}}">{{clipArtCategory.category_name}}</label>
+                    </div>
+                </div>
+        </div> -->
+        <!-- <div class="form-group">
+            <label class="col-sm-2 control-label"><xe-translate text-value="Pallete Category"></xe-translate></label>
+            <div class="col-sm-10">
+                <div ng-repeat="category in palleteCategory1">
+                    <div class="checkbox check-info pull-left m-r-10">
+                        <input type="checkbox" id="pall_printColorCategory_{{category.id}}"
+                            ng-model="status1" ng-change="palleteCategoryChanged(status1,category,$index)"
+                            ng-checked="category.status">
+                        <label for="pall_printColorCategory_{{category.id}}">{{category.category_name}}</label>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <!--   <div class="form-group">
+              <label class="col-sm-2 control-label"><xe-translate text-value="Template Category"></xe-translate></label>
+                  <div class="col-sm-10">
+                      <div class="checkbox check-info pull-left m-r-10" ng-repeat="tCategory in templateCategory1">
+                          <input type="checkbox" value="temp_{{tCategory.id}}" name="temp_{{tCategory.name}}" id="temp_{{tCategory.id}}"
+                              ng-model="status" ng-change="templateCategoryChanged(status,tCategory,$index)" 
+                              ng-checked="tCategory.status == '1'">
+                          <label for="temp_{{tCategory.id}}">{{tCategory.name}}</label>
+                      </div>
+                  </div>
+          </div> -->
+        <!-- <div class="form-group ">
+            <label class="col-sm-2 control-label"><xe-translate text-value="Webfont Category"></xe-translate></label>
+            <div class="col-sm-10 m-b-20">
+                <div class="checkbox check-info pull-left m-r-10" ng-repeat="fCategory in fontCategory1">
+                    <input type="checkbox" value="font_{{fCategory.id}}" name="font_{{fCategory.name}}" id="font_{{fCategory.id}}"
+                        ng-model="status" ng-change="webFontCategoryChanged(status,fCategory,$index)" 
+                        ng-checked="fCategory.status == '1'">
+                    <label for="font_{{fCategory.id}}">{{fCategory.category_name}}</label>
+                </div>
+            </div>
+        </div> -->
+    </form>
+</div>
+<div class="panel-footer wizard-ftr bg-white">
+    <button class="btn btn-sm btn-success pull-left m-r-10" ng-click="backPrintSettings(selectedIndex)" ng-disabled="demoStatus">
+        <xe-translate text-value="Back">
+        </xe-translate>
+    </button>
+    <button ng-show="!statusMode" class="btn btn-sm btn-success pull-left m-r-10" ng-click="updateCategory('')" ng-disabled="demoStatus">
+        <xe-translate text-value="Save">
+        </xe-translate>
+    </button>
+    <button class="btn btn-sm btn-success pull-left m-r-10" ng-click="updateCategory('colorCategory')" ng-disabled="demoStatus">
+        <xe-translate text-value="Save And Continiue">
+        </xe-translate>
+    </button>
+</div>

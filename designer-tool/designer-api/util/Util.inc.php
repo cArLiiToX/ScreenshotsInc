@@ -6,6 +6,7 @@ class UTIL extends REST
     const DB_USER = USER;
     const DB_PASSWORD = PASSWORD;
     const DB_NAME = DBNAME;
+    const DB_PORT = '';
     const APIURL = APIURL;
     const APIUSER = APIUSER;
     const APIPASS = APIPASS;
@@ -28,11 +29,19 @@ class UTIL extends REST
     ####################################################
     public function dbConnect()
     {
-        $db = mysqli_connect(self::DB_SERVER, self::DB_USER, self::DB_PASSWORD);
-        if ($db) {
-            mysqli_select_db($db, self::DB_NAME) or die('ERRROR:' . mysqli_error());
-            $this->db = $db;
-        }
+		if (self::DB_PORT == '') {
+			$db = mysqli_connect(self::DB_SERVER, self::DB_USER, self::DB_PASSWORD);
+			if ($db) {
+				mysqli_select_db($db, self::DB_NAME) or die('ERRROR:' . mysqli_error());
+				$this->db = $db;
+			}
+		} else {
+			$db = mysqli_connect(self::DB_SERVER, self::DB_USER, self::DB_PASSWORD, self::DB_NAME, self::DB_PORT) or die('ERRROR:' . mysqli_error());
+			if ($db) {
+				$this->db = $db;
+			}
+		}
+        
     }
 
     ####################################################
@@ -41,9 +50,11 @@ class UTIL extends REST
     public function executeFetchAssocQuery($query)
     {
         try {
-            if (!$this->db) {
-                $this->db = mysqli_connect(self::DB_SERVER, self::DB_USER, self::DB_PASSWORD);
-            }
+            if (!$this->db && self::DB_PORT == '') {
+                $this->db = mysqli_connect(self::DB_SERVER, self::DB_USER, self::DB_PASSWORD, self::DB_NAME);
+            } else if (!$this->db && self::DB_PORT != '') {
+				$this->db = mysqli_connect(self::DB_SERVER, self::DB_USER, self::DB_PASSWORD, self::DB_NAME, self::DB_PORT);
+			}
 
             mysqli_set_charset($this->db, 'utf8');
             mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -205,24 +216,26 @@ class UTIL extends REST
     ####################################################
     ############## syncOrdersZip ###################
     ####################################################
-    public function formatJson($jsonData)
+    public function formatJson($jsonData,$slash)
     {
         $formatted = $jsonData;
+        if ($slash == 0) {
         $formatted = str_replace('"{', '{', $formatted);
         $formatted = str_replace('}"', '}', $formatted);
         $formatted = str_replace('\n', '<br/>', $formatted);
         $formatted = str_replace('\\', '', $formatted);
+        }
         return $formatted;
     }
 
     ####################################################
     ############## syncOrdersZip ###################
     ####################################################
-    public function json($data)
+    public function json($data, $slash = 0)
     {
         if (is_array($data)) {
             $formatted = json_encode($data, JSON_UNESCAPED_UNICODE);
-            return $this->formatJson($formatted);
+            return $this->formatJson($formatted, $slash);
         }
     }
 
@@ -331,11 +344,44 @@ class UTIL extends REST
         $url = $this->getCurrentUrl();
         $url = explode('/', $url);
         $result = $url[2];
-        //$result = substr(XEPATH,0,-1);
+        $result = preg_replace('/^www\./', '', $result);
         $sql = "Select store_id FROM " . TABLE_PREFIX . "domain_store_rel Where domain_name='" . $result . "' limit 1";
         $data = $this->executeFetchAssocQuery($sql);
         $domain = $data[0]['store_id'];
         return (!empty($data) && $domain) ? $domain : 1;
+    }
+    /**
+     *
+     *date created 09-02-2017(dd-mm-yy)
+     *date modified (dd-mm-yy)
+     *Get store attributes
+     */
+    public function getStoreAttributes($result)
+    {
+		if(!isset($result) && empty($result)) 
+            $result = $this->_request['result'];
+        $sql = "Select attr_value FROM " . TABLE_PREFIX . "store_attributes Where attr_key='" . $result . "'";
+        $data = $this->executeFetchAssocQuery($sql);
+        $attribute = $data[0]['attr_value'];
+        if($this->_request['result']){
+            $this->response(($attribute), 200);
+        }else{
+             return ($attribute);
+        }
+    }
+
+    ####################################################
+    ############## syncOrdersZip ###################
+    ####################################################
+    public function getFileContents($url)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        $data = curl_exec($curl);
+        curl_close($curl);
+        return $data;
     }
 
     //@ All the services which defines path @//

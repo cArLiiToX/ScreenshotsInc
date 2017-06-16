@@ -21,29 +21,51 @@ class OrdersStore extends UTIL {
 		$error = false;
 		$result = $this->storeApiLogin();
 		if($this->storeApiLogin==true){
-			$lastOrderId = (isset($this->_request['lastOrderId']) && trim($this->_request['lastOrderId'])!='')?trim($this->_request['lastOrderId']):0;
-			$range = (isset($this->_request['range']) && trim($this->_request['range'])!='')?trim($this->_request['range']):0;
-			$start = (isset($this->_request['start']) && trim($this->_request['start'])!='')?trim($this->_request['start']):0;
-			$fromDate = (isset($this->_request['fromDate']) && trim($this->_request['fromDate'])!='')?trim($this->_request['fromDate']):'';
-			$toDate = (isset($this->_request['toDate']) && trim($this->_request['toDate'])!='')?trim($this->_request['toDate']):'';
-			 
-			try {
-				
-				$result =$this->datalayer->getAllOrders($start,$range,$lastOrderId);
-				if($result){
-					$result = json_decode($result,true);
-					foreach($result['order_list'] as $k=>$order) {
-						$select_sql = 'SELECT order_status FROM '.TABLE_PREFIX.'sync_order  WHERE orderId="'.$order['order_incremental_id'].'"';
-						$rows = $this->executeGenericDQLQuery($select_sql);
-						$order['print_status'] = $rows[0]['order_status'];	
-						$result['order_list'][$k] =$order;
-					} 
+			if ($this->checkSendQuote()) {
+                $lastOrderId = (isset($this->_request['start']) && trim($this->_request['start']) != '') ? trim($this->_request['start']) : 0;
+                $range = (isset($this->_request['range']) && trim($this->_request['range']) != '') ? trim($this->_request['range']) : 0;
+                try {
+                    $sql = 'Select id,order_date,customer_name from ' . TABLE_PREFIX . 'customer_order_info order by id desc';
+                    $sql .= " LIMIT $lastOrderId, $range";
+                    $result['is_Fault'] = 0;
+                    $result['order_list'] = $this->executeFetchAssocQuery($sql);
+                    foreach ($result['order_list'] as $k => $order) {
+                        $statusSql = 'SELECT order_status FROM ' . TABLE_PREFIX . 'sync_order  WHERE orderId="' . $order['id'] . '"';
+                        $orderStatus = $this->executeGenericDQLQuery($statusSql);
+                        $order['print_status'] = $orderStatus[0]['order_status'];
+                        $order['order_incremental_id'] = $order['id'];
+                        $order['order_id'] = $order['id'];
+                        $order['order_status'] = 'pending';
+                        $result['order_list'][$k] = $order;
+                    }
+                } catch (Exception $e) {
+                    $result = json_encode(array('isFault' => 1, 'faultMessage' => $e->getMessage()));
+                    $error = true;
+                }
+            } else {
+				$lastOrderId = (isset($this->_request['lastOrderId']) && trim($this->_request['lastOrderId'])!='')?trim($this->_request['lastOrderId']):0;
+				$range = (isset($this->_request['range']) && trim($this->_request['range'])!='')?trim($this->_request['range']):0;
+				$start = (isset($this->_request['start']) && trim($this->_request['start'])!='')?trim($this->_request['start']):0;
+				$fromDate = (isset($this->_request['fromDate']) && trim($this->_request['fromDate'])!='')?trim($this->_request['fromDate']):'';
+				$toDate = (isset($this->_request['toDate']) && trim($this->_request['toDate'])!='')?trim($this->_request['toDate']):'';
+				 
+				try {
+					
+					$result =$this->datalayer->getAllOrders($start,$range,$lastOrderId);
+					if($result){
+						$result = json_decode($result,true);
+						foreach($result['order_list'] as $k=>$order) {
+							$select_sql = 'SELECT order_status FROM '.TABLE_PREFIX.'sync_order  WHERE orderId="'.$order['order_incremental_id'].'"';
+							$rows = $this->executeGenericDQLQuery($select_sql);
+							$order['print_status'] = $rows[0]['order_status'];	
+							$result['order_list'][$k] =$order;
+						} 
+					}
+				}catch(Exception $e) {
+					$result = json_encode(array('isFault' => 1, 'faultMessage'=>$e->getMessage()));
+					$error = true;
 				}
-			}catch(Exception $e) {
-				$result = json_encode(array('isFault' => 1, 'faultMessage'=>$e->getMessage()));
-				$error = true;
 			}
-			
 			if(!$error){
 				print_r(json_encode($result)); exit;
 			}else{
@@ -339,7 +361,6 @@ class OrdersStore extends UTIL {
 					}
 					
                     if (file_exists($orderFolderPath . "/" . $orderNo)) {
-                        array_push($order_list_arr, array("order_id" => $order_id_arry2['order_id'], "order_incremental_id" => $order_incremental_id, "order_type" => $orderTypeFlag));
                         if (file_exists($orderFolderPath . '/' . $orderNo . '/order.json')) {
                             $order_json = file_get_contents($orderFolderPath . '/' . $orderNo . '/order.json');
                             $json_content = json_decode($order_json, true);
@@ -448,6 +469,7 @@ class OrdersStore extends UTIL {
                                 }
                             }
                         }
+						 array_push($order_list_arr, array("order_id" => $order_id_arry2['order_id'], "order_incremental_id" => $order_incremental_id, "order_type" => $orderTypeFlag));
                     }
                 }
                 $order_ary = array();
@@ -487,6 +509,27 @@ class OrdersStore extends UTIL {
 	*/
 	public function customizeOrder(){
 		echo $ref_id = $this->datalayer->customizeOrder($this->_request['order_id']);exit;
+	}
+	/**
+     * Get refid by order_details_id
+     *
+     * @param   Int($orderDetailId)
+     * @return  Int
+     *
+     */
+	public function getRefIdByOrderDetailId(){
+		echo $ref_id = $this->datalayer->getRefIdByOrderDetailId($this->_request['orderDetailId']);exit;
+	}
+	/**
+     * get pending order count by last order id
+     *
+     * @param   Int($last_id)
+     * @return  Array($result)
+     *
+     */
+	public function getPendingOrdersCount(){
+		$result = $this->datalayer->getPendingOrdersCount($this->_request['last_id']);
+		$this->response($this->json($result), 200);
 	}
 	
 	

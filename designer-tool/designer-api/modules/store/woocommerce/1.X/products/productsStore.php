@@ -22,11 +22,12 @@ class ProductsStore extends UTIL
     {
         header('HTTP/1.1 200 OK');
         $error = '';
+        $sizetexonomy = "pa_".$this->getStoreAttributes("xe_size");
         $result = $this->storeApiLogin();
         if ($this->storeApiLogin == true) {
             $key = $GLOBALS['params']['apisessId'];
             try {
-                $sizes = get_terms('pa_xe_size', 'hide_empty = 0');
+                $sizes = get_terms($sizetexonomy, 'hide_empty = 0');
                 $size_array = array();
                 $i = 0;
                 foreach ($sizes as $size) {
@@ -70,7 +71,7 @@ class ProductsStore extends UTIL
             if ($product_id != 0) {
                 $result = $this->wcApi->get_product($product_id);
                 foreach ($result->product->attributes as $attribute) {
-                    if (isset($attribute->name) && $attribute->name == 'xe_color') {
+                    if (isset($attribute->name) && $attribute->name == $this->getStoreAttributes("xe_color")) {
                         $productColors = $attribute->options;
                     }
                 }
@@ -85,8 +86,9 @@ class ProductsStore extends UTIL
             $table_taxo = $wpdb->prefix . "term_taxonomy";
 
             $key = $GLOBALS['params']['apisessId'];
+            $colortexonomy = "pa_".$this->getStoreAttributes("xe_color");
             try {
-                $sql = "SELECT t.term_id, t.name, t.slug FROM $table_term t LEFT JOIN $table_taxo tt ON (t.term_id = tt.term_id)  WHERE tt.taxonomy='pa_xe_color' ORDER BY t.term_id ASC $limit";
+                $sql = "SELECT t.term_id, t.name, t.slug FROM $table_term t LEFT JOIN $table_taxo tt ON (t.term_id = tt.term_id)  WHERE tt.taxonomy='".$colortexonomy."' ORDER BY t.term_id ASC $limit";
                 $colors = $wpdb->get_results($sql) or die(mysql_error());
                 $color_array = array();
                 $i = 0;
@@ -157,7 +159,7 @@ class ProductsStore extends UTIL
         if ($this->_request['categoryid'] != '' && $this->_request['categoryid'] != 0) {
             $cat = $this->_request['categoryid'];
             $table_name = $wpdb->prefix . "terms";
-            $slug = $wpdb->get_var("SELECT slug FROM $table_name WHERE term_id='$cat'");
+            $slug = $wpdb->get_var("SELECT slug FROM $table_name WHERE term_id = '$cat'");
             $filter['filter[category]'] = $slug;
         }
         $error = false;
@@ -175,37 +177,43 @@ class ProductsStore extends UTIL
                     $refid = get_post_meta($value->id, 'refid', true);
                     $variant = array();
                     $catArr = $value->categories;
-                    if ((isset($this->_request['preDecorated']) && $this->_request['preDecorated'] == 'false')) {
-                        if ($refid == '') {
-                            if ($this->_request['searchstring'] != '') {
-                                $search = $this->_request['searchstring'];
-                                if (($value->title == $search) || strlen(stristr($value->title, $search)) > 0 || in_array($search, $value->tags)) {
+                    foreach($value->attributes as $attribute)
+                    {
+                        if (isset($attribute->name) && $attribute->name == 'xe_is_designer' && in_array(1, $attribute->options))
+                        {
+                            if ((isset($this->_request['preDecorated']) && $this->_request['preDecorated'] == 'false')) {
+                                if ($refid == '') {
+                                    if ($this->_request['searchstring'] != '') {
+                                        $search = $this->_request['searchstring'];
+                                        if (($value->title == $search) || strlen(stristr($value->title, $search)) > 0 || in_array($search, $value->tags)) {
+                                            $productsArr[] = array('id' => $value->id, 'name' => $value->title, 'description' => wp_strip_all_tags($value->description), 'price' => $value->price, 'thumbnail' => $value->images[0]->src, 'image' => $value->images[0]->src, 'category' => $catArr);
+                                            $count++;
+                                        }
+                                    } else {
+                                        $productsArr[] = array('id' => $value->id, 'name' => $value->title, 'description' => wp_strip_all_tags($value->description), 'price' => $value->price, 'thumbnail' => $value->images[0]->src, 'image' => $value->images[0]->src, 'category' => $catArr);
+                                        $count++;
+                                    }
+                                }
+                            } else {
+                                if ($this->_request['searchstring'] != '') {
+                                    $search = $this->_request['searchstring'];
+                                    if (($value->title == $search) || strlen(stristr($value->title, $search)) > 0 || in_array($search, $value->tags)) {
+                                        $productsArr[] = array('id' => $value->id, 'name' => $value->title, 'description' => wp_strip_all_tags($value->description), 'price' => $value->price, 'thumbnail' => $value->images[0]->src, 'image' => $value->images[0]->src, 'category' => $catArr);
+                                        $count++;
+                                    }
+                                } else {
                                     $productsArr[] = array('id' => $value->id, 'name' => $value->title, 'description' => wp_strip_all_tags($value->description), 'price' => $value->price, 'thumbnail' => $value->images[0]->src, 'image' => $value->images[0]->src, 'category' => $catArr);
                                     $count++;
                                 }
-                            } else {
-                                $productsArr[] = array('id' => $value->id, 'name' => $value->title, 'description' => wp_strip_all_tags($value->description), 'price' => $value->price, 'thumbnail' => $value->images[0]->src, 'image' => $value->images[0]->src, 'category' => $catArr);
-                                $count++;
                             }
-                        }
-                    } else {
-                        if ($this->_request['searchstring'] != '') {
-                            $search = $this->_request['searchstring'];
-                            if (($value->title == $search) || strlen(stristr($value->title, $search)) > 0 || in_array($search, $value->tags)) {
-                                $productsArr[] = array('id' => $value->id, 'name' => $value->title, 'description' => wp_strip_all_tags($value->description), 'price' => $value->price, 'thumbnail' => $value->images[0]->src, 'image' => $value->images[0]->src, 'category' => $catArr);
-                                $count++;
-                            }
-                        } else {
-                            $productsArr[] = array('id' => $value->id, 'name' => $value->title, 'description' => wp_strip_all_tags($value->description), 'price' => $value->price, 'thumbnail' => $value->images[0]->src, 'image' => $value->images[0]->src, 'category' => $catArr);
-                            $count++;
                         }
                     }
                 }
                 $result = array('product' => $productsArr);
                 $sql = "SELECT distinct pm.pk_id as printid,pm.name as printName
-                            FROM " . TABLE_PREFIX . "print_method pm
-                            JOIN " . TABLE_PREFIX . "print_setting  pst ON pm.pk_id = pst.pk_id
-                            LEFT JOIN " . TABLE_PREFIX . "print_method_setting_rel pmsr ON pst.pk_id = pmsr.print_setting_id where pst.is_default = 1";
+                        FROM " . TABLE_PREFIX . "print_method pm
+                        JOIN " . TABLE_PREFIX . "print_setting  pst ON pm.pk_id = pst.pk_id
+                        LEFT JOIN " . TABLE_PREFIX . "print_method_setting_rel pmsr ON pst.pk_id = pmsr.print_setting_id where pst.is_default = 1";
                 $default_id = $this->executeFetchAssocQuery($sql);
 
                 foreach ($result['product'] as $k => $product) {
@@ -253,7 +261,7 @@ class ProductsStore extends UTIL
                 $error = true;
             }
             if (!$error) {
-                $this->response($this->json($result), 200);
+                $this->response(json_encode($result,JSON_UNESCAPED_SLASHES), 200);
             } else {
                 $msg = array('status' => 'failed', 'error' => $this->formatJSONToArray($result));
                 $this->response($this->json($msg), 200);
@@ -265,6 +273,28 @@ class ProductsStore extends UTIL
         $this->response($this->json($params), 200);
 
     }
+
+    /**
+     * Used to get all attributes
+     * @return list of attributes
+    */
+    public function getAllAttributesName()
+    {
+        $result = $this->wcApi->get_products_attribute();
+        $attributeArr = array();
+        if (!isset($result->errors)) {
+            foreach ($result->product_attributes as $key => $value) {
+                $attributeArr[] = $arrayName = array('id' => $value->id,'name' => $value->name);
+            }
+        }
+        else 
+        {
+            $msg = array('status' => 'apiLoginFailed', 'error' => $result);
+            $this->response($this->json($msg), 200);
+        }
+
+        $this->response(json_encode($attributeArr), 200);
+    }    
 
     /**
      * Check whether the given sku exists or doesn't
@@ -345,6 +375,9 @@ class ProductsStore extends UTIL
     public function getVariantList()
     {
         $error = false;
+        // get color attribute and size attribute.
+        $colorAttr = $this->getStoreAttributes("xe_color");
+        $sizeAttr = $this->getStoreAttributes("xe_size");
         $resultArr = $this->storeApiLogin();
         if ($this->storeApiLogin == true) {
             $key = $GLOBALS['params']['apisessId'];
@@ -362,10 +395,10 @@ class ProductsStore extends UTIL
                     foreach ($variation['attributes'] as $attributes) {
 
                         $attributes = (array) $attributes;
-                        if ($attributes['name'] == 'xe_color') {
+                        if ($attributes['name'] == $colorAttr) {
                             $attr_array[$j]['color_id'] = $attributes['option'];
                             $colorArr[] = $attributes['option'];
-                        } else if ($attributes['name'] == 'xe_size') {
+                        } else if ($attributes['name'] == $sizeAttr) {
                             $attr_array[$j]['size'] = $attributes['option'];
                         }
 
@@ -430,6 +463,8 @@ class ProductsStore extends UTIL
         $startIndex = (isset($this->_request['offset'])) ? (int) $this->_request['range'] * ((int) $this->_request['offset'] - 1) : 0;
         $result = $this->storeApiLogin();
         $confId = $this->_request['conf_pid'];
+        // get color attributes.
+        $colorAttr = $this->getStoreAttributes("xe_color");
         if ($this->storeApiLogin == true) {
             $key = $GLOBALS['params']['apisessId'];
             try {
@@ -443,7 +478,7 @@ class ProductsStore extends UTIL
                     $variant = array();
                     $color = array();
                     foreach ($result->product->attributes as $attribute) {
-                        if ($attribute->name == 'xe_color') {
+                        if ($attribute->name == $colorAttr) {
                             $color = $attribute->option;
                         }
 
@@ -451,7 +486,7 @@ class ProductsStore extends UTIL
                     $color_array = array();
                     foreach ($result->product->variations as $variations) {
                         foreach ($variations->attributes as $attribute) {
-                            if ($attribute->name == 'xe_color') {
+                            if ($attribute->name == $colorAttr) {
                                 if (empty($variant) || (!empty($variant) && !in_array($attribute->option, $color_array))) {
 
                                     if (!empty($color) && in_array('#' . $attribute->option, $color)) {
@@ -463,8 +498,10 @@ class ProductsStore extends UTIL
                                     $color_array[] = $attribute->option;
 
                                     $table_name = $wpdb->prefix . "terms";
+                                    $table_name1 = $wpdb->prefix . "term_taxonomy";
                                     $color_option = $attribute->option;
-                                    $term_id = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug='" . $color_option . "' OR lower(name) = '" . strtolower($color_option) . "'");
+                                    $color_taxonomy = "pa_" . $colorAttr;
+                                    $term_id = $wpdb->get_var("SELECT t.term_id FROM $table_name t LEFT JOIN $table_name1 tt ON (t.term_id = tt.term_id) WHERE tt.taxonomy = '".$color_taxonomy."' AND (t.slug='".$color_option."' OR lower(t.name) = '".strtolower($color_option)."')");
                                     $variant[$i]['colorUrl'] = $term_id . '.png';
                                     $variant[$i]['id'] = $variations->id;
                                     $variant[$i]['name'] = $result->product->title;
@@ -572,7 +609,9 @@ class ProductsStore extends UTIL
             } else {
                 $varient_id = trim($this->_request['simplePdctId']);
             }
-
+            // get color attribute and size attribute.
+            $colorAttr = strtolower($this->getStoreAttributes("xe_color"));
+            $sizeAttr = strtolower($this->getStoreAttributes("xe_size"));
             $result = $this->wcApi->get_product($product_id);
             if (!isset($result->errors)) {
                 try {
@@ -580,16 +619,21 @@ class ProductsStore extends UTIL
                     $i = 0;
                     $variant = array();
                     $colorArr = array();
+                    $sizeArr = array();
                     foreach ($result->product->attributes as $value) {
-                        if ($value->name == "xe_color") {
+                        if ($value->name == $colorAttr) {
                             $colorArr = $value->options;
+                        }
+                        if ($value->name == $sizeAttr) {
+                            $sizeArr = $value->options;
                         }
 
                     }
+
                     foreach ($result->product->variations as $variations) {
                         $variant[$i]['id'] = $variations->id;
                         foreach ($variations->attributes as $attribute) {
-                            if ($attribute->name == 'xe_color') {
+                            if ($attribute->name == $colorAttr) {
                                 if ($variations->id == $varient_id) {
                                     if (!empty($colorArr) && in_array('#' . $attribute->option, $colorArr)) {
                                         $color = '#' . $attribute->option;
@@ -604,7 +648,7 @@ class ProductsStore extends UTIL
                                     $variant[$i][$attribute->name] = $attribute->option;
                                 }
                             } else {
-                                $variant[$i][$attribute->name] = ucfirst($attribute->option);
+                                $variant[$i][$attribute->name] = strtoupper($attribute->option);
                             }
                             $table_name = $wpdb->prefix . "terms";
                             $attr_val = $variant[$i][$attribute->name];
@@ -620,19 +664,32 @@ class ProductsStore extends UTIL
                     }
                     $j = 0;
                     $size_array = array();
+                    // for sorting
+                    usort($variant, function($a, $b) use ($sizeArr){ //Sort the array using a user defined function
+                        $sizes = array();
+                        $sizeAttr1 = strtolower($this->getStoreAttributes("xe_size"));
+                        foreach ($sizeArr as $key => $value) {
+                            $sizes[$value] = $key;
+                        }
+                        if ($sizes[$a[$sizeAttr1]] == $sizes[$b[$sizeAttr1]]) {
+                            return 0;
+                        }
+                        return ($sizes[$a[$sizeAttr1]] < $sizes[$b[$sizeAttr1]]) ? -1 : 1;
+                    });
+                    // end
                     foreach ($variant as $var) {
                         if (isset($this->_request['byAdmin'])) {
-                            if (empty($size_array) || !in_array(strtoupper($var['attributes']['xe_size']), $size_array)) {
-                                $size = $var['xe_size'];
-                                $xecolor = $var['xe_color'];
+                            if (empty($size_array) || !in_array(strtoupper($var['attributes'][$sizeAttr]), $size_array)) {
+                                $size = $var[$sizeAttr];
+                                $xecolor = $var[$colorAttr];
                                 $table_name = $wpdb->prefix . "terms";
                                 $color_id = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug = '$xecolor'");
                                 $size_id = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug = '$size'");
                                 $variantsArr[$j]['simpleProductId'] = $var['id'];
                                 $variantsArr[$j]['xe_size_id'] = $size_id;
                                 $variantsArr[$j]['xe_color_id'] = $color_id;
-                                $variantsArr[$j]['xe_color'] = $var['xe_color'];
-                                $variantsArr[$j]['xe_size'] = strtoupper($var['xe_size']);
+                                $variantsArr[$j]['xe_color'] = $var[$colorAttr];
+                                $variantsArr[$j]['xe_size'] = strtoupper($var[$sizeAttr]);
                                 foreach ($var['attributes'] as $key => $value) {
                                     $attrId = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug = '$value'");
                                     $variantsArr[$j]['attributes'][$key] = $value;
@@ -641,20 +698,20 @@ class ProductsStore extends UTIL
                                 $variantsArr[$j]['quantity'] = $var['quantity'];
                                 $variantsArr[$j]['price'] = $var['price'];
                                 $variantsArr[$j]['minQuantity'] = 1;
-                                $size_array[] = $var['attributes']['xe_size'];
+                                $size_array[] = $var['attributes'][$sizeAttr];
                                 $j++;
                             }
                         } else {
-                            if ($var['xe_color'] == $color) {
-                                $size = $var['xe_size'];
+                            if ($var[$colorAttr] == $color) {
+                                $size = $var[$sizeAttr];
                                 $table_name = $wpdb->prefix . "terms";
                                 $color_id = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug = '$color'");
                                 $size_id = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug = '$size'");
                                 $variantsArr[$j]['simpleProductId'] = $var['id'];
                                 $variantsArr[$j]['xe_size_id'] = $size_id;
                                 $variantsArr[$j]['xe_color_id'] = $color_id;
-                                $variantsArr[$j]['xe_color'] = $var['xe_color'];
-                                $variantsArr[$j]['xe_size'] = strtoupper($var['xe_size']);
+                                $variantsArr[$j]['xe_color'] = $var[$colorAttr];
+                                $variantsArr[$j]['xe_size'] = strtoupper($var[$sizeAttr]);
                                 foreach ($var['attributes'] as $key => $value) {
                                     $attrId = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug = '$value'");
                                     $variantsArr[$j]['attributes'][$key] = $value;
@@ -1090,9 +1147,12 @@ class ProductsStore extends UTIL
         $error = false;
         global $wpdb;
         if (!empty($this->_request['data'])) {
-            $data = $this->_request['data'];
+            $data = json_decode(urldecode($this->_request['data']), true);
             $apikey = $this->_request['apikey'];
             $result = $this->storeApiLogin();
+            // get color and size attribute.
+            $colorAttr = $this->getStoreAttributes("xe_color");
+            $sizeAttr = $this->getStoreAttributes("xe_size");
             if ($this->storeApiLogin == true) {
                 $key = $GLOBALS['params']['apisessId'];
                 $var_color = $data['color_id'];
@@ -1104,7 +1164,7 @@ class ProductsStore extends UTIL
                 $oldVariantId = 0;
                 foreach ($oldProductData->product->variations as $variants) {
                     foreach ($variants->attributes as $attribute) {
-                        if ($attribute->name == 'xe_color' && ($colorName == $attribute->option || $color == $attribute->option)) {
+                        if ($attribute->name == $colorAttr && ($colorName == $attribute->option || $color == $attribute->option)) {
                             $oldVariantId = $variants->id;
                             foreach ($variants->image as $img) {
                                 $image_array[] = $img->src;
@@ -1138,14 +1198,14 @@ class ProductsStore extends UTIL
                     $product_array['product']['description'] = $data['description'];
                     $product_array['product']['short_description'] = $data['short_description'];
                     $product_array['product']['categories'] = $data['cat_id'];
-                    $product_array['product']['attributes'][0]['name'] = 'xe_color';
-                    $product_array['product']['attributes'][0]['slug'] = 'xe_color';
+                    $product_array['product']['attributes'][0]['name'] = $colorAttr;
+                    $product_array['product']['attributes'][0]['slug'] = $colorAttr;
                     $product_array['product']['attributes'][0]['position'] = 0;
                     $product_array['product']['attributes'][0]['visible'] = true;
                     $product_array['product']['attributes'][0]['variation'] = true;
                     $product_array['product']['attributes'][0]['options'] = array($color);
-                    $product_array['product']['attributes'][1]['name'] = 'xe_size';
-                    $product_array['product']['attributes'][1]['slug'] = 'xe_size';
+                    $product_array['product']['attributes'][1]['name'] = $sizeAttr;
+                    $product_array['product']['attributes'][1]['slug'] = $sizeAttr;
                     $product_array['product']['attributes'][1]['position'] = 0;
                     $product_array['product']['attributes'][1]['visible'] = true;
                     $product_array['product']['attributes'][1]['variation'] = true;
@@ -1172,11 +1232,11 @@ class ProductsStore extends UTIL
                     $colorArray = array();
                     $sizeArr = array();
                     foreach ($product_info->product->attributes as $attribute) {
-                        if ($attribute->name == 'xe_color') {
+                        if ($attribute->name == $colorAttr) {
                             foreach ($attribute->options as $option) {
                                 $colorArray[] = $option;
                             }
-                        } else if ($attribute->name == 'xe_size') {
+                        } else if ($attribute->name == $sizeAttr) {
                             foreach ($attribute->options as $option) {
                                 $sizeArr[] = $option;
                             }
@@ -1187,10 +1247,10 @@ class ProductsStore extends UTIL
                     foreach ($product_info->product->variations as $variations) {
                         foreach ($variations->attributes as $attributes) {
                             $attributes = (array) $attributes;
-                            if ($attributes['name'] == 'xe_color') {
+                            if ($attributes['name'] == $colorAttr) {
                                 $attr_array[$a]['color_id'] = $attributes['option'];
                                 $colorArr[] = $attributes['option'];
-                            } else if ($attributes['name'] == 'xe_size') {
+                            } else if ($attributes['name'] == $sizeAttr) {
                                 $attr_array[$a]['size'] = $attributes['option'];
                             }
 
@@ -1201,14 +1261,14 @@ class ProductsStore extends UTIL
                     $colorArray[] = $color;
                     $product_array = array();
                     $product_array['product']['type'] = 'variable';
-                    $product_array['product']['attributes'][0]['name'] = 'xe_color';
-                    $product_array['product']['attributes'][0]['slug'] = 'xe_color';
+                    $product_array['product']['attributes'][0]['name'] = $colorAttr;
+                    $product_array['product']['attributes'][0]['slug'] = $colorAttr;
                     $product_array['product']['attributes'][0]['position'] = 0;
                     $product_array['product']['attributes'][0]['visible'] = true;
                     $product_array['product']['attributes'][0]['variation'] = true;
                     $product_array['product']['attributes'][0]['options'] = $colorArray;
-                    $product_array['product']['attributes'][1]['name'] = 'xe_size';
-                    $product_array['product']['attributes'][1]['slug'] = 'xe_size';
+                    $product_array['product']['attributes'][1]['name'] = $sizeAttr;
+                    $product_array['product']['attributes'][1]['slug'] = $sizeAttr;
                     $product_array['product']['attributes'][1]['position'] = 0;
                     $product_array['product']['attributes'][1]['visible'] = true;
                     $product_array['product']['attributes'][1]['variation'] = true;
@@ -1241,11 +1301,11 @@ class ProductsStore extends UTIL
                             $j++;
                         }
                     }
-                    $product_array['product']['variations'][$i]['attributes'][0]['name'] = 'xe_color';
-                    $product_array['product']['variations'][$i]['attributes'][0]['slug'] = 'xe_color';
+                    $product_array['product']['variations'][$i]['attributes'][0]['name'] = $colorAttr;
+                    $product_array['product']['variations'][$i]['attributes'][0]['slug'] = $colorAttr;
                     $product_array['product']['variations'][$i]['attributes'][0]['option'] = $color;
-                    $product_array['product']['variations'][$i]['attributes'][1]['name'] = 'xe_size';
-                    $product_array['product']['variations'][$i]['attributes'][1]['slug'] = 'xe_size';
+                    $product_array['product']['variations'][$i]['attributes'][1]['name'] = $sizeAttr;
+                    $product_array['product']['variations'][$i]['attributes'][1]['slug'] = $sizeAttr;
                     $product_array['product']['variations'][$i]['attributes'][1]['option'] = $size;
                     $size_array[] = $size;
                     $i++;
@@ -1294,10 +1354,10 @@ class ProductsStore extends UTIL
 
                                 foreach ($variation['attributes'] as $attributes) {
                                     $attributes = (array) $attributes;
-                                    if ($attributes['name'] == 'xe_color') {
+                                    if ($attributes['name'] == $colorAttr) {
                                         $attr_array[$j]['color_id'] = $attributes['option'];
                                         $colorArr[] = $attributes['option'];
-                                    } else if ($attributes['name'] == 'xe_size') {
+                                    } else if ($attributes['name'] == $sizeAttr) {
                                         $attr_array[$j]['size'] = $attributes['option'];
                                     }
 
@@ -1435,6 +1495,11 @@ class ProductsStore extends UTIL
                     'hide_empty' => $empty,
                 );
                 $all_categories = get_categories($args);
+
+                usort($all_categories, function($a, $b) { //Sort the array using a user defined function
+                    return $a->name < $b->name ? -1 : 1; //Compare the scores
+                });
+                
                 $all_categories = (array) $all_categories;
                 if (isset($print_id) && $print_id != 0) {
                     $category_result = array();
@@ -1508,6 +1573,10 @@ class ProductsStore extends UTIL
                     'hide_empty' => $empty,
                 );
                 $sub_cats = get_categories($args);
+
+                usort($sub_cats, function($a, $b) { //Sort the array using a user defined function
+                    return $a->name < $b->name ? -1 : 1; //Compare the scores
+                });
                 foreach ($sub_cats as $cat) {
                     $catArr[] = array('id' => "" . $cat->term_id . "", 'name' => $cat->name);
                 }
@@ -1596,6 +1665,10 @@ class ProductsStore extends UTIL
         if ($size != '') {
             $attributes['size'] = $size;
         }
+        // get color attribute and size attribute.
+        $colorAttr = strtolower($this->getStoreAttributes("xe_color"));
+        $sizeAttr = strtolower($this->getStoreAttributes("xe_size"));
+
         $result = $this->wcApi->get_product($pro_id);
         if (!isset($result->errors)) {
 
@@ -1613,17 +1686,22 @@ class ProductsStore extends UTIL
                 $typesArr = array();
                 $colorArr = array();
                 foreach ($result->product->attributes as $key => $value) {
-
                     if ($value->name == "size") {
                         $typesArr = $value->options;
                     }
-                    if ($value->name == "xe_color") {
+                    if ($value->name == $colorAttr) {
                         $colorArr = $value->options;
                     }
-
                 }
 
-                $productsArr = array('pid' => $result->product->id, 'pidtype' => 'configurable', 'pname' => $result->product->title, 'shortdescription' => wp_strip_all_tags($result->product->short_description), 'category' => $catArray);
+                // Product Type
+                if ($result->product->type == "simple") {
+                    $ptype = $result->product->type;
+                } else {
+                    $ptype = "configurable";
+                } 
+
+                $productsArr = array('pid' => $result->product->id, 'pidtype' => $ptype, 'pname' => $result->product->title, 'shortdescription' => wp_strip_all_tags($result->product->short_description), 'category' => $catArray);
                 $table_name = $wpdb->prefix . "terms";
                 $tax_table = $wpdb->prefix . "options";
                 $tax_enabled = $wpdb->get_var("SELECT option_value FROM $tax_table WHERE option_name='woocommerce_calc_taxes'");
@@ -1644,25 +1722,27 @@ class ProductsStore extends UTIL
                             $productsArr['price'] = $pvariant->price;
                             $productsArr['taxrate'] = $tax;
                             foreach ($pvariant->attributes as $attribute) {
-
-                                if ($attribute->name == 'xe_color') {
+                                if ($attribute->name == $colorAttr) {
                                     if (!empty($colorArr) && in_array('#' . $attribute->option, $colorArr)) {
                                         $productsArr['xecolor'] = '#' . $attribute->option;
                                     } else {
                                         $productsArr['xecolor'] = $attribute->option;
                                     }
                                 } else {
-                                    if ($attribute->name == 'xe_size') {
-                                        $productsArr['xesize'] = ucfirst($attribute->option);
+                                    if ($attribute->name == $sizeAttr) {
+                                        $productsArr['xesize'] = strtoupper($attribute->option);
                                     } else {
                                         $productsArr[$attribute->name] = ucfirst($attribute->option);
                                     }
 
                                 }
                                 $attrId = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug='$attribute->option'");
-                                $productsArr[$attribute->name . '_id'] = $attrId;
+                                if ($attribute->name == $colorAttr)
+                                    $productsArr['xe_color_id'] = $attrId;
+                                else if ($attribute->name == $sizeAttr)
+                                    $productsArr['xe_size_id'] = $attrId;
                                 if ($attribute->option != "") {
-                                    $productsArr['attributes'][$attribute->name] = $attribute->option;
+                                    $productsArr['attributes'][$attribute->name] = ($attribute->name == $sizeAttr)?strtoupper($attribute->option):$attribute->option;
                                     $productsArr['attributes'][$attribute->name . '_id'] = $attrId;
                                 }
                             }
@@ -1681,52 +1761,122 @@ class ProductsStore extends UTIL
                         }
                     }
                 } else {
-                    $pvariant = $result->product->variations[0];
-                    $tax_rate = $_tax->get_rates($pvariant->tax_class);
-                    $tax = 0;
-                    if ($tax_enabled == 'yes') {
-                        foreach ($tax_rate as $value) {
-                            $tax += $value['rate'];
+                    if (!empty($result->product->variations)){
+                        // For configure product.
+                        $pvariant = $result->product->variations[0];
+                        $tax_rate = $_tax->get_rates($pvariant->tax_class);
+                        $tax = 0;
+                        if ($tax_enabled == 'yes') {
+                            foreach ($tax_rate as $value) {
+                                $tax += $value['rate'];
+                            }
                         }
-                    }
-                    $productsArr['pvid'] = $pvariant->id;
-                    $productsArr['pvname'] = $result->product->title;
-                    $productsArr['quanntity'] = $pvariant->stock_quantity;
-                    $productsArr['price'] = $pvariant->price;
-                    $productsArr['taxrate'] = $tax;
-                    foreach ($pvariant->attributes as $attribute) {
-                        if ($attribute->name == 'xe_color') {
-                            if (!empty($colorArr) && in_array('#' . $attribute->option, $colorArr)) {
-                                $productsArr['xecolor'] = '#' . $attribute->option;
+                        $productsArr['pvid'] = $pvariant->id;
+                        $productsArr['pvname'] = $result->product->title;
+                        $productsArr['quanntity'] = $pvariant->stock_quantity;
+                        $productsArr['price'] = $pvariant->price;
+                        $productsArr['taxrate'] = $tax;
+                        foreach ($pvariant->attributes as $attribute) {
+                            if ($attribute->name == $colorAttr) {
+                                if (!empty($colorArr) && in_array('#' . $attribute->option, $colorArr)) {
+                                    $productsArr['xecolor'] = '#' . $attribute->option;
+                                } else {
+                                    $productsArr['xecolor'] = $attribute->option;
+                                }
                             } else {
-                                $productsArr['xecolor'] = $attribute->option;
+                                if ($attribute->name == $sizeAttr) {
+                                    $productsArr['xesize'] = strtoupper($attribute->option);
+                                } else {
+                                    $productsArr[$attribute->name] = ucfirst($attribute->option);
+                                }
                             }
-                        } else {
-                            if ($attribute->name == 'xe_size') {
-                                $productsArr['xesize'] = ucfirst($attribute->option);
+                            $attrId = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug='$attribute->option'");
+                            if ( $attribute->name == $colorAttr ) {
+                                $productsArr['xe_color_id'] = $attrId;
+                            } else if ( $attribute->name == $sizeAttr ) {
+                                $productsArr['xe_size_id'] = $attrId;
                             } else {
-                                $productsArr[$attribute->name] = ucfirst($attribute->option);
+                                $productsArr[$attribute->name . '_id'] = $attrId;
                             }
+                            if ($attribute->option != "") {
+                                $productsArr['attributes'][$attribute->name] = $attribute->option;
+                                $productsArr['attributes'][$attribute->name . '_id'] = $attrId;
+                            }
+                        }
+                        $attachments = get_post_meta($pvariant->id, 'variation_image_gallery', true);
+                        $attachmentsExp = array_filter(explode(',', $attachments));
+                        $variantImg = get_post_meta($pvariant->id, '_thumbnail_id', true);
+                        if (!empty($pvariant->image) && $variantImg != 0) {
+                            foreach ($pvariant->image as $img) {
+                                $image[] = $img->src;
+                            }
+                        }
+                        foreach ($attachmentsExp as $id) {
+                            $imageSrc = wp_get_attachment_image_src($id, 'full');
+                            $image[] = $imageSrc[0];
+                        }
+                    } else {
+                        // For Simple Product.
+                        $pvariant = $result->product;
+                        $tax_rate = $_tax->get_rates($pvariant->tax_class);
+                        $tax = 0;
+                        if ($tax_enabled == 'yes') {
+                            foreach ($tax_rate as $value) {
+                                $tax += $value['rate'];
+                            }
+                        }
+                        $productsArr['pvid'] = $pvariant->id;
+                        $productsArr['pvname'] = $result->product->title;
+                        $productsArr['quanntity'] = $pvariant->stock_quantity;
+                        $productsArr['price'] = $pvariant->price;
+                        $productsArr['taxrate'] = $tax;
+                        $productsArr['xecolor'] = "";
+                        $productsArr['xesize'] = "";
+                        foreach ($pvariant->attributes as $attribute) {
+                            if (strtolower($attribute->name) == $colorAttr) {
+                                if (!empty($colorArr) && in_array('#' . $attribute->options, $colorArr)) {
+                                    $productsArr['xecolor'] = '#' . $attribute->options['0'];
+                                } else {
+                                    $productsArr['xecolor'] = $attribute->options['0'];
+                                }
+                            } else {
+                                if (strtolower($attribute->name) == $sizeAttr) {
+                                    $productsArr['xesize'] = strtoupper($attribute->options['0']);
+                                } else {
+                                    if ($attribute->name != "xe_is_designer")
+                                        $productsArr[$attribute->name] = ucfirst($attribute->options['0']);
+                                }
 
+                            }
+                            if ($attribute->name != "xe_is_designer")
+                            {
+                                $attrSlug = $attribute->options['0'];
+                                $attrId = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug='$attrSlug'");
+                                if ( strtolower($attribute->name) == $colorAttr ) {
+                                    $productsArr['xe_color_id'] = $attrId;
+                                } else if (strtolower($attribute->name) == $sizeAttr ) {
+                                    $productsArr['xe_size_id'] = $attrId;
+                                } else {
+                                    $productsArr[$attribute->name . '_id'] = $attrId;
+                                }
+                            }
+                            if ($attribute->option != "") {
+                                $productsArr['attributes'][$attribute->name] = $attribute->option;
+                                $productsArr['attributes'][$attribute->name . '_id'] = $attrId;
+                            }
                         }
-                        $attrId = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug='$attribute->option'");
-                        $productsArr[$attribute->name . '_id'] = $attrId;
-                        if ($attribute->option != "") {
-                            $productsArr['attributes'][$attribute->name] = $attribute->option;
-                            $productsArr['attributes'][$attribute->name . '_id'] = $attrId;
+                        $attachments = get_post_meta($pvariant->id, 'variation_image_gallery', true);
+                        $attachmentsExp = array_filter(explode(',', $attachments));
+                        $variantImg = get_post_meta($pvariant->id, '_thumbnail_id', true);
+                        if (!empty($pvariant->images) && $variantImg != 0) {
+                            foreach ($pvariant->images as $img) {
+                                $image[] = $img->src;
+                            } 
                         }
-                    }
-                    $attachments = get_post_meta($pvariant->id, 'variation_image_gallery', true);
-                    $attachmentsExp = array_filter(explode(',', $attachments));
-                    $variantImg = get_post_meta($pvariant->id, '_thumbnail_id', true);
-                    if (!empty($pvariant->image) && $variantImg != 0) {
-                        foreach ($pvariant->image as $img) {
-                            $image[] = $img->src;
+                        foreach ($attachmentsExp as $id) {
+                            $imageSrc = wp_get_attachment_image_src($id, 'full');
+                            $image[] = $imageSrc[0];
                         }
-                    }
-                    foreach ($attachmentsExp as $id) {
-                        $imageSrc = wp_get_attachment_image_src($id, 'full');
-                        $image[] = $imageSrc[0];
                     }
                 }
                 $productsArr['thumbsides'] = $image;
@@ -1757,10 +1907,18 @@ class ProductsStore extends UTIL
 
                 $printsize = $this->getDtgPrintSizesOfProductSides($pro_id);
                 $productsArr['printsize'] = $printsize;
-
                 $printareatype = $this->getPrintareaType($pro_id);
                 $productsArr['printareatype'] = $printareatype;
+                // insert multiple boundary data; if available
+                $settingsObj = Flight::multipleBoundary();
+                $multiBoundData = $settingsObj->getMultiBoundMaskData($product_id);
+                if (!empty($multiBoundData)) {
+                    $productsArr['printareatype']['multipleBoundary'] = "true";
+                    $productsArr['multiple_boundary'] = $multiBoundData;
+                }
                 $surplusPrice = $productsArr['price'];
+                $refid = get_post_meta($product_id, 'refid', true);
+                $productsArr['isPreDecorated'] = ($refid != '') ? true : false;
                 if (isset($product_id) && $product_id) {
                     $sql = "SELECT ref_id,parent_id FROM " . TABLE_PREFIX . "template_state_rel WHERE temp_id = " . $configProduct_id;
                     $parentId = $this->executeFetchAssocQuery($sql);
@@ -1772,7 +1930,11 @@ class ProductsStore extends UTIL
                         $productsArr['finalPrice'] = $surplusPrice;
                     }
                 }
-                $productsArr['sizeAdditionalprices'] = $this->getSizeVariantAdditionalPriceClient($product_id, $this->_request['print_method_id']);
+                $productsArr['minQuantity'] = 1;
+                if ($result->product->type == "simple")
+                    $productsArr['sizeAdditionalprices'] = [];
+                else   
+                    $productsArr['sizeAdditionalprices'] = $this->getSizeVariantAdditionalPriceClient($product_id, $this->_request['print_method_id']);
 
                 $pCategories = $catArray;
                 $pCategoryIds = array();
@@ -1791,7 +1953,7 @@ class ProductsStore extends UTIL
                 }
                 $simpleProductId = $productsArr['pvid'];
                 $productsArr['templates'] = $templates;
-                $sql = "SELECT  distinct print_method_id,price,is_whitebase
+                $sql = "SELECT distinct pk_id, print_method_id,price,is_whitebase
                             FROM   " . TABLE_PREFIX . "product_additional_prices
                             WHERE  product_id =" . $product_id . "
                             AND variant_id =" . $simpleProductId . " ORDER BY pk_id";
@@ -1830,7 +1992,7 @@ class ProductsStore extends UTIL
                 $error = true;
             }
             $this->closeConnection();
-            $this->response($this->json($result), 200);
+            $this->response(json_encode($result,JSON_UNESCAPED_UNICODE), 200);
         } else {
             $msg = array('status' => 'apiLoginFailed', 'error' => $result);
             $this->response($this->json($msg), 200);
@@ -1866,6 +2028,10 @@ class ProductsStore extends UTIL
         if ($size != '') {
             $attributes['size'] = $size;
         }
+        
+        // get color attribute and size attribute.
+        $colorAttr = strtolower($this->getStoreAttributes("xe_color"));
+        $sizeAttr = strtolower($this->getStoreAttributes("xe_size"));
 
         $result = $this->wcApi->get_product($pro_id);
         if (!isset($result->errors)) {
@@ -1887,12 +2053,20 @@ class ProductsStore extends UTIL
                     if ($value->name == "size") {
                         $typesArr = $value->options;
                     }
-                    if ($value->name == "xe_color") {
+                    if ($value->name == $colorAttr) {
                         $colorArr = $value->options;
                     }
 
                 }
-                $productsArr = array('pid' => $result->product->id, 'pidtype' => 'configurable', 'pname' => $result->product->title, 'category' => $catArray);
+
+                // Product Type
+                if ($result->product->type == "simple") {
+                    $ptype = $result->product->type;
+                } else {
+                    $ptype = "configurable";
+                }   
+
+                $productsArr = array('pid' => $result->product->id, 'pidtype' => $ptype, 'pname' => $result->product->title, 'category' => $catArray);
                 $table_name = $wpdb->prefix . "terms";
                 $image = array();
                 if ($configId != '' && $configId != $pid) {
@@ -1910,12 +2084,12 @@ class ProductsStore extends UTIL
                             $productsArr['price'] = $pvariant->price;
                             $productsArr['taxrate'] = $tax;
                             foreach ($pvariant->attributes as $attribute) {
-                                if ($attribute->name == 'xe_size') {
-                                    $productsArr['xesize'] = ucfirst($attribute->option);
+                                if ($attribute->name == $sizeAttr) {
+                                    $productsArr['xesize'] = strtoupper($attribute->option);
                                     $size_id = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug='$attribute->option'");
                                     $productsArr['xe_size_id'] = $size_id;
                                 }
-                                if ($attribute->name == 'xe_color') {
+                                if ($attribute->name == $colorAttr) {
                                     if (!empty($colorArr) && in_array('#' . $attribute->option, $colorArr)) {
                                         $productsArr['xecolor'] = '#' . $attribute->option;
                                     } else {
@@ -1942,45 +2116,116 @@ class ProductsStore extends UTIL
                         }
                     }
                 } else {
-                    $pvariant = $result->product->variations[0];
-                    $tax_rate = $_tax->get_rates($pvariant->tax_class);
-                    $tax = 0;
-                    foreach ($tax_rate as $value) {
-                        $tax += $value['rate'];
-                    }
-                    $productsArr['pvid'] = $pvariant->id;
-                    $productsArr['pvname'] = $result->product->title;
-                    $productsArr['quanntity'] = $pvariant->stock_quantity;
-                    $productsArr['price'] = $pvariant->price;
-                    $productsArr['taxrate'] = $tax;
-                    foreach ($pvariant->attributes as $attribute) {
-                        if ($attribute->name == 'xe_size') {
-                            $productsArr['xesize'] = ucfirst($attribute->option);
-                            $size_id = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug='$attribute->option'");
-                            $productsArr['xe_size_id'] = $size_id;
+                    // For Configure Product
+                    if (!empty($result->product->variations)){
+                        $pvariant = $result->product->variations[0];
+                        $tax_rate = $_tax->get_rates($pvariant->tax_class);
+                        $tax = 0;
+                        foreach ($tax_rate as $value) {
+                            $tax += $value['rate'];
                         }
-                        if ($attribute->name == 'xe_color') {
-                            if (!empty($colorArr) && in_array('#' . $attribute->option, $colorArr)) {
-                                $productsArr['xecolor'] = '#' . $attribute->option;
-                            } else {
-                                $productsArr['xecolor'] = $attribute->option;
+                        $productsArr['pvid'] = $pvariant->id;
+                        $productsArr['pvname'] = $result->product->title;
+                        $productsArr['quanntity'] = $pvariant->stock_quantity;
+                        $productsArr['price'] = $pvariant->price;
+                        $productsArr['taxrate'] = $tax;
+                        foreach ($pvariant->attributes as $attribute) {
+                            if ($attribute->name == $sizeAttr) {
+                                $productsArr['xesize'] = strtoupper($attribute->option);
+                                $size_id = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug='$attribute->option'");
+                                $productsArr['xe_size_id'] = $size_id;
                             }
+                            if ($attribute->name == $colorAttr) {
+                                if (!empty($colorArr) && in_array('#' . $attribute->option, $colorArr)) {
+                                    $productsArr['xecolor'] = '#' . $attribute->option;
+                                } else {
+                                    $productsArr['xecolor'] = $attribute->option;
+                                }
 
-                            $color_id = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug='$attribute->option'");
-                            $productsArr['xe_color_id'] = $color_id;
+                                $color_id = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug='$attribute->option'");
+                                $productsArr['xe_color_id'] = $color_id;
+                            }
                         }
-                    }
-                    $attachments = get_post_meta($pvariant->id, 'variation_image_gallery', true);
-                    $attachmentsExp = array_filter(explode(',', $attachments));
-                    $variantImg = get_post_meta($pvariant->id, '_thumbnail_id', true);
-                    if (!empty($pvariant->image) && $variantImg != 0) {
-                        foreach ($pvariant->image as $img) {
-                            $image[] = $img->src;
+                        $attachments = get_post_meta($pvariant->id, 'variation_image_gallery', true);
+                        $attachmentsExp = array_filter(explode(',', $attachments));
+                        $variantImg = get_post_meta($pvariant->id, '_thumbnail_id', true);
+                        if (!empty($pvariant->image) && $variantImg != 0) {
+                            foreach ($pvariant->image as $img) {
+                                $image[] = $img->src;
+                            }
                         }
-                    }
-                    foreach ($attachmentsExp as $id) {
-                        $imageSrc = wp_get_attachment_image_src($id, 'full');
-                        $image[] = $imageSrc[0];
+                        foreach ($attachmentsExp as $id) {
+                            $imageSrc = wp_get_attachment_image_src($id, 'full');
+                            $image[] = $imageSrc[0];
+                        }
+
+                    } else {
+                        // For Simple Product
+                        $pvariant = $result->product;
+                        $tax_rate = $_tax->get_rates($pvariant->tax_class);
+                        $tax = 0;
+                        foreach ($tax_rate as $value) {
+                            $tax += $value['rate'];
+                        }
+                        $productsArr['pvid'] = $pvariant->id;
+                        $productsArr['pvname'] = $result->product->title;
+                        $productsArr['quanntity'] = $pvariant->stock_quantity;
+                        $productsArr['price'] = $pvariant->price;
+                        $productsArr['taxrate'] = $tax;
+                        $productsArr['xesize'] = "";
+                        $productsArr['xecolor'] = "";
+                        $productsArr['xe_size_id'] = 0;
+                        $productsArr['xe_color_id'] = 0;
+                        foreach ($pvariant->attributes as $attribute) {
+                            if ($attribute->name == $sizeAttr) {
+                                $productsArr['xesize'] = strtoupper($attribute->options['0']);
+                                $sizeSlug = $attribute->options['0'];
+                                $size_id = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug = '$sizeSlug'");
+                                $productsArr['xe_size_id'] = $size_id;
+                            }
+                            if ($attribute->name == $colorAttr) {
+                                if (!empty($colorArr) && in_array('#' . $attribute->options['0'], $colorArr)) {
+                                    $productsArr['xecolor'] = '#' . $attribute->options['0'];
+                                } else {
+                                    $productsArr['xecolor'] = $attribute->options['0'];
+                                }
+                                $colorSlug = $attribute->options['0'];
+                                $color_id = $wpdb->get_var("SELECT term_id FROM $table_name WHERE slug = '$colorSlug'");
+                                $productsArr['xe_color_id'] = $color_id;
+                            }
+                        }
+
+                        // For Color Swatch
+                        $colorId = $productsArr['xe_color_id'];
+                        $sqlSwatch = "SELECT  hex_code,image_name FROM " . TABLE_PREFIX . "swatches WHERE attribute_id = '" . $colorId . "'";
+                        $res = $this->executeFetchAssocQuery($sqlSwatch);
+                        if ($res) {
+                            if ($res[0]['hex_code']) {
+                                $colorSwatch = $res[0]['hex_code'];
+                            } else {
+                                $imageName = $res[0]['image_name'];
+                                $swatchWidth = '45';
+                                $swatchDir = $this->getSwatchURL();
+                                $colorSwatch = $swatchDir . $swatchWidth . 'x' . $swatchWidth . '/' . $imageName;
+                            }
+                        } else {
+                            $colorSwatch = '';
+                        }
+
+                        $productsArr['colorSwatch'] = $colorSwatch;
+                        // End
+                        $attachments = get_post_meta($pvariant->id, 'variation_image_gallery', true);
+                        $attachmentsExp = array_filter(explode(',', $attachments));
+                        $variantImg = get_post_meta($pvariant->id, '_thumbnail_id', true);
+                        if (!empty($pvariant->images) && $variantImg != 0) {
+                            foreach ($pvariant->images as $img) {
+                                $image[] = $img->src;
+                            }
+                        }
+                        foreach ($attachmentsExp as $id) {
+                            $imageSrc = wp_get_attachment_image_src($id, 'full');
+                            $image[] = $imageSrc[0];
+                        }
                     }
                 }
                 $productsArr['thumbsides'] = $image;
@@ -1991,15 +2236,26 @@ class ProductsStore extends UTIL
                 $maskInfo = $this->getMaskData(sizeof($productsArr['sides']));
                 $productsArr['maskInfo'] = $this->formatJSONToArray($maskInfo);
                 $printsize = $this->getDtgPrintSizesOfProductSides($pro_id);
-                $productsArr['printsize'] = $printsize;
                 $printareatype = $this->getPrintareaType($pro_id);
                 $productsArr['printareatype'] = $printareatype;
+                // insert multiple boundary data; if available
+                $settingsObj = Flight::multipleBoundary();
+                $multiBoundData = $settingsObj->getMultiBoundMaskData($product_id);
+                if (!empty($multiBoundData)) {
+                    $productsArr['printareatype']['multipleBoundary'] = "true";
+                    $productsArr['multiple_boundary'] = $multiBoundData;
+                }
+                $productsArr['printsize'] = $printsize;
                 $cVariants = $variant;
                 $cVariantsIds = array();
                 for ($i = 0; $i < sizeof($cVariants); $i++) {
                     array_push($cVariantsIds, $cVariants[$i]['data']['id']);
                 }
-                $productsArr['sizeAdditionalprices'] = $this->getSizeVariantAdditionalPrice($pro_id);
+                $productsArr['minQuantity'] = 1;
+                if ($result->product->type == "simple")
+                    $productsArr['sizeAdditionalprices'] = [];
+                else 
+                    $productsArr['sizeAdditionalprices'] = $this->getSizeVariantAdditionalPrice($pro_id);
 
                 $pCategories = $catArray;
                 $pCategoryIds = array();
@@ -2033,7 +2289,6 @@ class ProductsStore extends UTIL
                 if (empty($productsArr['maskInfo'])) {
                     $maskInfo = $this->getMaskData(sizeof($templateArr['side_id']));
                     $productsArr['maskInfo'] = $this->formatJSONToArray($maskInfo);
-
                 }
                 $result = $productsArr;
             } catch (Exception $e) {
@@ -2041,7 +2296,7 @@ class ProductsStore extends UTIL
                 $error = true;
             }
             $this->closeConnection();
-            $this->response($this->json($result), 200);
+            $this->response(json_encode($result,JSON_UNESCAPED_UNICODE), 200);
         } else {
             $msg = array('status' => 'apiLoginFailed', 'error' => $result);
             $this->response($this->json($msg), 200);
@@ -2157,41 +2412,63 @@ class ProductsStore extends UTIL
             $confProductId = $this->_request['pid'];
 
             $refid = get_post_meta($confProductId, 'refid', true);
+            $isAdmin = (isset($this->_request['isAdmin']) && trim($this->_request['isAdmin']) == true) ? true : false;
+            //  Do not send any print method ID for multiple boundary product
+            $MultiBoundQry = "SELECT * FROM " . TABLE_PREFIX . "multi_bound_print_profile_rel WHERE product_id = '" . $confProductId . "'";
+            $records = $this->executeFetchAssocQuery($MultiBoundQry);
+            if (!empty($records) && !$isAdmin) {
+                $result_arr[0]['print_method_id'] = 0;
+                $result_arr[0]['name'] = "multiple";
+                $result_arr[0]['fetched_from'] = 'DB';
+            } 
+            else 
+            {
 
-            $fieldSql = 'SELECT distinct pm.pk_id AS print_method_id, pm.name';
-            if ($additional_price) {
-                $fieldSql .= ', pst.additional_price';
-            }
+                $fieldSql = 'SELECT distinct pm.pk_id AS print_method_id, pm.name';
+                if ($additional_price) {
+                    $fieldSql .= ', pst.additional_price';
+                }
+                // Check whether product has specific print method assigned //
+                $productPrintTypeSql = $fieldSql . ' FROM ' . TABLE_PREFIX . "print_method pm
+                INNER JOIN " . TABLE_PREFIX . "product_printmethod_rel ppr ON ppr.print_method_id = pm.pk_id
+                JOIN " . TABLE_PREFIX . "print_setting AS pst ON pm.pk_id = pst.pk_id
+                WHERE ppr.product_id=" . $confProductId . " order by pm.pk_id ASC";
+                $res = $this->executeFetchAssocQuery($productPrintTypeSql);
+                $result_arr = array();
+                if (empty($res)) {
+                    try {
+                        $catIds = $catIds = wp_get_post_terms($confProductId, 'product_cat', array('fields' => 'ids'));
 
-            // Check whether product has specific print method assigned //
-            $productPrintTypeSql = $fieldSql . ' FROM ' . TABLE_PREFIX . "print_method pm
-            INNER JOIN " . TABLE_PREFIX . "product_printmethod_rel ppr ON ppr.print_method_id = pm.pk_id
-            JOIN " . TABLE_PREFIX . "print_setting AS pst ON pm.pk_id = pst.pk_id
-            WHERE ppr.product_id=" . $confProductId . " order by pm.pk_id ASC";
-            $res = $this->executeFetchAssocQuery($productPrintTypeSql);
-            $result_arr = array();
-            if (empty($res)) {
-                try {
-                    $catIds = $catIds = wp_get_post_terms($confProductId, 'product_cat', array('fields' => 'ids'));
+                        if (!empty($catIds)) {
+                            $catIds = implode(',', $catIds);
+                            $catSql = $fieldSql . ' FROM ' . TABLE_PREFIX . 'product_category_printmethod_rel AS pcpml
+                                    JOIN ' . TABLE_PREFIX . 'print_method AS pm ON pm.pk_id = pcpml.print_method_id
+                                    JOIN ' . TABLE_PREFIX . 'print_setting AS pst ON pm.pk_id = pst.pk_id
+                                    LEFT JOIN ' . TABLE_PREFIX . 'print_method_setting_rel pmsr ON pst.pk_id = pmsr.print_setting_id
+                                    WHERE pcpml.product_category_id IN(' . $catIds . ') order by pm.pk_id ASC';
+                            $res = $this->executeFetchAssocQuery($catSql);
+                            foreach ($res as $k => $v) {
+                                $result_arr[$k]['print_method_id'] = $v['print_method_id'];
+                                $result_arr[$k]['name'] = $v['name'];
+                                $result_arr[$k]['fetched_from'] = 'category';
+                                if ($refid != '') {
+                                    $result_arr[$k]['refid'] = $refid;
+                                }
 
-                    if (!empty($catIds)) {
-                        $catIds = implode(',', $catIds);
-                        $catSql = $fieldSql . ' FROM ' . TABLE_PREFIX . 'product_category_printmethod_rel AS pcpml
-                                JOIN ' . TABLE_PREFIX . 'print_method AS pm ON pm.pk_id = pcpml.print_method_id
-                                JOIN ' . TABLE_PREFIX . 'print_setting AS pst ON pm.pk_id = pst.pk_id
-                                LEFT JOIN ' . TABLE_PREFIX . 'print_method_setting_rel pmsr ON pst.pk_id = pmsr.print_setting_id
-                                WHERE pcpml.product_category_id IN(' . $catIds . ') order by pm.pk_id ASC';
-                        $res = $this->executeFetchAssocQuery($catSql);
-                        foreach ($res as $k => $v) {
-                            $result_arr[$k]['print_method_id'] = $v['print_method_id'];
-                            $result_arr[$k]['name'] = $v['name'];
-                            $result_arr[$k]['fetched_from'] = 'category';
-                            if ($refid != '') {
-                                $result_arr[$k]['refid'] = $refid;
                             }
+                            if (empty($res)) {
+                                $res = $printProfile->getDefaultPrintMethodId();
+                                foreach ($res as $k => $v) {
+                                    $result_arr[$k]['print_method_id'] = $v['print_method_id'];
+                                    $result_arr[$k]['name'] = $v['name'];
+                                    $result_arr[$k]['fetched_from'] = 'default';
+                                    if ($refid != '') {
+                                        $result_arr[$k]['refid'] = $refid;
+                                    }
 
-                        }
-                        if (empty($res)) {
+                                }
+                            }
+                        } else {
                             $res = $printProfile->getDefaultPrintMethodId();
                             foreach ($res as $k => $v) {
                                 $result_arr[$k]['print_method_id'] = $v['print_method_id'];
@@ -2203,33 +2480,23 @@ class ProductsStore extends UTIL
 
                             }
                         }
-                    } else {
-                        $res = $printProfile->getDefaultPrintMethodId();
-                        foreach ($res as $k => $v) {
-                            $result_arr[$k]['print_method_id'] = $v['print_method_id'];
-                            $result_arr[$k]['name'] = $v['name'];
-                            $result_arr[$k]['fetched_from'] = 'default';
-                            if ($refid != '') {
-                                $result_arr[$k]['refid'] = $refid;
-                            }
-
+                    } catch (Exception $e) {
+                        $result_arr = json_encode(array('isFault' => 1, 'faultMessage' => $e->getMessage()));
+                    }
+                } else {
+                    foreach ($res as $k => $v) {
+                        $result_arr[$k]['print_method_id'] = $v['print_method_id'];
+                        $result_arr[$k]['name'] = $v['name'];
+                        $result_arr[$k]['fetched_from'] = 'product';
+                        if ($refid != '') {
+                            $result_arr[$k]['refid'] = $refid;
                         }
-                    }
-                } catch (Exception $e) {
-                    $result_arr = json_encode(array('isFault' => 1, 'faultMessage' => $e->getMessage()));
-                }
-            } else {
-                foreach ($res as $k => $v) {
-                    $result_arr[$k]['print_method_id'] = $v['print_method_id'];
-                    $result_arr[$k]['name'] = $v['name'];
-                    $result_arr[$k]['fetched_from'] = 'product';
-                    if ($refid != '') {
-                        $result_arr[$k]['refid'] = $refid;
-                    }
 
+                    }
                 }
             }
             $this->response($this->json($result_arr), 200);
+
         } else {
             $msg = array('status' => 'apiLoginFailed', 'error' => json_decode($result));
             $this->response($this->json($msg), 200);

@@ -155,11 +155,12 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
      *
      * @api
      * @param int $store.
+     * @param string $size.
      * @return string all size in a json format.
      */
-    public function getSizeArr($store)
+    public function getSizeArr($store, $size)
     {
-        $attribute = $this->_eavConfig->getAttribute('catalog_product', 'xe_size');
+        $attribute = $this->_eavConfig->getAttribute('catalog_product', $size);
         $optarr = array();
         if ($attribute->usesSource()) {
             $optarr = $attribute->getSource()->getAllOptions(); //array(9=>'L',10=>'XL',11=>'XXL');
@@ -176,12 +177,13 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
      * @param string|null $lastLoaded.
      * @param string $loadCount.
      * @param string $oldConfId.
+     * @param string $color.
      * @return string color in a json format.
      */
-    public function getColorArr($lastLoaded, $loadCount, $oldConfId)
+    public function getColorArr($lastLoaded, $loadCount, $oldConfId, $color)
     {
         if ($oldConfId == 0) {
-            $attribute = $this->_eavConfig->getAttribute('catalog_product', 'xe_color');
+            $attribute = $this->_eavConfig->getAttribute('catalog_product', $color);
             $optarr = array();
             if ($attribute->usesSource()) {
                 $optarr = $attribute->getSource()->getAllOptions();
@@ -196,9 +198,9 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                 $k = 0;
                 $temp = array();
                 foreach ($simpleCollection as $simple) {
-                    $attr = $simple->getResource()->getAttribute("xe_color");
+                    $attr = $simple->getResource()->getAttribute($color);
                     if ($attr->usesSource()) {
-                        $attrId = $color_id = $attr->getSource()->getOptionId($simple->getAttributeText('xe_color'));
+                        $attrId = $attr->getSource()->getOptionId($simple->getAttributeText($color));
                         if (!in_array($attrId, $temp)) {
                             $optarr[$k]['value'] = $attrId;
                             $optarr[$k]['label'] = $attr->getSource()->getOptionText($attrId);
@@ -242,19 +244,20 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
      * @param int $offset.
      * @param int $limit.
      * @param int $preDecorated.
+     * @param string $color.
+     * @param string $size.
      * @return string The all products in a json format.
      */
-    public function getAllProducts($filters, $categoryid, $searchstring, $store, $range, $loadVariants, $offset, $limit, $preDecorated)
+    public function getAllProducts($filters, $categoryid, $searchstring, $store, $range, $loadVariants, $offset, $limit, $preDecorated, $color, $size)
     {
-        $xe_colorId = $this->_eavConfig->getAttribute('catalog_product', 'xe_color')->getId();
-        $xe_sizeId = $this->_eavConfig->getAttribute('catalog_product', 'xe_size')->getId();
+        $xe_colorId = $this->_eavConfig->getAttribute('catalog_product', $color)->getId();
+        $xe_sizeId = $this->_eavConfig->getAttribute('catalog_product', $size)->getId();
         $category = $this->_categoryProductFactory->create()->load($categoryid);
         $baseUrl = $this->_storeManager->getStore()->getBaseUrl();
         if (!$preDecorated) {
             if ($categoryid && $categoryid != '') {
                 $collection = $this->_productCollectionFactory->create()
                     ->addAttributeToSelect('*')
-                    ->addAttributeToFilter('type_id', 'configurable')
                     ->addAttributeToFilter('xe_is_designer', 1)
                     ->addStoreFilter($store)
                     ->addAttributeToFilter('status', \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED)
@@ -267,7 +270,6 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
             } else {
                 $collection = $this->_productCollectionFactory->create()
                     ->addAttributeToSelect('*')
-                    ->addAttributeToFilter('type_id', 'configurable')
                     ->addAttributeToFilter('xe_is_designer', 1)
                     ->addStoreFilter($store)
                     ->addAttributeToFilter('status', \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED)
@@ -281,7 +283,6 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
             if ($categoryid && $categoryid != '') {
                 $collection = $this->_productCollectionFactory->create()
                     ->addAttributeToSelect('*')
-                    ->addAttributeToFilter('type_id', 'configurable')
                     ->addAttributeToFilter('xe_is_designer', 1)
                     ->addStoreFilter($store)
                     ->addAttributeToFilter('status', \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED)
@@ -293,7 +294,6 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
             } else {
                 $collection = $this->_productCollectionFactory->create()
                     ->addAttributeToSelect('*')
-                    ->addAttributeToFilter('type_id', 'configurable')
                     ->addAttributeToFilter('xe_is_designer', 1)
                     ->addStoreFilter($store)
                     ->addAttributeToFilter('status', \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED)
@@ -312,15 +312,19 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
             foreach ($collection as $productData) {
                 $product1 = $productData->getId();
                 $product = $this->_productModel->load($product1);
-                $simpleProductColl = $productData->getTypeInstance()->getUsedProducts($productData);
-                foreach ($simpleProductColl as $productColl) {
-                    $price = $productColl->getPrice();
+                if ($productData->getTypeId() == 'configurable') {
+                    $simpleProductColl = $productData->getTypeInstance()->getUsedProducts($productData);
+                    foreach ($simpleProductColl as $productColl) {
+                        $price = $productColl->getPrice();
+                    }
+                }else{
+                    $price = $productData->getPrice();
                 }
-                $img = (string) $baseUrl . 'pub/media/catalog/product/cache/1/thumbnail/88x110/beff4985b56e3afdbeabfc89641a4582' . $productData->getImage();
+                $img = $this->getThumbnailCacheURL() . $productData->getImage();
                 $products[$counter] = array(
                     'id' => $productData->getId(),
                     'name' => $productData->getName(),
-                    'description' => '',//strip_tags($productData->getDescription()),
+                    'description' => strip_tags($productData->getDescription()),
                     'price' => $price,
                     'thumbnail' => (string) $img,
                     'category' => $productData->getCategoryIds(),
@@ -339,9 +343,11 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
      * @param int $store.
      * @param int $attributes.
      * @param int $configPid.
+     * @param string $color.
+     * @param string $size.
      * @return string The simple products in a json format.
      */
-    public function getSimpleProduct($productId, $store, $attributes, $configPid)
+    public function getSimpleProduct($productId, $store, $attributes, $configPid, $color, $size)
     {
         $configPname = '';
         $simplePid = '';
@@ -355,6 +361,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
             $configPname = $product->getName();
             $configPid = $product->getId();
             $collection = $product->getTypeInstance()->getUsedProducts($product);
+            $productType = $product->getTypeId();
             foreach ($collection as $productColl) {
                 $simplePid[] = $productColl->getId();
             }
@@ -367,6 +374,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
             }
             $confProduct = $this->_productModel->load($configPid);
             $configPname = $confProduct->getName();
+            $productType = $confProduct->getTypeId();
             $simpleProduct = $this->_productModel->load($productId);
         }
         $attr = $this->_eavConfig->getAttribute('catalog_product', 'xe_is_template');
@@ -384,7 +392,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
             if ($productImagesLength > 0) {
                 foreach ($productImages as $productImage) {
                     $curImage = $productImage->getUrl();
-                    $curThumb = (string) $baseUrl . 'pub/media/catalog/product/cache/1/thumbnail/88x110/beff4985b56e3afdbeabfc89641a4582' . $productImage->getFile();
+                    $curThumb = $this->getThumbnailCacheURL() . $productImage->getFile();
                     array_push($images, $curImage);
                     array_push($thumbs, $curThumb);
                     array_push($labels, $productImage->getLabel());
@@ -399,8 +407,8 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                 $taxClassId = $product->getTaxClassId();
                 $percent = 0;
             }
-            $attr = $simpleProduct->getResource()->getAttribute("xe_color");
-            $attr1 = $simpleProduct->getResource()->getAttribute("xe_size");
+            $attr = $simpleProduct->getResource()->getAttribute($color);
+            $attr1 = $simpleProduct->getResource()->getAttribute($size);
             $productFinalPrice = $simpleProduct->getFinalPrice();
             $tierPrices = $simpleProduct->getPriceInfo()->getPrice('tier_price')->getTierPriceList();
             $tier = array();
@@ -411,19 +419,27 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                     $tier[$k]['tierPrice'] = number_format($price['website_price'], 2);
                 }
             }
+            $colorValue = $simpleProduct->getAttributeText($color);
+            $sizeValue = $simpleProduct->getAttributeText($size);
+            if(!$colorValue){
+                $colorValue = "";
+            }
+            if(!$sizeValue){
+                $sizeValue = "";
+            }
             $attributes = $simpleProduct->getAttributes();
             $result = array(
                 'pid' => $configPid,
-                'pidtype' => $simpleProduct->getTypeId(),
+                'pidtype' => $productType,
                 'pname' => $configPname,
                 'shortdescription' => $simpleProduct->getShortDescription(),
                 'category' => $simpleProduct->getCategoryIds(),
                 'pvid' => $simpleProduct->getId(),
                 'pvname' => $simpleProduct->getName(),
-                'xecolor' => $simpleProduct->getAttributeText('xe_color'),
-                'xesize' => $simpleProduct->getAttributeText('xe_size'),
-                'xe_color_id' => $attr->getSource()->getOptionId($simpleProduct->getAttributeText('xe_color')),
-                'xe_size_id' => $attr1->getSource()->getOptionId($simpleProduct->getAttributeText('xe_size')),
+                'xecolor' => $colorValue,
+                'xesize' => $sizeValue,
+                'xe_color_id' => $attr->getSource()->getOptionId($simpleProduct->getAttributeText($color)),
+                'xe_size_id' => $attr1->getSource()->getOptionId($simpleProduct->getAttributeText($size)),
                 'quanntity' => (int) $qty,
 				'minQuantity' => (int) $minimumQuantity,
                 'price' => $simpleProduct->getFinalPrice(),
@@ -434,16 +450,18 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                 'isPreDecorated' => $preDecorated,
                 'labels' => $labels,
             );
-            foreach ($attributes as $attribute) {
-                $attrCode = $attribute->getAttributeCode();
-                $attrData = $attribute->getData();
-                if ($attribute->getIsVisibleOnFront()) {
-                    $attr = $simpleProduct->getResource()->getAttribute($attrCode);
-                    $attrText = $simpleProduct->getAttributeText($attrCode);
-                    $attrId = $attr->getSource()->getOptionId($simpleProduct->getAttributeText($attrCode));
-                    if ($attrText) {
-                        $result['attributes'][$attrCode] = $attrText;
-                        $result['attributes'][$attrCode . "_id"] = $attrId;
+            if($attributes){
+                foreach ($attributes as $attribute) {
+                    $attrCode = $attribute->getAttributeCode();
+                    $attrData = $attribute->getData();
+                    if ($attribute->getIsVisibleOnFront()) {
+                        $attr = $simpleProduct->getResource()->getAttribute($attrCode);
+                        $attrText = $simpleProduct->getAttributeText($attrCode);
+                        $attrId = $attr->getSource()->getOptionId($simpleProduct->getAttributeText($attrCode));
+                        if ($attrText) {
+                            $result['attributes'][$attrCode] = $attrText;
+                            $result['attributes'][$attrCode . "_id"] = $attrId;
+                        }
                     }
                 }
             }
@@ -457,26 +475,28 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
      * @param int $productId.
      * @param int $store.
      * @param int $simpleProductId.
+     * @param string $color.
+     * @param string $size.
      * @return string size and quantity in a json format.
      */
-    public function getSizeAndQuantity($productId, $store, $simpleProductId)
+    public function getSizeAndQuantity($productId, $store, $simpleProductId, $color, $size)
     {
         $variant = array();
         $optarr = array();
         $product = $this->_productModel->load($productId);
         $collection = $product->getTypeInstance()->getUsedProducts($product);
         $childProduct = $this->_productModel->load($simpleProductId);
-        $variantColor = $childProduct->getAttributeText('xe_color');
+        $variantColor = $childProduct->getAttributeText($color);
         $checkSizeId = array();
         foreach ($collection as $productColl) {
-            if ($productColl->getAttributeText('xe_color') == $variantColor) {
-                $color = $productColl->getAttributeText('xe_color');
-                $size = $productColl->getAttributeText('xe_size');
-                $attr = $productColl->getResource()->getAttribute("xe_color");
-                $attr1 = $productColl->getResource()->getAttribute("xe_size");
+            if ($productColl->getAttributeText($color) == $variantColor) {
+                $colorText = $productColl->getAttributeText($color);
+                $sizeText = $productColl->getAttributeText($size);
+                $attr = $productColl->getResource()->getAttribute($color);
+                $attr1 = $productColl->getResource()->getAttribute($size);
                 if ($attr->usesSource()) {
-                    $color_id = $attr->getSource()->getOptionId($color);
-                    $size_id = $attr1->getSource()->getOptionId($size);
+                    $color_id = $attr->getSource()->getOptionId($colorText);
+                    $size_id = $attr1->getSource()->getOptionId($sizeText);
                 }
                 $productFinalPrice = $productColl->getFinalPrice();
                 $tierPrices = $productColl->getPriceInfo()->getPrice('tier_price')->getTierPriceList();
@@ -509,8 +529,8 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                     $minimumQuantity = $productStockObj->getMinSaleQty();
                     $variant[] = array(
                         'simpleProductId' => $productColl->getId(),
-                        'xe_color' => $color,
-                        'xe_size' => $size,
+                        'xe_color' => $colorText,
+                        'xe_size' => $sizeText,
                         'xe_color_id' => $color_id,
                         'xe_size_id' => $size_id,
                         'quantity' => (int) $qty,
@@ -533,9 +553,11 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
      * @param int $productId.
      * @param int $store.
      * @param int $simpleProductId.
+     * @param string $color.
+     * @param string $size.
      * @return string size and quantity in a json format.
      */
-    public function getSizeVariants($productId, $store, $simpleProductId)
+    public function getSizeVariants($productId, $store, $simpleProductId, $color, $size)
     {
         $variant = array();
         $optarr = array();
@@ -544,13 +566,13 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
         $childProduct = $this->_productModel->load($simpleProductId);
         $checkSizeId = array();
         foreach ($collection as $productColl) {
-            $color = $productColl->getAttributeText('xe_color');
-            $size = $productColl->getAttributeText('xe_size');
-            $attr = $productColl->getResource()->getAttribute("xe_color");
-            $attr1 = $productColl->getResource()->getAttribute("xe_size");
+            $colorText = $productColl->getAttributeText($color);
+            $sizeText = $productColl->getAttributeText($size);
+            $attr = $productColl->getResource()->getAttribute($color);
+            $attr1 = $productColl->getResource()->getAttribute($size);
             if ($attr->usesSource()) {
-                $color_id = $attr->getSource()->getOptionId($color);
-                $size_id = $attr1->getSource()->getOptionId($size);
+                $color_id = $attr->getSource()->getOptionId($colorText);
+                $size_id = $attr1->getSource()->getOptionId($sizeText);
             }
             if (!in_array($size_id, $checkSizeId)) {
                 $productFinalPrice = $productColl->getFinalPrice();
@@ -583,8 +605,8 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                 $minimumQuantity = $productStockObj->getMinSaleQty();
                 $variant[] = array(
                     'simpleProductId' => $productColl->getId(),
-                    'xe_color' => $color,
-                    'xe_size' => $size,
+                    'xe_color' => $colorText,
+                    'xe_size' => $sizeText,
                     'xe_color_id' => $color_id,
                     'xe_size_id' => $size_id,
                     'quantity' => (int) $qty,
@@ -608,9 +630,11 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
      * @param int $limit.
      * @param int $store.
      * @param int $offset.
+     * @param string $color.
+     * @param string $size.
      * @return string variants in a json format.
      */
-    public function getVariants($confId, $start, $limit, $store, $offset)
+    public function getVariants($confId, $start, $limit, $store, $offset, $color, $size)
     {
         $product = $this->_productModel->load($confId);
         $simpleProducts = $product->getTypeInstance()->getUsedProducts($product);
@@ -621,7 +645,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
             ->addIdFilter($ids)
             ->addAttributeToSelect('*')
             ->addStoreFilter($store)
-            ->groupByAttribute('xe_color')
+            ->groupByAttribute($color)
             ->addAttributeToFilter('status', \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED)
             ->setPageSize($limit)
             ->setCurPage($offset);
@@ -636,21 +660,24 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
             foreach ($simpleCollection as $child) {
                 $qty = $this->_stockInterface->getStockQty($child->getId(), $child->getStore()->getWebsiteId());
                 if ($qty > 0) {
+                    $attr = $child->getResource()->getAttribute($color);
+                    $attr1 = $child->getResource()->getAttribute($size);
                     $productFinalPrice = $child->getFinalPrice();
                     $productPrice = $child->getPriceInfo()->getPrice('final_price')->getAmount()->getBaseAmount();
                     $tax = $productPrice - $productFinalPrice;
-                    $colorId = $child->getXe_color();
+                    // $colorId = $child->getXe_color();
+                    $colorId = $attr->getSource()->getOptionId($child->getAttributeText($color));
                     if (!in_array($colorId, $temp)) {
                         $curVariant[] = array(
                             'id' => $child->getId(),
                             'name' => $child->getName(),
                             'description' => strip_tags($child->getDescription()),
-                            'thumbnail' => (string) $baseUrl . 'pub/media/catalog/product/cache/1/thumbnail/88x110/beff4985b56e3afdbeabfc89641a4582' . $child->getImage(),
+                            'thumbnail' => $this->getThumbnailCacheURL() . $child->getImage(),
                             'price' => $productFinalPrice,
                             'tax' => $tax,
-                            'xeColor' => $child->getAttributeText('xe_color'),
+                            'xeColor' => $child->getAttributeText($color),
                             'xe_color_id' => $colorId,
-                            'xe_size_id' => $child->getXe_size(),
+                            'xe_size_id' => $attr1->getSource()->getOptionId($child->getAttributeText($size)),
                             'colorUrl' => $colorId . ".png",
                             'ConfcatIds' => $categoryIds,
                         );
@@ -667,17 +694,18 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
      * @api
      * @param string $colorname.
      * @param int $store.
+     * @param string $color.
      * @return string options in a json format.
      */
-    public function addAttributeColorOptionValue($colorname, $store)
+    public function addAttributeColorOptionValue($colorname, $store, $color)
     {
         $argValue = $colorname;
-        $attrId = $this->_eavConfig->getAttribute('catalog_product', 'xe_color')->getId();
+        $attrId = $this->_eavConfig->getAttribute('catalog_product', $color)->getId();
         $option['attribute_id'] = $attrId;
         $option['value']['attribute_value'][0] = $argValue;
         $eavSetup = $this->_eavSetupFactory->create();
         $eavSetup->addAttributeOption($option);
-        $attribute = $this->_eavConfig->getAttribute('catalog_product', 'xe_color');
+        $attribute = $this->_eavConfig->getAttribute('catalog_product', $color);
         $source = $attribute->getSource();
         $options = $source->getAllOptions();
         foreach ($options as $optionValue) {
@@ -697,13 +725,14 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
      * @param int $optionId.
      * @param string $colorname.
      * @param int $store.
+     * @param string $color.
      * @return string options in a json format.
      */
-    public function editAttributeColorOptionValue($optionId, $colorname, $store)
+    public function editAttributeColorOptionValue($optionId, $colorname, $store, $color)
     {
         $argValue = $colorname;
-        $attrId = $this->_eavConfig->getAttribute('catalog_product', 'xe_color')->getId();
-        $attribute = $this->_eavConfig->getAttribute('catalog_product', 'xe_color');
+        $attrId = $this->_eavConfig->getAttribute('catalog_product', $color)->getId();
+        $attribute = $this->_eavConfig->getAttribute('catalog_product', $color);
         $attribute->load($attrId);
         $data = array();
         $values = array(
@@ -744,18 +773,21 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
      * @param int $oldConfId.
      * @param int $varColor.
      * @param string $varSize.
+     * @param string $color.
+     * @param string $size.
+     * @param string $attrSet.
      * @return string response in a json format.
      */
-    public function addTemplateProducts($store, $data, $configFile, $oldConfId, $varColor, $varSize)
+    public function addTemplateProducts($store, $data, $configFile, $oldConfId, $varColor, $varSize, $color, $size, $attrSet)
     {
         $data = json_decode($data, true);
         $configFile = json_decode($configFile, true);
         $varSize = json_decode($varSize, true);
-        $attribute_set_name = 'inkXE';
+        $attribute_set_name = $attrSet;
         $data['attribute_set_name'] = $attribute_set_name;
-        $attributeColorCode = 'xe_color';
+        $attributeColorCode = $color;
         $data['attributeColorCode'] = $attributeColorCode;
-        $attributeSizeCode = 'xe_size';
+        $attributeSizeCode = $size;
         $data['attributeSizeCode'] = $attributeSizeCode;
         $attribute_set_id = $this->_attributeSet->load($attribute_set_name, 'attribute_set_name')->getAttributeSetId();
         $data['attribute_set_id'] = $attribute_set_id;
@@ -792,11 +824,11 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                 $short_description = $simple->getShortDescription();
                 $oldSKU = $simple->getSku();
                 // $qty = $this->_stockInterface->getStockQty($simple->getId(), $simple->getStore()->getWebsiteId());
-                $attr = $simple->getResource()->getAttribute("xe_color");
-                $attr1 = $simple->getResource()->getAttribute("xe_size");
-                $color_id = $attr->getSource()->getOptionId($simple->getAttributeText('xe_color'));
-                $xe_size_id = $attr1->getSource()->getOptionId($simple->getAttributeText('xe_size'));
-                $color = $simple->getAttributeText('xe_color');
+                $attr = $simple->getResource()->getAttribute($color);
+                $attr1 = $simple->getResource()->getAttribute($size);
+                $color_id = $attr->getSource()->getOptionId($simple->getAttributeText($color));
+                $xe_size_id = $attr1->getSource()->getOptionId($simple->getAttributeText($size));
+                $colorText = $simple->getAttributeText($color);
                 $data['weight'] = $weight;
                 $data['description'] = $description;
                 $data['short_description'] = $short_description;
@@ -806,11 +838,11 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                 if (!in_array($color_id, $temp)) {
                     if ($varColor == $color_id) {
                         foreach ($varSize as $size_id) {
-                            $size = $attr1->getSource()->getOptionText($size_id);
+                            $sizeText = $attr1->getSource()->getOptionText($size_id);
                             $oldSKU = $oldSKU . $rand;
                             $data['sku'] = $oldSKU;
                             $data['size_id'] = $size_id;
-                            $data['product_name'] = $simpleProductName . '-' . $size . '-' . $color;
+                            $data['product_name'] = $simpleProductName . '-' . $sizeText . '-' . $colorText;
                             $childIds[] = $this->createTemplateSimpleProduct($data, $product);
                         }
                     }
@@ -827,7 +859,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                 $childIds = array_values(array_merge($assigned_splist, $childIds));
             }
             //associate new simple product with new configure product
-            $req = $this->associateSimpleToConfigurableProduct($confId, $childIds, $attributeColorCode, $attributeSizeCode, $attribute_colorid, $attribute_sizeid, $attribute_set_id);
+            $req = $this->associateSimpleToConfigurableProduct($confId, $childIds, $attributeColorCode, $attributeSizeCode, $attribute_colorid, $attribute_sizeid, $attribute_set_id, $color, $size);
             $res = array();
             foreach ($req['variants'] as $v) {
                 $x = array_search($v['color_id'], $req['colors']);
@@ -944,6 +976,8 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
     {
         extract($data);
         $simpleProductArr = array();
+        $setXeColor = "set" . ucfirst($data['attributeColorCode']);
+        $setXeSize = "set" . ucfirst($data['attributeSizeCode']);
         if (isset($data['color_id'])) {
             $simpleProduct = $this->_objectManager->create('Magento\Catalog\Model\Product');
             try {
@@ -971,8 +1005,8 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                     ->setMetaDescription('metadescription')
                     ->setDescription($data['description'])
                     ->setShortDescription($data['short_description'])
-                    ->setXeColor($data['color_id'])
-                    ->setXeSize($data['size_id']);
+                    ->$setXeColor($data['color_id'])
+                    ->$setXeSize($data['size_id']);
                 $simpleProduct->setStockData(array(
                     'use_config_manage_stock' => 0, //'Use config settings' checkbox
                     'manage_stock' => 1, //manage stock
@@ -1041,15 +1075,17 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
      *date created 23-07-2016(dd-mm-yy)
      *date modified (dd-mm-yy)
      *Associate simple product to configurable
-     * @param int $confId
-     * @param int $childIds
-     * @param int $attributeColorCode
-     * @param int $attributeSizeCode
-     * @param int $attribute_colorid
-     * @param int $attribute_sizeid
+     * @param int $confId.
+     * @param int $childIds.
+     * @param int $attributeColorCode.
+     * @param int $attributeSizeCode.
+     * @param int $attribute_colorid.
+     * @param int $attribute_sizeid.
+     * @param string $color.
+     * @param string $size.
      * @return int $already associated id.
      */
-    public function associateSimpleToConfigurableProduct($confId, $childIds, $attributeColorCode, $attributeSizeCode, $attribute_colorid, $attribute_sizeid, $attribute_set_id)
+    public function associateSimpleToConfigurableProduct($confId, $childIds, $attributeColorCode, $attributeSizeCode, $attribute_colorid, $attribute_sizeid, $attribute_set_id, $color, $size)
     {
         $configProduct = $this->_productModel->load($confId);
         $simpleProducts = $this->_productCollectionFactory->create()
@@ -1066,9 +1102,12 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
         $configurableProductsData = array();
         $variants = array();
         foreach ($simpleProducts as $i => $simple) {
-            $variants[$i]['color_id'] = (int) $simple->getXeColor();
-            $variants[$i]['size_id'] = (int) $simple->getXeSize();
-            $colors[] = (int) $simple->getXeColor();
+            $attr = $simple->getResource()->getAttribute($color);
+            $attr1 = $simple->getResource()->getAttribute($size);
+            $variants[$i]['color_id'] = (int) $attr->getSource()->getOptionId($simple->getAttributeText($color));
+            $variants[$i]['size_id'] = (int) $attr1->getSource()->getOptionId($simple->getAttributeText($size));
+            $colors[] = (int) $attr->getSource()->getOptionId($simple->getAttributeText($color));
+
             $productData = array(
                 'label' => $simple->getAttributeText($attributeColorCode),
                 'attribute_id' => $attribute_colorid,
@@ -1158,13 +1197,15 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
      *date created 23-08-2016(dd-mm-yy)
      *date modified (dd-mm-yy)
      *Get Product data of a simple product
-     * @param string $configId
-     * @param string $colorId
-     * @param string $sizeId
-     * @param string $qty
+     * @param string $configId.
+     * @param string $colorId.
+     * @param string $sizeId.
+     * @param string $qty.
+     * @param string $color.
+     * @param string $size.
      * @return string sku in json format.
      */
-    public function getProductInfo($configId, $colorId, $sizeId, $qty)
+    public function getProductInfo($configId, $colorId, $sizeId, $qty, $color, $size)
     {
         $nextarr = array();
         $productData = array();
@@ -1180,14 +1221,11 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                 $product_name = $simple->getName();
                 $price = $simple->getPrice();
                 $oldSKU = $simple->getSku();
-                $attr = $simple->getResource()->getAttribute("xe_color");
-                $attr1 = $simple->getResource()->getAttribute("xe_size");
-                $simpleColorId = $attr->getSource()->getOptionId($simple->getAttributeText('xe_color'));
-                $simpleSizeId = $attr1->getSource()->getOptionId($simple->getAttributeText('xe_size'));
-                if ($simpleColorId == $colorId && $simpleSizeId == $sizeId) {
-                    // $data['xe_color'] = $simple->getAttributeText('xe_color');
-                    // $data['xe_size'] = $simple->getAttributeText('xe_size');
-                    // $data['xe_size_id'] = $simpleSizeId;
+                $attr = $simple->getResource()->getAttribute($color);
+                $attr1 = $simple->getResource()->getAttribute($size);
+                $simpleColorId = $attr->getSource()->getOptionId($simple->getAttributeText($color));
+                $simpleSizeId = $attr1->getSource()->getOptionId($simple->getAttributeText($size));
+                if ($simpleColorId == $colorId && $simpleSizeId == $sizeId || $simpleColorId == $sizeId && $simpleSizeId == $colorId) {
                     $data['simpleProductId'] = $simple->getId();
                     foreach ($attributes as $attribute) {
                         $attrCode = $attribute->getAttributeCode();
@@ -1196,10 +1234,18 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                             $attr = $simple->getResource()->getAttribute($attrCode);
                             $attrText = $simple->getAttributeText($attrCode);
                             $attrId = $attr->getSource()->getOptionId($simple->getAttributeText($attrCode));
-                            if ($attrText) {
-                                $data[$attrCode] = $attrText;
-                                $data[$attrCode . "_id"] = $attrId;
-                            }
+    						if ($attrText) {
+    							if($attrCode == $color){
+    								$data['xe_color'] = $attrText;
+    								$data['xe_color_id'] = $attrId;
+    							}else if($attrCode == $size){
+    								$data['xe_size'] = $attrText;
+    								$data['xe_size_id'] = $attrId;
+    							}else{
+    								$data[$attrCode] = $attrText;
+    								$data[$attrCode . "_id"] = $attrId;
+    							}
+    						}
                         }
                     }
                 }
@@ -1215,22 +1261,24 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
      *date created 23-08-2016(dd-mm-yy)
      *date modified (dd-mm-yy)
      *Get Product data of a simple product
-     * @param string $configId
-     * @param string $sizeId
-     * @param string $colorId
+     * @param string $configId.
+     * @param string $sizeId.
+     * @param string $colorId.
+     * @param string $color.
+     * @param string $size.
      * @return string id in json format.
      */
-    public function getSimpleProductId($configId, $sizeId, $colorId)
+    public function getSimpleProductId($configId, $sizeId, $colorId, $color, $size)
     {
         $product = $this->_productModel->load($configId);
         $simpleCollection = $product->getTypeInstance()->getUsedProducts($product);
         if (!empty($simpleCollection)) {
             $data = array();
             foreach ($simpleCollection as $simple) {
-                $attr = $simple->getResource()->getAttribute("xe_color");
-                $attr1 = $simple->getResource()->getAttribute("xe_size");
-                $simpleColorId = $attr->getSource()->getOptionId($simple->getAttributeText('xe_color'));
-                $simpleSizeId = $attr1->getSource()->getOptionId($simple->getAttributeText('xe_size'));
+                $attr = $simple->getResource()->getAttribute($color);
+                $attr1 = $simple->getResource()->getAttribute($size);
+                $simpleColorId = $attr->getSource()->getOptionId($simple->getAttributeText($color));
+                $simpleSizeId = $attr1->getSource()->getOptionId($simple->getAttributeText($size));
                 if ($simpleSizeId == $sizeId && $simpleColorId == $colorId) {
                     $data['simpleProductId'] = $simple->getId();
                 }
@@ -1251,5 +1299,25 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
     public function getStockItem($productId)
     {
         return $this->_stockItemRepository->get($productId);
+    }
+    public function getThumbnailCacheURL()
+    {
+        $baseUrl = $this->_storeManager->getStore()->getBaseUrl();
+        $mversion = $this->_objectManager->get('\Magento\Framework\App\ProductMetadata')->getVersion();
+        $marr = explode('.', $mversion);
+        if ($marr[0] == 2) {
+            if ($marr[1] >= 1) {
+                if ($marr[2] > 2) {
+                    $img = (string) $baseUrl . 'pub/media/catalog/product/cache/thumbnail/88x110/beff4985b56e3afdbeabfc89641a4582';
+                } else {
+                    $img = (string) $baseUrl . 'pub/media/catalog/product/cache/1/thumbnail/88x110/beff4985b56e3afdbeabfc89641a4582';
+                }
+            } else {
+                $img = (string) $baseUrl . 'pub/media/catalog/product/cache/1/thumbnail/88x110/beff4985b56e3afdbeabfc89641a4582';
+            }
+        } else {
+            $img = (string) $baseUrl . 'pub/media/catalog/product/cache/1/thumbnail/88x110/beff4985b56e3afdbeabfc89641a4582';
+        }
+        return $img;
     }
 }

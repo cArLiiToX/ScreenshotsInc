@@ -12,7 +12,7 @@
                   <!-- Nav tabs -->
                     <ul class="nav nav-tabs nav-tabs-linetriangle nav-tab-v nav-tabs-left">
 
-                        <li ng-repeat="tab in settingTabList" ng-class="getCurrentStep($index)" ng-hide="$index == 0">
+                        <li ng-repeat="tab in settingTabList" ng-class="getCurrentStep($index)">
                             <a ng-click="goToNextStep($index)">
                                 <span>
                                   <xe-translate text-value="{{ tab.name }}">

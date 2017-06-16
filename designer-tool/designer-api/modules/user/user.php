@@ -44,75 +44,75 @@ class User extends UTIL
      */
     public function userAuthentication()
     {
-        session_start();
-        $random = substr(sha1(rand()), 0, 15);
-        $timestamp = time();
+		session_start();
+		$random = substr(sha1(rand()), 0, 15);
+		$timestamp = time();
         $products = Flight::products();
-        try {
-            $errorMsg = '';
-            extract($this->_request);
-            if ($email == '') {
-                $errorMsg = 'Please enter your email';
-            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errorMsg = 'Please enter valid email';
-            } elseif ($password == '') {
-                $errorMsg = 'Please enter your password';
-            }
+		try {
+			$errorMsg = '';
+			extract($this->_request);
+			if ($email == '') {
+				$errorMsg = 'Please enter your email';
+			} elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+				$errorMsg = 'Please enter valid email';
+			} elseif ($password == '') {
+				$errorMsg = 'Please enter your password';
+			}
 
-            if ($errorMsg == '') {
-                $sql = "select id,email,userType,name from " . TABLE_PREFIX . "user where email='$email' AND password='" . md5($password) . "' LIMIT 1";
-                $numRows = $this->executeFetchAssocQuery($sql);
-                if (!empty($numRows)) {
-                    $length = 10;
-                    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                    $charactersLength = strlen($characters);
-                    $randomString = '';
-                    for ($i = 0; $i < $length; $i++) {
-                        $randomString .= $characters[rand(0, $charactersLength - 1)];
-                    }
+			if ($errorMsg == '') {
+				$sql = "select id,email,userType,name from " . TABLE_PREFIX . "user where email='$email' AND password='" . md5($password) . "' LIMIT 1";
+				$numRows = $this->executeFetchAssocQuery($sql);
+				if (!empty($numRows)) {
+					$length = 10;
+					$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+					$charactersLength = strlen($characters);
+					$randomString = '';
+					for ($i = 0; $i < $length; $i++) {
+						$randomString .= $characters[rand(0, $charactersLength - 1)];
+					}
 
-                    $tempArray = array();
-                    $tempArray['tool_status'] = $products->checkDesignerTool(1);
-                    $tempArray['products'] = base64_encode('SUCCESS@' . $randomString);
-                    $tempArray['designs'] = base64_encode($numRows[0]['email']);
-                    $tempArray['type'] = $numRows[0]['userType'];
-                    $tempArray['name'] = $numRows[0]['name'];
-                    $tempArray['id'] = $numRows[0]['id'];
-                    $user_id = $numRows[0]['id'];
-                    $result = array();
-                    $sql_module = "select privilege from " . TABLE_PREFIX . "user_privileges up," . TABLE_PREFIX . "user_privilege_rel upr where up.id =upr.p_id and upr.u_id = '" . $user_id . "'";
-                    $rows = $this->executeFetchAssocQuery($sql_module);
-                    if (!empty($rows)) {
-                        foreach ($rows as $v) {
-                            $result[] = $v['privilege'];
-                        }
-                    }
-                    $tempArray['moduleAllow'] = $result;
-                    $encodeString = $random."#~_".$user_id."#~_".$timestamp."#~_".$numRows[0]['userType'];
-                    $xorString = base64_encode($this->xorIt($encodeString, 's9k7a8l4j'));                       
-                    if (isset($this->_request['orderapp']) && $this->_request['orderapp'] == 1) {
-                        $updateUser = "UPDATE " . TABLE_PREFIX . "user SET token = '" . $xorString . "' WHERE id='" . $user_id . "'";
-                        $status = $this->executeGenericDMLQuery($updateUser);
-                        if ($status) {
-                            $tempArray['token'] = $xorString;
-                        }
-                    } else {
-                        $_SESSION['user'] = $xorString;
-                    }
-                    $msg = array("status" => $tempArray);
-                } else {
-                    $msg = array("status" => 'Email or Password is incorrect');
-                }
-            } else {
-                $msg = array("status" => $errorMsg);
-            }
+					$tempArray = array();
+					$tempArray['tool_status'] = $products->checkDesignerTool(1);
+					$tempArray['products'] = base64_encode('SUCCESS@' . $randomString);
+					$tempArray['designs'] = base64_encode($numRows[0]['email']);
+					$tempArray['type'] = $numRows[0]['userType'];
+					$tempArray['name'] = $numRows[0]['name'];
+					$tempArray['id'] = $numRows[0]['id'];
+					$user_id = $numRows[0]['id'];
+					$result = array();
+					$sql_module = "select privilege from " . TABLE_PREFIX . "user_privileges up," . TABLE_PREFIX . "user_privilege_rel upr where up.id =upr.p_id and upr.u_id = '" . $user_id . "'";
+					$rows = $this->executeFetchAssocQuery($sql_module);
+					if (!empty($rows)) {
+						foreach ($rows as $v) {
+							$result[] = $v['privilege'];
+						}
+					}
+					$tempArray['moduleAllow'] = $result;
+					$encodeString = $random."#~_".$user_id."#~_".$timestamp."#~_".$numRows[0]['userType'];
+					$xorString = base64_encode($this->xorIt($encodeString, 's9k7a8l4j'));						
+					if (isset($this->_request['orderapp']) && $this->_request['orderapp'] == 1) {
+						$updateUser = "UPDATE " . TABLE_PREFIX . "user SET token = '" . $xorString . "' WHERE id='" . $user_id . "'";
+						$status = $this->executeGenericDMLQuery($updateUser);
+						if ($status) {
+							$tempArray['token'] = $xorString;
+						}
+					} else {
+						$_SESSION['user'] = $xorString;
+					}
+					$msg = array("status" => $tempArray);
+				} else {
+					$msg = array("status" => 'Email or Password is incorrect');
+				}
+			} else {
+				$msg = array("status" => $errorMsg);
+			}
 
-            $this->closeConnection();
-            $this->response($this->json($msg), 200);
-        } catch (Exception $e) {
-            $result = array('Caught exception:' => $e->getMessage());
-            $this->response($this->json($result), 200);
-        }
+			$this->closeConnection();
+			$this->response($this->json($msg), 200);
+		} catch (Exception $e) {
+			$result = array('Caught exception:' => $e->getMessage());
+			$this->response($this->json($result), 200);
+		}
         
     }
 

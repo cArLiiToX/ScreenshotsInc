@@ -1,0 +1,73 @@
+<div aria-hidden="false" class="modal fade slide-up disable-scroll" id="setDefaultCategoryModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content-wrapper">
+            <div class="modal-content">
+                <div class="modal-body padding-30 text-center">
+                    <h5 class="no-margin p-b-20">
+                        Set default category
+                    </h5>
+                   
+                    <div class="btn-group m-r-10">
+                        <button class="btn btn-default text-ellipsis" data-toggle="dropdown" style="width:145px" type="button">
+                            {{selectedCategory}}
+                        </button>
+                        <button aria-expanded="false" aria-haspopup="true" class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button">
+                            <span class="caret">
+                            </span>
+                            <span class="sr-only">
+                                Toggle Dropdown
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu" ng-class="{'button-scroll':designCategoryList.length> 4}" role="menu" style="width:163px">
+                            <li ng-click="categorySelected('')">
+                                <a href="">
+                                    <xe-translate text-value="All Categories">
+                                    </xe-translate>
+                                </a>
+                            </li>
+                            <li ng-click="categorySelected(category)" ng-repeat="category in designCategoryList">
+                                <a href="">
+                                    {{ category.category_name }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                   
+                   <div class="btn-group m-r-10">
+                    <div class="btn-group">
+                        <button class="btn btn-default text-ellipsis" data-toggle="dropdown" ng-class="{'disabled': selectedCategory == 'All Categories' || catCount == 0}" style="width:137px" type="button">
+                            {{ selectedSubCategory }}
+                        </button>
+                        <button aria-expanded="false" aria-haspopup="true" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-class="{'disabled': selectedCategory == 'All Categories'}" type="button">
+                            <span class="caret">
+                            </span>
+                            <span class="sr-only">
+                                Toggle Dropdown
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu" ng-class="{'button-scroll':designSubCategoryList.length> 3}" role="menu" style="width:163px">
+                        <li ng-click="subCategorySelected(subCategory)" ng-repeat="subCategory in designSubCategoryList">
+                                <a href="">
+                                    {{ subCategory.sub_category }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    </div>
+            
+                <div class="clearfix m-t-30">
+                    <button class="btn btn-success btn-cons" data-dismiss="modal" ng-click="saveAsDefaultCategoryAndSubCategory(selectedCategory,selectedSubCategory)" ng-disabled="demoStatus" type="button">
+                        <xe-translate text-value="Save">
+                        </xe-translate>
+                    </button>
+                    <button class="btn btn-danger btn-cons m-r-0" data-dismiss="modal" type="button">
+                        <xe-translate text-value="Cancel">
+                        </xe-translate>
+                    </button>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.modal-content -->
+</div>

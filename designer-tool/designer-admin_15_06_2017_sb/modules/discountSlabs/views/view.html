@@ -1,0 +1,99 @@
+<div class="container-fluid" ng-controller="discountSlabController">
+    <div class="col-sm-12" ng-init="init()">
+        <!-- Added Button -->
+        <div class="panel panel-transparent">
+            <div class="panel-body padding-0">
+                <button type="button" class="btn btn-info btn-sm btn-cons" ng-click="addNewDiscount()">
+                    <span>
+                        Add New
+                    </span>
+                </button>
+                <p class="small m-t-10">
+                    Here you can add discount on the product.
+                </p>
+            </div>
+        </div>
+        <ng-include src="'modules/discountSlabs/views/partials/addNewDiscount.html'" ng-show="isAddViewActive">
+        </ng-include>
+        <ng-include src="'modules/discountSlabs/views/partials/editDiscount.html'" ng-show="isEditViewActive">
+        </ng-include>
+        <!-- preloader start -->
+        <div class="panel panel-default" ng-show="preloader">
+            <div class="graphics-wrap-height">
+                <div class="panel-body text-center">
+                    <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/progress/progress-circle-master.svg" alt="Progress"/>
+                    <span style="position: absolute;top:44%;right:32%;">
+                        <xe-translate text-value="Loading product discount">
+                        </xe-translate>
+                        ...
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- preloader end -->
+        <div class="panel panel-default" ng-hide="preloader">
+            <div class="panel-heading separator">
+                <div class="panel-title">
+                    Discount On Product
+                </div>
+            </div>
+            <div class="panel-body m-t-20">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="table-responsive custom-table" ng-if="discountDataList.length> 0">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Discount Name
+                                        </th>
+                                        <th>
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="disount in discountDataList">
+                                        <td>
+                                            {{ disount.discount_name }}
+                                        </td>
+                                        <td>
+                                            <div class="pull-left m-l-30">
+                                                <button class="btn btn-info btn-sm m-t-5" type="button" ng-class="{'disabled': isPreLoader}"  ng-click="editattributevalue($index)">
+                                                    <i class="fa fa-paste">
+                                                    </i>
+                                                    <xe-translate text-value="Edit">
+                                                    </xe-translate>
+                                                </button>
+                                            </div>
+                                            <button class="btn btn-danger btn-sm m-l-5 m-t-5" type="button"  ng-class="{'disabled': isPreLoader}"  ng-click="deleteDisount($index)">
+                                                <xe-translate text-value="Delete">
+                                                </xe-translate>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <span ng-if="discountDataList.length == 0">
+                            <p class="font-normal text-lg text-center m-t-150">
+                                No Discount Found
+                            </p>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="isLoadMore" class="panel-footer">
+                <div class="text-center">
+                    <button type="button" class="btn btn-success btn-sm btn-cons" ng-click="loadMore()" ng-disabled="isPreLoader" ng-show="isLoadMore">
+                        <span>
+                            <xe-translate text-value="Load More">
+                            </xe-translate>
+                        </span>
+                    </button>
+                    <img class="image-responsive-height demo-mw-30 " src="assets/img/progress/progress-circle-master.svg" alt="Progress" ng-show="isPreLoader"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

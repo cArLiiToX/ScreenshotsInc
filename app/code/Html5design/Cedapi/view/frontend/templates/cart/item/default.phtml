@@ -25,6 +25,19 @@ if(null === $attr->getId()) {
 }
 ?>
 <script type="text/javascript">
+require(['jquery'],function($){
+	jQuery("#shopping-cart-table tbody tr td dt").each(function(index) {
+		var labeltxt = jQuery(this).html();
+		jQuery(this).next('dd').addClass("variation-"+labeltxt);
+		if (labeltxt.toLowerCase().indexOf("XE_Size")) {
+			var replaced = jQuery(this).html().replace('XE_Size', 'Size');
+			jQuery(this).html(replaced);
+		}
+		if (labeltxt.toLowerCase().indexOf("XE_Color")) {
+			var replaced = jQuery(this).html().replace('XE_Color', 'Color');
+			jQuery(this).html(replaced);
+		}
+	});
     ul = "<?php echo $baseUrl;?>";
     // var url = '';
     var url = ul+'designer-tool/designer-api/index.php';
@@ -44,6 +57,13 @@ if(null === $attr->getId()) {
                 if(status == 'success'){
                     if(data != ''){
                         var jsonObj = data;
+						 var size = new Array();		
+						var elem1 = jQuery("#shopping-cart-table tbody tr td dd.variation-Size");
+						var i = 0;
+						elem1.each(function(ind) {							
+							size[i] = jQuery(this).text();
+							i++;						
+						});
                         jQuery("a.product-item-photo").each(function(index) {
                             jQuery("a.product-item-photo").css('width', '100%');
                             jQuery(".action").css('display', 'inline');
@@ -54,10 +74,14 @@ if(null === $attr->getId()) {
                                     if(key==sid && val.length>0){
                                         var count=0;
                                         var print_id= val[0].printid;
+										var sizeId = size[index];
                                         jQuery(obj).find('.printid').val(print_id)
                                         if (val[0].nameAndNumber == 1) {
                                             jQuery("a.edit" + sid).css('display', 'none');
-                                        }
+                                        }else{
+											jQuery("a.info" + sid).css('display', 'none');
+										}
+										jQuery(obj).find('.sizeid').val(sizeId)
                                         jQuery.each(val,function(imgKey, imgObj){
                                             count++;
                                             if(count==1){
@@ -76,25 +100,73 @@ if(null === $attr->getId()) {
                 }
             });
         <?php }?>
-    });
-    function myFunction(refid) {
+		});
+	});
+    function myFunction(refid, id) {
         var print_id = document.getElementById(refid).value;
+        var sizeId = document.getElementById("sizeid"+id).value;
         var refid =  refid;
         var url = '';
         var ischecklogin = "<?php echo $customerSession->getId()?> ";
         customer = ischecklogin.trim();
         if(ischecklogin>0)  customer = '&customer='+customer;
         else customer = '&customer=0';
-        var storeId = "<?php echo 1;?> ";
+        var storeId = 1;
         var store = '&store='+storeId;
+		var sizeValue = '&spid='+sizeId;
         var screenWidth = (window.innerWidth > 0) ? window.innerWidth : screen.width;
         if(screenWidth < 1024){
-            url = ul+"designer-tool/designer-app/index.html?sid="+refid+"&pt="+print_id+customer+store;
+            url = ul+"designer-tool/designer-app/index.html?sid="+refid+"&pt="+print_id+customer+store+sizeValue;
         }else{
-            url = ul+"product-designer?sid="+refid+"&pt="+print_id+customer+store;
+            url = ul+"product-designer?sid="+refid+"&pt="+print_id+customer+store+sizeValue;
         }   
         window.location = url;
     }
+	function nameAndNumberInfo(refid, id){
+		var ul = "<?php echo $baseUrl;?>";
+		var url = ul+'designer-tool/designer-api/index.php';
+		jQuery.get(url + "?reqmethod=getNameAndNumberByRefId&refId=" + refid+"&pid="+id, function(data) { 
+		   if(data.nameNumberData !=''){
+				var div = "<div id='name-number' style='display:none;'><table ><thead><tr><th style='border: 2px solid #f6f6f6;'></th><th colspan='2' style='text-align: center;border: 2px solid #f6f6f6;'>Front</th><th colspan='2' style='text-align: center;border: 2px solid #f6f6f6;'>Back</th></tr> <tr><th style='border: 2px solid #f6f6f6;'>Size</th><th style='border: 2px solid #f6f6f6;'>Name</th><th style='border: 2px solid #f6f6f6;'>Number</th> <th style='border: 2px solid #f6f6f6;'>Name</th><th style='border: 2px solid #f6f6f6;'>Number</th></tr></thead><tbody>";
+				jQuery.each(data.nameNumberData, function(i, result) {
+					div += "<tr><td style='border: 2px solid #f6f6f6;'>"+result.size+"</td><td style='border: 2px solid #f6f6f6;'>"+result.front.name+"</td><td style='border: 2px solid #f6f6f6;'>"+result.front.number+"</td><td style='border: 2px solid #f6f6f6;'>"+result.back.name+"</td><td style='border: 2px solid #f6f6f6;'>"+result.back.number+"</td></tr>";
+				});
+				div += "</tbody></table></div>";
+				var divData = jQuery('#name-number');
+				if(divData.length) divData.remove();
+				jQuery('body').append(div);
+				addDiv();
+			}
+		});
+	}
+	function addDiv(){
+		require(
+        [
+            'jquery',
+            'Magento_Ui/js/modal/modal'
+        ],
+        function(
+            $,
+            modal
+        ) {
+            var options = {
+                type: 'popup',
+                responsive: true,
+                innerScroll: true,
+                title: 'Name And Number Details',
+                buttons: [{
+                    text: $.mage.__('Continue'),
+                    class: '',
+                    click: function () {
+                        this.closeModal();
+                    }
+                }]
+            };
+            var popup = modal(options, $('#name-number'));
+            $('#name-number').modal('openModal');   
+        }
+        );
+	}	
 </script>
 <tbody class="cart item">
     <tr class="item-info">
@@ -108,6 +180,7 @@ if(null === $attr->getId()) {
                 <span class="product-item-photo">
             <?php endif;?>
             <input type="hidden"  class="printid" id="<?php echo $refid ; ?>" rel="<?php echo $refid ?>" value="" />
+            <input type="hidden"  class="productId" id="<?php echo "sizeid".$this->getItem()->getId(); ?>" value="<?php  $_sku = $this->getItem()->getsku(); $productObject = $productManager->loadByAttribute('sku', $_item->getSku()); echo $productObject->getId(); ?>" />
             <?php echo $block->getImage($block->getProductForThumbnail(), 'cart_page_product_thumbnail')->toHtml(); ?>
             <?php if ($block->hasProductUrl()):?>
                 </a>
@@ -199,9 +272,18 @@ if(null === $attr->getId()) {
         <td colspan="100">
             <div class="actions-toolbar">
                 <?php if($refid && !$preDecoratedProduct){?>
-                    <a href="javascript:void(0)" class="edit<?php echo $refid; ?>" onclick="myFunction(<?php echo $refid; ?>)" title="Edit item parameters">Redesign</a>
+                    <a href="javascript:void(0)" class="edit<?php echo $refid; ?>" onclick="myFunction(<?php echo $refid; echo ','; echo $this->getItem()->getId(); ?>)" title="Edit item parameters">Redesign</a>
+					<a id="showinfo" href="javascript:void(0)" class="info<?php echo $refid; ?>" onclick="nameAndNumberInfo(<?php echo $refid; echo ','; $simpleProduct=$productManager->loadByAttribute('sku', $_item->getSku());echo $simpleProduct->getId(); ?>)" title="item info">Info</a>
                 <?php } ?>
-                <?php /* @escapeNotVerified */ echo $block->getActions($_item) ?>
+                
+				<?php /* @escapeNotVerified */ echo $block->getActions($_item) ?>
+            </div>
+        </td>
+    </tr>
+	<tr class="item-actions"> 
+        <td colspan="100">
+            <div class="actions-toolbar">
+				<a onclick="nameAndNumberInfo(<?php echo $refid; echo ','; $simpleProduct=$productManager->loadByAttribute('sku', $_item->getSku());echo $simpleProduct->getId(); ?>)"></a>
             </div>
         </td>
     </tr>

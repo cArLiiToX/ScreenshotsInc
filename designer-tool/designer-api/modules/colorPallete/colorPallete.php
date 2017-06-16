@@ -27,7 +27,7 @@ class ColorPallete extends UTIL
                 } else {
                     $sql = "SELECT * FROM " . TABLE_PREFIX . "palette_category";
                 }
-
+                $sql .= " ORDER BY sort_order";
                 $categoryDetail = array();
                 $rows = $this->executeGenericDQLQuery($sql);
                 if ($this->_request['customer'] && $this->_request['customer'] == '1') {
@@ -48,7 +48,7 @@ class ColorPallete extends UTIL
                     return $categoryDetail;
                 } else {
                     $this->closeConnection();
-                    $this->response($this->json($categoryDetail), 200);
+                    $this->response($this->json($categoryDetail, 1), 200);
                 }
             } catch (Exception $e) {
                 $result = array('Caught exception:' => $e->getMessage());
@@ -80,10 +80,10 @@ class ColorPallete extends UTIL
         if (isset($this->_request['apikey']) && $this->isValidCall($this->_request['apikey'])) {
             try {
                 $sql = "SELECT DISTINCT  p.is_pattern
-				FROM " . TABLE_PREFIX . "palette_category AS pc
-				RIGHT JOIN " . TABLE_PREFIX . "palette_category_rel AS pcl ON pc.id = pcl.category_id
-				JOIN " . TABLE_PREFIX . "palettes AS p ON pcl.palette_id = p.id
-				WHERE pc.is_available = '1'";
+                FROM " . TABLE_PREFIX . "palette_category AS pc
+                RIGHT JOIN " . TABLE_PREFIX . "palette_category_rel AS pcl ON pc.id = pcl.category_id
+                JOIN " . TABLE_PREFIX . "palettes AS p ON pcl.palette_id = p.id
+                WHERE pc.is_available = '1'";
                 $rows = $this->executeFetchAssocQuery($sql);
                 $rec = array();
                 $result = array();
@@ -124,17 +124,16 @@ class ColorPallete extends UTIL
         if (!empty($this->_request) && !empty($apikey) && $this->isValidCall($apikey)) {
             try {
                 $sql = "SELECT DISTINCT  p.*
-						FROM " . TABLE_PREFIX . "palette_category AS pc
-						RIGHT JOIN " . TABLE_PREFIX . "palette_category_rel AS pcl ON pc.id = pcl.category_id
-						JOIN " . TABLE_PREFIX . "palettes AS p ON pcl.palette_id = p.id
-						WHERE pc.is_available = '1'";
+                        FROM " . TABLE_PREFIX . "palette_category AS pc
+                        RIGHT JOIN " . TABLE_PREFIX . "palette_category_rel AS pcl ON pc.id = pcl.category_id
+                        JOIN " . TABLE_PREFIX . "palettes AS p ON pcl.palette_id = p.id
+                        WHERE pc.is_available = '1'";
                 if ((isset($categoryId) && $categoryId) || !empty($categoryId)) {
                     $sql .= " AND pc.id IN(" . $categoryId . ")";
                 }
                 if (isset($is_pattern)) {
                     $sql .= " AND p.is_pattern='" . $is_pattern . "'";
                 }
-                //$this->log('categoryId :'.$categoryId);
                 $sql .= " ORDER BY p.id DESC";
                 $srtIndex = (isset($srtIndex) && $srtIndex) ? $srtIndex : 0;
                 if ($range != '') {
@@ -174,7 +173,7 @@ class ColorPallete extends UTIL
             $colorArray['status'] = "invalidapikey";
         }
 
-        $this->response($this->json($colorArray), 200);
+        $this->response($this->json($colorArray, 1), 200);
     }
 
     /**
@@ -194,13 +193,20 @@ class ColorPallete extends UTIL
         $apiKey = $this->_request['apikey'];
         if ($this->isValidCall($apiKey)) {
             try {
-                $categoryName = $this->_request['categoryName'];
+                $categoryName = addslashes($this->_request['categoryName']);
                 $sql = "select count(*) duplicate from " . TABLE_PREFIX . "palette_category where name = '$categoryName'";
                 $row = $this->executeGenericDQLQuery($sql);
                 $response = array();
                 if ($row[0]['duplicate'] == "0") {
-                    $sql = "insert into " . TABLE_PREFIX . "palette_category(name) values('$categoryName')";
-                    $this->executeGenericDMLQuery($sql);
+                    $sql = "select id from " . TABLE_PREFIX . "palette_category ORDER BY id DESC";
+                    $result = $this->executeGenericDQLQuery($sql);
+                    $order = $result[0][0];
+                    if ($order == '') {
+                        $order = 0;
+                    }
+
+                    $sql1 = "insert into " . TABLE_PREFIX . "palette_category(name,sort_order) values('$categoryName','$order')";
+                    $this->executeGenericDMLQuery($sql1);
                     $response['status'] = "success";
                     $response['message'] = 'Category was added successfully.';
                 } else {
@@ -237,6 +243,7 @@ class ColorPallete extends UTIL
         if (!empty($this->_request) && $this->_request['id'] && isset($this->_request['name'])) {
             extract($this->_request);
             try {
+                $name = addslashes($name);
                 $chk_duplicate = "SELECT count(*) duplicate FROM " . TABLE_PREFIX . "palette_category WHERE name = '" . $name . "' AND id !='" . $id . "'";
                 $row = $this->executeGenericDQLQuery($chk_duplicate);
                 $response = array();
@@ -303,7 +310,6 @@ class ColorPallete extends UTIL
         }
     }
 
-	
     /**
      *
      *date created (dd-mm-yy)
@@ -331,7 +337,8 @@ class ColorPallete extends UTIL
                 $usql = 'UPDATE ' . TABLE_PREFIX . 'palettes SET value = CASE id';
                 $usql1 = '';
                 $usql2 = '';
-		$this->_request['price'] = (isset($this->_request['price']) && $this->_request['price'])?$this->_request['price']:0.00;
+                $this->_request['price'] = (isset($this->_request['price']) && $this->_request['price']) ? $this->_request['price'] : 0.00;
+                $colorName = addslashes($this->_request['name']);
                 if ($this->_request['is_pattern'] == '1') {
                     $dir = $this->getPalettePath();
                     if (!$dir) {
@@ -343,7 +350,7 @@ class ColorPallete extends UTIL
                     }
 
                     foreach ($this->_request['pattern'] as $k => $v) {
-                        $sql[$k] = $palette_sql . "('" . $this->_request['name'] . "','" . $this->_request['price'] . "','" . $this->_request['is_pattern'] . "')";
+                        $sql[$k] = $palette_sql . "('" . $colorName . "','" . $this->_request['price'] . "','" . $this->_request['is_pattern'] . "')";
                         $palette_id[$k] = $this->executeGenericInsertQuery($sql[$k]);
                         if (!empty($this->_request['category_id'])) {
                             foreach ($this->_request['category_id'] as $k1 => $v1) {
@@ -363,34 +370,49 @@ class ColorPallete extends UTIL
                     }
                 }
                 if ($this->_request['is_pattern'] == '2') {
-                    foreach ($this->_request['cmyk'] as $k => $v) {
-                        if (!empty($this->_request['name'])) {
-                            $palette = "INSERT INTO " . TABLE_PREFIX . "palettes (name,price,is_pattern,c,m,y,k) VALUES ";
-                            $sql[$k] = $palette . "('" . $this->_request['name'] . "','" . $this->_request['price'] . "',
-								'" . $this->_request['is_pattern'] . "','" . $v['c'] . "',
-								'" . $v['m'] . "','" . $v['y'] . "','" . $v['k'] . "')";
-                            $palette_id[$k] = $this->executeGenericInsertQuery($sql[$k]);
-                        }
-                        if (!empty($v['name'])) {
-                            $palette = "INSERT INTO " . TABLE_PREFIX . "palettes (name,price,is_pattern,c,m,y,k) VALUES ";
-                            $sql[$k] = $palette . "('" . $v['name'] . "','" . $this->_request['price'] . "',
-								'" . $this->_request['is_pattern'] . "','" . $v['c'] . "',
-								'" . $v['m'] . "','" . $v['y'] . "','" . $v['k'] . "')";
-                            $palette_id[$k] = $this->executeGenericInsertQuery($sql[$k]);
-                        }
-
-                        if (!empty($this->_request['category_id'])) {
-                            foreach ($this->_request['category_id'] as $k1 => $v1) {
-                                $cat_scat_rel_sql .= ",('" . $palette_id[$k] . "','" . $v1 . "')";
+                    if (!empty($this->_request['cmyk']) && isset($this->_request['cmyk'])) {
+                        foreach ($this->_request['cmyk'] as $k => $v) {
+                            if (!empty($colorName)) {
+                                $palette = "INSERT INTO " . TABLE_PREFIX . "palettes (name,price,is_pattern,c,m,y,k) VALUES ";
+                                $sql[$k] = $palette . "('" . $colorName . "','" . $this->_request['price'] . "',
+                                    '" . $this->_request['is_pattern'] . "','" . $v['c'] . "',
+                                    '" . $v['m'] . "','" . $v['y'] . "','" . $v['k'] . "')";
+                                $palette_id[$k] = $this->executeGenericInsertQuery($sql[$k]);
                             }
-                        }
-                        if (!empty($this->_request['print_method_id'])) {
-                            foreach ($this->_request['print_method_id'] as $v2) {
-                                $print_method_re_sql .= ",('" . $palette_id[$k] . "','" . $v2 . "')";
+                            if (!empty($this->_request['category_id'])) {
+                                foreach ($this->_request['category_id'] as $k1 => $v1) {
+                                    $cat_scat_rel_sql .= ",('" . $palette_id[$k] . "','" . $v1 . "')";
+                                }
                             }
+                            if (!empty($this->_request['print_method_id'])) {
+                                foreach ($this->_request['print_method_id'] as $v2) {
+                                    $print_method_re_sql .= ",('" . $palette_id[$k] . "','" . $v2 . "')";
+                                }
+                            }
+                            $usql1 .= ' WHEN ' . $palette_id[$k] . " THEN '" . $v['hexValue'] . "'";
+                            $usql2 .= $palette_id[$k] . ',';
                         }
-                        $usql1 .= ' WHEN ' . $palette_id[$k] . " THEN '" . $v['hexValue'] . "'";
-                        $usql2 .= $palette_id[$k] . ',';
+                    }
+                    if (!empty($this->_request['csvcmyk']) && isset($this->_request['csvcmyk'])) {
+                        foreach ($this->_request['csvcmyk'] as $k1 => $v1) {
+                            if (!empty($v1['name'])) {
+                                $palette = "INSERT INTO " . TABLE_PREFIX . "palettes (name,price,is_pattern,c,m,y,k) VALUES ";
+                                $sqlcsv[$k1] = $palette . "('" . $v1['name'] . "','" . $v1['price'] . "',
+                                    '" . $this->_request['is_pattern'] . "','" . $v1['c'] . "',
+                                    '" . $v1['m'] . "','" . $v1['y'] . "','" . $v1['k'] . "')";
+                                $palette_ids[$k1] = $this->executeGenericInsertQuery($sqlcsv[$k1]);
+                            }
+                            if (!empty($v1['category_id'])) {
+                                $cat_scat_rel_sql .= ",('" . $palette_ids[$k1] . "','" . $v1['category_id'] . "')";
+                            }
+                            if (!empty($this->_request['print_method_id'])) {
+                                foreach ($this->_request['print_method_id'] as $v3) {
+                                    $print_method_re_sql .= ",('" . $palette_ids[$k1] . "','" . $v3 . "')";
+                                }
+                            }
+                            $usql1 .= ' WHEN ' . $palette_ids[$k1] . " THEN '" . $v1['hexValue'] . "'";
+                            $usql2 .= $palette_ids[$k1] . ',';
+                        }
                     }
                 }
                 if ($this->_request['is_pattern'] == '0') {
@@ -412,7 +434,7 @@ class ColorPallete extends UTIL
                         }
                     } else {
                         foreach ($this->_request['color'] as $k => $v) {
-                            $sql[$k] = $palette_sql . "('" . $this->_request['name'] . "','" . $this->_request['price'] . "','" . $this->_request['is_pattern'] . "')";
+                            $sql[$k] = $palette_sql . "('" . $colorName . "','" . $this->_request['price'] . "','" . $this->_request['is_pattern'] . "')";
                             $palette_id[$k] = $this->executeGenericInsertQuery($sql[$k]);
 
                             if (!empty($this->_request['category_id'])) {
@@ -473,6 +495,7 @@ class ColorPallete extends UTIL
             if (!empty($this->_request) && !empty($this->_request['id']) && isset($this->_request['name']) && isset($this->_request['price'])) {
                 extract($this->_request);
                 $id_str = implode(',', $id);
+                $name = addslashes($name);
                 if (sizeof($id) > 1) {
                     $sql = "UPDATE " . TABLE_PREFIX . "palettes SET name='" . $name . "',price='" . $price . "' WHERE id IN(" . $id_str . ")";
                     $status = $this->executeGenericDMLQuery($sql);
@@ -487,7 +510,7 @@ class ColorPallete extends UTIL
                     }
                     if ($isPattern == '2') {
                         $sql = "UPDATE " . TABLE_PREFIX . "palettes SET value='" . $cmyk['hexValue'] . "',name='" . $name . "',
-						price='" . $price . "',c='" . $cmyk['c'] . "',m='" . $cmyk['m'] . "',y='" . $cmyk['y'] . "',k='" . $cmyk['k'] . "' WHERE id IN(" . $id_str . ")";
+                        price='" . $price . "',c='" . $cmyk['c'] . "',m='" . $cmyk['m'] . "',y='" . $cmyk['y'] . "',k='" . $cmyk['k'] . "' WHERE id IN(" . $id_str . ")";
                         $status = $this->executeGenericDMLQuery($sql);
                     }
                 }
@@ -531,53 +554,54 @@ class ColorPallete extends UTIL
      *@return json data
      *
      */
-    public function removePalettes(){
+    public function removePalettes()
+    {
         $apiKey = $this->_request['apikey'];
-	$status = 0;
+        $status = 0;
         if ($this->isValidCall($apiKey)) {
             try {
-		if(!empty($this->_request['paletteIds'])){
-			$ids = implode(',', $this->_request['paletteIds']);
-			$sql = "DELETE FROM " . TABLE_PREFIX . "print_method_palette_rel WHERE palette_id in ($ids)"; // table might not be used plz check again.
-			$status += $this->executeGenericDMLQuery($sql);
+                if (!empty($this->_request['paletteIds'])) {
+                    $ids = implode(',', $this->_request['paletteIds']);
+                    $sql = "DELETE FROM " . TABLE_PREFIX . "print_method_palette_rel WHERE palette_id in ($ids)"; // table might not be used plz check again.
+                    $status += $this->executeGenericDMLQuery($sql);
 
-			$sql = "DELETE FROM " . TABLE_PREFIX . "print_method_color_group_rel WHERE color_group_id in ($ids)";
-			$status += $this->executeGenericDMLQuery($sql);
+                    $sql = "DELETE FROM " . TABLE_PREFIX . "print_method_color_group_rel WHERE color_group_id in ($ids)";
+                    $status += $this->executeGenericDMLQuery($sql);
 
-			$sql = 'DELETE cpgrl,cpg FROM ' . TABLE_PREFIX . 'color_price_group_rel AS cpgrl 
-				INNER JOIN ' . TABLE_PREFIX . 'color_price_group AS cpg ON cpgrl.color_price_group_id=cpg.pk_id 
-				WHERE cpgrl.color_id IN(' . $ids . ')';
-			$status += $this->executeGenericDMLQuery($sql);
+                    $sql = 'DELETE cpgrl,cpg FROM ' . TABLE_PREFIX . 'color_price_group_rel AS cpgrl
+                INNER JOIN ' . TABLE_PREFIX . 'color_price_group AS cpg ON cpgrl.color_price_group_id=cpg.pk_id
+                WHERE cpgrl.color_id IN(' . $ids . ')';
+                    $status += $this->executeGenericDMLQuery($sql);
 
-			$sql = "DELETE FROM " . TABLE_PREFIX . "palettes WHERE id in ($ids)";
-			$status += $this->executeGenericDMLQuery($sql);
-					
-			if ($status > 0) {
-				$dir = $this->getPaletteImagePath();
-				if (!$dir) {
-					$this->response('', 204);
-				}
-				foreach($this->_request['fileNames'] as $fileNamesArray) {
-					$filePath = $dir . $fileNamesArray;
-					if (file_exists($filePath)) {
-						if (is_file($filePath)) {
-							@chmod($filePath,0755);
-							@unlink($filePath);
-						}
-					}
-				}
-			}
-			$settingObj = Flight::setting();
-			$settingObj->allSettingsDetails(1);
-		}
+                    $sql = "DELETE FROM " . TABLE_PREFIX . "palettes WHERE id in ($ids)";
+                    $status += $this->executeGenericDMLQuery($sql);
+
+                    if ($status > 0) {
+                        $dir = $this->getPaletteImagePath();
+                        if (!$dir) {
+                            $this->response('', 204);
+                        }
+                        foreach ($this->_request['fileNames'] as $fileNamesArray) {
+                            $filePath = $dir . $fileNamesArray;
+                            if (file_exists($filePath)) {
+                                if (is_file($filePath)) {
+                                    @chmod($filePath, 0755);
+                                    @unlink($filePath);
+                                }
+                            }
+                        }
+                    }
+                    $settingObj = Flight::setting();
+                    $settingObj->allSettingsDetails(1);
+                }
             } catch (Exception $e) {
                 $msg = array('Caught exception:' => $e->getMessage());
             }
-		$msg['status'] = ($status > 0)?'success':'failed';
+            $msg['status'] = ($status > 0) ? 'success' : 'failed';
         } else {
             $msg['status'] = 'invalid';
         }
-	$this->response($this->json($msg), 200);
+        $this->response($this->json($msg), 200);
     }
 
     /**
@@ -599,11 +623,11 @@ class ColorPallete extends UTIL
     {
         try {
             $sql = "SELECT DISTINCT  p.*
-					FROM " . TABLE_PREFIX . "palette_category AS pc
-					RIGHT JOIN " . TABLE_PREFIX . "palette_category_rel AS pcl ON pc.id = pcl.category_id
-					JOIN " . TABLE_PREFIX . "palettes AS p ON pcl.palette_id = p.id
-					JOIN " . TABLE_PREFIX . "print_method_palette_category AS pmpc ON pmpc.palette_category_id = pc.id
-					WHERE pc.is_available = '1'";
+                    FROM " . TABLE_PREFIX . "palette_category AS pc
+                    RIGHT JOIN " . TABLE_PREFIX . "palette_category_rel AS pcl ON pc.id = pcl.category_id
+                    JOIN " . TABLE_PREFIX . "palettes AS p ON pcl.palette_id = p.id
+                    JOIN " . TABLE_PREFIX . "print_method_palette_category AS pmpc ON pmpc.palette_category_id = pc.id
+                    WHERE pc.is_available = '1'";
             if ((isset($is_pattern) && $is_pattern != '')) {
                 $sql .= "  AND p.is_pattern ='" . $is_pattern . "'";
             }
@@ -614,7 +638,6 @@ class ColorPallete extends UTIL
             if ((isset($categoryId) && $categoryId) || !empty($categoryId)) {
                 $sql .= " AND pc.id IN(" . $categoryId . ")";
             }
-            $this->log('categoryId :' . $categoryId);
             $sql .= " ORDER BY p.id DESC";
 
             $srtIndex = (isset($srtIndex) && $srtIndex) ? $srtIndex : 0;
@@ -626,7 +649,6 @@ class ColorPallete extends UTIL
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
         }
-        //$this->log('getPatelletByCategory :'.$sql);
         $colorArray = array();
         $i = 0;
         $colorsFromValue = mysqli_query($this->db, $sql);
@@ -639,7 +661,7 @@ class ColorPallete extends UTIL
                 $colorArray[$i]['cmyk']['y'] = $row['y'];
                 $colorArray[$i]['cmyk']['k'] = $row['k'];
             }
-            $colorArray[$i]['name'] = $row['name'];
+            $colorArray[$i]['name'] = addslashes($row['name']);
             $colorArray[$i]['price'] = $row['price'];
             $colorArray[$i]['is_pattern'] = intval($row['is_pattern']);
 
@@ -649,7 +671,7 @@ class ColorPallete extends UTIL
             while ($rows = mysqli_fetch_array($categoryIdsFromValue)) {
                 array_push($categoryIdsArray, $rows['category_id']);
             }
-            $colorArray[$i]['categoryIds'] = $categoryIdsArray;
+            $colorArray[$i]['categoryIds'] = array_unique($categoryIdsArray);
 
             $i++;
         }
@@ -761,7 +783,7 @@ class ColorPallete extends UTIL
 
                         }
                     }
-                 } else {
+                } else {
                     for ($j = 0; $j < sizeof($colorArray); $j++) {
                         $colorValue = $colorArray[$j][0];
                         $colorName = $colorArray[$j][1];
@@ -880,5 +902,36 @@ class ColorPallete extends UTIL
         }
         $this->response($this->json($msg), 200);
     }
-
+    /**
+     *
+     *date created (dd-mm-yy)
+     *date modified 21-03-2017(dd-mm-yy)
+     *update Pallete category List
+     *
+     * @param (String)category list
+     * @return json data
+     *
+     */
+    public function updatePalleteDragCategoryList()
+    {
+        $status = 0;
+        $categoryList = $this->_request['categoryData'];
+        $prepareSql = '';
+        $querySql = '';
+        for ($i = 0; $i < sizeof($categoryList); $i++) {
+            $querySql .= ' WHEN ' . $categoryList[$i]['id'] . " THEN '" . $categoryList[$i]['sort_order'] . "'";
+            $prepareSql .= ',' . $categoryList[$i]['id'];
+        }
+        if (strlen($querySql) && strlen($prepareSql)) {
+            try {
+                $usql = 'UPDATE ' . TABLE_PREFIX . 'palette_category SET sort_order = CASE id' . $querySql . ' END WHERE id IN(' . substr($prepareSql, 1) . ')';
+                $status = $this->executeGenericDMLQuery($usql);
+            } catch (Exception $e) {
+                $result = array('Caught exception:' => $e->getMessage());
+                $this->response($this->json($result), 200);
+            }
+        }
+        $msg['status'] = ($status) ? 'success' : 'failed';
+        $this->response($this->json($msg), 200);
+    }
 }

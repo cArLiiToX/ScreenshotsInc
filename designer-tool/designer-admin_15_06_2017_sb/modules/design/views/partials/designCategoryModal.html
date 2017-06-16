@@ -1,0 +1,99 @@
+<div class="modal fade slide-right" id="designCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content-wrapper">
+            <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <i class="pg-close fs-14">
+                    </i>
+                </button>
+                <div class="container-xs-height full-height">
+                    <div class="row-xs-height">
+                        <div class="modal-body col-xs-height text-center" id="designManageCategoryModal">
+                            <div class="clearfix">
+                                <div class="category-head">
+                                    <xe-translate text-value="Design Category">
+                                    </xe-translate>
+                                </div>
+                                <div class="sub-category-head">
+                                    <xe-translate text-value="Design SubCategory">
+                                    </xe-translate>
+                                </div>
+                            </div>
+                            <div class="category-modal w-270">
+                                <div class="pull-left m-l-10 m-t-10">
+                                    <input type="text" placeholder="{{ catPlaceHolder }}" class="form-control input-sm" ng-model="newCategoryName"/>
+                                </div>
+                                <div class="m-t-10">
+                                    <button type="button" class="btn btn-sm btn-info" ng-click="addNewCategory(newCategoryName);newCategoryName=''"  ng-disabled="demoStatus" ng-class="{'disabled': !newCategoryName}">
+                                        <span>
+                                            <xe-translate text-value="Add">
+                                            </xe-translate>
+                                        </span>
+                                    </button>
+                                </div>
+                                <div class="clearfix category-list modal-scroll-height m-t-10">
+                                    <ul>
+                                        <li ng-repeat="category in designCategoryList"  ng-mouseenter="showCategoryClosebtn[$index]=true" ng-mouseleave="showCategoryClosebtn[$index]=false; showCategoryBadge[$index]=false"  ng-class="{'active': $index == selectedCatIndex || category == selectedCateg}">
+                                            <a href="" ng-click="loadSelectedSubCategories(category,$index)">
+                                                {{ category.category_name }}
+                                            </a>
+                                            <!-- <a href="" ng-click="loadSelectedSubCategories(category,$index)">
+                                            									<i class="pg-arrow_right m-r-5 m-l-5 pull-right"></i>
+                                            								</a> -->
+                                            <div class="pull-right ">
+                                                <a href="" ng-show="showCategoryClosebtn[$index]"  ng-click="editCategory($index)">
+                                                    <i class="fa fa-pencil text-info m-r-5 m-l-5">
+                                                    </i>
+                                                </a>
+                                                <a href="" ng-show="showCategoryClosebtn[$index]" ng-click="deleteDesignCategory($index)">
+                                                    <i class="pg-close_line m-r-5 m-l-5">
+                                                    </i>
+                                                </a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="sub-category-modal w-270">
+                                <div class="pull-left m-l-10 m-t-10">
+                                    <input type="text" placeholder="{{ subCatPlaceHolder }}" class="form-control input-sm" ng-model="newSubCategory"/>
+                                </div>
+                                <div class="m-t-10">
+                                    <button type="button" class="btn btn-sm btn-info"  ng-click="addNewSubCategory(newSubCategory);newSubCategory = ''"  ng-disabled="demoStatus || selectedCateg == ''" ng-class="{'disabled': !newSubCategory}">
+                                        <span>
+                                            <xe-translate text-value="Add">
+                                            </xe-translate>
+                                        </span>
+                                    </button>
+                                </div>
+                                <div class="clearfix sub-category-list modal-scroll-height m-t-10">
+                                    <ul>
+                                        <li ng-repeat="subCat in manageSubCategoryList" ng-mouseenter="showSubCategoryClosebtn[$index]=true" ng-mouseleave="showSubCategoryClosebtn[$index]=false; showSubCategoryBadge[$index]=false">
+                                            <a href="#">
+                                                {{ subCat.sub_category }}
+                                            </a>
+                                            <div class="pull-right ">
+                                                <a href="" ng-show="showSubCategoryClosebtn[$index]"  ng-click="editSubCategory($index)">
+                                                    <i class="fa fa-pencil text-info m-r-5 m-l-5">
+                                                    </i>
+                                                </a>
+                                                <a href="" ng-show="showSubCategoryClosebtn[$index]" ng-click="deleteDesignSubCategory(subCat)">
+                                                    <i class="pg-close_line m-r-5 m-l-5">
+                                                    </i>
+                                                </a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-include src="'modules/design/views/partials/updateDesignCategory.html'">
+</ng-include>
+<ng-include src="'modules/design/views/partials/updateDesignSubCategory.html'">
+</ng-include>

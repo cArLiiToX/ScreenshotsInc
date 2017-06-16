@@ -1,0 +1,30 @@
+<div class="row">
+    <div class="col-sm-6">
+        <div class="checkbox check-info" ng-repeat="printmthd in printMthdList1">
+            <input type="checkbox" id="printmthd_{{ printmthd.id }}" ng-model="status1" ng-change="changePrintMethod(status1,printmthd)"  ng-checked="printmthd.status"  ng-disabled="printmthd.fetched_from == 'category'"/>
+            <label for="printmthd_{{ printmthd.id }}" ng-class="{'disabled':printmthd.fetched_from=='category'}">
+                {{ printmthd.name }}
+                <span ng-show="printmthd.fetched_from == 'category'">
+                    (
+                    <xe-translate text-value="Category">
+                    </xe-translate>
+                    )
+                </span>
+            </label>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="checkbox check-info" ng-repeat="printmthd in printMthdList2">
+            <input type="checkbox" id="printmthd_{{ printmthd.id }}" ng-model="status2" ng-change="changePrintMethod(status2,printmthd)" ng-checked="printmthd.status"  ng-disabled="printmthd.fetched_from == 'category'"/>
+            <label for="printmthd_{{ printmthd.id }}" ng-class="{'disabled':printmthd.fetched_from=='category'}">
+                {{ printmthd.name }}
+                <span ng-show="printmthd.fetched_from == 'category'">
+                    (
+                    <xe-translate text-value="Category">
+                    </xe-translate>
+                    )
+                </span>
+            </label>
+        </div>
+    </div>
+</div>

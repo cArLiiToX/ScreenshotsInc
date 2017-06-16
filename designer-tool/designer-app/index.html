@@ -37,15 +37,42 @@
                 </script>
             </meta>
         </meta>
+        <style>
+             .xepreloader {
+               width:50px;
+               height:50px;
+               display:inline-block;
+               padding:0px;
+               border-radius:100%;
+               border:5px solid;
+               border-top-color:rgba(15, 227, 17,1);
+               /*border-top-color:rgba(53, 196, 240);*/
+               border-bottom-color:rgba(0,0,0, 0.15);
+               border-left-color:rgba(15, 227, 17,1);
+               /*border-left-color:rgba(53, 196, 240);*/
+               border-right-color:rgba(0,0,0, 0.15);
+               -webkit-animation: xepreloader 0.8s linear infinite;
+               animation: xepreloader 0.8s linear infinite;
+            }
+            @keyframes xepreloader {
+               from {transform: rotate(0deg);}
+               to {transform: rotate(360deg);}
+            }
+            @-webkit-keyframes xepreloader {
+               from {-webkit-transform: rotate(0deg);}
+               to {-webkit-transform: rotate(360deg);}
+            }
+        </style>
     </head>
     <body>
         <!--  <div class="online">
         </div>
         <div class="offline">
         </div> -->
-        <div class="preloader-center-lg">
-            <img src="assets/images/progress.svg">
-            </img>
+        <div id="xe-page-preload" class="preloder-trannsparent-initially">
+            <div class="preloder-content">
+                <div class="xepreloader"></div>
+            </div>
         </div>
         <div class="container-fluid" ng-controller="MainController">
             <div class="row">
@@ -66,7 +93,7 @@
         </div>
         <script type="text/javascript">
             var vnr = '?vnr='+ Math.random(), vn = '?vn=' + 520;        
-        var xeloadjscssfile = function (filename, filetype){
+            var xeloadjscssfile = function (filename, filetype){
             if (filetype=="js"){ /*if filename is a external JavaScript file*/
                 var fileref=document.createElement('script');
                 fileref.setAttribute("type","text/javascript");
@@ -97,7 +124,10 @@
         
         head.load('../localsettings.js' + vnr);
         head.load('all.css' + vn, cssfilename, customcssname);
-        head.load(adminSettingsfilename, 'xelib.js' + vn, 'xeloader.js' + vn, 'app555.js' + vn, 'svglib.js' + vn, 'app777.js' + vn, 'app333.js' + vn, 'libenc.js' + vn, 'xeview.js' + vn, 'extension/extension-controller.js' + vn);
+        head.load(adminSettingsfilename);
+        head.load('xeapp.js' + vn);
+		head.load('xecustom.js' + vn);
+        head.load('extension/extension-controller.js');
         Offline.check();
          window.onbeforeunload = function (e) {
             message = "Are you sure to leave?";

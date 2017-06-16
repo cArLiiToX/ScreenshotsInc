@@ -214,6 +214,10 @@ class OrdersStore extends UTIL
         }
 
         $error = '';
+        // get color attribute and size attribute.
+        $colorAttr = $this->getStoreAttributes("xe_color");
+        $sizeAttr = $this->getStoreAttributes("xe_size");
+
         if ($this->checkSendQuote()) {
             $orderId = (isset($this->_request['orderIncrementId']) && trim($this->_request['orderIncrementId']) != '') ? trim($this->_request['orderIncrementId']) : 0;
             try {
@@ -292,20 +296,23 @@ class OrdersStore extends UTIL
                 'telephone' => $value->billing_address->phone,
                 'email' => $value->billing_address->email,
             );
-            $attrArr = array();
+
             foreach ($value->line_items as $line_key => $line_items) {
                 $print_status = 0;
                 $refid = '';
+                $size = "";
+                $color = "";
+                $attrArr = array();
                 foreach ($line_items->meta as $meta_items) {
                     if ($meta_items->label == 'print_status') {
                         $print_status = $meta_items->value;
                     }
 
-                    if ($meta_items->label == 'xe_color') {
+                    if ($meta_items->label == $colorAttr) {
                         $color = $meta_items->value;
                     }
 
-                    if ($meta_items->label == 'xe_size') {
+                    if ($meta_items->label == $sizeAttr) {
                         $size = $meta_items->value;
                     }
 
@@ -362,13 +369,15 @@ class OrdersStore extends UTIL
      */
     public function downloadOrderDetail()
     {
-
         if (isset($this->_request['orderIncrementId'])) {
             $order_id = $this->_request['orderIncrementId'];
         } else {
             $order_id = 0;
         }
-        $orderId = $order_id;
+        // get color attribute and size attribute.
+        $colorAttr = $this->getStoreAttributes("xe_color");
+        $sizeAttr = $this->getStoreAttributes("xe_size");
+		$orderId = $order_id;
         $result = $this->getOrderDetails(1);
         $json = $result;
         if (!isset($result->errors)) {
@@ -414,6 +423,8 @@ class OrdersStore extends UTIL
             $langBRAgent = (!empty($languageJson1['BROWSER_AGENT'])) ? $languageJson1['BROWSER_AGENT'] : 'Browser Agent';
             $langBRHt = (!empty($languageJson1['BROWSER_HEIGHT'])) ? $languageJson1['BROWSER_HEIGHT'] : 'Browser Height';
             $langBRWd = (!empty($languageJson1['BROWSER_WIDTH'])) ? $languageJson1['BROWSER_WIDTH'] : 'Browser Width';
+            $langHeight = (!empty($languageJson1['HEIGHT'])) ? $languageJson1['HEIGHT'] : 'Height';
+            $langWidth = (!empty($languageJson1['WIDTH'])) ? $languageJson1['WIDTH'] : 'Width';
             $colorincrment = 1;
             $html = '<html><title>Order APP</title><body style="font-family:arial;"><div style="width: 1200px; margin:auto;">';
             $generatorPNG = new Picqer\Barcode\BarcodeGeneratorPNG();
@@ -426,33 +437,13 @@ class OrdersStore extends UTIL
                         </div>
                         <div style="float:right; padding:30px 20px 0px 0px;"><img src="data:image/png;base64,' . base64_encode($generatorPNG->getBarcode($order_id, $generatorPNG::TYPE_CODE_128)) . '"/></div></div>';
             $ref_status = 0;
+            $nameCount = 0;
+            $temp = array();
             foreach ($result['order_items'] as $line_items) {
                 if ($line_items['ref_id'] != '' && $line_items['ref_id'] != 0) {
                     if ($ref_status == 0) {
                         $ref_status = 1;
                     }
-
-                    // added extra attributes section.
-                    $attrKey = "";
-                    $attrvalue = "";
-                    foreach ($line_items['attributes'] as $key => $value) {
-                        if ($key == 'xe_color') {
-                            $attrKey .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> Color </th>';
-
-                            $attrvalue .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $value . '</td>';
-                        } else if ($key == 'xe_size') {
-                            $attrKey .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> Size </th>';
-                            $attrvalue .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $value . '</td>';
-                        } else {
-                            if (substr($key, -3) != '_id') {
-                                $attrKey .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $key . '</th>';
-                                $attrvalue .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $value . '</td>';
-                            }
-
-                        }
-                    }
-                    // end
-
                     $color = $line_items['xe_color'];
                     $size = $line_items['xe_size'];
                     $refid = $line_items['ref_id'];
@@ -494,6 +485,106 @@ class OrdersStore extends UTIL
                     @copy($final . "designer-tool/" . ASSET_PATH . "/previewimg/" . $refid . "/svg/designState.json", $final . "designer-tool/" . ORDER_PATH_DIR . "/" . $orderId . "/" . $item_id . "/designState.json");
                     /* file_put_contents($final."designer-tool/".ORDER_PATH_DIR."/".$orderId."/".$item_id."/designState.json",stripslashes($designState_json)); */
                     $noOfsides = count($json_content['sides']);
+
+                    // added extra attributes section.
+                    $attrKey = "";
+                    $attrvalue = "";
+                    foreach ($line_items['attributes'] as $key => $value) {
+                        if ($key == 'xe_color') {
+                            $attrKey .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> Color </th>';
+
+                            $attrvalue .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $value . '</td>';
+                        } else if ($key == 'xe_size') {
+                            if (empty($json_content['nameNumberData'])) {
+                                $attrKey .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> Size </th>';
+                                $attrvalue .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $value . '</td>';
+                            }
+                        } else {
+                            if (substr($key, -3) != '_id') {
+                                if($key != $sizeAttr || ($key == $sizeAttr && empty($json_content['nameNumberData'])))
+                                {
+                                    $attrKey .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $key . '</th>';
+                                    $attrvalue .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $value . '</td>';
+                                }
+                            }
+
+                        }
+                    }
+                    // end
+                    foreach ($json_content['sides'] as $key => $sides) {
+                        /**** Creation Of order files Started ****/
+                        if (isset($sides['svg']) && !empty($sides['svg'])) {
+                            $sideValue = $key + 1;
+                            $previewPath = $refPath . "/preview_0" . $sideValue . ".svg";
+                            $sidePath = $itemPath . "/side_" . $sideValue . "";
+                            if (!is_dir($sidePath)) {
+                                $mkDir = "";
+                                $tags = explode('/', $sidePath);
+                                foreach ($tags as $folder) {
+                                    $mkDir .= $folder . "/";
+                                    if (!file_exists($mkDir)) {
+                                        mkdir($mkDir, 0755, true);
+                                    }
+
+                                }
+                            }
+                            if (file_exists($previewPath)) {
+                                copy($previewPath, $sidePath . "/preview_0" . $sideValue . ".svg");
+                            }
+                            //For assets folder image file
+                            $assetPath = $final . "designer-tool" . ASSET_PATH . "/previewimg/" . $refid . "/assets/" . $sideValue;
+                            $asesetItemPath = $itemPath . "/side_" . $sideValue . "/assets/";
+                            if (!is_dir($asesetItemPath) && file_exists($assetPath)) {
+                                $mkDirs = "";
+                                $tag = explode('/', $asesetItemPath);
+                                foreach ($tag as $folders) {
+                                    $mkDirs .= $folders . "/";
+                                    if (!file_exists($mkDirs)) {
+                                        mkdir($mkDirs, 0755, true);
+                                    }
+
+                                }
+                            }
+                            if (file_exists($assetPath)) {
+                                $scanDir = scandir($assetPath);
+                                foreach ($scanDir as $k => $asset) {
+                                    if (file_exists($assetPath . "/" . $asset)) {
+                                        if ($asset != "." && $asset != "..") {
+                                            copy($assetPath . "/" . $asset, $asesetItemPath . "/" . $asset);
+                                        }
+                                    }
+                                }
+                            }
+                            //for preview folder image file
+                            $customizeImage = file_get_contents($sides['customizeImage']);
+                            $previewItemPath = $itemPath . "/side_" . $sideValue . "/preview";
+                            $pngFile = $previewItemPath . "/side_" . $sideValue . "_" . $item_id . "_" . $orderId . "_preview.png";
+                            if (!is_dir($previewItemPath)) {
+                                $mkDirPreviw = "";
+                                $exp = explode('/', $previewItemPath);
+                                foreach ($exp as $dir) {
+                                    $mkDirPreviw .= $dir . "/";
+                                    if (!file_exists($mkDirPreviw)) {
+                                        mkdir($mkDirPreviw, 0755, true);
+                                    }
+
+                                }
+                            }
+                            if (is_dir($previewItemPath)) {
+                                if (!file_exists($pngFile)) {
+                                    $svgFileStatus = file_put_contents($pngFile, $customizeImage);
+                                }
+                            }
+                        }
+                        /**** Creation Of order files End ****/
+                    }
+                    //Check for repeated name and number
+                    if (in_array($refid, $temp)) {
+                        if (!empty($json_content['nameNumberData']) && $nameCount != 0) {
+                            continue;
+                        }
+                    }
+                    $temp[] = $refid;
                     $printColorNames = "";
                     $printColors = "";
                     $cmykValue = "";
@@ -510,85 +601,75 @@ class OrdersStore extends UTIL
                     $browserLang = (isset($json_content['envInfo']) && $json_content['envInfo']['browserLang'] != '') ? $json_content['envInfo']['browserLang'] : "-";
                     $userAgent = (isset($json_content['envInfo']) && $json_content['envInfo']['userAgent'] != '') ? $json_content['envInfo']['userAgent'] : "-";
                     $browserName = (isset($json_content['envInfo']) && $json_content['envInfo']['browserName'] != '') ? $json_content['envInfo']['browserName'] : "-";
-                    $html .= '<div style="border: 2px solid #4CAF50; margin-bottom:20px; border-radius:5px; float:left; width:1200px;"><div style="background-color:#4CAF50; padding:15px;border-radius:2px 2px 0px 0px; font-size:20px; color:#fff;">' . $productname . '</div><div style="padding:20px;"><table style="width:100%;border: 1px solid #ccc; border-collapse: collapse;"><tbody><tr>    <th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $langQuantity . '</th>' . $attrKey . '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $langPrintMethod . '</th></tr><tr><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $quantity . '</td>' . $attrvalue . '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $printType . '</td></tr></tbody></table></div>';
+                    // Multiple Boundary
+                    $multipleBoundary = (isset($json_content['multipleBoundary']) && $json_content['multipleBoundary'] != '') ? $json_content['multipleBoundary'] : "false";
+                    $html .= '<div style="border: 2px solid #4CAF50; margin-bottom:20px; border-radius:5px; float:left; width:1200px;"><div style="background-color:#4CAF50; padding:15px;border-radius:2px 2px 0px 0px; font-size:20px; color:#fff;">' . $productname . '</div><div style="padding:20px;"><table style="width:100%;border: 1px solid #ccc; border-collapse: collapse;"><tbody><tr>';
+                    //Hide heading of size attribute and quantity for name and number case
+                    if (empty($json_content['nameNumberData'])) {
+                        $html .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $langQuantity . '</th>';
+                    }
+                    $html .= $attrKey;
+                    // Hide product wise print method for Multiple Boundary
+                    if ($multipleBoundary != 'true') {
+                        $html .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $langPrintMethod . '</th>';
+                    }
+                     $html .= '</tr><tr>';
+                    //Hide value of size attribute and quantity for name and number case
+                    if (empty($json_content['nameNumberData'])) {
+                        $html .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $quantity . '</td>';
+                    }
+                    $html .= $attrvalue;
+                    // Hide product wise print method for Multiple Boundary
+                    if ($multipleBoundary != 'true') {
+                        $html .= '<td style = "border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; color: #333;">' . $printType . '</td>';
+                    }
+                    $html .= '</tr></tbody></table></div>';
+                    //Name and number table start
+                    if (!empty($json_content['nameNumberData'])) {
+                        $nameCount++;
+                        $langNameFrontText = "-";
+                        $langNameBackText = "-";
+                        if ($json_content['nameNumberData']['front']) {
+                            if ($json_content['nameNumberData']['frontView'] == "name_num") {
+                                $frontView = "Name & Number";
+                            } elseif ($json_content['nameNumberData']['frontView'] == "name") {
+                                $frontView = "Name Only";
+                            } else {
+                                $frontView = "Number Only";
+                            }
+                            $langNameFrontText = $frontView;
+                        }
+                        if ($json_content['nameNumberData']['back']) {
+                            if ($json_content['nameNumberData']['backView'] == "name_num") {
+                                $backView = "Name & Number";
+                            } elseif ($json_content['nameNumberData']['backView'] == "name") {
+                                $backView = "Name Only";
+                            } else {
+                                $backView = "Number Only";
+                            }
+                            $langNameBackText = $backView;
+                        }
+                        $html .= '<div style="padding: 0px 20px 15px 20px;"><b>Name & Number Details:</b><br/><div style="height: 140px;overflow: auto;"><table style="border: 1px solid #ccc; border-collapse: collapse; width: 100%;"><tbody><tr><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> Name' . $langName . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">Number' . $langNumber . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $langSize . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">Front' . $langNameFront . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">Back' . $langNameBack . '</th></tr>';
+                        foreach ($json_content['nameNumberData']['list'] as $singleName) {
+                            $html .= '<tr><td style = "border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; color: #333;">' . $singleName['name'] . '</td><td style = "border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; color: #333;">' . $singleName['number'] . '</td><td style = "border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; color: #333;">' . $singleName['size'] . '</td><td style = "border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; color: #333;">' . $langNameFrontText . '</td><td style = "border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; color: #333;">' . $langNameBackText . '</td>';
+                        }
+                        $html .= '</tr></tbody></table></div></div>';
+                    }
                     if (!empty($notes)) {
                         $html .= '<div style="padding: 0px 20px 0px 20px;"><b>Notes:</b><br/><textarea rows="4" style="border: 0px;width: 100%;resize: vertical;padding-left: 15px;font-family: inherit;" readonly>' . $notes . '</textarea></div>';
                     }
                     foreach ($json_content['sides'] as $key => $sides) {
-                        /**** Creation Of order files Started ****/
-
-                        $sideValue = $key + 1;
-                        $previewPath = $refPath . "/preview_0" . $sideValue . ".svg";
-                        $sidePath = $itemPath . "/side_" . $sideValue . "";
-                        if (!is_dir($sidePath)) {
-                            $mkDir = "";
-                            $tags = explode('/', $sidePath);
-                            foreach ($tags as $folder) {
-                                $mkDir .= $folder . "/";
-                                if (!file_exists($mkDir)) {
-                                    mkdir($mkDir, 0755, true);
-                                }
-
-                            }
-                        }
-                        if (file_exists($previewPath)) {
-                            copy($previewPath, $sidePath . "/preview_0" . $sideValue . ".svg");
-                        }
-                        //For assets folder image file
-                        $assetPath = $final . "designer-tool" . ASSET_PATH . "/previewimg/" . $refid . "/assets/" . $sideValue;
-                        $asesetItemPath = $itemPath . "/side_" . $sideValue . "/assets/";
-                        if (!is_dir($asesetItemPath) && file_exists($assetPath)) {
-                            $mkDirs = "";
-                            $tag = explode('/', $asesetItemPath);
-                            foreach ($tag as $folders) {
-                                $mkDirs .= $folders . "/";
-                                if (!file_exists($mkDirs)) {
-                                    mkdir($mkDirs, 0755, true);
-                                }
-
-                            }
-                        }
-                        if (file_exists($assetPath)) {
-                            $scanDir = scandir($assetPath);
-                            foreach ($scanDir as $k => $asset) {
-                                if (file_exists($assetPath . "/" . $asset)) {
-                                    if ($asset != "." && $asset != "..") {
-                                        copy($assetPath . "/" . $asset, $asesetItemPath . "/" . $asset);
-                                    }
-                                }
-                            }
-                        }
-                        //for preview folder image file
-                        $customizeImage = file_get_contents($sides['customizeImage']);
-                        $previewItemPath = $itemPath . "/side_" . $sideValue . "/preview";
-                        $pngFile = $previewItemPath . "/side_" . $sideValue . "_" . $item_id . "_" . $orderId . "_preview.png";
-                        if (!is_dir($previewItemPath)) {
-                            $mkDirPreviw = "";
-                            $exp = explode('/', $previewItemPath);
-                            foreach ($exp as $dir) {
-                                $mkDirPreviw .= $dir . "/";
-                                if (!file_exists($mkDirPreviw)) {
-                                    mkdir($mkDirPreviw, 0755, true);
-                                }
-
-                            }
-                        }
-                        if (is_dir($previewItemPath)) {
-                            if (!file_exists($pngFile)) {
-                                $svgFileStatus = file_put_contents($pngFile, $customizeImage);
-                            }
-                        }
-                        /**** Creation Of order files End ****/
-
+                        // if(isset($sides['svg']) && !empty($sides['svg'])){
                         $pUrl = $sides['customizeImage'];
-                        $onesidewidth = ($noOfsides <= 1) ? 'width:93%;' : '';
-                        $barcodewidth = ($noOfsides <= 1) ? 'width: inherit;' : '';
+                        $onesidewidth = ($noOfsides <= 1) ? 'width:93%;' : 'width:45%;';
+                        $onesidepadding = ($noOfsides <= 1) ? 'padding:22px;' : 'padding:15px;';
+                        $barcodewidth = ($noOfsides <= 1) ? 'inherit;' : 'width:45%;';
                         /* $clear = ($odd%2 == 0)? 'clear:none': 'clear:both'; */
                         $printUnit = (isset($sides['printUnit']) && $sides['printUnit'] != '') ? $sides['printUnit'] : "No Unit";
                         $dimension = $sides['PrintDimension']['boundheight'] . 'x' . $sides['PrintDimension']['boundwidth'];
 
-                        $html .= '<div style="padding:0px 20px 20px 20px; text-align: center; float:left; background-color:#efefef; margin:20px 0px 20px 20px;min-height:810px;' . $onesidewidth . '"><div style="margin-bottom:7px; margin-right:50px; margin-top:20px;"><img src="data:image/png;base64,' . $product_barcode . '" height="50px" alt="" style="' . $barcodewidth . '" /></div><div style="margin-bottom:10px;"><h3 style="margin:0px; padding:0px; font-weight:normal;">' . $base64 . '</h3></div><div style="margin-bottom:20px; min-height:500px; min-width:500px;"><img class="product-img" src="' . $pUrl . '" alt=""></div>';
-                        if (isset($sides['printSize']) && $sides['printSize'] != '') {
+                        $html .= '<div style="' . $onesidepadding . ' text-align: center; float:left; background-color:#efefef; margin:20px 0px 20px 20px;min-height:810px;' . $onesidewidth . '"><div style="margin-bottom:7px; margin-top:20px;"><img src="data:image/png;base64,' . $product_barcode . '" style="'.$barcodewidth.'" height="50px" alt="" /></div><div style="margin-bottom:10px;"><h3 style="margin:0px; padding:0px; font-weight:normal;">' . $base64 . '</h3></div><div style="margin-bottom:20px; min-height:500px; min-width:500px;"><img class="product-img" src="' . $pUrl . '" alt=""></div>';
+                        if (isset($sides['printSize']) && $sides['printSize'] != '' && $multipleBoundary != 'true') {
                             $printValue = $sides['printSize'];
                             if ($printValue[0] != 'A') {
                                 $printSize = $dimension . ' (' . $printUnit . ')';
@@ -603,9 +684,9 @@ class OrdersStore extends UTIL
 
                         $printColorNames = (isset($sides['printColorNames'])) ? count($sides['printColorNames']) : 0;
                         $height = $printColorNames * 30;
-
-                        if ($printColorNames > 0) {
-                            $html .= '<div style="height: 141px;overflow: auto;"><table style="width:100%;border: 1px solid #ccc; border-collapse: collapse;"><tbody><tr><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langColorName . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langCategory . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langCmyk . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langHex . '</th></tr>';
+                        $html .= '<div style="height: 141px;overflow: auto;">';
+                        if ($printColorNames > 0 && $multipleBoundary != 'true') {
+                            $html .= '<table style="width:100%;border: 1px solid #ccc; border-collapse: collapse;"><tbody><tr><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langColorName . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langCategory . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langCmyk . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langHex . '</th></tr>';
                             foreach ($sides['printColorNames'] as $y => $printcolornames) {
                                 $printcolornames = (!empty($printcolornames)) ? $printcolornames : '-';
                                 $printColors[$y] = (!empty($sides['printColors'])) ? $sides['printColors'][$y] : '-';
@@ -621,7 +702,39 @@ class OrdersStore extends UTIL
                                 $html .= '<tr><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $printcolornames . '</td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $printColorCategories[$y] . '</td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $cmykValue[$y] . '</td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $printColors[$y] . '</td></tr>';
                             }
                             $html .= '</tbody></table></div>';
-                        }
+                        } elseif ($multipleBoundary == 'true') {
+                            foreach ($sides['multiBound'] as $section => $sectionDetails) {
+                                $html .= '<table style="width: 100%; margin-bottom: 25px; height:' . $height . 'px" class="repeattd t01"><tbody> <tr><th colspan="4" style="border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: center; background-color: #2f2f2f; color: white;"><span style="float:left;">' . $sectionDetails['name'];
+                                if ($sectionDetails['printProfile'] != "") {
+                                    $html .= ' : ' . $sectionDetails['printProfile'] . '</span>';
+                                    $html .= ' <span style="float:right;">' . $langWidth . ': ' . $sectionDetails['actulWidth'] . '&nbsp;' . $sides['printUnit'] . '&nbsp;&nbsp;' . $langHeight . ':' . $sectionDetails['actulHeight'] . '&nbsp;' . $sides['printUnit'] . '</span>';
+                                }
+                                $html .= '</th></tr>';
+                                if (!empty($sectionDetails['printColors'])) {
+                                    $html .= '<tr><th style="border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; background-color: #666; color: white;">' . $langColorName . '</th> <th style="border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; background-color: #666; color: white;">' . $langCategory . '</th><th style="border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; background-color: #666; color: white;">' . $langCmyk . '</th> <th style="border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; background-color: #666; color: white;">' . $langHex . '</th> </tr>';
+                                } else {
+                                    $html .= '<tr> <td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> -- </td> <td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> -- </td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> -- </td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> -- </td> </tr>';
+                                }
+                                foreach ($sectionDetails['printColorNames'] as $section => $sectionColorDetail) {
+                                    $sectionColorDetail = (!empty($sectionColorDetail)) ? $sectionColorDetail : '-';
+                                    $printColors[$section] = (!empty($sectionDetails['printColors'])) ? $sectionDetails['printColors'][$section] : '-';
+                                    $printColors[$section] = ($printColors[$section][0] == "#") ? $printColors[$section] : '<img src="' . $printColors[$section] . '" width="20" height="20" />';
+                                    if (!empty($sectionDetails['cmykValue'][$section])) {
+                                        $content_svg = json_encode(array_change_key_case($sectionDetails['cmykValue'][$section], CASE_UPPER));
+                                        $cmykValue[$section] = substr($content_svg, 1, -1);
+                                        $cmykValue[$section] = str_replace('"', '', $cmykValue[$section]);
+                                    } else {
+                                        $cmykValue[$section] = '-';
+                                    }
+                                    $printColorCategories[$section] = (!empty($sectionDetails['printColorCategories'])) ? $sectionDetails['printColorCategories'][$section] : '-';
+                                    $html .= '<tr> <td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . str_replace('No Name', '-', $sectionColorDetail) . '</td> <td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . str_replace('No Category', '-', $printColorCategories[$section]) . '</td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $cmykValue[$section] . '</td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $printColors[$section] . '</td> </tr>';
+                                }
+                                $html .= '</tbody></table>'; //end tablecell div
+                            }
+                            $html .= '</div>';
+                        }else  
+                            $html .= '</div>';
+
                         $html .= '</div>';
                         $k++;
                         $odd++;
@@ -713,7 +826,7 @@ class OrdersStore extends UTIL
      */
     public function downloadOrdersZipApp()
     {
-	    ini_set('memory_limit','18000M');
+        ini_set('memory_limit', '18000M');
         $downloadUrl = '';
         $msg = "Success";
         $last_order_id = (isset($this->_request['last_order_id'])) ? $this->_request['last_order_id'] : 0;
@@ -744,8 +857,8 @@ class OrdersStore extends UTIL
             $msg = array('status' => 'apiLoginFailed', 'error' => json_decode($result));
             $this->response($this->json($msg), 200);
         }
-		
-		$orders = json_decode($orderList, true);
+
+        $orders = json_decode($orderList, true);
         $orders = isset($orders['order_list']) ? $orders['order_list'] : array();
         $orders2 = $orders;
         $orderPath = $this->getOrdersPath();
@@ -753,141 +866,149 @@ class OrdersStore extends UTIL
             if ($fd == 1 || $is_create == 1) {
                 // if $is_create is 1 or $fd (force download) is 1 //
                 foreach ($orders2 as $order_id_arry) {
-					$order_id = $order_id_arry['order_id'];
-					$increment_id = $order_id_arry['order_incremental_id'];
-					
-					// fetch order_id or incremental_id //
-					if (file_exists($orderPath . "/" . $increment_id) && is_dir($orderPath . "/" . $increment_id)) { 
-						$orderFolderPath = $orderPath . "/" . $increment_id; // increment_id //
-						$orderTypeFlag = 1;
-						$order_id = $increment_id;
-					}else{
-						$orderFolderPath = $orderPath . "/" . $order_id;
-						$orderTypeFlag = 0;
-					}
+                    $order_id = $order_id_arry['order_id'];
+                    $increment_id = $order_id_arry['order_incremental_id'];
+                    
+                    // fetch order_id or incremental_id //
+                    if (file_exists($orderPath . "/" . $increment_id) && is_dir($orderPath . "/" . $increment_id)) { 
+                        $orderFolderPath = $orderPath . "/" . $increment_id; // increment_id //
+                        $orderTypeFlag = 1;
+                        $order_id = $increment_id;
+                    }else{
+                        $orderFolderPath = $orderPath . "/" . $order_id;
+                        $orderTypeFlag = 0;
+                    }
                     
                     if (file_exists($orderFolderPath) && is_dir($orderFolderPath)) {
                         $scanProductDir = scandir($orderFolderPath); // scan directory to fetch all items folder //
-						if (file_exists($orderFolderPath . '/order.json')) {
+                        if (file_exists($orderFolderPath . '/order.json')) {
                                 $order_json = file_get_contents($orderFolderPath . '/order.json');
                                 $json_content = $this->formatJSONToArray($order_json);
                                 foreach ($json_content['order_details']['order_items'] as $item_details) {
                                     $item_id = $item_details['item_id'];
                                     $sizeArr[$item_id] = $item_details['xe_size'];
                                 }
-						}
-						
+                        }
+                        
                         if (is_array($scanProductDir)) {
                             foreach ($scanProductDir as $itemDir) {
                                 if ($itemDir != '.' && $itemDir != '..' && is_dir($orderFolderPath . "/" . $itemDir)){ // check the item folders under the product folder //
-									//Fetch the design state json details //
-									$designState = file_get_contents(XEPATH . "designer-tool" . ORDER_PATH_DIR . "/" . $order_id . "/" . $itemDir . "/designState.json");
-									$resultDesign = $this->formatJSONToArray($designState);
-									
-									// check if side_index folder exists or not //
-									$sidePath = $orderFolderPath . "/" . $itemDir;
-									$scanSidePath = scandir($sidePath);
-									$scanSideDir = $scanSidePath;
-									$orderTypeFlag = 0;
-									if(is_array($scanSideDir)){
-										foreach($scanSideDir as $sidecheckPath){
-											if(strpos($sidecheckPath, "side_") !== false){
-												$orderTypeFlag = 1;
-												continue;
-											}
-										}
-									}
-									
-									// for new file structure //
-									if($orderTypeFlag == 1){
-								        //check and find the sides of each item //
-										$sidePath = $orderFolderPath . "/" . $itemDir; 
-										if (file_exists($sidePath) && is_dir($sidePath)){
-									        $scanSideDir = scandir($sidePath); // scan item directory to fetch all side folders //
-											$scanSideDirSide = $scanSideDir;
-												if(is_array($scanSideDir)){
-												    foreach ($scanSideDir as $sideDir){
-													    if($sideDir != '.' && $sideDir != '..' && is_dir($orderFolderPath . "/" . $itemDir. "/". $sideDir)){
-															$i = str_replace("side_","",$sideDir);  //to fetch only side folders//
-															if (file_exists($orderFolderPath."/".$itemDir."/".$sideDir."/preview_0".$i.".svg")){
-																// with product svg file exists or not//
-																if ($fd == 1){
-																	$reqSvgFile = XEPATH."designer-tool".ORDER_PATH_DIR."/".$order_id."/".$itemDir."/".$sideDir."/preview_0".$i.".svg";
-																	$item_id = $itemDir;
-																	//check name and number exists or not
-													
-																	if (!empty($resultDesign['nameNumberData'])) {
-																		$this->creteNameAndNumberSeparatedSvg($reqSvgFile,$resultDesign, $order_id, $item_id, $sizeArr[$item_id],1);
-																	}else{
-																		$this->createWithoutProductSvg($reqSvgFile, $order_id, $item_id, $resultDesign, 1);
-																	}
-																	$msg = 'Success';
-																}else{
-																	if (!file_exists($orderFolderPath . "/" . $itemDir . "/" . $sideDir. "/". $sideDir."_".$itemDir."_".$order_id . ".svg") && $is_create == 1){
-																	/* check if without product svg file exists or not.if not exist, then create the file */
-																	$reqSvgFile = XEPATH."designer-tool".ORDER_PATH_DIR."/".$order_id."/".$itemDir."/".$sideDir."/preview_0".$i.".svg";
-																	$item_id = $itemDir;
-																	//check name and number exit or not
-													
-																	if (!empty($resultDesign['nameNumberData'])) {
-																		$this->creteNameAndNumberSeparatedSvg($reqSvgFile,$resultDesign, $order_id, $item_id, $sizeArr[$item_id],1);
-																	}else{
-																		$this->createWithoutProductSvg($reqSvgFile, $order_id, $item_id, $resultDesign, 1);
-																	}
-																	
-																	$msg = 'Success';
-																	}
-																}
-															}
-														}
-													}
-												}
-											}
-										}
-										// for old file structure //
-										else if($orderTypeFlag == 0){
-											//to fetch only item id folders //
-											$kounter = 1;
-											for($i=1;$i<=15;$i++){
-												if(file_exists($orderFolderPath."/".$itemDir."/preview_0".$i.".svg")){// with product svg file exists or not//	
-												    if($fd == 1){
-													    $reqSvgFile = XEPATH."designer-tool".ORDER_PATH_DIR."/".$order_id."/".$itemDir."/preview_0".$i.".svg";
-														$item_id = $itemDir;
-														//check name and number exit or not
-														$designState = file_get_contents(XEPATH."designer-tool".ORDER_PATH_DIR."/".$order_id."/".$item_id."/designState.json");
-														$resultDesign = $this->formatJSONToArray($designState);
-														if(!empty($resultDesign['nameNumberData'])){
-															$this->creteNameAndNumberSeparatedSvg($reqSvgFile,$resultDesign,$item_id,$order_id,$sizeArr[$item_id],0);
-														}else{
-															$this->createWithoutProductSvg($reqSvgFile, $order_id, $item_id, $resultDesign, 0);
-														}
-														$msg = 'Success';
-													 }
-													 else{
-														 if(!file_exists($orderFolderPath."/".$itemDir."/".$i.".svg") && $is_create == 1){ 
-															/* check if without product svg file exists or not. if not exist, then create the file */
-															$reqSvgFile = XEPATH."designer-tool".ORDER_PATH_DIR."/".$order_id."/".$itemDir."/preview_0".$i.".svg";
-															$item_id = $itemDir;
-															//check name and number exit or not
-															$designState = file_get_contents(XEPATH."designer-tool".ORDER_PATH_DIR."/".$order_id."/".$item_id."/designState.json");
-															$resultDesign = $this->formatJSONToArray($designState);
-															if(!empty($resultDesign['nameNumberData'])){
-																$this->creteNameAndNumberSeparatedSvg($reqSvgFile,$resultDesign,$item_id,$order_id,$sizeArr[$item_id],0);
-															}else{
-																$this->createWithoutProductSvg($reqSvgFile, $order_id, $item_id, $resultDesign, 0);
-															}
-															$msg = 'Success';
-														}
-													 }
-												 }
-											}	
-										}
-									}
+                                    //Fetch the design state json details //
+                                    $designState = file_get_contents(XEPATH . "designer-tool" . ORDER_PATH_DIR . "/" . $order_id . "/" . $itemDir . "/designState.json");
+                                    $resultDesign = $this->formatJSONToArray($designState);
+                                    
+                                    // check if side_index folder exists or not //
+                                    $sidePath = $orderFolderPath . "/" . $itemDir;
+                                    $scanSidePath = scandir($sidePath);
+                                    $scanSideDir = $scanSidePath;
+                                    $orderTypeFlag = 0;
+                                    if(is_array($scanSideDir)){
+                                        foreach($scanSideDir as $sidecheckPath){
+                                            if(strpos($sidecheckPath, "side_") !== false){
+                                                $orderTypeFlag = 1;
+                                                continue;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // for new file structure //
+                                    if($orderTypeFlag == 1){
+                                        //check and find the sides of each item //
+                                        $sidePath = $orderFolderPath . "/" . $itemDir; 
+                                        if (file_exists($sidePath) && is_dir($sidePath))
+                                        {
+                                            $scanSideDir = scandir($sidePath); // scan item directory to fetch all side folders //
+                                            $scanSideDirSide = $scanSideDir;
+                                            if(is_array($scanSideDir))
+                                            {
+                                                foreach ($scanSideDir as $sideDir)
+                                                {
+                                                    if($sideDir != '.' && $sideDir != '..' && is_dir($orderFolderPath . "/" . $itemDir. "/". $sideDir))
+                                                    {
+                                                        $i = str_replace("side_","",$sideDir);  //to fetch only side folders//
+                                                        if (file_exists($orderFolderPath."/".$itemDir."/".$sideDir."/preview_0".$i.".svg"))
+                                                        {
+                                                            // with product svg file exists or not//
+                                                            if ($fd == 1)
+                                                            {
+                                                                $reqSvgFile = XEPATH."designer-tool".ORDER_PATH_DIR."/".$order_id."/".$itemDir."/".$sideDir."/preview_0".$i.".svg";
+                                                                $item_id = $itemDir;
+                                                                //check name and number exists or not
+                                                
+                                                                if (!empty($resultDesign['nameNumberData'])) {
+                                                                    $this->creteNameAndNumberSeparatedSvg($reqSvgFile,$resultDesign, $order_id, $item_id, $sizeArr[$item_id],1);
+                                                                }else{
+                                                                    $this->createWithoutProductSvg($reqSvgFile, $order_id, $item_id, $resultDesign, 1);
+                                                                }
+                                                                $msg = 'Success';
+                                                            }
+                                                            else
+                                                            {
+                                                                if (!file_exists($orderFolderPath . "/" . $itemDir . "/" . $sideDir. "/". $sideDir."_".$itemDir."_".$order_id . ".svg") && $is_create == 1){
+                                                                    /* check if without product svg file exists or not.if not exist, then create the file */
+                                                                    $reqSvgFile = XEPATH."designer-tool".ORDER_PATH_DIR."/".$order_id."/".$itemDir."/".$sideDir."/preview_0".$i.".svg";
+                                                                    $item_id = $itemDir;
+                                                                    //check name and number exit or not
+                                                    
+                                                                    if (!empty($resultDesign['nameNumberData'])) {
+                                                                        $this->creteNameAndNumberSeparatedSvg($reqSvgFile,$resultDesign, $order_id, $item_id, $sizeArr[$item_id],1);
+                                                                    }else{
+                                                                        $this->createWithoutProductSvg($reqSvgFile, $order_id, $item_id, $resultDesign, 1);
+                                                                    }
+                                                                    $msg = 'Success';
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        // for old file structure //
+                                        else if($orderTypeFlag == 0){
+                                            //to fetch only item id folders //
+                                            $kounter = 1;
+                                            for($i=1;$i<=15;$i++){
+                                                if(file_exists($orderFolderPath."/".$itemDir."/preview_0".$i.".svg")){// with product svg file exists or not//  
+                                                    if($fd == 1){
+                                                        $reqSvgFile = XEPATH."designer-tool".ORDER_PATH_DIR."/".$order_id."/".$itemDir."/preview_0".$i.".svg";
+                                                        $item_id = $itemDir;
+                                                        //check name and number exit or not
+                                                        $designState = file_get_contents(XEPATH."designer-tool".ORDER_PATH_DIR."/".$order_id."/".$item_id."/designState.json");
+                                                        $resultDesign = $this->formatJSONToArray($designState);
+                                                        if(!empty($resultDesign['nameNumberData'])){
+                                                            $this->creteNameAndNumberSeparatedSvg($reqSvgFile,$resultDesign,$item_id,$order_id,$sizeArr[$item_id],0);
+                                                        }else{
+                                                            $this->createWithoutProductSvg($reqSvgFile, $order_id, $item_id, $resultDesign, 0);
+                                                        }
+                                                        $msg = 'Success';
+                                                    }
+                                                    else
+                                                    {
+                                                        if(!file_exists($orderFolderPath."/".$itemDir."/".$i.".svg") && $is_create == 1){ 
+                                                            /* check if without product svg file exists or not. if not exist, then create the file */
+                                                            $reqSvgFile = XEPATH."designer-tool".ORDER_PATH_DIR."/".$order_id."/".$itemDir."/preview_0".$i.".svg";
+                                                            $item_id = $itemDir;
+                                                            //check name and number exit or not
+                                                            $designState = file_get_contents(XEPATH."designer-tool".ORDER_PATH_DIR."/".$order_id."/".$item_id."/designState.json");
+                                                            $resultDesign = $this->formatJSONToArray($designState);
+                                                            if(!empty($resultDesign['nameNumberData'])){
+                                                                $this->creteNameAndNumberSeparatedSvg($reqSvgFile,$resultDesign,$item_id,$order_id,$sizeArr[$item_id],0);
+                                                            }else{
+                                                                $this->createWithoutProductSvg($reqSvgFile, $order_id, $item_id, $resultDesign, 0);
+                                                            }
+                                                            $msg = 'Success';
+                                                        }
+                                                    }
+                                                }
+                                            }   
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            }
             //exit;
             $orderFolderPath = $this->getOrdersPath();
             $zipName = 'orders_' . time() . '.zip';
@@ -916,18 +1037,17 @@ class OrdersStore extends UTIL
                 foreach ($orders as $order_id_arry2) {
                     $orderNo = $order_id_arry2['order_id'];
                     $order_incremental_id = $order_id_arry2['order_incremental_id'];
-					
-					$orderFolderPath = $this->getOrdersPath();
-					// fetch order_id or incremental_id //
-					if (file_exists($orderFolderPath . "/" . $order_incremental_id) && is_dir($orderPath . "/" . $order_incremental_id)) { 
-						$orderTypeFlag = 1;
-						$orderNo = $order_incremental_id;
-					}else{
-						$orderTypeFlag = 0;
-					}
-					
+
+                    $orderFolderPath = $this->getOrdersPath();
+                    // fetch order_id or incremental_id //
+                    if (file_exists($orderFolderPath . "/" . $order_incremental_id) && is_dir($orderPath . "/" . $order_incremental_id)) {
+                        $orderTypeFlag = 1;
+                        $orderNo = $order_incremental_id;
+                    } else {
+                        $orderTypeFlag = 0;
+                    }
+
                     if (file_exists($orderFolderPath . "/" . $orderNo)) {
-                        array_push($order_list_arr, array("order_id" => $order_id_arry2['order_id'], "order_incremental_id" => $order_incremental_id, "order_type" => $orderTypeFlag));
                         if (file_exists($orderFolderPath . '/' . $orderNo . '/order.json')) {
                             $order_json = file_get_contents($orderFolderPath . '/' . $orderNo . '/order.json');
                             $json_content = json_decode($order_json, true);
@@ -939,105 +1059,115 @@ class OrdersStore extends UTIL
                                 $item_kounter = 1;
                                 foreach ($json_content['order_details']['order_items'] as $item_details) {
                                     $item_id = $item_details['item_id'];
-									$ref_id = $item_details['ref_id'];
-									$scanDirArr = scandir($orderFolderPath . "/" . $orderNo. "/". $item_id); //for name and number folder scan
-									
-									
-									// check if side_index folder exists or not //
-									$sidePath = $orderFolderPath . "/" . $orderNo. "/" . $item_id;
-									$scanSidePath = scandir($sidePath);
-									$scanSideDir = $scanSidePath;
-									$orderTypeFlag = 0;
-									if(is_array($scanSideDir)) {
-										foreach($scanSideDir as $sidecheckPath){
-											if(strpos($sidecheckPath, "side_") !== false){
-												$orderTypeFlag = 1;
-												continue;
-											}
-										}
-									}
-									
-									if ($item_id != null && $item_id > 0 && $ref_id != null && $ref_id > 0) {
-										$zip->addEmptyDir($orderNo . "/" . $item_id);
-										if($orderTypeFlag == 1){
-											// add side folders inside item directory //
-											//Fetch the design state json details //
-											$designState = file_get_contents(XEPATH . "designer-tool" . ORDER_PATH_DIR . "/" . $orderNo . "/" . $item_id . "/designState.json");
-											$resultDesign = $this->formatJSONToArray($designState);
-											//echo "<pre>"; print_r($resultDesign['sides']);
-											$sidesCount = count($resultDesign['sides']);
-											for($flag=1;$flag<=$sidesCount;$flag++){
-												if(is_dir($orderFolderPath . "/" . $orderNo. "/". $item_id."/side_".$flag)){
-													$zip->addEmptyDir($orderNo . "/" . $item_id."/side_".$flag);
-												}
-												
-												$scanDirArr = scandir($orderFolderPath . "/" . $orderNo. "/". $item_id."/side_".$flag);
-												if (count($scanDirArr) > 2) {
-													//for name and number folder scan
-													foreach ($scanDirArr as $nameAndNumberDir) {
-														if ($nameAndNumberDir != '.' && $nameAndNumberDir != '..' && is_dir($orderFolderPath . "/" . $orderNo. "/". $item_id . "/side_".$flag.'/' . $nameAndNumberDir)) {
-															$zip->addEmptyDir($orderNo . "/" . $item_id."/side_".$flag);
-															$from_url = $orderFolderPath . "/" . $orderNo. "/". $item_id."/side_".$flag.'/' . $nameAndNumberDir;
-															$options = array('add_path' => $orderNo . "/" . $item_id ."/side_".$flag.'/' . $nameAndNumberDir . "/", 'remove_path' => $from_url);
-															$zip->addGlob($from_url . '/*{svg}', GLOB_BRACE, $options);
-														}
-													}
-												}
-												
-												//copy to side folder //
-												$fromUrlSide = $orderFolderPath . "/" .$orderNo. "/". $item_id."/side_".$flag;
-												$optionsSide = array('add_path' => $orderNo . "/" . $item_id . "/side_".$flag."/", 'remove_path' => $fromUrlSide);
-												$zip->addGlob($fromUrlSide . '/*{svg,json,html,pdf,png,jpg}', GLOB_BRACE, $optionsSide);
-												
-												//copy to asset folder //
-												if(is_dir($orderFolderPath . "/" . $orderNo. "/". $item_id."/side_".$flag."/assets")){
-													$zip->addEmptyDir($orderNo . "/" . $item_id."/side_".$flag."/assets");
-													
-													$fromUrlAsset = $orderFolderPath . "/" .$orderNo. "/". $item_id."/side_".$flag."/assets";
-													$optionsAsset = array('add_path' => $orderNo . "/" . $item_id . "/side_".$flag."/assets/", 'remove_path' => $fromUrlAsset);
-													$zip->addGlob($fromUrlAsset . '/*{svg,json,html,pdf,png,jpg,jpeg,PNG,bmp,BMP}', GLOB_BRACE, $optionsAsset);
-												}
-												
-												//copy to preview folder //
-												if(is_dir($orderFolderPath . "/" . $orderNo. "/". $item_id."/side_".$flag."/preview")){
-													$zip->addEmptyDir($orderNo . "/" . $item_id."/side_".$flag."/preview");
-												}
-												
-												$fromUrlPreview = $orderFolderPath . "/" . $orderNo. "/". $item_id."/side_".$flag."/preview";
-												$optionsPreview = array('add_path' => $orderNo . "/" . $item_id . "/side_".$flag."/preview/", 'remove_path' => $fromUrlPreview);
-												$zip->addGlob($fromUrlPreview . '/*{png,PNG}', GLOB_BRACE, $optionsPreview);
-												
-												//delete preview svg from zip //
-												$zip->deleteName($orderNo . "/" . $item_id."/side_".$flag."/preview_0".$flag.".svg");
-											}
-											
-											$from_url = $orderFolderPath . "/" . $orderNo. "/". $item_id;
-											$options = array('add_path' => $orderNo . "/" . $item_id . "/", 'remove_path' => $from_url);
-											$zip->addGlob($from_url . '/*{svg,json,html,pdf,png,jpg}', GLOB_BRACE, $options);
-											$zipCheckKounter++;
-											
-										}else if($orderTypeFlag == 0){
-										    $scanDirArr = scandir($orderFolderPath."/".$orderNo. "/".$item_id);//for name and number folder scan
-											if(count($scanDirArr) >2){//for name and number folder scan
-											    foreach($scanDirArr as $nameAndNumberDir){
-											        if($nameAndNumberDir != '.' && $nameAndNumberDir != '..' && is_dir($orderFolderPath."/".$orderNo. "/".$item_id."/".$nameAndNumberDir)){
-														$zip->addEmptyDir($orderNo."/".$item_id."/".$nameAndNumberDir);
-														$from_url = $orderFolderPath."/".$orderNo. "/".$item_id."/".$nameAndNumberDir;
-														$options = array('add_path' => $orderNo."/".$item_id."/".$nameAndNumberDir."/",'remove_path' => $from_url);
-														$zip->addGlob($from_url.'/*{svg}', GLOB_BRACE, $options);
-													}
-												}
-											}//end for name and number zip download
-											$from_url = $orderFolderPath."/".$orderNo."/".$item_id;
-											$options = array('add_path' => $orderNo."/".$item_id."/",'remove_path' => $from_url);
-											$zip->addGlob($from_url.'/*{svg,json,html,pdf,png,jpg}', GLOB_BRACE, $options);
-											$zipCheckKounter++;
-										}
-									}
+                                    $ref_id = $item_details['ref_id'];
+                                    $scanDirArr = scandir($orderFolderPath . "/" . $orderNo. "/". $item_id); //for name and number folder scan
+                                    
+                                    
+                                    // check if side_index folder exists or not //
+                                    $sidePath = $orderFolderPath . "/" . $orderNo. "/" . $item_id;
+                                    $scanSidePath = scandir($sidePath);
+                                    $scanSideDir = $scanSidePath;
+                                    $orderTypeFlag = 0;
+                                    if(is_array($scanSideDir)) {
+                                        foreach($scanSideDir as $sidecheckPath){
+                                            if(strpos($sidecheckPath, "side_") !== false){
+                                                $orderTypeFlag = 1;
+                                                continue;
+                                            }
+                                        }
+                                    }
+                                    //Fetch the design state json details //
+                                    $designState = file_get_contents(XEPATH . "designer-tool" . ORDER_PATH_DIR . "/" . $orderNo . "/" . $item_id . "/designState.json");
+                                    if ($item_id != null && $item_id > 0 && $ref_id != null && $ref_id > 0) {
+                                        $zip->addEmptyDir($orderNo . "/" . $item_id);
+                                        if($orderTypeFlag == 1){
+                                            // add side folders inside item directory //                                            
+                                            $resultDesign = $this->formatJSONToArray($designState);
+                                            //echo "<pre>"; print_r($resultDesign['sides']);
+                                            $sidesCount = count($resultDesign['sides']);
+                                            for($flag=1;$flag<=$sidesCount;$flag++){
+                                                if(is_dir($orderFolderPath . "/" . $orderNo. "/". $item_id."/side_".$flag)){
+                                                    $zip->addEmptyDir($orderNo . "/" . $item_id."/side_".$flag);
+                                                }
+                                                
+                                                $scanDirArr = scandir($orderFolderPath . "/" . $orderNo. "/". $item_id."/side_".$flag);
+                                                if (count($scanDirArr) > 2) {
+                                                    //for name and number folder scan
+                                                    foreach ($scanDirArr as $nameAndNumberDir) {
+                                                        if ($nameAndNumberDir != '.' && $nameAndNumberDir != '..' && is_dir($orderFolderPath . "/" . $orderNo. "/". $item_id . "/side_".$flag.'/' . $nameAndNumberDir)) {
+                                                            $zip->addEmptyDir($orderNo . "/" . $item_id."/side_".$flag);
+                                                            $from_url = $orderFolderPath . "/" . $orderNo. "/". $item_id."/side_".$flag.'/' . $nameAndNumberDir;
+                                                            $options = array('add_path' => $orderNo . "/" . $item_id ."/side_".$flag.'/' . $nameAndNumberDir . "/", 'remove_path' => $from_url);
+                                                            $zip->addGlob($from_url . '/*{svg}', GLOB_BRACE, $options);
+                                                        }
+                                                    }
+                                                }
+                                                
+                                                //copy to side folder //
+                                                $fromUrlSide = $orderFolderPath . "/" .$orderNo. "/". $item_id."/side_".$flag;
+                                                $optionsSide = array('add_path' => $orderNo . "/" . $item_id . "/side_".$flag."/", 'remove_path' => $fromUrlSide);
+                                                $zip->addGlob($fromUrlSide . '/*{svg,json,html,pdf,png,jpg}', GLOB_BRACE, $optionsSide);
+                                                
+                                                //copy to asset folder //
+                                                if(is_dir($orderFolderPath . "/" . $orderNo. "/". $item_id."/side_".$flag."/assets")){
+                                                    $zip->addEmptyDir($orderNo . "/" . $item_id."/side_".$flag."/assets");
+                                                    
+                                                    $fromUrlAsset = $orderFolderPath . "/" .$orderNo. "/". $item_id."/side_".$flag."/assets";
+                                                    $optionsAsset = array('add_path' => $orderNo . "/" . $item_id . "/side_".$flag."/assets/", 'remove_path' => $fromUrlAsset);
+                                                    $zip->addGlob($fromUrlAsset . '/*{svg,json,html,pdf,png,jpg,jpeg,PNG,bmp,BMP}', GLOB_BRACE, $optionsAsset);
+                                                }
+                                                
+                                                //copy to preview folder //
+                                                if(is_dir($orderFolderPath . "/" . $orderNo. "/". $item_id."/side_".$flag."/preview")){
+                                                    $zip->addEmptyDir($orderNo . "/" . $item_id."/side_".$flag."/preview");
+                                                }
+                                                
+                                                $fromUrlPreview = $orderFolderPath . "/" . $orderNo. "/". $item_id."/side_".$flag."/preview";
+                                                $optionsPreview = array('add_path' => $orderNo . "/" . $item_id . "/side_".$flag."/preview/", 'remove_path' => $fromUrlPreview);
+                                                $zip->addGlob($fromUrlPreview . '/*{png,PNG}', GLOB_BRACE, $optionsPreview);
+                                                
+                                                //delete preview svg from zip //
+                                                $zip->deleteName($orderNo . "/" . $item_id."/side_".$flag."/preview_0".$flag.".svg");
+                                            }
+                                            
+                                            $from_url = $orderFolderPath . "/" . $orderNo. "/". $item_id;
+                                            $options = array('add_path' => $orderNo . "/" . $item_id . "/", 'remove_path' => $from_url);
+                                            if (strpos($designState,'{\"') === false) {
+                                                $zip->addGlob($from_url . '/*{svg,json,html,pdf,png,jpg}', GLOB_BRACE, $options);               
+                                            } else {
+                                                $zip->addFromString($orderNo."/".$item_id."/designState.json", stripslashes($designState));
+                                                $zip->addGlob($from_url . '/*{svg,html,pdf,png,jpg}', GLOB_BRACE, $options);
+                                            }
+                                            $zipCheckKounter++;
+                                            
+                                        }else if($orderTypeFlag == 0){
+                                            $scanDirArr = scandir($orderFolderPath."/".$orderNo. "/".$item_id);//for name and number folder scan
+                                            if(count($scanDirArr) >2){//for name and number folder scan
+                                                foreach($scanDirArr as $nameAndNumberDir){
+                                                    if($nameAndNumberDir != '.' && $nameAndNumberDir != '..' && is_dir($orderFolderPath."/".$orderNo. "/".$item_id."/".$nameAndNumberDir)){
+                                                        $zip->addEmptyDir($orderNo."/".$item_id."/".$nameAndNumberDir);
+                                                        $from_url = $orderFolderPath."/".$orderNo. "/".$item_id."/".$nameAndNumberDir;
+                                                        $options = array('add_path' => $orderNo."/".$item_id."/".$nameAndNumberDir."/",'remove_path' => $from_url);
+                                                        $zip->addGlob($from_url.'/*{svg}', GLOB_BRACE, $options);
+                                                    }
+                                                }
+                                            }//end for name and number zip download
+                                            $from_url = $orderFolderPath."/".$orderNo."/".$item_id;
+                                            $options = array('add_path' => $orderNo."/".$item_id."/",'remove_path' => $from_url);
+                                            if (strpos($designState,'{\"') === false) {
+                                                $zip->addGlob($from_url . '/*{svg,json,html,pdf,png,jpg}', GLOB_BRACE, $options);
+                                            } else {
+                                                $zip->addFromString($orderNo."/".$item_id."/designState.json", stripslashes($designState));
+                                                $zip->addGlob($from_url . '/*{svg,html,pdf,png,jpg}', GLOB_BRACE, $options);
+                                            }
+                                            $zipCheckKounter++;
+                                        }
+                                    }
                                     $item_kounter++;
                                 }
                             }
                         }
+                        array_push($order_list_arr, array("order_id" => $order_id_arry2['order_id'], "order_incremental_id" => $order_incremental_id, "order_type" => $orderTypeFlag));
                     }
                 }
                 $order_ary = array();
@@ -1068,6 +1198,34 @@ class OrdersStore extends UTIL
         $msg2 = array("Response" => $msg);
         $this->response($this->json($msg2), 200);
 
-        
+    }
+
+    public function getPendingOrdersCount()
+    {
+        $last_order_id = (isset($this->_request['last_id'])) ? $this->_request['last_id'] : 0;
+        $result = $this->wcApi->get_orders();
+        if (!isset($result->errors)) {
+            $count = 0;
+            foreach ($result->orders as $key => $value) {
+                $customized = 0;
+                foreach ($value->line_items as $item) {
+                    foreach ($item->meta as $meta) {
+                        if ($meta->label == 'refid' && $meta->value != '') {
+                            $customized = 1;
+                        }
+                    }
+                }
+                if ($customized == 1) {
+                    if ($last_order_id < $value->order_number) {
+                        $count++;
+                    }
+                }
+
+            }
+            $response = array('lastOrderID' => $last_order_id, 'pendingOrderCount' => $count);
+        } else {
+            $response = array('status' => 'failed', 'error' => $result);
+        }
+        $this->response($this->json($response), 200);
     }
 }

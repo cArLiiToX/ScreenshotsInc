@@ -37,12 +37,12 @@
                     </div>
                 </div>
                 <div class="radio radio-info m-t-0 m-b-30">
-                    <input type="radio" value="1" id="editSwatchColor" ng-model="editInfo.isColor" ng-change="editInfo.isColor = 1" ng-checked="editInfo.isColor == 1"/>
+                    <input type="radio" value="1" id="editSwatchColor" ng-model="editInfo.isColor" ng-change= "changeEditInfo(1)" ng-checked="editInfo.isColor == 1"/>
                     <label for="editSwatchColor">
                         <xe-translate text-value="Color">
                         </xe-translate>
                     </label>
-                    <input type="radio" id="editSwatchImage" value="0" ng-model="editInfo.isColor"  ng-change="editInfo.isColor = 0" ng-checked="editInfo.isColor == 0"/>
+                    <input type="radio" id="editSwatchImage" value="0" ng-model="editInfo.isColor"  ng-change="changeEditInfo(0)" ng-checked="editInfo.isColor == 0"/>
                     <label for="editSwatchImage">
                         <xe-translate text-value="Image">
                         </xe-translate>
@@ -81,7 +81,7 @@
         </div>
         <div class="panel-footer b-t-none clearfix">
             <div class="pull-right">
-                <button class="btn btn-info btn-sm" type="button" ng-click="editSwachColor(editInfo)"  ng-class="{'disabled': !editInfo.optionlabel}" ng-disabled="demoStatus">
+                <button class="btn btn-info btn-sm" type="button" ng-click="editSwachColor(editInfo)"  ng-class="{'disabled': !editInfo.optionlabel || !editInfo.hexValue}" ng-disabled="demoStatus">
                     <xe-translate text-value="Save">
                     </xe-translate>
                 </button>

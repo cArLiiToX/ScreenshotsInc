@@ -24,11 +24,14 @@ class CartsStore extends UTIL
         $original_mem = ini_get('memory_limit');
         $mem = substr($original_mem, 0, -1);
         if ($original_mem <= $mem) {
-            $mem = $mem + 256;
+            $mem = $mem + 1024;
             ini_set('memory_limit', $mem . 'M');
             set_time_limit(0);
         }
         global $woocommerce;
+        // get color attribute and size attribute.
+        $colorAttr = $this->getStoreAttributes("xe_color");
+        $sizeAttr = $this->getStoreAttributes("xe_size");
         $error = false;
         $result = $this->storeApiLogin();
         if ($this->storeApiLogin == true) {
@@ -48,6 +51,9 @@ class CartsStore extends UTIL
                 $productDataJSON = $this->_request['productData'];
 
             }
+            $designData = urldecode($designData);
+            $designData = addslashes($designData);
+            $productDataJSON = urldecode($productDataJSON);
             $cartArr = json_decode(stripslashes($productDataJSON), true);
             $refid = $this->saveDesignStateCart($apikey, $refid, $designData);
             if ($refid > 0) {
@@ -67,11 +73,16 @@ class CartsStore extends UTIL
                         $variation = array();
                         foreach ($cart['simple_product'] as $key => $value) {
                             if ($key != 'simpleProductId' && substr($key, -3) != '_id') {
-                                $variation['attribute_pa_' . $key] = $value;
+                                if($key == "xe_color")
+                                    $variation['attribute_pa_' . $colorAttr] = $value;
+                                else if($key == "xe_size")
+                                    $variation['attribute_pa_' . $sizeAttr] = $value;
+                                else    
+                                    $variation['attribute_pa_' . $key] = $value;
+
                             }
 
                         }
-
                         $cart_meta = array();
                         $cart_meta['_other_options']['product-price'] = $price + $cart['addedprice'];
                         $cart_meta['refid'] = $refid;
@@ -229,16 +240,36 @@ class CartsStore extends UTIL
             $quantity = $cartArr['qty'];
             $simpleProductId = $cartArr['simple_product']['simpleProductId'];
             //$color1 = $cartArr['simple_product']['color1'];
+            if(!empty($cartArr['simple_product']['xe_color'])){
+                $xeColor = $this->getStoreAttributes("xe_color");
+                if($xeColor != 'xe_color'){
+                    $cartArr['simple_product'][$xeColor] = $cartArr['simple_product']['xe_color'];
+                    unset($cartArr['simple_product']['xe_color']);
+                }
+            }
+            if(!empty($cartArr['simple_product']['xe_size'])){
+                $xeSize = $this->getStoreAttributes("xe_size");
+                if($xeSize != 'xe_size'){
+                    $cartArr['simple_product'][$xeSize] = $cartArr['simple_product']['xe_size'];
+                    unset($cartArr['simple_product']['xe_size']);
+                }
+            }
+
             $xeColor = $cartArr['simple_product']['xe_color'];
             $xeSize = $cartArr['simple_product']['xe_size'];
             $product = array(
                 "product_id" => $configProductId,
                 "qty" => $quantity,
                 "simpleproduct_id" => $simpleProductId,
-                "options" => array('xe_color' => $xeColor, 'xe_size' => $xeSize),
+                "options" => array(),
                 "custom_price" => $custom_price,
                 "custom_design" => $cutom_design_refId,
             );
+            foreach ($cartArr['simple_product'] as $key => $value) {
+                if ($cartArr['simple_product'][$key]) {
+                    $product['options'][$key] = $cartArr['simple_product'][$key];
+                }
+            }
             if ($quantity > 0) {
                 return $product;
             } else {

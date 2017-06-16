@@ -21,14 +21,14 @@ class Shape extends UTIL
     {
         $catagoryArray = array();
         try {
-            $sql = "SELECT distinct id,category_name FROM " . TABLE_PREFIX . "shape_cat";
+            $sql = "SELECT distinct id,category_name FROM " . TABLE_PREFIX . "shape_cat ORDER BY category_name DESC";
             $categoryDetail = array();
             $rows = $this->executeGenericDQLQuery($sql);
             for ($i = 0; $i < sizeof($rows); $i++) {
                 $categoryDetail[$i]['id'] = $rows[$i]['id'];
                 $categoryDetail[$i]['category_name'] = $rows[$i]['category_name'];
             }
-            $this->response($this->json($categoryDetail), 200);
+            $this->response($this->json($categoryDetail,1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -57,6 +57,7 @@ class Shape extends UTIL
             $searchval = $this->_request['searchval'];
             $shapeLastLoaded = $this->_request['lastLoaded'];
             $shapeLimit = $this->_request['loadCount'];
+            $category = addslashes($category);
             $categoryValue = ($category != '') ? " and sc.category_name='" . $category . "'" : "";
             $joinText = '';
             if ($category != '' && $searchval == '') {
@@ -101,7 +102,7 @@ class Shape extends UTIL
             $x['total_count'] = $countShape[0]['total'];
             $x['shapes'] = $shapeArray;
             $this->closeConnection();
-            $this->response($this->json($x), 200);
+            $this->response($this->json($x,1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -152,6 +153,7 @@ class Shape extends UTIL
 
                     if (!empty($this->_request['tags'])) {
                         foreach ($this->_request['tags'] as $k => $v) {
+                            $v = addslashes($v);
                             $tag_sql = "SELECT id,count( * ) AS nos FROM " . TABLE_PREFIX . "shape_tags WHERE name = '" . $v . "'";
                             $res = $this->executeFetchAssocQuery($tag_sql);
                             if (!$res[0]['nos']) {
@@ -165,7 +167,7 @@ class Shape extends UTIL
 
  					$this->_request['price'] = (isset($this->_request['price']) && $this->_request['price'])?$this->_request['price']:0.00;
                     foreach ($this->_request['files'] as $k => $v) {
-                        $sql[$k] = $isql . "('" . $this->_request['shape_name'] . "','" . $this->_request['price'] . "')";
+                        $sql[$k] = $isql . "('" . addslashes($this->_request['shape_name']) . "','" . $this->_request['price'] . "')";
                         $shape_id[$k] = $this->executeGenericInsertQuery($sql[$k]);
                         $fname[$k] = 's_' . $shape_id[$k];
 
@@ -253,7 +255,7 @@ class Shape extends UTIL
             }
             // $shapeData['tags'] = array_unique($shapeData['tags']);
             $shapeData['tags'] = $this->uniqueObjArray($shapeData['tags'], "tag_name");
-            $this->response($this->json($shapeData), 200);
+            $this->response($this->json($shapeData,1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -281,7 +283,7 @@ class Shape extends UTIL
                 extract($this->_request);
                 $id_str = implode(',', $id);
 				$price = (isset($price) & $price)?$price:0.00;
-				
+				$shape_name = addslashes($shape_name);
 				$sql = "UPDATE " . TABLE_PREFIX . "shapes SET shape_name = '" . $shape_name . "', price = '" . $price . "' WHERE id IN(" . $id_str . ")";
                 $status = $this->executeGenericDMLQuery($sql);
 
@@ -297,6 +299,7 @@ class Shape extends UTIL
 
                 if (!empty($this->_request['tags'])) {
                     foreach ($this->_request['tags'] as $k => $v) {
+                        $v = addslashes($v);
                         $tag_sql = "SELECT id,count( * ) AS nos FROM " . TABLE_PREFIX . "shape_tags WHERE name = '" . $v . "'";
                         $res = $this->executeFetchAssocQuery($tag_sql);
                         if (!$res[0]['nos']) {
@@ -354,11 +357,12 @@ class Shape extends UTIL
         $status = 0;
         try {
             if (!empty($this->_request) && isset($this->_request['category_name']) && $this->_request['category_name']) {
-                $query = "select count(*) count from " . TABLE_PREFIX . "shape_cat where category_name = '" . $this->_request['category_name'] . "'";
+                $categoryName = addslashes($this->_request['category_name']);
+                $query = "select count(*) count from " . TABLE_PREFIX . "shape_cat where category_name = '" . $categoryName . "'";
                 $rows = $this->executeGenericDQLQuery($query);
                 $response = array();
                 if ($rows[0]['count'] == "0") {
-                    $sql = "INSERT INTO " . TABLE_PREFIX . "shape_cat (category_name) VALUES ('" . $this->_request['category_name'] . "')";
+                    $sql = "INSERT INTO " . TABLE_PREFIX . "shape_cat (category_name) VALUES ('" . $categoryName . "')";
                     $status = $this->executeGenericDMLQuery($sql);
                     $msg['status'] = ($status) ? 'Success' : 'Failure';
                 } else {
@@ -392,6 +396,7 @@ class Shape extends UTIL
         if (!empty($this->_request) && $this->_request['id'] && isset($this->_request['name'])) {
             extract($this->_request);
             try {
+                $name = addslashes($name);
                 $chk_duplicate = "SELECT COUNT(*) AS duplicate FROM " . TABLE_PREFIX . "shape_cat WHERE category_name='" . $name . "' AND id !='" . $id . "'";
                 $res = $this->executeFetchAssocQuery($chk_duplicate);
 
@@ -425,7 +430,7 @@ class Shape extends UTIL
      */
     public function removeShapeCategory()
     {
-        $pCategory = $this->_request['removeCategory'];
+        $pCategory = addslashes($this->_request['removeCategory']);
         try {
             $sql = "select count(*) count from " . TABLE_PREFIX . "shape_cat where category_name = '$pCategory'";
             $row = $this->executeGenericDQLQuery($sql);
@@ -449,7 +454,7 @@ class Shape extends UTIL
             $response['status'] = true;
             $response['message'] = "'$pCategory' cateory delete successful !!";
         }
-        $this->response($this->json($response), 200);
+        $this->response($this->json($response,1), 200);
     }
 
     /**

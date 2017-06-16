@@ -40,9 +40,11 @@ interface CartInterface
      * @api
      * @param int $orderId.
      * @param int $store.
+     * @param string $color.
+     * @param string $size.
      * @return string The all products in a json format.
      */
-    public function getOrderDetails($orderId, $store);
+    public function getOrderDetails($orderId, $store, $color, $size);
 
     /**
      *
@@ -71,5 +73,6 @@ interface CartInterface
      * @param int $store
      * @return string No of cart qty.
      */
+
     public function orderIdFromStore($lastOrderId, $range, $store);
 }

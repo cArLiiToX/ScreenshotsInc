@@ -1,0 +1,46 @@
+<div class="panel panel-transparent" ng-init="init()" ng-controller="SettingController">
+    <div class="panel-heading">
+        <div class="panel-title">
+            <xe-translate text-value="Settings">
+            </xe-translate>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="panel panel-transparent">
+                  <!-- Nav tabs -->
+                    <ul class="nav nav-tabs nav-tabs-linetriangle nav-tab-v nav-tabs-left">
+
+                        <li ng-repeat="tab in settingTabList" ng-class="getCurrentStep($index)" ng-hide="$index == 0">
+                            <a ng-click="goToNextStep($index)">
+                                <span>
+                                  <xe-translate text-value="{{ tab.name }}">
+                                  </xe-translate>
+                                </span>
+                            </a>
+                        </li>
+                 
+                    </ul>
+                    <!-- Tab panes -->
+                    <div class="tab-content tab-m-h">
+                        <div class="tab-pane active" id="tab1">
+                            <div class="row column-seperation">
+                                <div class="col-md-12">
+                                    <div  class="panel-body m-h-550" style="display: block;">
+                                        <ng-include src="'modules/setting/views/partials/'+nextPage+'.html'">
+                                        </ng-include>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>   
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ng-include src="'modules/setting/views/partials/languageModal.html'">
+    </ng-include>
+    <ng-include src="'modules/setting/views/socialImageModal.html'">
+    </ng-include>
+</div>

@@ -475,6 +475,20 @@ class Component extends ComponentStore
     {
         return $this->getBasePath() . self::LANGUAGE_DIR;
     }
+	
+	/**
+     *
+     *date created (dd-mm-yy)
+     *date modified 5-4-2017(dd-mm-yy)
+     *get laguage path
+     *
+     * @return language path admin
+     *
+     */
+    protected function getLanguagePathAdmin()
+    {
+        return $this->getBasePath() . self::ADMIN_LANGUAGE_DIR;
+    }
 
     //////////////*************** OTHER UNDECIDED METHODS **************************//////////////////
 
@@ -533,8 +547,8 @@ class Component extends ComponentStore
         }
         $apiKey = $this->_request['apikey'];
         $refid = $this->_request['refid'];
-        $designData = $this->_request['designData'];
-        $previewImgData = $this->_request['previewImgData'];
+        $designData = urldecode($this->_request['designData']);
+        $previewImgData = urldecode($this->_request['previewImgData']);
 
         $productURL = $previewImgData["productURL"];
         $svgData = $previewImgData["svgData"];
@@ -601,7 +615,7 @@ class Component extends ComponentStore
         }
         $apiKey = $this->_request['apikey'];
         $refid = $this->_request['refid'];
-        $jsonData = $this->_request['data'];
+        $jsonData = urldecode($this->_request['data']);
         $jsonData = $this->executeEscapeStringQuery($jsonData);
         if ($this->isValidCall($apiKey)) {
             try {
@@ -1143,50 +1157,67 @@ class Component extends ComponentStore
         if (isset($this->_request['isTemplate'])) {
             $isTemplate = $this->_request['isTemplate'];
         }
+        if (isset($this->_request['multiBoundStatus'])) {
+            $multipleBoundary = $this->_request['multiBoundStatus'];
+        }
         $apiKey = $this->_request['apikey'];
         $productid = $this->_request['productid'];
-        $jsonData = $this->_request['jsondata'];
+        $jsonData = urldecode($this->_request['jsondata']);
         $apiKey = $this->executeEscapeStringQuery($apiKey);
         $productid = $this->executeEscapeStringQuery($productid);
         $jsonData1 = $this->formatJSONToArray($jsonData);
         if ($this->isValidCall($apiKey)) {
             try {
-                $sql = "delete from " . TABLE_PREFIX . "mask_data where productid='$productid'";
-                $result = $this->executeGenericDMLQuery($sql);
-                $values = '';
-                $status = 0;
-                foreach ($jsonData1 as $side => $value) {
-                    $maskJSON = ($value['mask']) ? json_encode($value['mask']) : '';
-                    $boundsJSON = ($value['bounds']) ? json_encode($value['bounds']) : '';
-                    $customJSON = ($value['customsize']) ? json_encode($value['customsize']) : '';
-                    $customMask = ($value['custom_mask']) ? json_encode($value['custom_mask']) : '';
-		    $value['custom_min_height'] = (isset($value['custom_min_height']) && $value['custom_min_height'])?$value['custom_min_height']:0.00; 
-		    $value['custom_min_width'] = (isset($value['custom_min_width']) && $value['custom_min_width'])?$value['custom_min_width']:0.00; 
-		    $value['custom_max_height'] = (isset($value['custom_max_height']) && $value['custom_max_height'])?$value['custom_max_height']:0.00; 
-		    $value['custom_max_width'] = (isset($value['custom_max_width']) && $value['custom_max_width'])?$value['custom_max_width']:0.00; 
-		    $value['custom_boundary_price'] = (isset($value['custom_boundary_price']) && $value['custom_boundary_price'])?$value['custom_boundary_price']:0.00; 
-		    $value['custom_boundary_unit'] = (isset($value['custom_boundary_unit']) && $value['custom_boundary_unit'])?$value['custom_boundary_unit']:0.00; 
-		    $value['custom_min_height_mask'] = (isset($value['custom_min_height_mask']) && $value['custom_min_height_mask'])?$value['custom_min_height_mask']:0.00; 
-		    $value['custom_min_width_mask'] = (isset($value['custom_min_width_mask']) && $value['custom_min_width_mask'])?$value['custom_min_width_mask']:0.00; 
-		    $value['custom_max_height_mask'] = (isset($value['custom_max_height_mask']) && $value['custom_max_height_mask'])?$value['custom_max_height_mask']:0.00; 
-		    $value['custom_max_width_mask'] = (isset($value['custom_max_width_mask']) && $value['custom_max_width_mask'])?$value['custom_max_width_mask']:0.00;
-                    $values .= ",('" . $value['mask_id'] . "','" . $value['mask_name'] . "','$productid', '$side', '" . addslashes($maskJSON) . "', '$boundsJSON', '$customJSON','" . $this->_request['maskScalewidth'][$side] . "','" . $this->_request['maskScaleHeight'][$side] . "','" . $this->_request['maskPrice'][$side] . "','" . $this->_request['scaleRatio'][$side] . "','" . $value['is_cropMark'] . "','" . $value['is_safeZone'] . "','" . $value['cropValue'] . "','" . $value['safeValue'] . "','" . $this->_request['scaleRatio_unit'][$side] . "','" . $value['custom_min_height'] . "','" . $value['custom_min_width'] . "','" . $value['custom_max_height'] . "','" . $value['custom_max_width'] . "','" . $value['custom_boundary_price'] . "','" . $value['custom_boundary_unit'] . "','" . $customMask . "','" . $value['custom_min_height_mask'] . "','" . $value['custom_min_width_mask'] . "','" . $value['custom_max_height_mask'] . "','" . $value['custom_max_width_mask'] . "','" . $value['isBorderEnable'] . "','" . $value['isSidesAdded'] . "','" . $value['sidesAllowed'] . "')";
-                }
-                if (strlen($values)) {
-                    $sql = "INSERT INTO " . TABLE_PREFIX . "mask_data (mask_id,mask_name,productid, side, mask_json_data,bounds_json_data,custom_size_data, mask_width,mask_height,mask_price,scale_ratio,is_cropMark,is_safeZone,cropValue,safeValue,scaleRatio_unit,cust_min_height,cust_min_width,cust_max_height,cust_max_width,cust_bound_price,custom_boundary_unit,custom_mask,custom_mask_min_height,custom_mask_min_width,custom_mask_max_height,custom_mask_max_width,isBorderEnable,isSidesAdded,sidesAllowed) VALUES" . substr($values, 1);
-                    $status = $this->executeGenericDMLQuery($sql);
-                }
-                if ($status) {
-                    $printtypeStatus = $this->setPrintareaType();
-                    $msg = array("printtypeStatus" => $printtypeStatus);
-                    $msg = array("status" => "success");
+                if ($multipleBoundary == "true") {
+                    $MultiBoundData = $this->_request['multiple_boundary'];
+                    $unitArr = array_column($jsonData1, 'scaleRatio_unit');
+                    // multiple boundary saving
+                    $multiBoundObj = Flight::multipleBoundary();
+                    $multiBoundObj->saveMultipleBoundary($productid, $MultiBoundData, $unitArr);
                 } else {
-                    $msg = array("status" => "failed");
-                }
-                if ($isTemplate == 1) {
-                    return $this->json($msg);
-                } else {
-                    $this->response($this->json($msg), 200);
+                    $sql = "delete from " . TABLE_PREFIX . "mask_data where productid='$productid'";
+                    $result = $this->executeGenericDMLQuery($sql);
+                    // Delete Multiple boundary for this product if exists
+                    $deleteRec = "DELETE FROM m1 , m2, m3 USING  " . TABLE_PREFIX . "multiple_boundary_rel as m1 INNER JOIN " . TABLE_PREFIX . "multi_bound_print_profile_rel as m2 INNER JOIN " . TABLE_PREFIX . "multiple_boundary_settings as m3 WHERE m1.product_id = '" . $productid . "' AND m2.product_id = m1.product_id AND m3.boundary_rel_id = m1.id";
+                    $flush = $this->executeGenericDMLQuery($deleteRec);
+                    $values = '';
+                    $status = 0;
+
+                    foreach ($jsonData1 as $side => $value) {
+                        $maskJSON = ($value['mask']) ? json_encode($value['mask']) : '';
+                        $boundsJSON = ($value['bounds']) ? json_encode($value['bounds']) : '';
+                        $customJSON = ($value['customsize']) ? json_encode($value['customsize']) : '';
+                        $customMask = ($value['custom_mask']) ? json_encode($value['custom_mask']) : '';
+                        $maskPrice = (isset($this->_request['maskPrice']) && $this->_request['maskPrice']) ? $this->_request['maskPrice'] : array(0.00);
+                        $scaleRatio_unit = (isset($this->_request['scaleRatio_unit']) && $this->_request['scaleRatio_unit']) ? $this->_request['scaleRatio_unit'] : array(1);
+                        $custom_min_height = (isset($value['custom_min_height']) && $value['custom_min_height']) ? $value['custom_min_height'] : 0.00;
+                        $custom_min_width = (isset($value['custom_min_width']) && $value['custom_min_width']) ? $value['custom_min_width'] : 0.00;
+                        $custom_max_height = (isset($value['custom_max_height']) && $value['custom_max_height']) ? $value['custom_max_height'] : 0.00;
+                        $custom_max_width = (isset($value['custom_max_width']) && $value['custom_max_width']) ? $value['custom_max_width'] : 0.00;
+                        $custom_boundary_price = (isset($value['custom_boundary_price']) && $value['custom_boundary_price']) ? $value['custom_boundary_price'] : 0.00;
+                        $custom_boundary_unit = (isset($value['custom_boundary_unit']) && $value['custom_boundary_unit']) ? $value['custom_boundary_unit'] : 0.00;
+                        $custom_min_height_mask = (isset($value['custom_min_height_mask']) && $value['custom_min_height_mask']) ? $value['custom_min_height_mask'] : 0.00;
+                        $custom_min_width_mask = (isset($value['custom_min_width_mask']) && $value['custom_min_width_mask']) ? $value['custom_min_width_mask'] : 0.00;
+                        $custom_max_height_mask = (isset($value['custom_max_height_mask']) && $value['custom_max_height_mask']) ? $value['custom_max_height_mask'] : 0.00;
+                        $custom_max_width_mask = (isset($value['custom_max_width_mask']) && $value['custom_max_width_mask']) ? $value['custom_max_width_mask'] : 0.00;
+                        $values .= ",('" . $value['mask_id'] . "','" . $value['mask_name'] . "','$productid', '$side', '" . addslashes($maskJSON) . "', '$boundsJSON', '$customJSON','" . $this->_request['maskScalewidth'][$side] . "','" . $this->_request['maskScaleHeight'][$side] . "','" . $maskPrice[$side] . "','" . $this->_request['scaleRatio'][$side] . "','" . $value['is_cropMark'] . "','" . $value['is_safeZone'] . "','" . $value['cropValue'] . "','" . $value['safeValue'] . "','" . $scaleRatio_unit[$side] . "','" . $custom_min_height . "','" . $custom_min_width . "','" . $custom_max_height . "','" . $custom_max_width . "','" . $custom_boundary_price . "','" . $custom_boundary_unit . "','" . $customMask . "','" . $custom_min_height_mask . "','" . $custom_min_width_mask . "','" . $custom_max_height_mask . "','" . $custom_max_width_mask . "','" . $value['isBorderEnable'] . "','" . $value['isSidesAdded'] . "','" . $value['sidesAllowed'] . "')";
+                    }
+                    if (strlen($values)) {
+                        $sql = "INSERT INTO " . TABLE_PREFIX . "mask_data (mask_id,mask_name,productid, side, mask_json_data,bounds_json_data,custom_size_data, mask_width,mask_height,mask_price,scale_ratio,is_cropMark,is_safeZone,cropValue,safeValue,scaleRatio_unit,cust_min_height,cust_min_width,cust_max_height,cust_max_width,cust_bound_price,custom_boundary_unit,custom_mask,custom_mask_min_height,custom_mask_min_width,custom_mask_max_height,custom_mask_max_width,isBorderEnable,isSidesAdded,sidesAllowed) VALUES" . substr($values, 1);
+                        $status = $this->executeGenericDMLQuery($sql);
+                    }
+                    if ($status) {
+                        $printtypeStatus = $this->setPrintareaType();
+                        $msg = array("printtypeStatus" => $printtypeStatus);
+                        $msg = array("status" => "success");
+                    } else {
+                        $msg = array("status" => "failed");
+                    }
+                    if ($isTemplate == 1) {
+                        return $this->json($msg);
+                    } else {
+                        $this->response($this->json($msg), 200);
+                    }
                 }
             } catch (Exception $e) {
                 $result = array('Caught exception:' => $e->getMessage());
@@ -2482,7 +2513,7 @@ class Component extends ComponentStore
     {
         extract($this->_request);
         try {
-	    $unitId = (isset($unitId) && $unitId && $unitId)?$unitId:1;
+            $unitId = (isset($unitId) && $unitId && $unitId) ? $unitId : 1;
             $sql = "SELECT COUNT( * ) AS exist FROM " . TABLE_PREFIX . "product_printarea_type WHERE productid=" . $productid;
             $res = $this->executeFetchAssocQuery($sql);
             if ($res[0]['exist']) {
@@ -3308,7 +3339,7 @@ class Component extends ComponentStore
     public function removeCategory()
     {
         try {
-            $pCategory = $this->_request['removeCategory'];
+            $pCategory = addslashes($this->_request['removeCategory']);
             $sql = "select id , category_name from " . TABLE_PREFIX . "des_cat where category_name = '$pCategory'";
             $row = $this->executeGenericDQLQuery($sql);
             $response = array();
@@ -3328,7 +3359,7 @@ class Component extends ComponentStore
                 $response['message'] = "'$pCategory' cateory delete successful !!";
             }
             $this->closeConnection();
-            $this->response($this->json($response), 200);
+            $this->response($this->json($response,1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -3584,7 +3615,7 @@ class Component extends ComponentStore
     {
         if (isset($confProductId) && $confProductId) {
             try {
-                $sql = "SELECT DISTINCT xe_size_id,pk_id FROM " . TABLE_PREFIX . "size_variant_additional_price where product_id='" . $confProductId . "' order by pk_id";
+                $sql = "SELECT DISTINCT xe_size_id FROM " . TABLE_PREFIX . "size_variant_additional_price where product_id='" . $confProductId . "' order by pk_id";
                 $resArr = array();
                 $rows = $this->executeGenericDQLQuery($sql);
                 for ($i = 0; $i < sizeof($rows); $i++) {
@@ -3592,8 +3623,8 @@ class Component extends ComponentStore
                 }
                 for ($i = 0; $i < sizeof($resArr); $i++) {
                     $sql_arr = "SELECT  distinct pk_id,print_method_id,percentage
-						FROM   " . TABLE_PREFIX . "size_variant_additional_price
-						WHERE   xe_size_id ='" . $resArr[$i]['xe_size_id'] . "' AND product_id =" . $confProductId . ' ORDER BY pk_id';
+                        FROM   " . TABLE_PREFIX . "size_variant_additional_price
+                        WHERE   xe_size_id ='" . $resArr[$i]['xe_size_id'] . "' AND product_id =" . $confProductId . ' ORDER BY pk_id';
                     $row = $this->executeGenericDQLQuery($sql_arr);
                     $sizePrice = array();
                     for ($j = 0; $j < sizeof($row); $j++) {
@@ -3613,7 +3644,6 @@ class Component extends ComponentStore
             $this->response($this->json($msg), 200);
         }
     }
-
     /**
      *
      *date created (dd-mm-yy)
@@ -3676,7 +3706,7 @@ class Component extends ComponentStore
                     $printSize['printSize'][$k]['is_user_defined'] = $row['is_user_defined'];
                     $printSize['printSize'][$k]['is_default'] = $row['is_default'];
                 }
-                $this->response($this->json($printSize), 200);
+                $this->response($this->json($printSize,1), 200);
             } catch (Exception $e) {
                 $result = array('Caught exception:' => $e->getMessage());
                 $this->response($this->json($result), 200);
@@ -3906,18 +3936,19 @@ class Component extends ComponentStore
             if (!empty($this->_request) && $this->_request['productid'] && $this->_request['apikey'] && $this->isValidCall($this->_request['apikey'])) {
                 extract($this->_request);
                 $variantDetails = isset($variantDetails) ? $this->formatJSONToArray($variantDetails) : array();
-                //echo '<pre>';print_r($variantDetails);
-                // deleting existing records of selected product id
+
+                /* deleting existing records of selected product id */
                 $status = 0;
                 $sql = "delete from " . TABLE_PREFIX . "product_additional_prices where product_id=$productid";
                 $this->executeGenericDMLQuery($sql);
-                // inserting new data get from font end
+
+                /* inserting new data get from font end */
                 if (!empty($variantDetails)) {
                     $sql = array();
                     foreach ($variantDetails as $k => $v) {
                         if (!empty($variantDetails[$k]['price'])) {
-							$v1['prntmthdid'] = (isset($v1['prntmthdid']) && $v1['prntmthdid'])?$v1['prntmthdid']:0;
-							foreach ($variantDetails[$k]['price'] as $k1 => $v1) {
+                            foreach ($variantDetails[$k]['price'] as $k1 => $v1) {
+                                $v1['prntmthdid'] = (isset($v1['prntmthdid']) && $v1['prntmthdid']) ? $v1['prntmthdid'] : 0;
                                 $sql[] = "('" . $productid . "' , '" . $variantDetails[$k]['variantid'] . "','" . $v1['prntmthdid'] . "', '" . $v1['prntmthdprice'] . "','" . $v1['is_whitebase'] . "')";
                             }
                         }
@@ -3957,22 +3988,25 @@ class Component extends ComponentStore
         $key = $this->_request['apikey'];
         if (!empty($productId) && !empty($key) && $this->isValidCall($key)) {
             try {
-                $sql = "SELECT DISTINCT variant_id FROM " . TABLE_PREFIX . "product_additional_prices WHERE product_id='$productId' ORDER BY pk_id";
+                $sql = "SELECT DISTINCT pk_id, variant_id FROM " . TABLE_PREFIX . "product_additional_prices WHERE product_id='$productId' GROUP BY variant_id";
                 $variantIdsArray = array();
                 //$rows = $this->executeGenericDQLQuery($sql);
                 $rows = $this->executeFetchAssocQuery($sql);
                 // $count = sizeof($rows);
                 if (!empty($rows)) {
                     foreach ($rows as $k => $v) {
-                        $variantIdsArray[$k]['variantid'] = $v['variant_id'];
+                        if($v['variant_id'] != "")
+                            $variantIdsArray[$k]['variantid'] = $v['variant_id'];
+                        else
+                            $variantIdsArray[$k]['variantid'] = 0;
                     }
                 }
                 $countvarient = sizeof($variantIdsArray);
                 for ($i = 0; $i < $countvarient; $i++) {
-                    $sql = "SELECT  distinct print_method_id,price,is_whitebase
-							FROM   " . TABLE_PREFIX . "product_additional_prices
-							WHERE  product_id ='$productId'
-							AND    variant_id =" . $variantIdsArray[$i]['variantid'] . " ORDER BY pk_id";
+                    $sql = "SELECT  distinct pk_id, print_method_id,price,is_whitebase
+                            FROM   " . TABLE_PREFIX . "product_additional_prices
+                            WHERE  product_id ='$productId'
+                            AND    variant_id =" . $variantIdsArray[$i]['variantid'] . " ORDER BY pk_id";
                     //$rows = $this->executeGenericDQLQuery($sql);
                     $rows = $this->executeFetchAssocQuery($sql);
                     $priceDetails = array();
@@ -3986,9 +4020,7 @@ class Component extends ComponentStore
                     }
                     $variantIdsArray[$i]['price'] = $priceDetails;
                 }
-                $varnDetails = array();
-                $varnDetails = $variantIdsArray;
-                $this->response($this->json($varnDetails), 200);
+                $this->response($this->json($variantIdsArray), 200);
             } catch (Exception $e) {
                 $msg = array('Caught exception:' => $e->getMessage());
             }
@@ -4091,9 +4123,9 @@ class Component extends ComponentStore
             if (!empty($fres)) {
                 foreach ($fres as $kf => $vf) {
                     $css_content .= '@font-face {
-						font-family: "' . $vf['orgName'] . '";
-						src: url("' . str_replace(array("'", " "), array("", "_"), $vf['orgName']) . '.ttf")  format("truetype");
-					}';
+                        font-family: "' . $vf['orgName'] . '";
+                        src: url("' . str_replace(array("'", " "), array("", "_"), $vf['orgName']) . '.ttf")  format("truetype");
+                    }';
                 }
             }
             @unlink($file);
@@ -4210,7 +4242,7 @@ class Component extends ComponentStore
                 if (!empty($this->_request['print_size'])) {
                     $usql = '';
                     foreach ($this->_request['print_size'] as $k => $v) {
-                        $usql .= ",('" . $v['id'] . "','" . $v['name'] . "','" . $v['height'] . "','" . $v['width'] . "')";
+                        $usql .= ",('" . $v['id'] . "','" . addslashes($v['name']) . "','" . $v['height'] . "','" . $v['width'] . "')";
                     }
                     if (strlen($usql)) {
                         $usql = "INSERT INTO " . TABLE_PREFIX . "print_size (pk_id,name,height,width) VALUES " . substr($usql, 1) . " ON DUPLICATE KEY UPDATE pk_id=VALUES(pk_id),name=VALUES(name),height = VALUES(height),width = VALUES(width)";
@@ -4251,7 +4283,7 @@ class Component extends ComponentStore
             $status = 0;
             if (!empty($this->_request) && isset($this->_request['name'])) {
                 extract($this->_request);
-                $sql = "INSERT INTO " . TABLE_PREFIX . "print_size(name,height,width,is_user_defined)VALUES('" . $name . "','" . $height . "','" . $width . "','" . $is_user_defined . "')";
+                $sql = "INSERT INTO " . TABLE_PREFIX . "print_size(name,height,width,is_user_defined)VALUES('" . addslashes($name) . "','" . $height . "','" . $width . "','" . $is_user_defined . "')";
                 $status = $this->executeGenericInsertQuery($sql);
             }
             $status = ($status) ? $this->getSizeInfo() : 'Failed';
@@ -4666,6 +4698,8 @@ class Component extends ComponentStore
                 $maskdata = str_replace(array(' ', '"', '\\', '/', ':', '?', '*', '<', '>', '|'), '_', $name) . '_0.svg';
                 $svgImageFilePath = $dir . $maskdata;
                 $status = file_put_contents($svgImageFilePath, $maskBase64Data);
+                $name = addslashes($name);
+                $maskdata = addslashes($maskdata);
                 $sql = "INSERT INTO " . TABLE_PREFIX . "custom_maskdata(name,file_name,maskheight, maskwidth,price) VALUES ('$name','$maskdata', '$maskheight', '$maskwidth','$price')";
                 $status = $this->executeGenericDMLQuery($sql);
                 $settingsObj = Flight::setting();
@@ -4701,12 +4735,12 @@ class Component extends ComponentStore
                 $resultArr[$i]['name'] = $rows[$i]['name'];
                 $resultArr[$i]['url'] = $url . $rows[$i]['file_name'];
                 $resultArr[$i]['file_name'] = $rows[$i]['file_name'];
-                $resultArr[$i]['maskheight'] = $rows[$i]['maskheight'];
-                $resultArr[$i]['maskwidth'] = $rows[$i]['maskwidth'];
+                $resultArr[$i]['maskheight'] = (isset($rows[$i]['maskheight']) && $rows[$i]['maskheight']) ? $rows[$i]['maskheight'] : 0.00;
+                $resultArr[$i]['maskwidth'] = (isset($rows[$i]['maskwidth']) && $rows[$i]['maskwidth']) ? $rows[$i]['maskwidth'] : 0.00;
                 $resultArr[$i]['price'] = $rows[$i]['price'];
             }
             if ($rows) {
-                $this->response($this->json($resultArr), 200);
+                $this->response($this->json($resultArr,1), 200);
             } else {
                 $msg = array("status" => "nodata");
             }
@@ -5098,7 +5132,7 @@ class Component extends ComponentStore
                     $status = $this->executeGenericDMLQuery($sql_delete);
                     foreach ($discount_range as $value) {
                         $sql = "INSERT INTO " . TABLE_PREFIX . "discont_range(from_range,to_range,discount_price,discount_id)
-						VALUES('" . $value['from'] . "','" . $value['to'] . "','" . $value['percentage'] . "','" . $id . "')";
+                        VALUES('" . $value['from'] . "','" . $value['to'] . "','" . $value['percentage'] . "','" . $id . "')";
                         $status = $this->executeGenericDMLQuery($sql);
                     }
                     $msg['status'] = ($status) ? 'success' : 'failed';
@@ -5139,7 +5173,7 @@ class Component extends ComponentStore
                 }
                 foreach ($discount as $key => $value) {
                     $sql = "INSERT INTO " . TABLE_PREFIX . "product_print_discount_rel(product_id,print_id,discount_id)
-						VALUES('" . $pid . "','" . $value['print_id'] . "','" . $value['discount_id'] . "')";
+                        VALUES('" . $pid . "','" . $value['print_id'] . "','" . $value['discount_id'] . "')";
                     $status = $this->executeGenericDMLQuery($sql);
                 }
                 $msg['status'] = ($status) ? 'success' : 'failed';
@@ -5176,7 +5210,7 @@ class Component extends ComponentStore
             try {
                 foreach ($customMaskList as $v) {
                     $sql = "update " . TABLE_PREFIX . "custom_maskdata set name='" . $v['name'] . "',maskheight='" . $v['maskheight'] . "',
-					 maskwidth='" . $v['maskwidth'] . "',price='" . $v['price'] . "' where id='" . $v['id'] . "'";
+                     maskwidth='" . $v['maskwidth'] . "',price='" . $v['price'] . "' where id='" . $v['id'] . "'";
                     $status = $this->executeGenericDMLQuery($sql);
                 }
                 $settingsObj = Flight::setting();
@@ -5433,7 +5467,7 @@ class Component extends ComponentStore
         $baseImagePath = $this->getCurrentUrl() . self::ASSETS_CONTAINER_DIR . PRE_DECO_PRODUCT_IMAGE_DIR;
         return $baseImagePath;
     }
-     /**
+    /**
      *
      *date of created 08-12-2016(dd-mm-yy)
      *date of Modified 08-12-2016(dd-mm-yy)
@@ -5506,32 +5540,32 @@ class Component extends ComponentStore
         $ids = array();
         if (!empty($this->_request) && !empty($this->_request['capturedData'])) {
             $source = $this->_request['type'];
-            $capturedData = $this->_request['capturedData'];
+            $capturedData = $this->formatJSONToArray(urldecode($this->_request['capturedData']), true);
             switch ($source) {
                 case 'cart':
                     $dir = $this->getCartImagePath();
                     $fileUrl = $this->getCartImageUrl();
-                break;
+                    break;
                 case 'pre-deco':
                     $dir = $this->getPreDecoProductImagePath();
                     $fileUrl = $this->getPreDecoProductImageUrl();
-                break;
+                    break;
                 case 'socialShare':
                     $dir = $this->getSharedImagePath();
                     $fileUrl = $this->getSharedImageUrl();
-                break;
+                    break;
                 case 'userSlot':
                     $dir = $this->getUserSlotpreviewImagePath();
                     $fileUrl = $this->getUserSlotpreviewImageUrl();
-                break;
+                    break;
                 case 'template':
                     $dir = $this->getTemplatePreviewImagePath();
                     $fileUrl = $this->getTemplatePreviewImageUrl();
-                break;
+                    break;
                 default:
                     $dir = $this->getCapturedImagePath();
                     $fileUrl = $this->getCapturedImageUrl();
-                break;
+                    break;
             }
             if (!file_exists($dir)) {
                 mkdir($dir, 0777, true);
@@ -5546,24 +5580,23 @@ class Component extends ComponentStore
                     $fname = uniqid('ci_', true) . '.' . $type;
                     $file = $dir . $fname;
                     $base64 = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $v));
-                    
-                    $sql = "INSERT INTO " . TABLE_PREFIX . "capture_image (image, type, date_created) VALUES ('".$fname."','".$source."', now())";
+
+                    $sql = "INSERT INTO " . TABLE_PREFIX . "capture_image (image, type, date_created) VALUES ('" . $fname . "','" . $source . "', now())";
                     $id = $this->executeGenericInsertQuery($sql);
-                    if($id > 0){
+                    if ($id > 0) {
                         $status = file_put_contents($file, $base64);
                         if ($status) {
                             $result[] = $fileUrl . $fname;
                             $ids[] = $id;
                         }
-                    }else{
+                    } else {
                         $msg['status'] = 'failed';
                         $msg['Message'] = 'SQL error';
                         $this->response($this->json($msg), 200);
-                    }                    
+                    }
 
                 } else {
-					if($v !='undefined')
-						$result[] = $v;
+                    $result[] = $v;
                 }
             }
         }
@@ -5661,22 +5694,47 @@ class Component extends ComponentStore
                     $jsonData = $this->formatJSONToArray(file_get_contents($stateDesignPath));
                     $nameAndNumber = 0;
                     $displayEdit = 0;
+                    $multipleBoundary = 0;
+                    // get color and size attributes.
+                    $colorAttr = $this->getStoreAttributes("xe_color");
+                    $sizeAttr = $this->getStoreAttributes("xe_size");
+                    if ($jsonData['multipleBoundary'] == 'true') {
+                        $multipleBoundary = 1;
+                    }
+
+                    $sql = "SELECT parent_id FROM " . TABLE_PREFIX . "template_state_rel WHERE ref_id = " . $values . " OR temp_id = " . $jsonData[productInfo][productId];
+                    $parentIds = $this->executeFetchAssocQuery($sql);
+                    $sizeLoop = sizeof($jsonData['sides']);
                     if ($jsonData['nameNumberData']['list'] != null) {
                         $nameAndNumber = 1;
                     }
-                    $sql = "SELECT parent_id FROM " . TABLE_PREFIX . "template_state_rel WHERE ref_id = " . $values . " OR temp_id = " . $jsonData[productInfo][productId];
-                    $parentIds = $this->executeFetchAssocQuery($sql);
-
+					$sizeArr = array();
+					foreach($jsonData['sizeData'] as $simple){
+						$sizeArr[] = $simple['simple_product']['xe_size'];
+						$simleProductId = $simple['simple_product']['simpleProductId'];
+					}
                     if ($jsonData != '') {
                         $designStatus = 1;
                         $printid = $jsonData['printTypeId'];
-                        for ($i = 0; $i < sizeof($jsonData['sides']); $i++) {
+                        for ($i = 0; $i < $sizeLoop; $i++) {
                             $productUrl = $jsonData['sides'][$i]['url'];
                             $customImageUrl = $jsonData['sides'][$i]['customizeImage'];
+                            if ($i <= 1 && $jsonData['nameNumberData']['list'] != null) {
+                                $side = ($i == 0 ? "front" : "back");
+                                if ($jsonData['nameNumberData'][$side]) {
+                                    if ($jsonData['nameNumberData'][$side.'View'] == 'name') {
+                                        $customImageUrl = $this->getCapturedImageUrl() . 'nameNumber/name.png';
+                                    } else if ($jsonData['nameNumberData'][$side.'View'] == 'num') {
+                                        $customImageUrl = $this->getCapturedImageUrl() . 'nameNumber/number.png';
+                                    } else {
+                                        $customImageUrl = $this->getCapturedImageUrl() . 'nameNumber/nameNumber.png';
+                                    }
+                                }
+                            }
                             $svgData = $jsonData['sides'][$i]['svg'];
-                            $displayEdit = ($nameAndNumber == 1 || !empty($parentIds)) ? 0 : 1;
+                            $displayEdit = ($nameAndNumber == 1 || !empty($parentIds) || $multipleBoundary == 1) ? 0 : 1;
                             if ($svgData != '') {$designStatus = 1;} else { $designStatus = 0;}
-                            $images[$values][] = array('design_status' => $designStatus, 'customImageUrl' => $customImageUrl, 'productImageUrl' => $productUrl, 'printid' => $printid, 'nameAndNumber' => $nameAndNumber, 'display_edit' => $displayEdit);
+                            $images[$values][] = array('design_status' => $designStatus, 'customImageUrl' => $customImageUrl, 'productImageUrl' => $productUrl, 'printid' => $printid, 'nameAndNumber' => $nameAndNumber, 'multipleBoundary' => $multipleBoundary, 'display_edit' => $displayEdit, 'colorAttr' => $colorAttr, 'sizeAttr' => $sizeAttr, 'sizeAttrValue' => $sizeArr, 'simpleProductId' => $simleProductId);
                         }
                     } else {
                         $msg = array("status" => "nodata");
@@ -5687,7 +5745,6 @@ class Component extends ComponentStore
                     } else {
                         $finalArray[$values] = array();
                     }
-
                 }
                 if ($return) {
                     return $finalArray;
@@ -5815,6 +5872,30 @@ class Component extends ComponentStore
             $msg['status'] = ($status) ? 'success' : 'failed';
             $this->response($this->json($msg), 200);
         }
+    }
+    /*
+     *
+     *date created 7-2-2017(dd-mm-yy)
+     *date modified (dd-mm-yy)
+     *getMaxmNumberOfSelectColor
+     *purpose:fetching maximum number of selected color from the database
+     *
+     */
+    public function getMaxmNumberOfSelectColor()
+    {
+        try {
+            $sql = "SELECT max_number_of_color FROM " . TABLE_PREFIX . " image_edit_select_color ORDER BY id DESC LIMIT 1";
+            $rows = $this->executeFetchAssocQuery($sql);
+            if (!empty($rows)) {
+                $result = array("max_number_of_color" => $rows[0]['max_number_of_color']);
+            } else {
+                $result = array("max_number_of_color" => 0);
+            }
+
+        } catch (Exception $e) {
+            $result = array('Caught exception:' => $e->getMessage());
+        }
+        $this->response($this->json($result), 200);
     }
 
     /////////////////////*****************COMMON METHODS*********************/////////////////////////
@@ -6365,7 +6446,7 @@ class Component extends ComponentStore
             $insertSql = "INSERT INTO " . TABLE_PREFIX . "product_temp_rel(product_id,temp_id) VALUES('" . $pid . "','" . $productTempId . "')";
             $status = $this->executeGenericDMLQuery($insertSql);
         }
-        $this->customRequest(array('id' => $this->_request['pid'], 'apikey' => $this->_request['apiKey']));
+        $this->customRequest(array('id' => $this->_request['pid'], 'apikey' => $this->_request['apiKey'], 'confId' => $this->_request['pid']));
         if ($isTemplate == 1) {
             //$msg = array("status" => "success");
             //return $this->json($msg);
@@ -6536,7 +6617,7 @@ class Component extends ComponentStore
                     }
                 }
                 $this->closeConnection();
-                $this->response($this->json($msg), 200);
+                $this->response($this->json($msg,1), 200);
             } catch (Exception $e) {
                 $result = array('Caught exception:' => $e->getMessage());
                 $this->response($this->json($result), 200);
@@ -6644,28 +6725,45 @@ class Component extends ComponentStore
             @rmdir($dir);
         }
     }
-	
-	/**
-	* Get the file content
-	* @param url path of the file
-	* @return string data
-	*/
-	public function getFileContents($url){
-		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curl, CURLOPT_HEADER, false);
-		$data = curl_exec($curl);
-		curl_close($curl);
-		return $data;
-	}
 
     /**
-    * Sent mail to customer while order placed
-    * @param (String)toMail
-    * @param (String)html
-    * @return status successful and failure messages.
-    */
+     *
+     *date created (dd-mm-yy)
+     *date modified 15-4-2016 (dd-mm-yy)
+     *get multiple boundary svg path
+     *
+     *@param (String)apikey
+     *@return base image path
+     *
+     */
+    protected function getMultipleBondaryPath()
+    {
+        $multiBoundPath = $this->getBasePath() . '/' . self::HTML5_MULTIPLE_BOUNDARY_DIR;
+        return $multiBoundPath;
+    }
+
+    /**
+     * Get the file content
+     * @param url path of the file
+     * @return string data
+     */
+    public function getFileContents($url)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        $data = curl_exec($curl);
+        curl_close($curl);
+        return $data;
+    }
+
+    /**
+     * Sent mail to customer while order placed
+     * @param (String)toMail
+     * @param (String)html
+     * @return status successful and failure messages.
+     */
     public function sentCustomerMail($toMail, $html)
     {
 
@@ -6690,8 +6788,8 @@ class Component extends ComponentStore
         }
         return $msg;
     }
-	
-	/**
+
+    /**
      *
      * @Purpose: Encrypt/decrypt the data by using a key
      * @param string $string
@@ -6699,22 +6797,22 @@ class Component extends ComponentStore
      * @param boolean $type
      *
      */
-	protected function xorIt($string, $key, $type = 0)
-	{
-		$sLength = strlen($string);
-		$xLength = strlen($key);
-		for ($i = 0; $i < $sLength; $i++) {
-			for ($j = 0; $j < $xLength; $j++) {
-				if ($type == 1) {
-					//decrypt
-					$string[$i] = $key[$j]^$string[$i];
-						 
-				} else {
-					//crypt
-					$string[$i] = $string[$i]^$key[$j];
-				}
-			}
-		}
-		return $string;
-	}
+    protected function xorIt($string, $key, $type = 0)
+    {
+        $sLength = strlen($string);
+        $xLength = strlen($key);
+        for ($i = 0; $i < $sLength; $i++) {
+            for ($j = 0; $j < $xLength; $j++) {
+                if ($type == 1) {
+                    //decrypt
+                    $string[$i] = $key[$j] ^ $string[$i];
+
+                } else {
+                    //crypt
+                    $string[$i] = $string[$i] ^ $key[$j];
+                }
+            }
+        }
+        return $string;
+    }
 }

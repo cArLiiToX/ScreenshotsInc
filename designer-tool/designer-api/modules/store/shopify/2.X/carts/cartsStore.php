@@ -14,7 +14,7 @@ class CartsStore extends UTIL
         $original_mem = ini_get('memory_limit');
         $mem = substr($original_mem, 0, -1);
         if ($original_mem <= $mem) {
-            $mem = $mem + 256;
+            $mem = $mem + 1024;
             ini_set('memory_limit', $mem . 'M');
             set_time_limit(0);
         }
@@ -40,6 +40,8 @@ class CartsStore extends UTIL
                 $designData = $this->_request['designData'];
                 $productDataJSON = $this->_request['productData'];
             }
+            $designData = urldecode($designData);
+            $productDataJSON = urldecode($productDataJSON);
             $cartArr = json_decode($productDataJSON, true);
             if ($isTemplate == 0) {
                 $refid = $this->saveDesignStateCart($apikey, $refid, $designData); // private
@@ -253,6 +255,7 @@ class CartsStore extends UTIL
                 "options" => array('xe_color' => $xeColor, 'xe_size' => $xeSize),
                 "custom_price" => $custom_price,
                 "ref_id" => $refid,
+                "qty" => $quantity
             );
             // if ($custom_price > 0) {
             $result = $this->proxy->call($key, 'cedapi_product.addCustomProduct', $product_data);
@@ -283,6 +286,23 @@ class CartsStore extends UTIL
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             return $result;
+        }
+    }
+
+    public function getVariantId()
+    {
+        $result = $this->storeApiLogin();
+        $pvID = $this->_request['vid'];
+        if ($this->storeApiLogin == true) {
+            $key = $GLOBALS['params']['apisessId'];
+            try {
+                $variantInfo = array('pvID' => $pvID);
+                $vid = $this->proxy->call($key, 'cedapi_cart.getOriginalVarID', $variantInfo);
+            } catch (Exception $e) {
+                $vid = json_encode(array('isFault' => 1, 'faultMessage' => $e->getMessage()));
+                $error = true;
+            }
+            echo $vid;exit();
         }
     }
 }

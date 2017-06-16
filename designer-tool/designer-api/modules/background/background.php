@@ -23,13 +23,14 @@ class Background extends UTIL
                 $sql .= " left join " . TABLE_PREFIX . "design_back_cate_printmethod_rel as dbcpr on dbc.category_id = dbcpr.background_category_id
 				where dbcpr.print_method_id =$print_method";
             }
+			$sql .=" ORDER BY dbc.name";
             $rows = $this->executeGenericDQLQuery($sql);
             $categoryDetail = array();
             for ($i = 0; $i < sizeof($rows); $i++) {
                 $categoryDetail[$i]['id'] = $rows[$i]['category_id'];
                 $categoryDetail[$i]['category_name'] = $rows[$i]['name'];
             }
-            $this->response($this->json($categoryDetail), 200);
+            $this->response($this->json($categoryDetail,1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -47,7 +48,7 @@ class Background extends UTIL
     {
         try {
             $categoryValue = $this->_request['categoryValue'];
-            $searchval = $this->_request['searchval'];
+            $searchval = $this->_request['searchValue'];
             $designLastLoaded = $this->_request['lastLoaded'];
             $designLimit = $this->_request['loadCount'];
             $print_method = $this->_request['print_method'];
@@ -117,7 +118,7 @@ class Background extends UTIL
             $x['total_count'] = $countDesign[0]['total'];
             $x['design_background'] = $designArray;
             $this->closeConnection();
-            $this->response($this->json($x), 200);
+            $this->response($this->json($x,1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -153,6 +154,7 @@ class Background extends UTIL
         $tag_arr = array();
         if (!empty($tags)) {
             foreach ($tags as $k2 => $v2) {
+                $v2 = addslashes($v2);
                 $tag_sql = "SELECT id,count( * ) AS nos FROM " . TABLE_PREFIX . "design_background_tags WHERE name = '" . $v2 . "'";
                 $res = $this->executeFetchAssocQuery($tag_sql);
                 if (!$res[0]['nos']) {
@@ -163,6 +165,7 @@ class Background extends UTIL
                 }
             }
         }
+        $design_back_name = addslashes($design_back_name);
         if (isset($color) && $is_image == 0) {
             $sql = "INSERT INTO " . TABLE_PREFIX . "design_background (background_design_name,price,isScalable,is_image,color_value) values('" . $design_back_name . "','" . $price . "','" . $isScalable . "','" . $is_image . "','" . $color . "')";
             $design_back_id = $this->executeGenericInsertQuery($sql);
@@ -287,7 +290,7 @@ class Background extends UTIL
             }
             $designData['tag'] = $dbTagArr;
             $this->closeConnection();
-            $this->response($this->json($designData), 200);
+            $this->response($this->json($designData,1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -308,6 +311,7 @@ class Background extends UTIL
         $color_value = $this->_request['color_value'];
         $status = 0;
         if (!empty($this->_request) && isset($this->_request['background_design_name']) && isset($this->_request['isScalable'])) {
+            $background_design_name =addslashes($background_design_name);
             if (!empty($this->_request['id'])) {
                 $id_str = implode(',', $this->_request['id']);
                 if (!empty($color_value)) {
@@ -325,6 +329,7 @@ class Background extends UTIL
                 $tag_arr = array();
                 if (!empty($this->_request['tags'])) {
                     foreach ($this->_request['tags'] as $k => $v) {
+                        $v = addslashes($v);
                         $tag_sql = "SELECT id,count( * ) AS nos FROM " . TABLE_PREFIX . "design_background_tags WHERE name = '" . $v . "'";
                         $res = $this->executeFetchAssocQuery($tag_sql);
                         if (!$res[0]['nos']) {
@@ -370,7 +375,7 @@ class Background extends UTIL
      */
     public function saveBackGround_Designcategory()
     {
-        $cate_name = $this->_request['cate_name'];
+        $cate_name = addslashes($this->_request['cate_name']);
         if (isset($cate_name)) {
             $select_sql = "SELECT name from " . TABLE_PREFIX . "design_background_category WHERE name='" . $cate_name . "'";
             $rows = $this->executeFetchAssocQuery($select_sql);
@@ -397,6 +402,7 @@ class Background extends UTIL
         $status = 0;
         if (!empty($this->_request) && $this->_request['id'] && isset($this->_request['cate_name'])) {
             extract($this->_request);
+            $cate_name = addslashes($cate_name);
             $chk_duplicate = "SELECT COUNT(*) AS duplicate FROM " . TABLE_PREFIX . "design_background_category WHERE name='" . $cate_name . "' AND category_id !='" . $id . "'";
             $res = $this->executeFetchAssocQuery($chk_duplicate);
             if ($res[0]['duplicate']) {
@@ -422,7 +428,7 @@ class Background extends UTIL
      */
     public function removeBackground_DesignCategory()
     {
-        $pCategory = $this->_request['pCategory'];
+        $pCategory = addslashes($this->_request['pCategory']);
         $sql = "select category_id ,name from design_background_category where design_background_category.name = '" . $pCategory . "'";
 
         $row = $this->executeGenericDQLQuery($sql);
@@ -441,7 +447,7 @@ class Background extends UTIL
             $response['message'] = "'$pCategory' category is deleted successfully !!";
         }
         $this->closeConnection();
-        $this->response($this->json($response), 200);
+        $this->response($this->json($response,1), 200);
     }
     /*
      *

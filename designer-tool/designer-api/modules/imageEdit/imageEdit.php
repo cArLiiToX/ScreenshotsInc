@@ -40,7 +40,7 @@ class ImageEdit extends UTIL
                         $maskedImageData[] = $data;
                     }
                     $this->closeConnection();
-                    $this->response($this->json($maskedImageData), 200);
+                    $this->response($this->json($maskedImageData,1), 200);
                 } else {
                     $msg['status'] = array('nodata');
                     $this->response($this->json($msg), 200);
@@ -152,7 +152,7 @@ class ImageEdit extends UTIL
             $this->response('', 406);
         }
         $apiKey = $this->_request['apikey'];
-        $name = $this->_request['name'];
+        $name = addslashes($this->_request['name']);
         $maskdata = $this->_request['maskdata'];
         $thumbdata = $this->_request['thumbdata']; // design/pattern/textfx
         $id = $this->_request['id']; //file name
@@ -217,6 +217,7 @@ class ImageEdit extends UTIL
                 if (!empty($rec[0])) {
                     $sql = "UPDATE " . TABLE_PREFIX . "mask_paths SET";
                     $msg = array("status" => "success");
+                    $maskName = addslashes($maskName);
                     if ($rec[0]['maskName'] !== $maskName) {
                         $sql .= " name='$maskName',";
                         $msg['name'] = $maskName;
@@ -262,7 +263,7 @@ class ImageEdit extends UTIL
                     }
 
                     $this->closeConnection();
-                    $this->response($this->json($msg), 200);
+                    $this->response($this->json($msg,1), 200);
                 }
             } catch (Exception $e) {
                 $result = array('Caught exception:' => $e->getMessage());

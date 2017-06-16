@@ -164,8 +164,12 @@ class Carts extends CartsStore
                                     $viewBox = explode(' ', $viewBox);
                                     $vBwidth = $viewBox[2];
                                     $vBheight = $viewBox[3];
-                                    $width = $Imgwidth / $vBwidth;
-                                    $height = $Imgheight / $vBheight;
+                                    if (strpos( $imgData['xlink:href'], "userimg")!==false){
+										$height = $width = $Imgwidth / $vBwidth;
+									}else{
+										$width = $Imgwidth / $vBwidth;
+										$height = $Imgheight / $vBheight;
+									}
                                 } else {
                                     $width = $Imgwidth;
                                     $height = $Imgheight;
@@ -181,7 +185,17 @@ class Carts extends CartsStore
                                 foreach ($idMatchArr[$k] as $key => $idVal) {
                                     $fileContent = str_replace($idVal, uniqid($k . '_xe_', true), $fileContent);
                                 }
-
+								if (strpos($imgData['xlink:href'], "userimg")!==false){
+									preg_match_all('/style="([^"]+)"/', $fileContent, $styleMatch);
+									if (!empty($styleMatch)) {
+										$styleMatch[$k] = $styleMatch[1];
+									}
+									foreach ($styleMatch[$k] as $k1 => $vStyle) {
+										if (strpos($vStyle, 'display: none;') !== false) {
+											$fileContent = str_replace('display: none;','display: block;' , $fileContent);
+										}
+									}
+								}
                                 $fileContent = str_ireplace(array('<svg', '/svg>'), array('<g', '/g>'), $fileContent);
                                 $res = '<g  transform="translate(' . $ImgX . ', ' . $ImgY . ') scale(' . $width . ', ' . $height . ')">' . $fileContent . '</g>';
                                 $html2 = new simple_html_dom();
@@ -296,7 +310,7 @@ class Carts extends CartsStore
                 $key = $GLOBALS['params']['apisessId'];
                 $apikey = $this->_request['apikey']; //'A610^Gx{!%3D3l%23%23i*905Q';
                 $refid = $this->_request['refid']; //0
-                $designData = $this->_request['designData']; //$this->designData;
+                $designData = urldecode($this->_request['designData']); //$this->designData;
                 $refid = $this->saveDesignStateCart($apikey, $refid, $designData);
                 if ($refid > 0) {
                     $dbstat = $this->saveProductPreviewSvgImagesOnAddToCart($apikey, $refid, $designData);
@@ -571,6 +585,78 @@ class Carts extends CartsStore
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
         }
+    }
+	/**
+     *
+     *date created 9-2-2017(dd-mm-yy)
+     *date modified (dd-mm-yy)
+     *Get name and number list by refid
+     *
+     *@param (Int)pid
+     *@param (Int)refId
+     *@return json array
+     *
+     */
+    public function getNameAndNumberByRefId(){
+        $refId = $this->_request['refId'];
+        $pid = $this->_request['pid'];
+		$attValue = $this->_request['attValue'];
+        $fileName ='designState.json';
+        if(isset($refId) && (isset($pid) || isset($attValue))){
+            $baseImagePath = $this->getPreviewImagePath();
+            $savePath = $baseImagePath.$refId.'/';
+            $stateDesignPath = $savePath.'svg/';
+            $stateDesignPath = $stateDesignPath.$fileName;
+            if (file_exists($stateDesignPath)){
+				$jsonData = $this->formatJSONToArray(file_get_contents($stateDesignPath),true);
+            }
+            $result= array();
+            $i = 0;
+            foreach ($jsonData['nameNumberData']['list'] as $key => $value) {
+                if($pid == $value['pid'] || $attValue == $value['size']){
+					$result[$i]['size'] = $value['size'];
+					if($jsonData['nameNumberData']['front']){
+						if ($jsonData['nameNumberData']['frontView'] == 'name_num') {
+							$result[$i]['front']['name'] = $value['name'];
+							$result[$i]['front']['number'] = $value['number'];
+						}
+						if ($jsonData['nameNumberData']['frontView'] == 'name') {
+							 $result[$i]['front']['name'] = $value['name'];
+							 $result[$i]['front']['number'] = '_';
+						}
+						if ($jsonData['nameNumberData']['frontView'] == 'num') {
+							$result[$i]['front']['number'] = $value['number'];
+							$result[$i]['front']['name'] = '_';
+						}
+					}else{
+						$result[$i]['front']['number'] ='_';
+						$result[$i]['front']['name'] = '_';
+					}
+					if($jsonData['nameNumberData']['back']){
+						if ($jsonData['nameNumberData']['backView'] == 'name_num') {
+							$result[$i]['back']['name'] = $value['name'];
+							$result[$i]['back']['number'] = $value['number'];
+						}
+						if ($jsonData['nameNumberData']['backView'] == 'name') {
+							$result[$i]['back']['name'] = $value['name'];
+							$result[$i]['back']['number'] = '_';
+						}
+						if ($jsonData['nameNumberData']['backView'] == 'num') {
+							$result[$i]['back']['number'] = $value['number'];
+							$result[$i]['back']['name'] = '_';
+						}
+					}else{
+						$result[$i]['back']['number'] ='_';
+						$result[$i]['back']['name'] = '_';
+					}
+                    $i++;
+                }
+            }
+            $finalResult['nameNumberData'] =array_values($result);
+        }else{
+            $finalResult['nameNumberData'] ='no refId';
+        }
+        $this->response($this->json($finalResult), 200);
     }
 
 }

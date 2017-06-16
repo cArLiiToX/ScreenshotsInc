@@ -28,6 +28,7 @@ class ColorSwatchStore extends UTIL
                 $filters = array(
                     'colorname' => $colorname,
                     'store' => $this->getDefaultStoreId(),
+                    'color' => $this->getStoreAttributes("xe_color"),
                 );
                 $result = $this->apiCall('Product', 'addAttributeColorOptionValue', $filters);
                 $result = $result->result;

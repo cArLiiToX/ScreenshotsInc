@@ -1,0 +1,93 @@
+<div class="row">
+    <label class="col-sm-3 control-label">
+        <xe-translate text-value="Enable Side Price">
+        </xe-translate>
+    </label>
+    <div class="checkbox check-info">
+        <input type="checkbox" id="print_method_default" ng-model="printSettings.is_extra_side_price" ng-true-value="1" ng-false-value="0" ng-checked="printSettings.is_extra_side_price == 1" ng-change="changeExtraSidePriceEnable(printSettings.is_extra_side_price)"/>
+        <label for="print_method_default">
+            <xe-translate text-value="Enabled">
+            </xe-translate>
+        </label>
+    </div>
+
+    <div class="panel panel-default m-t-40" ng-show="printSettings.is_extra_side_price">
+    	<div class="panel-body">
+    	    <div class="row">
+    	        <div class="clearfix pull-left m-b-10">
+    	            <label class="pull-left m-r-10 m-t-5">
+    	                <xe-translate text-value="Number of Sides">
+    	                </xe-translate>
+    	            </label>
+    	            <input type="text" class="input-sm form-control w-md pull-left m-r-10" name="start"  ng-model="extraSide.value" numbers-only="numbers-only"/>
+    	        </div>
+    	    </div>
+    	</div>
+    	<div class="panel-footer no-margin">
+    	    <button type="button" class="btn btn-default btn-sm" ng-click="addMoreExtraSides()" ng-disabled="demoStatus" ng-class="{'disabled':extraSide.value==0}">
+    	        <span>
+    	            <xe-translate text-value="Update">
+    	            </xe-translate>
+    	        </span>
+    	    </button>
+    	</div>
+    </div>
+
+    <div class="row" ng-show="printSettings.is_extra_side_price">
+      <div class="col-sm-12 overflow-auto pos-int">
+        <table class="table">
+          <tbody>
+            <tr>
+              <td class="padding-0">
+                <table class="table-bordered">
+                  <thead>
+                    <tr>
+                      <th class="text-center" colspan="2">
+                        <xe-translate text-value="Print Quantity"></xe-translate>
+                      </th>
+                      <th class="text-center" colspan="{{extraSidePrice[0].overridePrice.length}}">
+                <xe-translate text-value="Override Price"></xe-translate></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Min</td>
+                      <td>Max</td>
+                      <td ng-repeat="oPrice in extraSidePrice[0].overridePrice">{{oPrice.sideName}}</td>
+                    </tr>
+                    <tr ng-repeat="sPrice in extraSidePrice">
+                      <td colspan="2">
+                        <a ng-if="$index == extraSidePrice.length-1 && $index!= 0" class="range-delete-icon" ng-click="removeExtraSidePrice($index)" ng-disabled="demoStatus">
+                            <!-- <xe-translate text-value="Remove"></xe-translate> -->
+                            <i class="fa fa-times">
+                            </i>
+                        </a>
+                        <div class="input-group w-120">
+                          <input type="text" class="input-sm form-control" name="start" ng-model="sPrice.from" numbers-only="numbers-only">
+                          <span class="input-group-addon">
+                            <xe-translate text-value="to"></xe-translate>
+                          </span>
+                          <input type="text" class="input-sm form-control" name="end" ng-model="sPrice.to" numbers-only="numbers-only">
+                        </div>
+                      </td>
+                      <td ng-repeat="overPrice in sPrice.overridePrice">
+                          <input type="text" class="form-control w-60" id="exampleInputAmount" placeholder="Amount" ng-model="overPrice.price" price-only="price-only">
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="clearfix" ng-show="printSettings.is_extra_side_price">
+    	<button class="btn m-b-10 btn-sm btn-success btn-addon" ng-click="addNewExtraSidePrice()" ng-disabled="demoStatus">
+    	    <i class="fa fa-plus">
+    	    </i>
+    	    <xe-translate text-value="Add Range">
+    	    </xe-translate>
+    	</button>
+    </div>	
+</div>

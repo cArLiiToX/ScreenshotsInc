@@ -16,16 +16,17 @@ class Font extends UTIL
      *@param (Int)printId
      *@return json data
      *
-		*/
+     */
     public function getFontCategories()
     {
         try {
             if (isset($this->_request['printId']) && ($this->_request['printId']) != '') {
-                $query = "SELECT distinct category_name FROM " . TABLE_PREFIX . "font_category fc join " . TABLE_PREFIX . "font_category_printmethod_rel fcppr
-				 on fcppr.font_category_id =fc.id where fcppr.print_method_id='" . $this->_request['printId'] . "' order by category_name";
+                $query = "SELECT distinct * FROM " . TABLE_PREFIX . "font_category fc join " . TABLE_PREFIX . "font_category_printmethod_rel fcppr
+                 on fcppr.font_category_id =fc.id where fcppr.print_method_id='" . $this->_request['printId'] . "'";
             } else {
-                $query = "SELECT distinct * FROM " . TABLE_PREFIX . "font_category order by category_name";
+                $query = "SELECT distinct * FROM " . TABLE_PREFIX . "font_category";
             }
+            $query .= " ORDER BY sort_order";
             $categoryArray = array();
             $allTags = $this->executeGenericDQLQuery($query);
             foreach ($allTags as $row) {
@@ -64,7 +65,7 @@ class Font extends UTIL
             $searchByCategory = ($category != '') ? " and c.category_name='" . $category . "'" : "";
             $searchByString = ($searchString != '') ? " and or f.font_name LIKE '" . $searchString . "%'" : "";
             if (isset($print_method) && $print_method != '') {
-                $query = "SELECT DISTINCT f.id,f.font_name,f.orgName,f.font_label,f.price,f.is_delete FROM " . TABLE_PREFIX . "fonts f	";			
+                $query = "SELECT DISTINCT f.id,f.font_name,f.orgName,f.font_label,f.price,f.is_delete FROM " . TABLE_PREFIX . "fonts f  ";
                 if ($category != '' && $searchString == '') {
                     $query .= ", " . TABLE_PREFIX . "font_category_relation fcr, " . TABLE_PREFIX . "font_category c," . TABLE_PREFIX . "font_category_printmethod_rel fcpr WHERE f.is_delete='0' and f.id = fcr.font_id and fcr.category_id = fcpr.font_category_id and f.id = fcr.font_id and fcr.category_id = fcpr.font_category_id and f.id=fcr.font_id and fcr.category_id = c.id$searchByCategory";
                 }
@@ -75,11 +76,11 @@ class Font extends UTIL
                     $query .= ", " . TABLE_PREFIX . "font_tag_relation tr, " . TABLE_PREFIX . "tags t, " . TABLE_PREFIX . "font_category_relation fcr, " . TABLE_PREFIX . "font_category c," . TABLE_PREFIX . "font_category_printmethod_rel fcpr WHERE f.is_delete='0' and 1 and f.id = fcr.font_id and fcr.category_id = fcpr.font_category_id and ((f.font_name LIKE '" . $searchString . "%') or (f.id=tr.font_id and tr.tag_id = t.id and t.tag_name LIKE '$searchString%')) AND fcpr.print_method_id ='" . $print_method . "'";
                 }
                 if ($category == '' && $searchString == '') {
-                    $query .= "	join " . TABLE_PREFIX . "font_category_relation fcr  on f.id = fcr.font_id
-					left join " . TABLE_PREFIX . "font_category_printmethod_rel fcpr  on fcr.category_id = fcpr.font_category_id
-					where f.is_delete='0' and fcpr.print_method_id='" . $print_method . "'";
+                    $query .= " join " . TABLE_PREFIX . "font_category_relation fcr  on f.id = fcr.font_id
+                    left join " . TABLE_PREFIX . "font_category_printmethod_rel fcpr  on fcr.category_id = fcpr.font_category_id
+                    where f.is_delete='0' and fcpr.print_method_id='" . $print_method . "'";
                 }
-                $query .= " ORDER BY f.font_name";
+                $query .= " ORDER BY f.id DESC";
                 $count = $this->executeGenericCountQuery($query);
                 $query .= " LIMIT $start, $range";
 
@@ -104,7 +105,7 @@ class Font extends UTIL
         } catch (Exception $e) {
             $x = array('Caught exception:' => $e->getMessage());
         }
-        $this->response($this->json($x), 200);
+        $this->response($this->json($x, 1), 200);
     }
     /**
      *
@@ -120,14 +121,14 @@ class Font extends UTIL
     {
         $catagoryArray = array();
         try {
-            $sql = "SELECT distinct id,category_name FROM " . TABLE_PREFIX . "font_category";
+            $sql = "SELECT distinct id,category_name,sort_order FROM " . TABLE_PREFIX . "font_category ORDER BY sort_order";
             $categoryDetail = array();
             $rows = $this->executeGenericDQLQuery($sql);
             for ($i = 0; $i < sizeof($rows); $i++) {
                 $categoryDetail[$i]['id'] = $rows[$i]['id'];
                 $categoryDetail[$i]['category_name'] = $rows[$i]['category_name'];
             }
-            $this->response($this->json($categoryDetail), 200);
+            $this->response($this->json($categoryDetail, 1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -155,18 +156,19 @@ class Font extends UTIL
             $searchString = $this->_request["searchString"];
             $start = $this->_request["start"];
             $range = $this->_request["range"];
-            $print_method = isset($this->_request["print_method"])?$this->_request["print_method"]:0;
+            $print_method = isset($this->_request["print_method"]) ? $this->_request["print_method"] : 0;
             $searchByCategory = ($category != '') ? " and c.category_name='" . $category . "'" : "";
             $searchByString = ($searchString != '') ? " and   or f.font_name LIKE '" . $searchString . "%'" : "";
 
+            $query = "SELECT DISTINCT f.id,f.font_name,f.orgName,f.font_label,f.price,f.is_delete FROM " . TABLE_PREFIX . "fonts f ";
             if ($category != '' && $searchString == '') {
-                $query = "SELECT DISTINCT f.id,f.font_name,f.orgName,f.font_label,f.price,f.is_delete FROM " . TABLE_PREFIX . "fonts f, " . TABLE_PREFIX . "font_category_relation cr, " . TABLE_PREFIX . "font_category c WHERE f.is_delete='0' and  f.id=cr.font_id and cr.category_id = c.id$searchByCategory";
+                $query .= ", " . TABLE_PREFIX . "font_category_relation cr, " . TABLE_PREFIX . "font_category c WHERE f.is_delete='0' and  f.id=cr.font_id and cr.category_id = c.id$searchByCategory";
             } else if ($category != '' && $searchString != '') {
-                $query = "SELECT DISTINCT f.id,f.font_name,f.orgName,f.font_label,f.price,f.is_delete FROM " . TABLE_PREFIX . "fonts f, font_tag_relation tr, " . TABLE_PREFIX . "tags t, " . TABLE_PREFIX . "font_category_relation cr, " . TABLE_PREFIX . "font_category c WHERE f.is_delete='0' and f.id=cr.font_id and cr.category_id = c.id$searchByCategory and ((f.font_name LIKE '" . $searchString . "%') or (f.id=tr.font_id and tr.tag_id = t.id and t.tag_name LIKE '$searchString%'))";
+                $query .= ", font_tag_relation tr, " . TABLE_PREFIX . "tags t, " . TABLE_PREFIX . "font_category_relation cr, " . TABLE_PREFIX . "font_category c WHERE f.is_delete='0' and f.id=cr.font_id and cr.category_id = c.id$searchByCategory and ((f.font_name LIKE '" . $searchString . "%') or (f.id=tr.font_id and tr.tag_id = t.id and t.tag_name LIKE '$searchString%'))";
             } else if ($category == '' && $searchString != '') {
-                $query = "SELECT DISTINCT f.id,f.font_name,f.orgName,f.font_label,f.price,f.is_delete FROM " . TABLE_PREFIX . "fonts f, " . TABLE_PREFIX . "font_tag_relation tr, " . TABLE_PREFIX . "tags t, " . TABLE_PREFIX . "font_category_relation cr, " . TABLE_PREFIX . "font_category c WHERE f.is_delete='0' and 1 and ((f.font_name LIKE '" . $searchString . "%') or (f.id=tr.font_id and tr.tag_id = t.id and t.tag_name LIKE '$searchString%')) ";
+                $query .= ", " . TABLE_PREFIX . "font_tag_relation tr, " . TABLE_PREFIX . "tags t, " . TABLE_PREFIX . "font_category_relation cr, " . TABLE_PREFIX . "font_category c WHERE f.is_delete='0' and 1 and ((f.font_name LIKE '" . $searchString . "%') or (f.id=tr.font_id and tr.tag_id = t.id and t.tag_name LIKE '$searchString%')) ";
             } else {
-                $query = "SELECT DISTINCT f.id,f.font_name,f.orgName,f.font_label,f.price,f.is_delete FROM " . TABLE_PREFIX . "fonts f where f.is_delete='0'";
+                $query .= " where f.is_delete='0'";
             }
 
             if (isset($print_method) && $print_method != '') {
@@ -175,8 +177,8 @@ class Font extends UTIL
             $query .= " ORDER BY f.id DESC";
             $count = $this->executeGenericCountQuery($query);
             $query .= " LIMIT $start, $range";
-            //echo $query;
             $allsearchFonts = $this->executeFetchAssocQuery($query);
+
             $searchfontArray['webFonts'] = array();
             $i = 0;
             foreach ($allsearchFonts as $row) {
@@ -188,14 +190,14 @@ class Font extends UTIL
                 $searchfontArray['webFonts'][$i]['is_delete'] = $row['is_delete'];
                 $i++;
             }
-            $sql = "SELECT COUNT(id) as total FROM " . TABLE_PREFIX . "fonts where is_delete='0' ORDER BY id DESC";
+            $sql = "SELECT COUNT(id) as total FROM " . TABLE_PREFIX . "fonts where is_delete='0' GROUP BY id ORDER BY id DESC";
             $countWebFonts = $this->executeFetchAssocQuery($sql);
             $x['count'] = $count;
             $x['total_count'] = $countWebFonts[0]['total'];
             $x['fonts'] = $searchfontArray;
             $dir = $this->getWebfontsPath();
             //if(file_exists($dir)) $this->updateFontCss($dir.'fonts.css');
-            $this->response($this->json($x), 200);
+            $this->response($this->json($x, 1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -250,6 +252,7 @@ class Font extends UTIL
 
                     if (!empty($this->_request['tags'])) {
                         foreach ($this->_request['tags'] as $k => $v) {
+                            $v = addslashes($v);
                             $tag_sql = "SELECT id,count( * ) AS nos FROM " . TABLE_PREFIX . "tags WHERE tag_name = '" . $v . "'";
                             $res = $this->executeFetchAssocQuery($tag_sql);
                             if (!$res[0]['nos']) {
@@ -268,17 +271,17 @@ class Font extends UTIL
                         $orgName[$k] = $this->executeEscapeStringQuery($fontinfo[$k][1]);
                         $fesql[$k] = 'SELECT id FROM ' . TABLE_PREFIX . 'fonts WHERE orgName="' . $orgName[$k] . '" and is_delete="0" LIMIT 1';
                         $feres[$k] = $this->executeFetchAssocQuery($fesql[$k]);
-
+                        $fontName = $this->_request['font_name'];
                         if (!empty($feres[$k]) && isset($feres[$k][0]['id']) && $feres[$k][0]['id']) {
                             $font_id[$k] = $feres[$k][0]['id'];
-                            $fusql[$k] = 'UPDATE ' . TABLE_PREFIX . 'fonts SET font_name="' . $this->_request['font_name'] . '", font_label="' . $this->_request['font_label'] . '", price="' . $this->_request['price'] . '" WHERE id=' . $font_id[$k];
+                            $fusql[$k] = 'UPDATE ' . TABLE_PREFIX . 'fonts SET font_name="' . $fontName . '", font_label="' . $this->_request['font_label'] . '", price="' . $this->_request['price'] . '" WHERE id=' . $font_id[$k];
                             $this->executeGenericDMLQuery($fusql[$k]);
                         } else {
-                            $sql[$k] = $isql . "('" . $this->_request['font_name'] . "','" . $this->_request['font_label'] . "','" . $this->_request['price'] . "')";
+                            $sql[$k] = $isql . "('" . $fontName . "','" . $this->_request['font_label'] . "','" . $this->_request['price'] . "')";
                             $font_id[$k] = $this->executeGenericInsertQuery($sql[$k]);
                         }
 
-                        $msg['font_name'][$k] = $this->_request['font_name'];
+                        $msg['font_name'][$k] = $fontName;
                         $fname[$k] = str_replace(' ', '_', $orgName[$k]);
                         $msg['extracted_name'][$k] = $fname[$k];
                         $msg['family_name'][$k] = $orgName[$k];
@@ -323,7 +326,7 @@ class Font extends UTIL
                 }
             }
             $msg['status'] = ($status) ? 'Success' : 'Failure';
-            $this->response($this->json($msg), 200);
+            $this->response($this->json($msg, 1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -355,8 +358,8 @@ class Font extends UTIL
 
             //fetch print method id by font id
             $sql = "SELECT pmfr.print_method_id FROM  " . TABLE_PREFIX . "print_method_fonts_rel pmfr," . TABLE_PREFIX . "fonts f
-				WHERE pmfr.font_id=f.id
-				AND f.id=$pFontId";
+                WHERE pmfr.font_id=f.id
+                AND f.id=$pFontId";
             $rows = $this->executeGenericDQLQuery($sql);
             $prntmethodIdDetailArr = array();
             for ($j = 0; $j < sizeof($rows); $j++) {
@@ -365,7 +368,7 @@ class Font extends UTIL
 
             // fetching categories
             $sql = "select distinct fc.id, fc.category_name  from " . TABLE_PREFIX . "fonts f , " . TABLE_PREFIX . "font_category fc , " . TABLE_PREFIX . "font_category_relation fcr where
-			 f.id = fcr.font_id and fc.id = fcr.category_id and f.id = '$pFontId'";
+             f.id = fcr.font_id and fc.id = fcr.category_id and f.id = '$pFontId'";
             $rows = $this->clearArray($rows);
             $rows = $this->executeGenericDQLQuery($sql);
             $dbCatArr = array();
@@ -389,7 +392,7 @@ class Font extends UTIL
             $productDetail['categories'] = $dbCatArr;
             $productDetail['tags'] = $dbTagArr;
             $this->closeConnection();
-            $this->response($this->json($productDetail), 200);
+            $this->response($this->json($productDetail, 1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -435,7 +438,8 @@ class Font extends UTIL
 
                 if (!empty($this->_request['tags'])) {
                     foreach ($this->_request['tags'] as $k => $v) {
-                        $tag_sql = "SELECT id,count( * ) AS nos FROM " . TABLE_PREFIX . "tags WHERE tag_name = '" . $v . "'";
+                        $v = addslashes($v);
+                        $tag_sql = "SELECT id,count( * ) AS nos FROM " . TABLE_PREFIX . "tags WHERE tag_name = '" . $v . "' GROUP BY id";
                         $res = $this->executeFetchAssocQuery($tag_sql);
                         if (!$res[0]['nos']) {
                             $tag_sql1 = "INSERT INTO " . TABLE_PREFIX . "tags(tag_name) VALUES('" . $v . "')";
@@ -498,14 +502,20 @@ class Font extends UTIL
     public function addWebFontCategory()
     {
         try {
-            $pCategory = $this->_request['category'];
+            $pCategory = addslashes($this->_request['category']);
             $sql = "select count(*) count from " . TABLE_PREFIX . "font_category where category_name = '$pCategory'";
             $row = $this->executeGenericDQLQuery($sql);
             $response = array();
             if ($row[0]['count'] == "0") {
-                $sql = "insert into " . TABLE_PREFIX . "font_category(category_name) values('$pCategory')";
-                //executeGenericDMLQuery($sql);
-                $this->executeGenericDMLQuery($sql);
+                $sql = "select id from " . TABLE_PREFIX . "font_category ORDER BY id DESC";
+                $result = $this->executeGenericDQLQuery($sql);
+                $order = $result[0][0];
+                if ($order == '') {
+                    $order = 0;
+                }
+
+                $sql1 = "insert into " . TABLE_PREFIX . "font_category(category_name,sort_order) values('$pCategory','$order')";
+                $this->executeGenericDMLQuery($sql1);
                 $response['status'] = "success";
                 $response['message'] = ' category inserted';
             } else {
@@ -536,6 +546,7 @@ class Font extends UTIL
         if (!empty($this->_request) && $this->_request['id'] && isset($this->_request['name'])) {
             extract($this->_request);
             try {
+                $name = addslashes($name);
                 $chk_duplicate = "SELECT COUNT(*) AS duplicate FROM " . TABLE_PREFIX . "font_category WHERE category_name='" . $name . "' AND id !='" . $id . "'";
                 $res = $this->executeFetchAssocQuery($chk_duplicate);
 
@@ -569,7 +580,7 @@ class Font extends UTIL
     public function removeWebFontCategory()
     {
         try {
-            $pCategory = $this->_request['removeCategory'];
+            $pCategory = addslashes($this->_request['removeCategory']);
             $sql = "select count(*) count from " . TABLE_PREFIX . "font_category where category_name = '$pCategory'";
             $row = $this->executeGenericDQLQuery($sql);
             $response = array();
@@ -587,7 +598,7 @@ class Font extends UTIL
         } catch (Exception $e) {
             $response = array('Caught exception:' => $e->getMessage());
         }
-        $this->response($this->json($response), 200);
+        $this->response($this->json($response, 1), 200);
     }
 
     /**
@@ -947,6 +958,38 @@ class Font extends UTIL
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
         }
+    }
+    /**
+     *
+     *date created (dd-mm-yy)
+     *date modified 21-03-2017(dd-mm-yy)
+     *update Font category List
+     *
+     * @param (String)category list
+     * @return json data
+     *
+     */
+    public function updateFontDragCategoryList()
+    {
+        $status = 0;
+        $categoryList = $this->_request['categoryData'];
+        $prepareSql = '';
+        $querySql = '';
+        for ($i = 0; $i < sizeof($categoryList); $i++) {
+            $querySql .= ' WHEN ' . $categoryList[$i]['id'] . " THEN '" . $categoryList[$i]['sort_order'] . "'";
+            $prepareSql .= ',' . $categoryList[$i]['id'];
+        }
+        if (strlen($querySql) && strlen($prepareSql)) {
+            try {
+                $usql = 'UPDATE ' . TABLE_PREFIX . 'font_category SET sort_order = CASE id' . $querySql . ' END WHERE id IN(' . substr($prepareSql, 1) . ')';
+                $status = $this->executeGenericDMLQuery($usql);
+            } catch (Exception $e) {
+                $result = array('Caught exception:' => $e->getMessage());
+                $this->response($this->json($result), 200);
+            }
+        }
+        $msg['status'] = ($status) ? 'success' : 'failed';
+        $this->response($this->json($msg), 200);
     }
 
 }

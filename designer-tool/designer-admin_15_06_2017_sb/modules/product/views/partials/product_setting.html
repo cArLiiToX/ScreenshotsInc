@@ -1,0 +1,148 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="row column-seperation">
+            <div class="col-md-6">
+                <div class="xe-product-setting bg-white">
+                    <div class="setting-view m-h-588">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="checkbox check-info m-t-20 m-l-5">
+                                    <input id="checkbox7" type="checkbox" ng-model="tstatus" value="7" ng-change="enableTemplate(tstatus)" 
+                                    ng-checked="selectedTemplateIndex!=0"/>
+                                    <label class="bold" for="checkbox7">
+                                        Product skeleton image
+                                    </label>
+                                </input>
+                            </div>
+                            <div class="form-group m-l-5" ng-show="tstatus || selectedTemplateIndex!=0">
+                                <div class="btn-group pull-left full-width">
+                                    <button type="button" class="btn btn-default text-ellipsis text-left"  data-toggle="dropdown">
+                                        {{ selectedTemplate }}
+                                    </button>
+                                    <button type="button" class="btn btn-default dropdown-toggle btn-group-caret" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="caret">
+                                        </span>
+                                        <span class="sr-only">
+                                            Toggle Dropdown
+                                        </span>
+                                    </button>
+                                    <ul class="dropdown-menu full-width" role="menu" ng-class="{'button-scroll':productTemplateDetails.length> 4}">
+                                        <li ng-repeat="template in productTemplateDetails" ng-click="assignProductTemplate($index)">
+                                            <a href="">
+                                                {{ template.name }}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gray-line">
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="checkbox check-info m-l-5">
+                                <input id="checkbox8" type="checkbox" value="8" ng-model="bleedStatus" ng-checked="isBleedMark" ng-change="enableBleed(bleedStatus)"/>
+                                <label class="bold" for="checkbox8">
+                                    Bleed mark
+                                </label>
+                            </div>
+                            <div class="clearfix m-l-5">
+                                Bleed is a printing term that refers to printing that goes beyond the edge of the sheet before trimming. In other words, the bleed is the area to be trimmed off.
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-md-4" ng-show="isBleedMark == '1'">
+                            <div class="checkbox check-info m-t-20 m-l-5">
+                                <input id="checkbox9" type="checkbox" ng-model="cropStatus" value="9" ng-checked="tempMaskData[0].is_cropMark == '1'" ng-change="changeCropMark(cropStatus)"/>
+                                <label class="bold" for="checkbox9">
+                                    Crop mark
+                                </label>
+                            </div>
+                            <div class="form-group input-group m-b-0">
+                                <input class="form-control" ng-model="tempMaskData[0].cropValue" placeholder="0" ng-keyup="setCropValue(tempMaskData[0].cropValue)" type="text"/>
+                                <span class="input-group-addon" ng-bind="productUnit">
+                                    <!-- inch -->
+                                </span>
+                            </input>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-md-4" ng-show="isBleedMark == '1'">
+                        <div class="checkbox check-info m-t-20 m-l-5">
+                            <input id="checkbox10" type="checkbox" ng-model="safeStatus" ng-checked="tempMaskData[0].is_safeZone == '1'" ng-change="changeSafeZone(safeStatus)" value="10"/>
+                            <label class="bold" for="checkbox10">
+                                Safe zone
+                            </label>
+                        </div>
+                        <div class="form-group input-group m-b-0">
+                            <input class="form-control" ng-model="tempMaskData[0].safeValue" placeholder="0" ng-keyup="setSafeValue(tempMaskData[0].safeValue)" type="text"/>
+                            <span class="input-group-addon" ng-bind="productUnit">
+                                <!-- inch -->
+                            </span>
+                        </input>
+                    </div>
+                </div>
+            </div>
+            <div class="gray-line">
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <label class="custom-label m-l-5">
+                        Measurement unit
+                    </label>
+                    <div class="form-group m-l-5">
+                        <div class="btn-group btn-flex">
+                            <button type="button" class="btn btn-default w-full text-left"  data-toggle="dropdown">
+                                {{ selectedScaleUnit.name }}
+                            </button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="caret">
+                                </span>
+                                <span class="sr-only">
+                                    Toggle Dropdown
+                                </span>
+                            </button>
+                            <ul class="dropdown-menu w-full" role="menu" ng-class="{'button-scroll':scaleUnitList.length> 4}">
+                                <li ng-repeat="unit in scaleUnitList" ng-disabled="true" ng-click="selectedUnit($index,true)">
+                                    <a href="">
+                                        {{ unit.name }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6" ng-show="boundary.name != 'multipleBoundary'">
+    <div class="xe-product-preview-wrap">
+        <div class="xe-product-preview">
+            <div class="setting-print-method-content">
+                <h5>
+                    Assign print method
+                </h5>
+                <p>
+                    Enable/Disable print type for every individual product. Any change you make will be limited to the product only.
+                </p>
+                <div class="gray-line">
+                </div>
+                <ng-include src="'modules/product/views/partials/printtypesetting.html'">
+                </ng-include>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12">
+    <div class="xe-product-ftr">
+        <button class="btn btn-info btn-cons" type="button" ng-click="saveMaskBoundary(true)" ng-disabled="demoStatus">
+            <span class="bold">
+                Save
+            </span>
+        </button>
+        <span class="text-danger m-l-10" ng-show="!isVariableAreaDimention.status">Invalid default width and default height.</span>
+    </div>
+</div>
+</div>
+</div>
+</div>

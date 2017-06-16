@@ -43,15 +43,15 @@ class ProductsStore extends UTIL
                 $result = json_decode($result, true);
                 $finalResult = array();
                 $sql = "SELECT distinct pm.pk_id as printid,pm.name as printName
-						FROM " . TABLE_PREFIX . "print_method pm
-						JOIN " . TABLE_PREFIX . "print_setting  pst ON pm.pk_id=pst.pk_id
-						LEFT JOIN " . TABLE_PREFIX . "print_method_setting_rel pmsr ON pst.pk_id=pmsr.print_setting_id where pst.is_default=1";
+                        FROM " . TABLE_PREFIX . "print_method pm
+                        JOIN " . TABLE_PREFIX . "print_setting  pst ON pm.pk_id=pst.pk_id
+                        LEFT JOIN " . TABLE_PREFIX . "print_method_setting_rel pmsr ON pst.pk_id=pmsr.print_setting_id where pst.is_default=1";
                 $default_id = $this->executeFetchAssocQuery($sql);
                 if (!empty($result['product'])) {
                     foreach ($result['product'] as $k => $product) {
                         $productPrintTypeSql = "SELECT distinct pm.pk_id, pm.name FROM " . TABLE_PREFIX . "print_method pm
-					INNER JOIN " . TABLE_PREFIX . "product_printmethod_rel ppr ON ppr.print_method_id=pm.pk_id
-					WHERE ppr.product_id=" . $product['id'];
+                    INNER JOIN " . TABLE_PREFIX . "product_printmethod_rel ppr ON ppr.print_method_id=pm.pk_id
+                    WHERE ppr.product_id=" . $product['id'];
                         $productPrintType = $this->executeGenericDQLQuery($productPrintTypeSql);
                         //print_r($productPrintType);exit();
                         if (!empty($productPrintType)) {
@@ -65,8 +65,8 @@ class ProductsStore extends UTIL
                             if (!empty($catIds)) {
                                 $catIds = implode(',', (array) $catIds);
                                 $catSql = 'SELECT DISTINCT pm.pk_id, pm.name
-								FROM ' . TABLE_PREFIX . 'product_category_printmethod_rel AS pcpml
-								JOIN ' . TABLE_PREFIX . 'print_method AS pm ON pm.pk_id = pcpml.print_method_id WHERE pcpml.product_category_id IN(' . $catIds . ')';
+                                FROM ' . TABLE_PREFIX . 'product_category_printmethod_rel AS pcpml
+                                JOIN ' . TABLE_PREFIX . 'print_method AS pm ON pm.pk_id = pcpml.print_method_id WHERE pcpml.product_category_id IN(' . $catIds . ')';
                                 $rows = $this->executeFetchAssocQuery($catSql);
                             }
                             if (empty($rows)) {
@@ -88,7 +88,7 @@ class ProductsStore extends UTIL
                 $result = json_encode(array('isFault' => 1, 'faultMessage' => $e->getMessage()));
             }
             //print_r(json_encode($result));  exit;
-            $this->response($this->json($result), 200);
+            $this->response($this->json($result,1), 200);
         } else {
             $msg = array('status' => 'apiLoginFailed', 'error' => json_encode($finalResult));
             $this->response($this->json($msg), 200);
@@ -236,38 +236,55 @@ class ProductsStore extends UTIL
             $key = $GLOBALS['params']['apisessId'];
             $result_arr = array();
             $confProductId = $this->_request['pid'];
-            $fieldSql = 'SELECT distinct pm.pk_id AS print_method_id, pm.name';
-            if ($additional_price) {
-                $fieldSql .= ', pst.additional_price';
-            }
+            $isAdmin = (isset($this->_request['isAdmin']) && trim($this->_request['isAdmin']) == true) ? true : false;
+            //  Do not send any print method ID for multiple boundary product
+            $MultiBoundQry = "SELECT * FROM " . TABLE_PREFIX . "multi_bound_print_profile_rel WHERE product_id = '" . $confProductId . "'";
+            $records = $this->executeFetchAssocQuery($MultiBoundQry);
+            if (!empty($records) && !$isAdmin) {
+                $result_arr[0]['print_method_id'] = 0;
+                $result_arr[0]['name'] = "multiple";
+                $result_arr[0]['fetched_from'] = 'DB';
+            } else {
+                $fieldSql = 'SELECT distinct pm.pk_id AS print_method_id, pm.name';
+                if ($additional_price) {
+                    $fieldSql .= ', pst.additional_price';
+                }
 
-            // Check whether product has specific print method assigned //
-            $productPrintTypeSql = $fieldSql . ' FROM ' . TABLE_PREFIX . "print_method pm
-			INNER JOIN " . TABLE_PREFIX . "product_printmethod_rel ppr ON ppr.print_method_id=pm.pk_id
-			JOIN " . TABLE_PREFIX . "print_setting AS pst ON pm.pk_id=pst.pk_id
-			WHERE ppr.product_id=" . $confProductId;
-            $res = $this->executeFetchAssocQuery($productPrintTypeSql);
-            $result_arr = array();
-            $filters = array('productid' => $this->_request['pid'], 'store' => $this->getDefaultStoreId());
-            if (empty($res)) {
-                try {
-                    $printPObj = Flight::printProfile();
-                    $result = $this->proxy->call($key, 'cedapi_product.getCategoriesByProduct', $filters);
-                    $catIds = json_decode($result, true);
-                    if (!empty($catIds)) {
-                        $catIds = implode(',', $catIds);
-                        $catSql = $fieldSql . ' FROM ' . TABLE_PREFIX . 'product_category_printmethod_rel AS pcpml
-								JOIN ' . TABLE_PREFIX . 'print_method AS pm ON pm.pk_id = pcpml.print_method_id
-								JOIN ' . TABLE_PREFIX . 'print_setting AS pst ON pm.pk_id=pst.pk_id
-								LEFT JOIN ' . TABLE_PREFIX . 'print_method_setting_rel pmsr ON pst.pk_id=pmsr.print_setting_id
-								WHERE pcpml.product_category_id IN(' . $catIds . ')';
-                        $res = $this->executeFetchAssocQuery($catSql);
-                        foreach ($res as $k => $v) {
-                            $result_arr[$k]['print_method_id'] = $v['print_method_id'];
-                            $result_arr[$k]['name'] = $v['name'];
-                            $result_arr[$k]['fetched_from'] = 'category';
-                        }
-                        if (empty($res)) {
+                // Check whether product has specific print method assigned //
+                $productPrintTypeSql = $fieldSql . ' FROM ' . TABLE_PREFIX . "print_method pm
+                INNER JOIN " . TABLE_PREFIX . "product_printmethod_rel ppr ON ppr.print_method_id=pm.pk_id
+                JOIN " . TABLE_PREFIX . "print_setting AS pst ON pm.pk_id=pst.pk_id
+                WHERE ppr.product_id=" . $confProductId;
+                $res = $this->executeFetchAssocQuery($productPrintTypeSql);
+                $result_arr = array();
+                $filters = array('productid' => $this->_request['pid'], 'store' => $this->getDefaultStoreId());
+                if (empty($res)) {
+                    try {
+                        $printPObj = Flight::printProfile();
+                        $result = $this->proxy->call($key, 'cedapi_product.getCategoriesByProduct', $filters);
+                        $catIds = json_decode($result, true);
+                        if (!empty($catIds)) {
+                            $catIds = implode(',', $catIds);
+                            $catSql = $fieldSql . ' FROM ' . TABLE_PREFIX . 'product_category_printmethod_rel AS pcpml
+                                    JOIN ' . TABLE_PREFIX . 'print_method AS pm ON pm.pk_id = pcpml.print_method_id
+                                    JOIN ' . TABLE_PREFIX . 'print_setting AS pst ON pm.pk_id=pst.pk_id
+                                    LEFT JOIN ' . TABLE_PREFIX . 'print_method_setting_rel pmsr ON pst.pk_id=pmsr.print_setting_id
+                                    WHERE pcpml.product_category_id IN(' . $catIds . ')';
+                            $res = $this->executeFetchAssocQuery($catSql);
+                            foreach ($res as $k => $v) {
+                                $result_arr[$k]['print_method_id'] = $v['print_method_id'];
+                                $result_arr[$k]['name'] = $v['name'];
+                                $result_arr[$k]['fetched_from'] = 'category';
+                            }
+                            if (empty($res)) {
+                                $res = $printPObj->getDefaultPrintMethodId();
+                                foreach ($res as $k => $v) {
+                                    $result_arr[$k]['print_method_id'] = $v['print_method_id'];
+                                    $result_arr[$k]['name'] = $v['name'];
+                                    $result_arr[$k]['fetched_from'] = 'default';
+                                }
+                            }
+                        } else {
                             $res = $printPObj->getDefaultPrintMethodId();
                             foreach ($res as $k => $v) {
                                 $result_arr[$k]['print_method_id'] = $v['print_method_id'];
@@ -275,22 +292,15 @@ class ProductsStore extends UTIL
                                 $result_arr[$k]['fetched_from'] = 'default';
                             }
                         }
-                    } else {
-                        $res = $printPObj->getDefaultPrintMethodId();
-                        foreach ($res as $k => $v) {
-                            $result_arr[$k]['print_method_id'] = $v['print_method_id'];
-                            $result_arr[$k]['name'] = $v['name'];
-                            $result_arr[$k]['fetched_from'] = 'default';
-                        }
+                    } catch (Exception $e) {
+                        $result_arr = json_encode(array('isFault' => 1, 'faultMessage' => $e->getMessage()));
                     }
-                } catch (Exception $e) {
-                    $result_arr = json_encode(array('isFault' => 1, 'faultMessage' => $e->getMessage()));
-                }
-            } else {
-                foreach ($res as $k => $v) {
-                    $result_arr[$k]['print_method_id'] = $v['print_method_id'];
-                    $result_arr[$k]['name'] = $v['name'];
-                    $result_arr[$k]['fetched_from'] = 'product';
+                } else {
+                    foreach ($res as $k => $v) {
+                        $result_arr[$k]['print_method_id'] = $v['print_method_id'];
+                        $result_arr[$k]['name'] = $v['name'];
+                        $result_arr[$k]['fetched_from'] = 'product';
+                    }
                 }
             }
             echo json_encode($result_arr);exit();
@@ -544,6 +554,13 @@ class ProductsStore extends UTIL
                         $resultArr->printsize = $printsize;
                         $printareatype = $this->getPrintareaType($confProductId);
                         $resultArr->printareatype = $printareatype;
+                        // insert multiple boundary data; if available
+                        $settingsObj = Flight::multipleBoundary();
+                        $multiBoundData = $settingsObj->getMultiBoundMaskData($confProductId);
+                        if (!empty($multiBoundData)) {
+                            $resultArr->printareatype['multipleBoundary'] = "true";
+                            $resultArr->multiple_boundary = $multiBoundData;
+                        }
                         /* $cVariants = $resultArr->variants;
                         $cVariantsIds = array();
                         for($i=0; $i<sizeof($cVariants); $i++)
@@ -577,10 +594,10 @@ class ProductsStore extends UTIL
 
                         $resultArr->sizeAdditionalprices = $this->getSizeVariantAdditionalPriceClient($confProductId, $this->_request['print_method_id']);
                         //$resultArr->additionalprices = $this->getAdditionalPrintingPriceOfVariants($confProductId, $simpleProductId);
-                        $sql = "SELECT  distinct print_method_id,price,is_whitebase
-							FROM   " . TABLE_PREFIX . "product_additional_prices
-							WHERE  product_id =" . $confProductId . "
-							AND variant_id =" . $simpleProductId . " ORDER BY pk_id";
+                        $sql = "SELECT distinct pk_id, print_method_id,price,is_whitebase
+                            FROM   " . TABLE_PREFIX . "product_additional_prices
+                            WHERE  product_id =" . $confProductId . "
+                            AND variant_id =" . $simpleProductId . " ORDER BY pk_id";
                         $rows = $this->executeFetchAssocQuery($sql);
                         $priceDetails = array();
                         //$num = sizeof($rows);
@@ -678,6 +695,13 @@ class ProductsStore extends UTIL
                         $resultArr->printsize = $printsize;
                         $printareatype = $this->getPrintareaType($confProductId);
                         $resultArr->printareatype = $printareatype;
+                        // insert multiple boundary data; if available
+                        $settingsObj = Flight::multipleBoundary();
+                        $multiBoundData = $settingsObj->getMultiBoundMaskData($confProductId);
+                        if (!empty($multiBoundData)) {
+                            $resultArr->printareatype['multipleBoundary'] = "true";
+                            $resultArr->multiple_boundary = $multiBoundData;
+                        }
                         $additionalprices = $this->getAdditionalPrintingPriceOfVariants($confProductId, $simpleProductId);
                         $resultArr->additionalprices = $additionalprices;
                         $resultArr->sizeAdditionalprices = $this->getSizeVariantAdditionalPrice($confProductId);
@@ -698,7 +722,7 @@ class ProductsStore extends UTIL
                         // is pre deco product
                         $resultArr->isPreDecorated = false;
                         $sql = "SELECT  ref_id FROM " . TABLE_PREFIX . "template_state_rel
-							WHERE  temp_id =" . $product_id;
+                            WHERE  temp_id =" . $product_id;
                         $rows = $this->executeFetchAssocQuery($sql);
                         $refID = $rows[0]['ref_id'];
                         if ($refID && $refID > 0) {
@@ -813,9 +837,9 @@ class ProductsStore extends UTIL
 // &&  !empty($key) && $this->isValidCall($key)){
             $error = false;
             $productPrintTypeSql = "SELECT distinct pm.pk_id, pm.name FROM " . TABLE_PREFIX . "print_method pm
-			INNER JOIN " . TABLE_PREFIX . "product_printmethod_rel ppr ON ppr.print_method_id=pm.pk_id
-			JOIN " . TABLE_PREFIX . "print_setting AS pst ON pm.pk_id=pst.pk_id
-			WHERE ppr.product_id=" . $productId;
+            INNER JOIN " . TABLE_PREFIX . "product_printmethod_rel ppr ON ppr.print_method_id=pm.pk_id
+            JOIN " . TABLE_PREFIX . "print_setting AS pst ON pm.pk_id=pst.pk_id
+            WHERE ppr.product_id=" . $productId;
             $productPrintType = $this->executeGenericDQLQuery($productPrintTypeSql);
             if (!empty($productPrintType)) {
                 //$this->log('productPrintTypeSql: '.$productPrintTypeSql, true, 'Zsql.log');
@@ -837,19 +861,19 @@ class ProductsStore extends UTIL
                         //$lencatid = count(trim($catIds));
                         $catIds = implode(',', (array) $catIds);
                         $catSql = 'SELECT DISTINCT pm.pk_id, pm.name
-							FROM ' . TABLE_PREFIX . 'product_category_printmethod_rel AS pcpml
-							JOIN ' . TABLE_PREFIX . 'print_method AS pm ON pm.pk_id = pcpml.print_method_id
-							JOIN ' . TABLE_PREFIX . 'print_setting AS pst ON pm.pk_id=pst.pk_id
-							LEFT JOIN ' . TABLE_PREFIX . 'print_method_setting_rel pmsr ON pst.pk_id=pmsr.print_setting_id
-							WHERE pcpml.product_category_id IN (' . $catIds . ')';
+                            FROM ' . TABLE_PREFIX . 'product_category_printmethod_rel AS pcpml
+                            JOIN ' . TABLE_PREFIX . 'print_method AS pm ON pm.pk_id = pcpml.print_method_id
+                            JOIN ' . TABLE_PREFIX . 'print_setting AS pst ON pm.pk_id=pst.pk_id
+                            LEFT JOIN ' . TABLE_PREFIX . 'print_method_setting_rel pmsr ON pst.pk_id=pmsr.print_setting_id
+                            WHERE pcpml.product_category_id IN (' . $catIds . ')';
                         $rows = $this->executeFetchAssocQuery($catSql);
                         $printDetails = array();
                         if (empty($rows)) {
                             $default_print_type = "SELECT pm.pk_id,pm.name
-							from " . TABLE_PREFIX . "print_method AS pm
-							JOIN " . TABLE_PREFIX . "print_setting ps ON pm.pk_id=ps.pk_id
-							LEFT JOIN " . TABLE_PREFIX . "print_method_setting_rel pmsr ON ps.pk_id=pmsr.print_setting_id
-							WHERE ps.is_default='1' AND pm.is_enable='1' AND ps.is_default='1'";
+                            from " . TABLE_PREFIX . "print_method AS pm
+                            JOIN " . TABLE_PREFIX . "print_setting ps ON pm.pk_id=ps.pk_id
+                            LEFT JOIN " . TABLE_PREFIX . "print_method_setting_rel pmsr ON ps.pk_id=pmsr.print_setting_id
+                            WHERE ps.is_default='1' AND pm.is_enable='1' AND ps.is_default='1'";
                             $res = $this->executeFetchAssocQuery($default_print_type);
                             $printDetails[0]['print_method_id'] = $res[0]['pk_id'];
                             $printDetails[0]['name'] = $res[0]['name'];
@@ -1109,7 +1133,7 @@ class ProductsStore extends UTIL
     {
         $error = false;
         if (!empty($this->_request['data'])) {
-            $data = $this->_request['data'];
+            $data = json_decode(urldecode($this->_request['data']), true);
             $apikey = $this->_request['apikey'];
             $result = $this->storeApiLogin();
             if ($this->storeApiLogin == true) {

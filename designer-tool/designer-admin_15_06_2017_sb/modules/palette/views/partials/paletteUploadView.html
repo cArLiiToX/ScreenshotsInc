@@ -1,0 +1,272 @@
+<!--
+    preloader start
+-->
+<div class="panel panel-default" ng-hide="preloader">
+    <div class="graphics-wrap-height">
+        <div class="panel-body text-center">
+            <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/progress/progress-circle-master.svg" alt="Progress"/>
+        </div>
+    </div>
+</div>
+<!-- preloader end -->
+<div class="panel panel-default" ng-show="preloader">
+    <div class="loader-OnUpload" pg-portlet on-refresh="refreshTest('.loader-OnUpload')">
+        <div class="panel-body">
+            <div class="col-sm-5 b-r-light">
+                <div class="panel-heading padding-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Preview">
+                        </xe-translate>
+                    </div>
+                </div>
+                <div class="radio radio-success m-t-0 m-b-30">
+                    <input type="radio" id="uploadPaletteColor" value="0" ng-model="uploadPalette.isPattern"  ng-change="changePaletteTab(0)" ng-checked="uploadPalette.isPattern == 0"/>
+                    <label for="uploadPaletteColor">
+                        <xe-translate text-value="Color">
+                        </xe-translate>
+                    </label>
+                    <input type="radio" value="1" id="uploadPalettePattern" ng-model="uploadPalette.isPattern" ng-change="changePaletteTab(1)" ng-checked="uploadPalette.isPattern == 1"/>
+                    <label for="uploadPalettePattern">
+                        <xe-translate text-value="Pattern">
+                        </xe-translate>
+                    </label>
+                    <input type="radio" value="2" id="uploadcmyk" ng-model="uploadPalette.isPattern" ng-change="changePaletteTab(2)" ng-checked="uploadPalette.isPattern == 2"/>
+                    <label for="uploadcmyk">
+                        CMYK
+                    </label>
+                </div>
+                <div class="gallery-upload-thumb m-b-5" ng-show="showUploadPattern && uploadPalette.isPattern && uploadPalette.isPattern == 1">
+                    <img class="img-responsive" ng-src="{{ uploadPalette.value }}"/>
+                </div>
+                <div class="palette-variant" ng-show="uploadPalette.isPattern == 0 && showUploadCSV">
+                    <div ng-repeat="color in CSVRGBArray">
+                        <span  class="pull-left w-20 " style="background-color:{{ color.color_code }};background-size: contain; background-repeat:no-repeat;">
+                        </span>
+                    </div>
+                </div>
+                <div class="gallery-upload-thumb m-b-5" ng-show="isUploadFileCount &&  uploadPalette.isPattern == 1">
+                    <span>
+                        {{ uploadFileCount }}
+                        <xe-translate text-value="files selected">
+                        </xe-translate>
+                    </span>
+                </div>
+                <button class="btn btn-success btn-sm btn-cons" ng-file-select ng-file-change="upload($files)"   multiple accept=".png," ng-show="uploadPalette.isPattern == 1">
+                    <span>
+                        <xe-translate text-value="Upload Pattern">
+                        </xe-translate>
+                    </span>
+                </button>
+                <p class="small" ng-show="uploadPalette.isPattern == 1">
+                    .png
+                </p>
+                <p class="small text-danger" ng-show="showPatternError && uploadPalette.isPattern == 1">
+                    {{ showMsg }}
+                </p>
+                <div class="clearfix" ng-show="!uploadPalette.isPattern">
+                    <div class="pull-left m-r-10">
+                        <spectrum-colorpicker ng-model="colorChooser.Val"  options="{showInput: true,  showAlpha: false}" format="'hex'"  on-hide="onColorChooserChange(color)">
+                        </spectrum-colorpicker>
+                    </div>
+                    <span>
+                        Or
+                    </span>
+                    <button class="btn btn-success btn-sm btn-cons m-l-5" ng-file-select ng-file-change="uploadCSV($files)"  accept=".csv,">
+                        <span>
+                            <xe-translate text-value="Upload CSV">
+                            </xe-translate>
+                        </span>
+                    </button>
+                    <a href="./modules/palette/views/partials/samplergb.csv" target="_blank">
+                        <xe-translate text-value="Download sample">
+                        </xe-translate>
+                    </a>
+                </div>
+                <p class="small text-danger" ng-show="showRGBColorError && uploadPalette.isPattern == 0">
+                    {{ showMsg }}
+                </p>
+                <div class="clearfix" ng-show="uploadPalette.isPattern == 2">
+                    <div class="pull-left m-r-10">
+                        <table>
+                            <tr>
+                                <td>
+                                    <b>
+                                        C
+                                    </b>
+                                    &nbsp;
+                                </td>
+                                <td>
+                                    <input class="form-control input-sm m-b-5" id="c" type="text" size="3" maxlength="3" ng-model="cmyk.c"  ng-change="toRGB()" ng-keyup="toRGB()" ng-disabled="isCMYKCSV == false" number-only="number-only"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>
+                                        M
+                                    </b>
+                                    &nbsp;
+                                </td>
+                                <td>
+                                    <input class="form-control input-sm m-b-5" id="m" type="text" size="3" maxlength="3" ng-model="cmyk.m"  ng-change="toRGB()" ng-keyup="toRGB()" ng-disabled="isCMYKCSV == false" number-only="number-only"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>
+                                        Y
+                                    </b>
+                                    &nbsp;
+                                </td>
+                                <td>
+                                    <input class="form-control input-sm m-b-5" id="y" type="text" size="3" maxlength="3" ng-model="cmyk.y"  ng-change="toRGB()" ng-keyup="toRGB()" ng-disabled="isCMYKCSV == false" number-only="number-only"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>
+                                        K
+                                    </b>
+                                    &nbsp;
+                                </td>
+                                <td>
+                                    <input class="form-control input-sm m-b-5" id="k" type="text" size="3" maxlength="3" ng-model="cmyk.k"  ng-change="toRGB()" ng-keyup="toRGB()"  ng-disabled="isCMYKCSV == false" number-only="number-only"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="gallery-upload-thumb pull-left" style="background-color:{{ cmyk.hexValue }};width:100px;height:100px;">
+                    </div>
+                    <div class="pull-left  m-t-40 m-l-10" ng-show="uploadPalette.isPattern == 2">
+                        <span>
+                            Or
+                        </span>
+                        <button class="btn btn-success btn-sm btn-cons m-l-5" ng-file-select ng-file-change="uploadCMYK($files)"  accept=".csv,">
+                            <span>
+                                <xe-translate text-value="Upload CSV">
+                                </xe-translate>
+                            </span>
+                        </button>
+                        <a ng-href="./modules/palette/views/partials/samplecmyk.csv" target="_blank">
+                            <xe-translate text-value="Download sample">
+                            </xe-translate>
+                        </a>
+                        <p class="small text-danger m-l-30" ng-show="showCMYKError && uploadPalette.isPattern == 2">
+                            {{ showMsg }}
+                        </p>
+                    </div>
+                </div>
+                <!-- <hr ng-show="uploadPalette.isPattern == 2"/> -->
+                <div class="palette-variant" ng-show="showUploadCMYK && uploadPalette.isPattern == 2">
+                    <div ng-repeat="color in cmykArr">
+                        <span  class="pull-left w-20 " style="background-color:{{ color.hexValue }};background-size: contain; background-repeat:no-repeat;">
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 b-r-light " ng-show="isRGBCSV == true">
+                <div class="panel-heading p-t-0" ng-show="isCMYKCSV == true">
+                    <div class="panel-title">
+                        <xe-translate text-value="Properties">
+                        </xe-translate>
+                    </div>
+                </div>
+                <form id="form-personal" role="form" autocomplete="off" class="p-l-20 p-r-20">
+                    <div class="row clearfix" ng-show="isCMYKCSV == true">
+                        <div class="col-sm-12">
+                            <div class="form-group form-group-default required" pg-form-group>
+                                <label>
+                                    <xe-translate text-value="Name">
+                                    </xe-translate>
+                                </label>
+                                <input type="text" class="form-control" name="Name" ng-model="uploadPalette.name" required/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix" ng-show="isCMYKCSV == true">
+                        <div class="col-sm-8">
+                            <div class="form-group form-group-default" pg-form-group>
+                                <label>
+                                    <xe-translate text-value="Price">
+                                    </xe-translate>
+                                </label>
+                                <input type="text" class="form-control" name="Name" ng-model="uploadPalette.price" money required/>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-sm-4" ng-show="isRGBCSV == true">
+                <div class="panel-heading p-t-0" ng-show="isCMYKCSV == true">
+                    <div class="panel-title">
+                        <xe-translate text-value="Assign Category">
+                        </xe-translate>
+                    </div>
+                    <span style='color:red;'>
+                        *
+                    </span>
+                </div>
+                <div class="clearfix p-l-20 p-r-20 m-b-10" ng-repeat="elem in categoryElms" ng-show="isCMYKCSV == true">
+                    <div class="btn-group pull-left m-r-20">
+                        <button type="button" class="btn btn-default text-ellipsis"  data-toggle="dropdown" style="width:141px">
+                            {{ elem.category }}
+                        </button>
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret">
+                            </span>
+                            <span class="sr-only">
+                                Toggle Dropdown
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" ng-class="{'button-scroll':paletteCategoryList.length> 4}" style="width:166px">
+                            <!-- <li ng-click="uploadCategorySelected('All Categories',$index)">
+                                    <a href="">All Categories</a>
+                              </li> -->
+                            <li ng-repeat="categoryItem in paletteCategoryList" ng-click="uploadCategorySelected(categoryItem,$parent.$index)">
+                                <a href="">
+                                    {{ categoryItem.category_name }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="pull-right">
+                        <button class="btn btn-info btn-xs" type="button"  ng-click="removeUploadCategoryElms($index)">
+                            <i class="fa fa-times">
+                            </i>
+                        </button>
+                    </div>
+                </div>
+                <button class="btn btn-success btn-xs m-r-20 pull-right" type="button" ng-click="addUploadCategoyElm()" ng-show="isCMYKCSV == true">
+                    <i class="fa fa-plus">
+                    </i>
+                </button>
+            </div>
+            <!-- <div class="col-sm-3">
+                <div class="panel-heading p-t-0">
+                    <div class="panel-title"><xe-translate text-value="Printing Methods"></xe-translate></div>
+                </div>        
+                <form id="form-personal" role="form" autocomplete="off" class="p-l-20 p-r-20">
+                  <div class="row clearfix">
+                    <div class="col-sm-8"> 
+                        <div class="checkbox check-success" ng-repeat="print in printMethodList">
+                            <input type="checkbox" id="uplodPrint_{{print.id}}" ng-model="uploadPrintType[$index]">
+                            <label for="uplodPrint_{{print.id}}">{{print.name}}</label>
+                        </div>
+                    </div>
+                  </div>
+                </form>
+            </div> -->
+        </div>
+        <div class="panel-footer b-t-none clearfix">
+            <div class="pull-right">
+                <button class="btn btn-primary btn-sm" type="button" ng-click="uploadNewPaletteData()"  ng-disabled="demoStatus">
+                    <xe-translate text-value="Save">
+                    </xe-translate>
+                </button>
+                <button class="btn btn-primary btn-sm" type="button" ng-click="cancelUploadPallete()">
+                    <xe-translate text-value="Cancel">
+                    </xe-translate>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

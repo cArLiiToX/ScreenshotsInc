@@ -53,8 +53,8 @@ class Products extends ProductsStore
                         $data[$k]['mask_price'] = $v['mask_price'];
                         $data[$k]['scale_ratio'] = $v['scale_ratio'];
                         $data[$k]['side'] = $v['side'];
-                        $data[$k]['is_cropMark'] = $v['is_cropMark'];
-                        $data[$k]['is_safeZone'] = $v['is_safeZone'];
+                        $data[$k]['is_cropMark'] = (isset($v['is_cropMark']) && strlen($v['is_cropMark'])) ? $v['is_cropMark'] : 0;
+                        $data[$k]['is_safeZone'] = (isset($v['is_safeZone']) && strlen($v['is_cropMark'])) ? $v['is_safeZone'] : 1;
                         $data[$k]['cropValue'] = $v['cropValue'];
                         $data[$k]['safeValue'] = $v['safeValue'];
                         $data[$k]['scaleRatio_unit'] = $v['scaleRatio_unit'];
@@ -74,10 +74,10 @@ class Products extends ProductsStore
 						$data[$k]['isSidesAdded'] = $v['isSidesAdded'];
 						$data[$k]['sidesAllowed'] = $v['sidesAllowed'];
                     }
-                    $this->log('maskDataRow :: mask : ' . json_encode($data));
+                    //$this->log('maskDataRow :: mask : ' . json_encode($data));
                     if ($resultLength < $sides) {
                         for ($i = $resultLength; $i < $sides; $i++) {
-                            $data[$i] = $arr;
+                            $data[$i] = $data[0];
                         }
                     }
                 } else {
@@ -192,6 +192,7 @@ class Products extends ProductsStore
                 $dataArray['bounds'] = $row['bounds'];
                 $dataArray['custom_size'] = $row['custom_size'];
                 $dataArray['customMask'] = $row['custom_mask'];
+                $dataArray['multipleBoundary'] = "false";
                 $dataArray['unit_id'] = intval($row['unit_id']);
                 $dataArray['pricePerUnit'] = floatval($row['price_per_unit']);
                 $dataArray['maxWidth'] = floatval($row['max_width']);
@@ -206,6 +207,7 @@ class Products extends ProductsStore
             $dataArray['bounds'] = "true";
             $dataArray['custom_size'] = "false";
             $dataArray['customMask'] = "false";
+            $dataArray['multipleBoundary'] = "false";
             $dataArray['unit_id'] = 1;
             $dataArray['unit_name'] = 'in';
             $dataArray['pricePerUnit'] = 0;
@@ -287,7 +289,7 @@ class Products extends ProductsStore
     {
         if (isset($confProductId) && $confProductId && isset($print_method_id) && $print_method_id) {
             try {
-                $sql = "SELECT svap.xe_size_id,svap.percentage,svap.xe_size_id FROM " . TABLE_PREFIX . "size_variant_additional_price as svap WHERE svap.product_id=" . $confProductId . " AND svap.print_method_id=" . $print_method_id . ' ORDER BY svap.xe_size_id DESC';
+                $sql = "SELECT svap.xe_size_id,svap.percentage FROM " . TABLE_PREFIX . "size_variant_additional_price as svap WHERE svap.product_id=" . $confProductId . " AND svap.print_method_id=" . $print_method_id . ' ORDER BY svap.xe_size_id DESC';
                 $result = $this->executeFetchAssocQuery($sql);
             } catch (Exception $e) {
                 $result = array('Caught exception:' => $e->getMessage());
@@ -311,7 +313,7 @@ class Products extends ProductsStore
      */
     public function getProductTemplateByProductId($confProductId){
         $imageurl = $this->getProductTemplatePath();
-        $side_sql = "SELECT distinct pts.pk_id,pts.side_name,pts.image,ptr.temp_id,pts.sort_order
+        $side_sql = "SELECT distinct pts.sort_order, pts.pk_id,pts.side_name,pts.image,ptr.temp_id
                     FROM " . TABLE_PREFIX . "product_template AS pt ," . TABLE_PREFIX . "product_temp_rel AS ptr ,
                     " . TABLE_PREFIX . "product_temp_side AS pts
                     WHERE ptr.product_id='" . $confProductId . "' AND pts.product_temp_id =ptr.temp_id ORDER BY pts.sort_order";

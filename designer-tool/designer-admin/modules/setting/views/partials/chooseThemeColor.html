@@ -9,79 +9,10 @@
 <div class="panel-body m-t-20">
     <form class="form-horizontal" role="form" autocomplete="off">
         <div class="form-group">
-            <div class="btn-group dropdown-default" pg-dropdown>
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"  style="width: 170px;" aria-expanded="false">
-                    {{selectedTheme}}
-                    <span class="caret">
-                    </span>
-                </button>
-                <ul class="dropdown-menu" role="menu" style="width: 170px;"  ng-class="{'button-scroll':themeList.length> 4}">
-                    <li ng-repeat="theme in themeList" ng-click="themeSelected($index)">
-                        <a href="">
-                            {{theme.theme_name}}
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- dropdown end -->
-            <div class="row m-t-15">
-                <div class="col-sm-5" ng-show="customTheme">
-                    <img class="img-responsive" ng-src="{{theme.url}}"/>
-                </div>
-                <div class="col-sm-5"  ng-hide="customTheme">
-                    <div class="clearfix m-b-10" ng-repeat="c in customColor">
-                        <div class="pull-left m-r-10">
-                            <spectrum-colorpicker ng-model="c.chosseColor"  options="{showInput: true, showAlpha: false, color: c.color}" format="'hex'"  on-hide="onColorChooserChange(color,$index)">
-                            </spectrum-colorpicker>
-                        </div>
-                        <div class="font-montserrat m-t-5">
-                            {{ c.colorName }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-3" ng-show="customTheme">
-                    <div class="clearfix">
-                        <div class="color-pick" ng-style="{'background-color':theme.brandPrimary}">
-                        </div>
-                        <div class="font-montserrat m-t-5">
-                            <xe-translate text-value="Brand Primary">
-                            </xe-translate>
-                        </div>
-                    </div>
-                    <div class="clearfix m-t-5">
-                        <div class="color-pick" ng-style="{'background-color':theme.borderColor}">
-                        </div>
-                        <div class="font-montserrat m-t-5">
-                            <xe-translate text-value="Border Color">
-                            </xe-translate>
-                        </div>
-                    </div>
-                    <div class="clearfix m-t-5">
-                        <div class="color-pick" ng-style="{'background-color':theme.panelColor}">
-                        </div>
-                        <div class="font-montserrat m-t-5">
-                            <xe-translate text-value="Panel Color">
-                            </xe-translate>
-                        </div>
-                    </div>
-                    <div class="clearfix m-t-5">
-                        <div class="color-pick" ng-style="{'background-color':theme.stageColor}">
-                        </div>
-                        <div class="font-montserrat m-t-5">
-                            <xe-translate text-value="Stage Color">
-                            </xe-translate>
-                        </div>
-                    </div>
-                    <div class="clearfix m-t-5">
-                        <div class="color-pick" ng-style="{'background-color':theme.textColor}">
-                        </div>
-                        <div class="font-montserrat m-t-5">
-                            <xe-translate text-value="Text Color">
-                            </xe-translate>
-                        </div>
-                    </div>
+            <div class="clearfix">
+                <div class="pull-left m-r-10">
+                    <spectrum-colorpicker ng-model="themeColorChooser.Val"  options="{showInput: true,  showAlpha: false}" format="'hex'"  on-hide="onThemeColorChooserChange(color)">
+                    </spectrum-colorpicker>
                 </div>
             </div>
         </div>

@@ -29,8 +29,8 @@
                                         </button>
                                     </div>
                                     <div class="clearfix category-list modal-scroll-height m-t-10">
-                                        <ul>
-                                            <li ng-repeat="category in modalWebfontsCategoryList" ng-mouseenter="showClosebtn = true" ng-mouseleave="showClosebtn = false;showBadge[$index] = false">
+                                        <ul dnd-list="webfontsCategoryList">
+                                            <li ng-repeat="category in webfontsCategoryList" dnd-draggable="category" dnd-moved="webfontsCategoryList.splice($index, 1)"  dnd-effect-allowed="move" dnd-selected="models.selected = category" dnd-dragstart="getCurrentIndex(category)" dnd-dragend ="getUpdateIndex(category)" ng-mouseenter="showClosebtn = true" ng-mouseleave="showClosebtn = false;showBadge[$index] = false">
                                                 {{ category.category_name }}
                                                 <div class="pull-right">
                                                     <a href="" ng-show="showClosebtn"  ng-click="editCategory($index)">

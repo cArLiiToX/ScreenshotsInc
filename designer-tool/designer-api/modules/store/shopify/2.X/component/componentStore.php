@@ -37,6 +37,8 @@ class ComponentStore
     const CLEAR_ZIP_DURATION = 1; //1 Day
     const CLEAR_USERSLOT_DURATION = 2; //In Day(s)
     const HTML5_BACKGROUND_PATTERN_DIR = HTML5_BACKGROUND_PATTERN_DIR;
+    const HTML5_MULTIPLE_BOUNDARY_DIR = HTML5_MULTIPLE_BOUNDARY_DIR;
+	const ADMIN_LANGUAGE_DIR = ADMIN_LANGUAGE_DIR;
 
     /**
      * Authenticate connection to shopify
@@ -159,7 +161,7 @@ class ComponentStore
         $user_id = (isset($this->_request['userId'])) ? $this->_request['userId'] : 0;
         $uid = (isset($this->_request['uid'])) ? $this->_request['uid'] : 0;
         try {
-            $sql = "Select slot_id, user_id, status, slot_image, uid from " . TABLE_PREFIX . "user_slot ";
+            $sql = "Select slot_id, user_id, status, slot_image, uid, json_data from " . TABLE_PREFIX . "user_slot ";
             $sql .= "where user_id=" . $user_id . " and uid='" . $uid . "'";
 
             $result = $this->executeFetchAssocQuery($sql);
@@ -167,15 +169,30 @@ class ComponentStore
             if (!empty($result)) {
                 $slotBasePath = $this->getSlotsPreviewURL();
                 foreach ($result as $rows) {
+		    $CapturedImageUrl=$this->getCapturedImageUrl();
                     $imageURL = ($rows['user_id'] && $rows['user_id'] > 0) ? $slotBasePath . $rows['user_id'] . '/' . $rows['slot_image'] : $slotBasePath . $rows['uid'] . '/' . $rows['slot_image'];
-                    $responseData[] = array(
-                        "slotImage" => $rows['slot_image'],
-                        "slotImageUrl" => $imageURL,
-                        "slotId" => $rows['slot_id'],
-                        "userId" => $rows['user_id'],
-                        "status" => $rows['status'],
-                        "uid" => $rows['uid'],
-                    );
+                    if (preg_match('|^http(s)?://|i', $this->formatJSONToArray($rows['json_data'], false)->captureSlot)) {
+					    $responseData[] = array(
+							"slotImage" => $rows['slot_image'],
+							"slotImageUrl" => $imageURL,
+							"slotId" => $rows['slot_id'],
+							"userId" => $rows['user_id'],
+							"status" => $rows['status'],
+							"uid" => $rows['uid'],
+							"captureSlot" => $this->formatJSONToArray($rows['json_data'], false)->captureSlot
+						);
+					} else {
+						$responseData[] = array(
+							"slotImage" => $rows['slot_image'],
+							"slotImageUrl" => $imageURL,
+							"slotId" => $rows['slot_id'],
+							"userId" => $rows['user_id'],
+							"status" => $rows['status'],
+							"uid" => $rows['uid'],
+							"captureSlot" => $CapturedImageUrl.$this->formatJSONToArray($rows['json_data'], false)->captureSlot
+						);
+					}	
+					$CapturedImageUrl=null;
                 }
             } else {
                 $responseData = array("status" => "nodata");
@@ -201,5 +218,26 @@ class ComponentStore
     {
         $arr = json_decode($data, $returnArr);
         return $arr;
+    }
+
+    /**
+     *
+     *date created (dd-mm-yy)
+     *date modified 02-09-2017 (dd-mm-yy)
+     *get Format Json Array
+     *
+     *@return boolean
+     */
+    public function checkSendQuote()
+    {
+        $url = $this->getCurrentUrl() . '/designer-tool/localsettings.js';
+        $tarray = array(" ", "\n", "\r");
+        $contents = $this->getFileContents($url);
+        $contents = trim(str_replace($tarray, "", $contents));
+        $contents = substr($contents, 0, -1);
+        $contents = explode("localSettings=", $contents);
+        $contents = json_decode($contents['1'], true);
+        $isQuote = $contents['is_send_a_quote'];
+        return $isQuote;
     }
 }

@@ -25,7 +25,7 @@ class CartsStore extends UTIL
         $original_mem = ini_get('memory_limit');
         $mem = substr($original_mem, 0, -1);
         if ($original_mem <= $mem) {
-            $mem = $mem + 256;
+            $mem = $mem + 1024;
             ini_set('memory_limit', $mem . 'M');
             set_time_limit(0);
         }
@@ -45,6 +45,10 @@ class CartsStore extends UTIL
                 $productDataJSON = $this->_request['productData'];
 
             }
+            $designData = urldecode($designData);
+            $productDataJSON = urldecode($productDataJSON);
+            $designDataArray = json_decode($designData, true);
+			$designProductData = $designDataArray['productInfo']['productdata'];
             $cartArr = json_decode($productDataJSON, true);
             $refid = $this->saveDesignStateCart($apikey, $refid, $designData);
             if ($refid > 0) {
@@ -78,11 +82,17 @@ class CartsStore extends UTIL
                                 if ($optionName == 'refid') {
                                     $productOptions[$option['id']] = $refid;
                                 } elseif ($optionName != 'xe_is_design') {
-                                    $productOptions[$option['id']] = $this->datalayer->getProductOptionValue($cart['simple_product'][$optionName], $option['id']);
+									$color = $this->getStoreAttributes("xe_color");
+									$size = $this->getStoreAttributes("xe_size");
+									if ($optionName == $color) {
+										$productOptions[$option['id']] = $this->datalayer->getProductOptionValue($cart['simple_product']['xe_color'], $option['id']);
+									} elseif ($optionName == $size) {
+										$productOptions[$option['id']] = $this->datalayer->getProductOptionValue($cart['simple_product']['xe_size'], $option['id']);
+									} else {
+										$productOptions[$option['id']] = $this->datalayer->getProductOptionValue($designProductData[$optionName], $option['id']);
+									}
                                 }
-
                             }
-
                             $productdata[$j]['id'] = $id;
                             $productdata[$j]['qty'] = $cart['qty'];
                             $productdata[$j]['options'] = $productOptions;
@@ -96,7 +106,9 @@ class CartsStore extends UTIL
                     $status = $this->helper->addToCart((object) $productdata);
                     ini_set('memory_limit', $original_mem);
                     if ($status) {
-                        $url = HTTP_SERVER . '?route=checkout/cart';
+						$protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,5))=='https'?'https':'http';
+						$storeUrl = isset($_SERVER["HTTPS"]) ? HTTPS_SERVER : HTTP_SERVER;
+                        $url = $storeUrl . '?route=checkout/cart';
                         $result = array('status' => 'success', 'url' => $url, 'quoteId' => 0, 'refid' => $refid);
                     } else {
                         $result = array('error' => 'Cart is empty please check your input parameters.', 'error_no' => $status);

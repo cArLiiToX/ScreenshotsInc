@@ -49,7 +49,7 @@ class TextFx extends UTIL
                     }
                 }
             }
-            $this->response($this->json($res), 200);
+            $this->response($this->json($res,1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -108,6 +108,7 @@ class TextFx extends UTIL
         if (!empty($this->_request) && isset($this->_request['name']) && $this->_request['textfx_style_id']) {
             extract($this->_request);
             try {
+                $name = addslashes($name);
                 $sql = "UPDATE " . TABLE_PREFIX . "textfx_style SET name='" . $name . "' WHERE pk_id='" . $textfx_style_id . "'";
                 $status = $this->executeGenericDMLQuery($sql);
                 if (!empty($alphabets)) {
@@ -188,7 +189,7 @@ class TextFx extends UTIL
     {
         $status = 0;
         if (!empty($this->_request) && isset($this->_request['name']) && $this->_request['name']) {
-            $styl_sql = "INSERT INTO " . TABLE_PREFIX . "textfx_style (name) VALUES ('" . $this->_request['name'] . "')";
+            $styl_sql = "INSERT INTO " . TABLE_PREFIX . "textfx_style (name) VALUES ('" . addslashes($this->_request['name']) . "')";
             $textfx_style_id = $this->executeGenericInsertQuery($styl_sql);
             try {
                 if (!empty($this->_request['files'])) {

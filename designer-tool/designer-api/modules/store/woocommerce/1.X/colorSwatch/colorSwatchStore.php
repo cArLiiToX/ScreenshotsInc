@@ -18,6 +18,8 @@ class ColorSwatchStore extends UTIL
         header('HTTP/1.1 200 OK');
         global $wpdb;
         $error = '';
+        $colortexonomy = "pa_".$this->getStoreAttributes("xe_color");
+
         $result = $this->storeApiLogin();
         if ($this->storeApiLogin == true) {
             $key = $GLOBALS['params']['apisessId'];
@@ -37,7 +39,7 @@ class ColorSwatchStore extends UTIL
                 $lastid = $wpdb->insert_id;
 
                 $table_name = $wpdb->prefix . "term_taxonomy";
-                $wpdb->insert($table_name, array('term_id' => $lastid, 'taxonomy' => 'pa_xe_color', 'description' => '', 'parent' => '', 'count' => 0));
+                $wpdb->insert($table_name, array('term_id' => $lastid, 'taxonomy' => $colortexonomy, 'description' => '', 'parent' => '', 'count' => 0));
 
                 $rsultrsponse = array();
                 $rsultrsponse['attribute_id'] = $lastid;

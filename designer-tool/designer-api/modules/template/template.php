@@ -23,10 +23,9 @@ class Template extends UTIL
         try {
             $catagoryArray = array();
             if (isset($this->_request['printId']) && $this->_request['printId'] != 0) {
-                $sql = "SELECT tc.id,tc.name FROM " . TABLE_PREFIX . "template_category tc join " . TABLE_PREFIX . "template_category_printmethod_rel tcppr
-                on tcppr.temp_category_id =tc.id where tcppr.print_method_id='" . $this->_request['printId'] . "' ";
+                $sql = "SELECT tc.id,tc.name FROM " . TABLE_PREFIX . "template_category tc join " . TABLE_PREFIX . "template_category_printmethod_rel tcppr on tcppr.temp_category_id =tc.id where tcppr.print_method_id='" . $this->_request['printId'] . "' ORDER BY tc.name DESC";
             } else {
-                $sql = "SELECT id,name FROM " . TABLE_PREFIX . "template_category";
+                $sql = "SELECT id,name FROM " . TABLE_PREFIX . "template_category ORDER BY name DESC";
             }
             $categoryDetail = array();
             $rows = $this->executeGenericDQLQuery($sql);
@@ -34,7 +33,7 @@ class Template extends UTIL
                 $categoryDetail[$i]['id'] = $rows[$i]['id'];
                 $categoryDetail[$i]['name'] = $rows[$i]['name'];
             }
-            $this->response($this->json($categoryDetail), 200);
+            $this->response($this->json($categoryDetail,1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -108,34 +107,32 @@ class Template extends UTIL
             $range = $this->_request['loadCount'];
             $searchByCategory = ($cat_id != '') ? " and cat_id='" . $cat_id . "'" : "";
             $searchByString = ($searchString != '') ? " and   or name LIKE '" . $searchString . "%'" : "";
-            $sql = '';
+			$sql = "Select ts.id,ts.name,ts.json_data,ts.status,ts.template_image from  " . TABLE_PREFIX . "template_state as ts ";
             if ($cat_id >= 1 && $searchString == '' && $print_method != '') {
-                $sql = "Select ts.id,ts.name,ts.product_image,ts.template_image,ts.status from  " . TABLE_PREFIX . "template_state as ts
-                LEFT JOIN " . TABLE_PREFIX . "template_category_printmethod_rel tcppr ON tcppr.temp_category_id = ts.cat_id
+                $sql .= "LEFT JOIN " . TABLE_PREFIX . "template_category_printmethod_rel tcppr ON tcppr.temp_category_id = ts.cat_id
                 WHERE cat_id =$cat_id and tcppr.print_method_id='" . $print_method . "' ORDER BY ts.id DESC";
             }if ($cat_id >= 1 && $searchString != '' && $print_method != '') {
-                $sql = "Select ts.id, ts.name, ts.product_image, ts.template_image, ts.status from  " . TABLE_PREFIX . "template_state as ts
-                LEFT JOIN " . TABLE_PREFIX . "template_category_printmethod_rel tcppr ON tcppr.temp_category_id = ts.cat_id WHERE cat_id =$cat_id and (name LIKE '" . $searchString . "%') and tcppr.print_method_id='" . $print_method . "' ORDER BY ts.id DESC";
+                $sql .= "LEFT JOIN " . TABLE_PREFIX . "template_category_printmethod_rel tcppr ON tcppr.temp_category_id = ts.cat_id WHERE cat_id =$cat_id and (name LIKE '" . $searchString . "%') and tcppr.print_method_id='" . $print_method . "' ORDER BY ts.id DESC";
             }if ($cat_id == 0 && $searchString != '' && $print_method != '') {
-                $sql = "Select ts.id, ts.name, ts.product_image, ts.template_image, ts.status from  " . TABLE_PREFIX . "template_state as ts LEFT JOIN " . TABLE_PREFIX . "template_category_printmethod_rel tcppr ON tcppr.temp_category_id = ts.cat_id WHERE 1 and tcppr.print_method_id='" . $print_method . "' and (name LIKE '" . $searchString . "%')  ORDER BY ts.id DESC";
+                $sql .= "LEFT JOIN " . TABLE_PREFIX . "template_category_printmethod_rel tcppr ON tcppr.temp_category_id = ts.cat_id WHERE 1 and tcppr.print_method_id='" . $print_method . "' and (name LIKE '" . $searchString . "%')  ORDER BY ts.id DESC";
             }
             if ($cat_id == 0 && $searchString == '' && $print_method != '') {
-                $sql = "Select id, name, product_image, template_image, status from " . TABLE_PREFIX . "template_state ts, " . TABLE_PREFIX . "template_category_printmethod_rel tcppr where tcppr.temp_category_id = ts.cat_id and tcppr.print_method_id='" . $print_method . "' ORDER BY ts.id DESC ";
+                $sql .= "LEFT JOIN " . TABLE_PREFIX . "template_category_printmethod_rel tcppr ON tcppr.temp_category_id = ts.cat_id and tcppr.print_method_id='" . $print_method . "' ORDER BY ts.id DESC ";
             }
             if ($cat_id == 0 && $print_method == '') {
-                $sql = "Select id, name, product_image, template_image, status from  " . TABLE_PREFIX . "template_state ORDER BY id DESC";
+                $sql .= "ORDER BY ts.id DESC";
             }
             if ($cat_id != 0 && $print_method == '' && $tempId == '') {
-                $sql = "Select id, name, product_image, template_image, status from  " . TABLE_PREFIX . "template_state where cat_id = " . $cat_id . " ORDER BY id DESC";
+                $sql .= "where ts.cat_id = " . $cat_id . " ORDER BY ts.id DESC";
             }
             if ($tempId != '' && $print_method == '' && $cat_id == 0) {
-                $sql = "Select id, name, product_image, template_image, status from  " . TABLE_PREFIX . "template_state where id='" . $tempId . "' ORDER BY id DESC";
+                $sql .= "where ts.id='" . $tempId . "' ORDER BY ts.id DESC";
             }
             if ($start != '' && $range != '') {
                 $sql .= "  limit $start,$range";
             }
 
-            $result = $this->executeGenericDQLQuery($sql);
+            $result = $this->executeFetchAssocQuery($sql);
             if (!empty($result)) {
                 $images = array();
                 foreach ($result as $rows) {
@@ -144,14 +141,16 @@ class Template extends UTIL
                     $savePath = $this->getTemplateImageURL();
                     $imageURL = $savePath . $template_image;
                     $productURL = $savePath . 'products/' . $template_image;
+					$data = json_decode($rows['json_data'],true);
+					$captureImage = $data['templateConfig']['captureImage'];
                     $id = $rows['id'];
                     $status = $rows['status'];
-                    $data = array("template_image" => $template_image, "template_imagePath" => $imageURL, "product_image" => $productURL, "id" => $id, "name" => $name, "status" => $status);
+                    $data = array("captureImage" => $captureImage, "template_image" => $template_image, "template_imagePath" => $imageURL, "product_image" => $productURL, "id" => $id, "name" => $name, "status" => $status);
                     $images[] = $data;
                     //array_push($images, $data);
                 }
                 $this->closeConnection();
-                $this->response($this->json($images), 200);
+                $this->response($this->json($images,1), 200);
             } else {
                 $msg = array("status" => "nodata");
                 $this->closeConnection();
@@ -179,7 +178,7 @@ class Template extends UTIL
         $status = 0;
         try {
             if (!empty($this->_request) && isset($this->_request['category'])) {
-                $category = $this->_request['category'];
+                $category = addslashes($this->_request['category']);
                 $chk_duplicate = "SELECT COUNT(*) AS duplicate FROM " . TABLE_PREFIX . "template_category WHERE name='" . $category . "'";
                 $res = $this->executeFetchAssocQuery($chk_duplicate);
                 if ($res[0]['duplicate']) {
@@ -195,7 +194,7 @@ class Template extends UTIL
             }
 
             $this->closeConnection();
-            $this->response($this->json($msg), 200);
+            $this->response($this->json($msg,1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -220,6 +219,7 @@ class Template extends UTIL
         if (!empty($this->_request) && $this->_request['id'] && isset($this->_request['name'])) {
             extract($this->_request);
             try {
+                $name = addslashes($name);
                 $chk_duplicate = "SELECT COUNT(*) AS duplicate FROM " . TABLE_PREFIX . "template_category WHERE name='" . $name . "' AND id !='" . $id . "'";
                 $res = $this->executeFetchAssocQuery($chk_duplicate);
                 if ($res[0]['duplicate']) {
@@ -326,6 +326,7 @@ class Template extends UTIL
                     $jsonData = str_replace('\/', '/', $rows[$j]['json_data']);
                     $jsonData = $this->formatJSONToArray($jsonData, false);
                     $jsonData->templateConfig->name = $name;
+                    $name = addslashes($name);
                     $jsonData->templateConfig->category = $cate_id;
                     $jsonData = json_encode($jsonData);
                     $jsonData = $this->executeEscapeStringQuery($jsonData);
@@ -416,56 +417,63 @@ class Template extends UTIL
         try {
             $apiKey = $this->_request['apikey'];
             $refid = $this->_request['refid'];
-            $jsonData = $this->_request['data'];
+            $jsonData = json_decode(urldecode($this->_request['data']), true);
             if (is_array($jsonData)) {
                 $dataArray = $jsonData;
             } else {
                 $dataArray = $this->formatJSONToArray($jsonData);
             }
-            $tmpltName = $dataArray['templateConfig']['name'];
+            $tmpltName = addslashes($dataArray['templateConfig']['name']);
             $tmpltCategory = $dataArray['templateConfig']['category'];
             $tmpltSubCategory = $dataArray['templateConfig']['subCategory'];
             $productId = $dataArray['templateConfig']['productId'];
             $variantId = $dataArray['templateConfig']['variantId'];
             $productURL = $dataArray['templateConfig']['productURL']; //to be add in clientapp
+            $captureImage = $dataArray['templateConfig']['captureImage']; //to be add in clientapp
             $svgData = $dataArray['objects'];
 
-            $productImgContent = file_get_contents($productURL);
-            $base64ProductImgData = base64_encode($productImgContent);
-            $cartObj = Flight::carts();
-            $svgPreviewData = $cartObj->parsePrintSVG($svgData);
-            $templatePreviewData = "<svg xmlns='http://www.w3.org/2000/svg' id='svgroot' xlinkns='http://www.w3.org/1999/xlink' width='500' height='500' x='0' y='0' overflow='visible'>" . stripslashes($svgPreviewData['svgStringwithImageURL']) . "</svg>";
-            $templateProductPreviewData = "<svg xmlns='http://www.w3.org/2000/svg' id='svgroot' xlinkns='http://www.w3.org/1999/xlink' width='500' height='500' x='0' y='0' overflow='visible'><image x='0' y='0' width='500' height='500' id='svg_1' xmlns:xlink='http://www.w3.org/1999/xlink' xlink:href='data:image/png;base64," . stripslashes($base64ProductImgData) . "'></image>" . stripslashes($svgPreviewData['svgStringwithImageURL']) . "</svg>";
-            $sql0 = "Select max(id) as id from " . TABLE_PREFIX . "template_state";
-            $result0 = $this->getResult($sql0);
-            $maxId = $result0[0]['id'] + 1;
-            $ext = 'svg';
-            $tmpltImgFileName = $maxId . '.' . $ext;
-            $tmpltImgSavePath = $this->getTemplateImagePath();
-            if (!file_exists($tmpltImgSavePath)) {
-                mkdir($tmpltImgSavePath, 0777, true);
-            }
-            $tmpltImgFilePath = $tmpltImgSavePath . $tmpltImgFileName;
-            $tmpltImgFileURL = $this->getTemplateImageURL() . $tmpltImgFileName;
-            $tmpltImgStatus = file_put_contents($tmpltImgFilePath, $templatePreviewData);
+            $checkExistSql = "SELECT count(*) AS nos FROM ".TABLE_PREFIX."template_state WHERE name = '".$tmpltName."'";
+            $exist = $this->executeFetchAssocQuery($checkExistSql);
+            if(!empty($exist) && $exist[0]['nos']){
+                $msg = array("status" => "failed", "sql" => "Duplicate Template Name.");
+            }else{
+                $productImgContent = file_get_contents($productURL);
+                $base64ProductImgData = base64_encode($productImgContent);
+                $cartObj = Flight::carts();
+                $svgPreviewData = $cartObj->parsePrintSVG($svgData);
+                $templatePreviewData = "<svg xmlns='http://www.w3.org/2000/svg' id='svgroot' xlinkns='http://www.w3.org/1999/xlink' width='500' height='500' x='0' y='0' overflow='visible'>" . stripslashes($svgPreviewData['svgStringwithImageURL']) . "</svg>";
+                $templateProductPreviewData = "<svg xmlns='http://www.w3.org/2000/svg' id='svgroot' xlinkns='http://www.w3.org/1999/xlink' width='500' height='500' x='0' y='0' overflow='visible'><image x='0' y='0' width='500' height='500' id='svg_1' xmlns:xlink='http://www.w3.org/1999/xlink' xlink:href='data:image/png;base64," . stripslashes($base64ProductImgData) . "'></image>" . stripslashes($svgPreviewData['svgStringwithImageURL']) . "</svg>";
+                $sql0 = "Select max(id) as id from " . TABLE_PREFIX . "template_state";
+                $result0 = $this->getResult($sql0);
+                $maxId = $result0[0]['id'] + 1;
+                $ext = 'svg';
+                $tmpltImgFileName = $maxId . '.' . $ext;
+                $tmpltImgSavePath = $this->getTemplateImagePath();
+                if (!file_exists($tmpltImgSavePath)) {
+                    mkdir($tmpltImgSavePath, 0777, true);
+                }
+                $tmpltImgFilePath = $tmpltImgSavePath . $tmpltImgFileName;
+                $tmpltImgFileURL = $this->getTemplateImageURL() . $tmpltImgFileName;
+                $tmpltImgStatus = file_put_contents($tmpltImgFilePath, $templatePreviewData);
 
-            $tmpltProductImgSavePath = $this->getTemplateImagePath() . 'products/';
-            if (!file_exists($tmpltProductImgSavePath)) {
-                mkdir($tmpltProductImgSavePath, 0777, true);
-            }
-            $tmpltProductImgFilePath = $tmpltProductImgSavePath . $tmpltImgFileName;
-            $tmpltProductImgFileURL = $this->getTemplateImageURL() . 'products/' . $tmpltImgFileName;
-            $tmpltProductImgStatus = file_put_contents($tmpltProductImgFilePath, $templateProductPreviewData);
-            $dataArray['templateConfig']['templateImage'] = $tmpltImgFileURL;
-            $dataArray['templateConfig']['productImage'] = $tmpltProductImgFileURL;
-            $dataArray = json_encode($dataArray);
-            $dataArray = mysqli_real_escape_string($this->db, $dataArray);
-            $sql = "INSERT INTO " . TABLE_PREFIX . "template_state (id, name, json_data, product_image, template_image, cat_id, sub_id, pid, pvid, date_created) VALUES ($maxId, '$tmpltName', '$dataArray', '$tmpltImgFileName', '$tmpltImgFileName', $tmpltCategory, $tmpltSubCategory, $productId, $variantId, now())";
-            $status = $this->executeGenericDMLQuery($sql);
-            if ($status) {
-                $msg = array("status" => "success", "tmplid" => $maxId, "tmplImage" => $tmpltImgFileURL, "tmplThumbImage" => $tmpltProductImgFileURL);
-            } else {
-                $msg = array("status" => "failed", "sql" => $sql);
+                $tmpltProductImgSavePath = $this->getTemplateImagePath() . 'products/';
+                if (!file_exists($tmpltProductImgSavePath)) {
+                    mkdir($tmpltProductImgSavePath, 0777, true);
+                }
+                $tmpltProductImgFilePath = $tmpltProductImgSavePath . $tmpltImgFileName;
+                $tmpltProductImgFileURL = $this->getTemplateImageURL() . 'products/' . $tmpltImgFileName;
+                $tmpltProductImgStatus = file_put_contents($tmpltProductImgFilePath, $templateProductPreviewData);
+                $dataArray['templateConfig']['templateImage'] = $tmpltImgFileURL;
+                $dataArray['templateConfig']['productImage'] = $tmpltProductImgFileURL;
+                $dataArray = json_encode($dataArray);
+                $dataArray = mysqli_real_escape_string($this->db, $dataArray);
+                $sql = "INSERT INTO " . TABLE_PREFIX . "template_state (id, name, json_data, product_image, template_image, cat_id, sub_id, pid, pvid, date_created) VALUES ($maxId, '$tmpltName', '$dataArray', '$tmpltImgFileName', '$tmpltImgFileName', $tmpltCategory, $tmpltSubCategory, $productId, $variantId, now())";
+                $status = $this->executeGenericDMLQuery($sql);
+                if ($status) {
+                    $msg = array("status" => "success", "tmplid" => $maxId, "captureImage" => $captureImage, "tmplImage" => $tmpltImgFileURL, "tmplThumbImage" => $tmpltProductImgFileURL);
+                } else {
+                    $msg = array("status" => "failed", "sql" => $sql);
+                }
             }
             $this->response($this->json($msg), 200);
         } catch (Exception $e) {
