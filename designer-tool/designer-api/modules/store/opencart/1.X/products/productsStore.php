@@ -24,7 +24,8 @@ class ProductsStore extends UTIL
     {
         $error = '';
         $result = $this->storeApiLogin();
-        $filter = array("filter_name" => "xe_size");
+		$size = $this->getStoreAttributes("xe_size");
+        $filter = array("filter_name" => $size);
         if ($this->storeApiLogin == true) {
             $key = $GLOBALS['params']['apisessId'];
             try {
@@ -60,9 +61,10 @@ class ProductsStore extends UTIL
         if (!empty($this->_request['productId'])) {
             $productId = $this->_request['productId'];
         }
+		$color = $this->getStoreAttributes("xe_color");
         $lastLoaded = ($this->_request['lastLoaded']) ? $this->_request['lastLoaded'] : 0;
         $loadCount = ($this->_request['loadCount']) ? $this->_request['loadCount'] : 0;
-        $filter = array("filter_name" => "xe_color", "lastLoaded" => $lastLoaded, "loadCount" => $loadCount, 'oldConfId' => $productId);
+        $filter = array("filter_name" => $color, "lastLoaded" => $lastLoaded, "loadCount" => $loadCount, 'oldConfId' => $productId);
         if ($this->storeApiLogin == true) {
             $key = $GLOBALS['params']['apisessId'];
             try {
@@ -169,7 +171,7 @@ class ProductsStore extends UTIL
                 $error = true;
             }
             if (!$error) {
-                $this->response($this->json($result), 200);
+                $this->response($this->json($result,1), 200);
             } else {
                 $msg = array('status' => 'failed', 'error' => json_decode($result));
                 $this->response($this->json($msg), 200);
@@ -374,7 +376,8 @@ class ProductsStore extends UTIL
                 $byAdmin = false;
             }
             try {
-                $resultArr = (!$byAdmin) ? $this->datalayer->getSizeAndQuantity((object) $this->_request) : $this->datalayer->getSizeVariants((object) $this->_request);
+               /*  $resultArr = (!$byAdmin) ? $this->datalayer->getSizeAndQuantity((object) $this->_request) : $this->datalayer->getSizeVariants((object) $this->_request); */
+				$resultArr = $this->datalayer->getSizeAndQuantity((object) $this->_request);
                 foreach ($resultArr['quantities'] as $key => $value) {
                     $surplusPrice = $resultArr['quantities'][$key]['price'];
                     $sql = "SELECT ref_id,parent_id FROM " . TABLE_PREFIX . "template_state_rel WHERE temp_id = " . $product_id;
@@ -484,8 +487,7 @@ class ProductsStore extends UTIL
     {
         $error = false;
         if (!empty($this->_request['data'])) {
-            //$data = json_decode($this->_request['data'],true);
-            $data = $this->_request['data'];
+            $data = json_decode(urldecode($this->_request['data']), true);
             $apikey = $this->_request['apikey'];
             $result = $this->storeApiLogin();
             if ($this->storeApiLogin == true) {
@@ -738,6 +740,13 @@ class ProductsStore extends UTIL
                 $resultArr->printsize = $printsize;
                 $printareatype = $this->getPrintareaType($product_id);
                 $resultArr->printareatype = $printareatype;
+                // insert multiple boundary data; if available
+                $settingsObj = Flight::multipleBoundary();
+                $multiBoundData = $settingsObj->getMultiBoundMaskData($product_id);
+                if (!empty($multiBoundData)) {
+                    $resultArr->printareatype['multipleBoundary'] = "true";
+                    $resultArr->multiple_boundary = $multiBoundData;
+                }
                 $resultArr->sizeAdditionalprices = $this->getSizeVariantAdditionalPriceClient($product_id, $this->_request['print_method_id']);
                 $surplusPrice = $resultArr->price;
                 if (isset($product_id) && $product_id) {
@@ -780,7 +789,7 @@ class ProductsStore extends UTIL
                 }
                 $resultArr->templates = $templates;
 
-                $sql = "SELECT  distinct print_method_id,price,is_whitebase
+                    $sql = "SELECT distinct pk_id, print_method_id,price,is_whitebase
                         FROM   " . TABLE_PREFIX . "product_additional_prices
                         WHERE  product_id =" . $product_id . "
                         AND variant_id =" . $simpleProductId . " ORDER BY pk_id";
@@ -855,6 +864,13 @@ class ProductsStore extends UTIL
                 $resultArr->printsize = $printsize;
                 $printareatype = $this->getPrintareaType($product_id);
                 $resultArr->printareatype = $printareatype;
+                // insert multiple boundary data; if available
+                $settingsObj = Flight::multipleBoundary();
+                $multiBoundData = $settingsObj->getMultiBoundMaskData($product_id);
+                if (!empty($multiBoundData)) {
+                    $resultArr->printareatype['multipleBoundary'] = "true";
+                    $resultArr->multiple_boundary = $multiBoundData;
+                }
                 $cVariants = $resultArr->product->variants;
                 $cVariantsIds = array();
                 $resultArr->sizeAdditionalprices = $this->getSizeVariantAdditionalPrice($product_id);
@@ -1017,37 +1033,54 @@ class ProductsStore extends UTIL
             $result_arr = array();
             $filters = array('store' => $this->getDefaultStoreId());
             $confProductId = $this->_request['pid'];
+            $isAdmin = (isset($this->_request['isAdmin']) && trim($this->_request['isAdmin']) == true) ? true : false;
 
-            $fieldSql = 'SELECT distinct pm.pk_id AS print_method_id, pm.name';
-            if ($additional_price) {
-                $fieldSql .= ', pst.additional_price';
-            }
+            //  Do not send any print method ID for multiple boundary product
+            $MultiBoundQry = "SELECT * FROM " . TABLE_PREFIX . "multi_bound_print_profile_rel WHERE product_id = '" . $confProductId . "'";
+            $records = $this->executeFetchAssocQuery($MultiBoundQry);
+            if (!empty($records) && !$isAdmin) {
+                $result_arr[0]['print_method_id'] = 0;
+                $result_arr[0]['name'] = "multiple";
+                $result_arr[0]['fetched_from'] = 'DB';
+            } else {
+                $fieldSql = 'SELECT distinct pm.pk_id AS print_method_id, pm.name';
+                if ($additional_price) {
+                    $fieldSql .= ', pst.additional_price';
+                }
 
-            // Check whether product has specific print method assigned //
-            $productPrintTypeSql = $fieldSql . ' FROM ' . TABLE_PREFIX . "print_method pm
-            INNER JOIN " . TABLE_PREFIX . "product_printmethod_rel ppr ON ppr.print_method_id=pm.pk_id
-            JOIN " . TABLE_PREFIX . "print_setting AS pst ON pm.pk_id=pst.pk_id
-            WHERE ppr.product_id=" . $confProductId . " order by pm.pk_id ASC";
-            $res = $this->executeFetchAssocQuery($productPrintTypeSql);
-            $result_arr = array();
-            if (empty($res)) {
-                try {
-                    $catIds = $this->datalayer->getProductCategoryList($confProductId);
+                // Check whether product has specific print method assigned //
+                $productPrintTypeSql = $fieldSql . ' FROM ' . TABLE_PREFIX . "print_method pm
+                INNER JOIN " . TABLE_PREFIX . "product_printmethod_rel ppr ON ppr.print_method_id=pm.pk_id
+                JOIN " . TABLE_PREFIX . "print_setting AS pst ON pm.pk_id=pst.pk_id
+                WHERE ppr.product_id=" . $confProductId . " order by pm.pk_id ASC";
+                $res = $this->executeFetchAssocQuery($productPrintTypeSql);
+                $result_arr = array();
+                if (empty($res)) {
+                    try {
+                        $catIds = $this->datalayer->getProductCategoryList($confProductId);
 
-                    if (!empty($catIds)) {
-                        $catIds = implode(',', $catIds);
-                        $catSql = $fieldSql . ' FROM ' . TABLE_PREFIX . 'product_category_printmethod_rel AS pcpml
-                                JOIN ' . TABLE_PREFIX . 'print_method AS pm ON pm.pk_id = pcpml.print_method_id
-                                JOIN ' . TABLE_PREFIX . 'print_setting AS pst ON pm.pk_id=pst.pk_id
-                                LEFT JOIN ' . TABLE_PREFIX . 'print_method_setting_rel pmsr ON pst.pk_id=pmsr.print_setting_id
-                                WHERE pcpml.product_category_id IN(' . $catIds . ') order by pm.pk_id ASC';
-                        $res = $this->executeFetchAssocQuery($catSql);
-                        foreach ($res as $k => $v) {
-                            $result_arr[$k]['print_method_id'] = $v['print_method_id'];
-                            $result_arr[$k]['name'] = $v['name'];
-                            $result_arr[$k]['fetched_from'] = 'category';
-                        }
-                        if (empty($res)) {
+                        if (!empty($catIds)) {
+                            $catIds = implode(',', $catIds);
+                            $catSql = $fieldSql . ' FROM ' . TABLE_PREFIX . 'product_category_printmethod_rel AS pcpml
+                                    JOIN ' . TABLE_PREFIX . 'print_method AS pm ON pm.pk_id = pcpml.print_method_id
+                                    JOIN ' . TABLE_PREFIX . 'print_setting AS pst ON pm.pk_id=pst.pk_id
+                                    LEFT JOIN ' . TABLE_PREFIX . 'print_method_setting_rel pmsr ON pst.pk_id=pmsr.print_setting_id
+                                    WHERE pcpml.product_category_id IN(' . $catIds . ') order by pm.pk_id ASC';
+                            $res = $this->executeFetchAssocQuery($catSql);
+                            foreach ($res as $k => $v) {
+                                $result_arr[$k]['print_method_id'] = $v['print_method_id'];
+                                $result_arr[$k]['name'] = $v['name'];
+                                $result_arr[$k]['fetched_from'] = 'category';
+                            }
+                            if (empty($res)) {
+                                $res = $printProfile->getDefaultPrintMethodId();
+                                foreach ($res as $k => $v) {
+                                    $result_arr[$k]['print_method_id'] = $v['print_method_id'];
+                                    $result_arr[$k]['name'] = $v['name'];
+                                    $result_arr[$k]['fetched_from'] = 'default';
+                                }
+                            }
+                        } else {
                             $res = $printProfile->getDefaultPrintMethodId();
                             foreach ($res as $k => $v) {
                                 $result_arr[$k]['print_method_id'] = $v['print_method_id'];
@@ -1055,25 +1088,17 @@ class ProductsStore extends UTIL
                                 $result_arr[$k]['fetched_from'] = 'default';
                             }
                         }
-                    } else {
-                        $res = $printProfile->getDefaultPrintMethodId();
-                        foreach ($res as $k => $v) {
-                            $result_arr[$k]['print_method_id'] = $v['print_method_id'];
-                            $result_arr[$k]['name'] = $v['name'];
-                            $result_arr[$k]['fetched_from'] = 'default';
-                        }
+                    } catch (Exception $e) {
+                        $result_arr = json_encode(array('isFault' => 1, 'faultMessage' => $e->getMessage()));
                     }
-                } catch (Exception $e) {
-                    $result_arr = json_encode(array('isFault' => 1, 'faultMessage' => $e->getMessage()));
-                }
-            } else {
-                foreach ($res as $k => $v) {
-                    $result_arr[$k]['print_method_id'] = $v['print_method_id'];
-                    $result_arr[$k]['name'] = $v['name'];
-                    $result_arr[$k]['fetched_from'] = 'product';
+                } else {
+                    foreach ($res as $k => $v) {
+                        $result_arr[$k]['print_method_id'] = $v['print_method_id'];
+                        $result_arr[$k]['name'] = $v['name'];
+                        $result_arr[$k]['fetched_from'] = 'product';
+                    }
                 }
             }
-
             $this->response($this->json($result_arr), 200);
         } else {
             $msg = array('status' => 'apiLoginFailed', 'error' => json_decode($result));

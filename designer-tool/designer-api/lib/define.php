@@ -30,3 +30,6 @@ define('SHARED_IMAGE_DIR', ASSET_PATH . "/images/capturedImage/shared/");
 define('PRE_DECO_PRODUCT_IMAGE_DIR', ASSET_PATH . "/images/capturedImage/preDecoProduct/");
 define('TEMPLATE_PREVIEW_IMAGE_DIR', ASSET_PATH . "/images/capturedImage/template/");
 define('USERSLOT_PREVIEW_IMAGE_DIR', ASSET_PATH . "/images/capturedImage/userslot/");
+define('HTML5_MULTIPLE_BOUNDARY_DIR', ASSET_PATH . "/images/multipleBoundary/");
+define('ADMIN_LANGUAGE_PATH', '/designer-admin');
+define('ADMIN_LANGUAGE_DIR', ADMIN_LANGUAGE_PATH . "/languages/");

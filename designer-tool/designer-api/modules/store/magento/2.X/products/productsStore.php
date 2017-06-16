@@ -39,7 +39,8 @@ class ProductsStore extends UTIL
                 'store' => $this->getDefaultStoreId(),
                 'attributes' => $attributes,
                 'configPid' => $configProduct_id,
-
+                'color' => $this->getStoreAttributes("xe_color"),
+                'size' => $this->getStoreAttributes("xe_size")
             );
 
             if (!$error) {
@@ -83,6 +84,21 @@ class ProductsStore extends UTIL
 
                         $printareatype = $this->getPrintareaType($confProductId);
                         $resultArr->printareatype = $printareatype;
+                        // insert multiple boundary data; if available
+                        $settingsObj = Flight::multipleBoundary();
+                        $multiBoundData = $settingsObj->getMultiBoundMaskData($confProductId);
+                        if (!empty($multiBoundData)) {
+                            $resultArr->printareatype['multipleBoundary'] = "true";
+                            $resultArr->multiple_boundary = $multiBoundData;
+                        }
+
+                        /* $cVariants = $resultArr->variants;
+                        $cVariantsIds = array();
+                        for($i=0; $i<sizeof($cVariants); $i++)
+                        {
+                        array_push($cVariantsIds, $cVariants[$i]->data->id);
+                        } */
+
                         $surplusPrice = $resultArr->price;
                         if (isset($product_id) && $product_id) {
                             $sql = "SELECT ref_id,parent_id FROM " . TABLE_PREFIX . "template_state_rel WHERE temp_id = " . $configProduct_id;
@@ -111,7 +127,7 @@ class ProductsStore extends UTIL
                         $resultArr->templates = $templates;
                         $resultArr->sizeAdditionalprices = $this->getSizeVariantAdditionalPriceClient($confProductId, $this->_request['print_method_id']);
                         //$resultArr->additionalprices = $this->getAdditionalPrintingPriceOfVariants($confProductId, $simpleProductId);
-                        $sql = "SELECT  distinct pk_id,print_method_id,price,is_whitebase
+                        $sql = "SELECT distinct pk_id, print_method_id,price,is_whitebase
                             FROM   " . TABLE_PREFIX . "product_additional_prices
                             WHERE  product_id =" . $confProductId . "
                             AND variant_id =" . $simpleProductId . " ORDER BY pk_id";
@@ -188,6 +204,8 @@ class ProductsStore extends UTIL
                     'limit' => $limit,
                     'store' => $store,
                     'offset' => $offset,
+                    'color' => $this->getStoreAttributes("xe_color"),
+                    'size' => $this->getStoreAttributes("xe_size")
                 );
                 $result = $this->apiCall('Product', 'getVariants', $filters);
                 $result = $result->result;
@@ -263,6 +281,8 @@ class ProductsStore extends UTIL
                 'productId' => $product_id,
                 'store' => $this->getDefaultStoreId(),
                 'simpleProductId' => $varient_id,
+                'color' => $this->getStoreAttributes("xe_color"),
+                'size' => $this->getStoreAttributes("xe_size")
             );
 
             if (!$error) {
@@ -320,6 +340,8 @@ class ProductsStore extends UTIL
                     'offset' => $offset,
                     'limit' => $limit,
                     'preDecorated' => $preDecorated,
+                    'color' => $this->getStoreAttributes("xe_color"),
+                    'size' => $this->getStoreAttributes("xe_size")
                 );
                 $result = $this->apiCall('Product', 'getAllProducts', $filters);
                 $result = $result->result;
@@ -369,7 +391,7 @@ class ProductsStore extends UTIL
             } catch (Exception $e) {
                 $result = json_encode(array('isFault' => 1, 'faultMessage' => $e->getMessage()));
             }
-            $this->response($this->json($result), 200);
+            $this->response($this->json($result,1), 200);
         } else {
             $msg = array('status' => 'apiLoginFailed', 'error' => json_encode($finalResult));
             $this->response($this->json($msg), 200);
@@ -466,42 +488,59 @@ class ProductsStore extends UTIL
             $key = $GLOBALS['params']['apisessId'];
             $result_arr = array();
             $confProductId = $this->_request['pid'];
+            $isAdmin = (isset($this->_request['isAdmin']) && trim($this->_request['isAdmin']) == true) ? true : false;
+            //  Do not send any print method ID for multiple boundary product
+            $MultiBoundQry = "SELECT * FROM " . TABLE_PREFIX . "multi_bound_print_profile_rel WHERE product_id = '" . $confProductId . "'";
+            $records = $this->executeFetchAssocQuery($MultiBoundQry);
+            if (!empty($records) && !$isAdmin) {
+                $result_arr[0]['print_method_id'] = 0;
+                $result_arr[0]['name'] = "multiple";
+                $result_arr[0]['fetched_from'] = 'DB';
+            } else {
+                $fieldSql = 'SELECT distinct pm.pk_id AS print_method_id, pm.name';
+                if ($additional_price) {
+                    $fieldSql .= ', pst.additional_price';
+                }
 
-            $fieldSql = 'SELECT distinct pm.pk_id AS print_method_id, pm.name';
-            if ($additional_price) {
-                $fieldSql .= ', pst.additional_price';
-            }
-            // Check whether product has specific print method assigned //
-            $productPrintTypeSql = $fieldSql . ' FROM ' . TABLE_PREFIX . "print_method pm
-            INNER JOIN " . TABLE_PREFIX . "product_printmethod_rel ppr ON ppr.print_method_id=pm.pk_id
-            JOIN " . TABLE_PREFIX . "print_setting AS pst ON pm.pk_id=pst.pk_id
-            WHERE ppr.product_id=" . $confProductId . " order by pm.pk_id ASC";
-            $res = $this->executeFetchAssocQuery($productPrintTypeSql);
-            $result_arr = array();
-            if (empty($res)) {
-                $filters = array(
-                    'productId' => $confProductId,
-                    'store' => $this->getDefaultStoreId(),
-                );
-                try {
-                    $result = $this->apiCall('Product', 'getCategoriesByProduct', $filters);
-                    $result = $result->result;
-                    $catIds = json_decode($result, true);
-                    $printPObj = Flight::printProfile();
-                    if (!empty($catIds)) {
-                        $catIds = implode(',', $catIds);
-                        $catSql = $fieldSql . ' FROM ' . TABLE_PREFIX . 'product_category_printmethod_rel AS pcpml
-                                JOIN ' . TABLE_PREFIX . 'print_method AS pm ON pm.pk_id = pcpml.print_method_id
-                                JOIN ' . TABLE_PREFIX . 'print_setting AS pst ON pm.pk_id=pst.pk_id
-                                LEFT JOIN ' . TABLE_PREFIX . 'print_method_setting_rel pmsr ON pst.pk_id=pmsr.print_setting_id
-                                WHERE pcpml.product_category_id IN(' . $catIds . ') order by pm.pk_id ASC';
-                        $res = $this->executeFetchAssocQuery($catSql);
-                        foreach ($res as $k => $v) {
-                            $result_arr[$k]['print_method_id'] = $v['print_method_id'];
-                            $result_arr[$k]['name'] = $v['name'];
-                            $result_arr[$k]['fetched_from'] = 'category';
-                        }
-                        if (empty($res)) {
+                // Check whether product has specific print method assigned //
+                $productPrintTypeSql = $fieldSql . ' FROM ' . TABLE_PREFIX . "print_method pm
+                INNER JOIN " . TABLE_PREFIX . "product_printmethod_rel ppr ON ppr.print_method_id=pm.pk_id
+                JOIN " . TABLE_PREFIX . "print_setting AS pst ON pm.pk_id=pst.pk_id
+                WHERE ppr.product_id=" . $confProductId . " order by pm.pk_id ASC";
+                $res = $this->executeFetchAssocQuery($productPrintTypeSql);
+                $result_arr = array();
+                if (empty($res)) {
+                    $filters = array(
+                        'productId' => $confProductId,
+                        'store' => $this->getDefaultStoreId(),
+                    );
+                    try {
+                        $result = $this->apiCall('Product', 'getCategoriesByProduct', $filters);
+                        $result = $result->result;
+                        $catIds = json_decode($result, true);
+                           $printPObj = Flight::printProfile();                        
+                           if (!empty($catIds)) {
+                            $catIds = implode(',', $catIds);
+                            $catSql = $fieldSql . ' FROM ' . TABLE_PREFIX . 'product_category_printmethod_rel AS pcpml
+                                    JOIN ' . TABLE_PREFIX . 'print_method AS pm ON pm.pk_id = pcpml.print_method_id
+                                    JOIN ' . TABLE_PREFIX . 'print_setting AS pst ON pm.pk_id=pst.pk_id
+                                    LEFT JOIN ' . TABLE_PREFIX . 'print_method_setting_rel pmsr ON pst.pk_id=pmsr.print_setting_id
+                                    WHERE pcpml.product_category_id IN(' . $catIds . ') order by pm.pk_id ASC';
+                            $res = $this->executeFetchAssocQuery($catSql);
+                            foreach ($res as $k => $v) {
+                                $result_arr[$k]['print_method_id'] = $v['print_method_id'];
+                                $result_arr[$k]['name'] = $v['name'];
+                                $result_arr[$k]['fetched_from'] = 'category';
+                            }
+                            if (empty($res)) {
+                                $res = $printPObj->getDefaultPrintMethodId();
+                                foreach ($res as $k => $v) {
+                                    $result_arr[$k]['print_method_id'] = $v['print_method_id'];
+                                    $result_arr[$k]['name'] = $v['name'];
+                                    $result_arr[$k]['fetched_from'] = 'default';
+                                }
+                            }
+                        } else {
                             $res = $printPObj->getDefaultPrintMethodId();
                             foreach ($res as $k => $v) {
                                 $result_arr[$k]['print_method_id'] = $v['print_method_id'];
@@ -509,22 +548,15 @@ class ProductsStore extends UTIL
                                 $result_arr[$k]['fetched_from'] = 'default';
                             }
                         }
-                    } else {
-                        $res = $printPObj->getDefaultPrintMethodId();
-                        foreach ($res as $k => $v) {
-                            $result_arr[$k]['print_method_id'] = $v['print_method_id'];
-                            $result_arr[$k]['name'] = $v['name'];
-                            $result_arr[$k]['fetched_from'] = 'default';
-                        }
+                    } catch (Exception $e) {
+                        $result_arr = json_encode(array('isFault' => 1, 'faultMessage' => $e->getMessage()));
                     }
-                } catch (Exception $e) {
-                    $result_arr = json_encode(array('isFault' => 1, 'faultMessage' => $e->getMessage()));
-                }
-            } else {
-                foreach ($res as $k => $v) {
-                    $result_arr[$k]['print_method_id'] = $v['print_method_id'];
-                    $result_arr[$k]['name'] = $v['name'];
-                    $result_arr[$k]['fetched_from'] = 'product';
+                } else {
+                    foreach ($res as $k => $v) {
+                        $result_arr[$k]['print_method_id'] = $v['print_method_id'];
+                        $result_arr[$k]['name'] = $v['name'];
+                        $result_arr[$k]['fetched_from'] = 'product';
+                    }
                 }
             }
             $this->response($this->json($result_arr), 200);
@@ -599,6 +631,8 @@ class ProductsStore extends UTIL
                 'store' => $this->getDefaultStoreId(),
                 'attributes' => $attributes,
                 'configPid' => $configProduct_id,
+                'color' => $this->getStoreAttributes("xe_color"),
+                'size' => $this->getStoreAttributes("xe_size")
             );
             if (!$error) {
                 try {
@@ -611,6 +645,22 @@ class ProductsStore extends UTIL
                         $resultArr = json_decode($result);
                         $confProductId = $resultArr->pid;
                         $simpleProductId = $resultArr->pvid;
+                        $colorId = $resultArr->xe_color_id;
+                        $sqlSwatch = "SELECT  hex_code,image_name FROM " . TABLE_PREFIX . "swatches WHERE attribute_id='" . $colorId . "'";
+                        $res = $this->executeFetchAssocQuery($sqlSwatch);
+                        if ($res) {
+                            if ($res[0]['hex_code']) {
+                                $colorSwatch = $res[0]['hex_code'];
+                            } else {
+                                $imageName = $res[0]['image_name'];
+                                $swatchWidth = '45';
+                                $swatchDir = $this->getSwatchURL();
+                                $colorSwatch = $swatchDir . $swatchWidth . 'x' . $swatchWidth . '/' . $imageName;
+                            }
+                        } else {
+                            $colorSwatch = '';
+                        }
+                        $resultArr->colorSwatch = $colorSwatch;
                         $this->_request['productid'] = $confProductId; //Mask Info
                         $this->_request['returns'] = true; //Mask Info
                         $maskInfo = $this->getMaskData(sizeof($resultArr->sides));
@@ -619,6 +669,13 @@ class ProductsStore extends UTIL
                         $resultArr->printsize = $printsize;
                         $printareatype = $this->getPrintareaType($confProductId);
                         $resultArr->printareatype = $printareatype;
+                        // insert multiple boundary data; if available
+                        $settingsObj = Flight::multipleBoundary();
+                        $multiBoundData = $settingsObj->getMultiBoundMaskData($confProductId);
+                        if (!empty($multiBoundData)) {
+                            $resultArr->printareatype['multipleBoundary'] = "true";
+                            $resultArr->multiple_boundary = $multiBoundData;
+                        }
                         $additionalprices = $this->getAdditionalPrintingPriceOfVariants($confProductId, $simpleProductId);
                         $resultArr->additionalprices = $additionalprices;
                         $resultArr->sizeAdditionalprices = $this->getSizeVariantAdditionalPrice($confProductId);
@@ -681,6 +738,7 @@ class ProductsStore extends UTIL
             $key = $GLOBALS['params']['apisessId'];
             $filters = array(
                 'store' => $this->getDefaultStoreId(),
+                'size' => $this->getStoreAttributes("xe_size")
             );
             try {
                 $result = $this->apiCall('Product', 'getSizeArr', $filters);
@@ -730,6 +788,7 @@ class ProductsStore extends UTIL
                     'lastLoaded' => $lastLoaded,
                     'loadCount' => $loadCount,
                     'oldConfId' => $productId,
+                    'color' => $this->getStoreAttributes("xe_color"),
                 );
                 $result = $this->apiCall('Product', 'getColorArr', $filters);
                 $result = $result->result;
@@ -798,14 +857,14 @@ class ProductsStore extends UTIL
     {
         $error = false;
         if (!empty($this->_request['data'])) {
-            $data = $this->_request['data'];
+            $data = json_decode(urldecode($this->_request['data']), true);
             $apikey = $this->_request['apikey'];
             $result = $this->storeApiLogin();
             if ($this->storeApiLogin == true) {
                 $key = $GLOBALS['params']['apisessId'];
                 if (!$error) {
                     try {
-                        $arr = array('store' => $this->getDefaultStoreId(), 'data' => json_encode($data), 'configFile' => json_encode($data['images']), 'oldConfId' => $data['simpleproduct_id'], 'varColor' => $data['color_id'], 'varSize' => json_encode($data['sizes']));
+                        $arr = array('store' => $this->getDefaultStoreId(), 'data' => json_encode($data), 'configFile' => json_encode($data['images']), 'oldConfId' => $data['simpleproduct_id'], 'varColor' => $data['color_id'], 'varSize' => json_encode($data['sizes']), 'color' => $this->getStoreAttributes("xe_color"), 'size' => $this->getStoreAttributes("xe_size"), 'attrSet' => $this->getStoreAttributes("inkXE"));
                         $result = $this->apiCall('Product', 'addTemplateProducts', $arr);
                         $result = $result->result;
                         $resultData = json_decode($result, true);
@@ -1003,6 +1062,7 @@ class ProductsStore extends UTIL
                             JOIN " . TABLE_PREFIX . "print_setting ps ON pm.pk_id=ps.pk_id
                             LEFT JOIN " . TABLE_PREFIX . "print_method_setting_rel pmsr ON ps.pk_id=pmsr.print_setting_id
                             WHERE ps.is_default='1' AND pm.is_enable='1' AND ps.is_default='1'";
+
                             $res = $this->executeFetchAssocQuery($default_print_type);
                             $printDetails[0]['print_method_id'] = $res[0]['pk_id'];
                             $printDetails[0]['name'] = $res[0]['name'];
@@ -1083,7 +1143,9 @@ class ProductsStore extends UTIL
                 $productInfo = array(
                     'configId' => $this->_request['pid'],
                     'sizeId' => $this->_request['xe_size'],
-                    'colorId' => $this->_request['xe_color']
+                    'colorId' => $this->_request['xe_color'],
+                    'color' => $this->getStoreAttributes("xe_color"),
+                    'size' => $this->getStoreAttributes("xe_size")
                 );
                 $result = $this->apiCall('Product','getSimpleProductId',$productInfo);
                 $result = $result->result;

@@ -37,6 +37,8 @@ class ComponentStore
     const CLEAR_ZIP_DURATION = 1; //1 Day
     const CLEAR_USERSLOT_DURATION = 2; //In Day(s)
     const HTML5_BACKGROUND_PATTERN_DIR = HTML5_BACKGROUND_PATTERN_DIR;
+    const HTML5_MULTIPLE_BOUNDARY_DIR = HTML5_MULTIPLE_BOUNDARY_DIR;
+	const ADMIN_LANGUAGE_DIR = ADMIN_LANGUAGE_DIR;
 
     /**
      * check store shop user login
@@ -144,7 +146,7 @@ class ComponentStore
         $result = array();
         try {
             if ($user_id && $user_id > 0) {
-                $sql = "Select slot_id, user_id, status, slot_image, uid from " . TABLE_PREFIX . "user_slot where user_id=" . $user_id;
+                $sql = "Select slot_id, user_id, json_data, status, slot_image, uid from " . TABLE_PREFIX . "user_slot where user_id=" . $user_id;
                 //$sql .= ($user_id && $user_id>0)?"where user_id=".$user_id:"where uid='". $uid."'";
                 $result = $this->executeFetchAssocQuery($sql);
             }
@@ -152,15 +154,30 @@ class ComponentStore
             if (!empty($result)) {
                 $slotBasePath = $this->getSlotsPreviewURL();
                 foreach ($result as $rows) {
+		    $CapturedImageUrl=$this->getCapturedImageUrl();
                     $imageURL = ($rows['user_id'] && $rows['user_id'] > 0) ? $slotBasePath . $rows['user_id'] . '/' . $rows['slot_image'] : $slotBasePath . $rows['uid'] . '/' . $rows['slot_image'];
-                    $responseData[] = array(
-                        "slotImage" => $rows['slot_image'],
-                        "slotImageUrl" => $imageURL,
-                        "slotId" => $rows['slot_id'],
-                        "userId" => $rows['user_id'],
-                        "status" => $rows['status'],
-                        "uid" => $rows['uid'],
-                    );
+					if (preg_match('|^http(s)?://|i', $this->formatJSONToArray($rows['json_data'], false)->captureSlot)) {
+					    $responseData[] = array(
+							"slotImage" => $rows['slot_image'],
+							"slotImageUrl" => $imageURL,
+							"slotId" => $rows['slot_id'],
+							"userId" => $rows['user_id'],
+							"status" => $rows['status'],
+							"uid" => $rows['uid'],
+							"captureSlot" => $this->formatJSONToArray($rows['json_data'], false)->captureSlot
+						);
+					} else {
+						$responseData[] = array(
+							"slotImage" => $rows['slot_image'],
+							"slotImageUrl" => $imageURL,
+							"slotId" => $rows['slot_id'],
+							"userId" => $rows['user_id'],
+							"status" => $rows['status'],
+							"uid" => $rows['uid'],
+							"captureSlot" => $CapturedImageUrl.$this->formatJSONToArray($rows['json_data'], false)->captureSlot
+						);
+					}	
+		        $CapturedImageUrl=null;
                 }
             } else {
                 $responseData = array("status" => "nodata");

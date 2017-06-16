@@ -1,0 +1,158 @@
+<div class="panel panel-transparent">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs products-nav-tabs">
+        <li ng-class="{'active':tabModel == 'boundary'}">
+            <a data-toggle="tab"  ng-click="changeTab('boundary')" href="">
+                <span>
+                    Printing Area
+                </span>
+            </a>
+        </li>
+        <li ng-class="{'active':tabModel == 'price'}">
+            <a data-toggle="tab"  ng-click="changeTab('price')" href="" 
+            ng-class="{'disable-click':prntMethodByProduct.length == 0}">
+                <span>
+                    Price Rules
+                </span>
+            </a>
+        </li>
+        <li ng-class="{'active':tabModel == 'setting'}">
+            <a data-toggle="tab"   ng-click="changeTab('setting')" href="">
+                <span>
+                    Settings
+                </span>
+            </a>
+        </li>
+        <button type="button" ng-disabled="isPrintMethodPresent" class="btn btn-info btn-sm pull-right m-b-10 m-r-15"  ng-click="createTemplate()" 
+        ng-hide="isPreDecorated || boundary.name == 'multipleBoundary'">
+            <span>
+                <xe-translate text-value="Create Template">
+                </xe-translate>
+            </span>
+        </button>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content products-tab-content">
+        <div class="tab-pane fade in" ng-class="{'active':tabModel == 'boundary'}">
+            <div class="row column-seperation">
+                <div class="col-md-5">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <ng-include src="'modules/product/views/partials/custom_dropdown.html'">
+                            </ng-include>
+                        </div>
+                    </div>
+                    <rectangle-setting container="{{ settingView }}" ng-show="boundary.name != 'multipleBoundary'">
+                    </rectangle-setting>
+                    <ng-include src="'modules/product/views/partials/multiple_boundary_setting.html'" ng-show="boundary.name == 'multipleBoundary'">
+                    </ng-include>
+                </div>
+                <div class="col-md-7">
+                    <div class="xe-product-preview-wrap">
+                        <div class="text-right m-b-10">
+                            <span class="custom-label">
+                                Preview
+                            </span>
+                        </div>
+                        <div class="xe-product-preview">
+                            <div class="xe-product-thumb">
+                                <ul>
+                                    <li ng-class="{'active': $index == selectedThumbIndex }"  ng-repeat="thumb in thumbSides">
+                                        <img class="img-responsive" ng-click="changeThumbSide($index)" ng-src="{{ thumb }}"/>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="xe-product-stage" id="xe_product_editor">
+                                <!-- <img class="img-responsive" src="assets/img/front-side-blue.png">
+                                </img> -->
+                            </div>
+                            <div class="row m-t-10" ng-show="boundary.name != 'multipleBoundary'">
+                                <div class="col-xs-3 col-md-2" ng-show="boundary.name == 'bound' || boundary.name == 'customBoundry'">
+                                </div>
+                                <div class="col-xs-3 col-md-8"ng-show="boundary.name == 'mask' || boundary.name == 'variableMask'">
+                                </div>
+                                <div class="col-xs-4 col-md-3 col-padd" ng-show="boundary.name == 'bound' || boundary.name == 'customBoundry'">
+                                    <span class="custom-label">
+                                        width
+                                    </span>
+                                    <div class="form-group input-group">
+                                        <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].bounds.boundwidth" placeholder="width" type="text" ng-keyup="changeBoundary('w')" ng-show="boundary.name == 'bound'" numbers-only="numbers-only"/>
+                                        <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].mask.width" placeholder="width" type="text" ng-keyup="drawBoundary()" ng-show="boundary.name == 'mask'" ng-disabled="true"/>
+                                        <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].customsize.width" placeholder="width" type="text" ng-keyup="drawBoundary()" ng-show="boundary.name == 'customBoundry'" numbers-only="numbers-only"/>
+                                        <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].custom_mask.width" placeholder="width" type="text" ng-keyup="drawBoundary()" ng-show="boundary.name == 'variableMask'" ng-disabled="true"/>
+                                        <!-- <input class="form-control" 
+                                        ng-model="tempMaskData[selectedThumbIndex].bounds.boundwidth" placeholder="width" type="text" ng-keyup="drawBoundary()" /> -->
+                                        <span class="input-group-addon">
+                                            px
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="pull-left m-t-25 m-l-10 m-r-10" ng-show="boundary.name == 'bound'">
+                                    <i class="fa fa-exchange pointer" ng-click="exchangeSize()">
+                                    </i>
+                                </div>
+                                <div class="col-xs-4 col-md-3 col-padd" ng-show="boundary.name == 'bound' || boundary.name == 'customBoundry'">
+                                    <span class="custom-label">
+                                        height
+                                    </span>
+                                    <div class="form-group input-group">
+                                        <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].bounds.boundheight"  placeholder="height" type="text" ng-keyup="changeBoundary('h')" ng-show="boundary.name == 'bound'" numbers-only="numbers-only"/>
+                                        <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].mask.height"  placeholder="height" type="text" ng-keyup="drawBoundary()" ng-show="boundary.name == 'mask'" ng-disabled="true"/>
+                                        <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].customsize.height"  placeholder="height" type="text" ng-keyup="drawBoundary()" ng-show="boundary.name == 'customBoundry'" numbers-only="numbers-only"/>
+                                        <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].custom_mask.height"  placeholder="height" type="text" ng-keyup="drawBoundary()" ng-show="boundary.name == 'variableMask'" ng-disabled="true"/>
+                                        <!-- <input class="form-control" 
+                                        ng-model="tempMaskData[selectedThumbIndex].bounds.boundheight" 
+                                        placeholder="height" type="text" ng-keyup="drawBoundary()"/> -->
+                                        <span class="input-group-addon">
+                                            px
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-md-3 col-padd">
+                                    <div class="position-move-icon pull-right">
+                                        <div class="position-top" ng-click="onPositionChange('t')">
+                                            <i class="fa fa-long-arrow-up">
+                                            </i>
+                                        </div>
+                                        <div class="position-bottom" ng-click="onPositionChange('b')">
+                                            <i class="fa fa-long-arrow-down">
+                                            </i>
+                                        </div>
+                                        <div class="position-left" ng-click="onPositionChange('l')">
+                                            <i class="fa fa-long-arrow-left">
+                                            </i>
+                                        </div>
+                                        <div class="position-right" ng-click="onPositionChange('r')">
+                                            <i class="fa fa-long-arrow-right">
+                                            </i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="xe-product-ftr">
+                        <button class="btn btn-info btn-cons" type="button" ng-click="saveMaskBoundary(false)" ng-disabled="demoStatus">
+                            <span class="bold">
+                                Save
+                            </span>
+                        </button>
+                        <span class="text-danger m-l-10" ng-show="!isVariableAreaDimention.status">
+                            Invalid default width and default height.
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" ng-class="{'active':tabModel == 'price'}">
+            <ng-include src="'modules/product/views/partials/price_rule.html'">
+            </ng-include>
+        </div>
+        <div class="tab-pane" ng-class="{'active':tabModel == 'setting'}">
+            <ng-include src="'modules/product/views/partials/product_setting.html'">
+            </ng-include>
+        </div>
+    </div>
+</div>

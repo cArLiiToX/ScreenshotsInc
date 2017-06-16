@@ -1,0 +1,74 @@
+<div class="row">
+    <label class="col-sm-3 control-label">
+        <xe-translate text-value="Enable Team Price">
+        </xe-translate>
+    </label>
+    <div class="m-b-15">
+        <div class="checkbox check-info">
+            <input type="checkbox" id="all" ng-model="printSettings.is_name_number_price" ng-true-value="1" ng-false-value="0" ng-checked="printSettings.is_name_number_price == 1" ng-change="changeNameNumberEnable(printSettings.is_name_number_price)"/>
+            <label for="all">
+                <xe-translate text-value="Enabled">
+                </xe-translate>
+            </label>
+        </div>
+    </div>
+
+    <table class="table" ng-show="printSettings.is_name_number_price == 1">
+      <tbody>
+        <tr>
+          <td class="padding-0">
+            <table class="table-bordered">
+              <thead>
+                <tr>
+                  <th class="text-center" colspan="2">
+                  	<xe-translate text-value="Print Quantity"></xe-translate>
+                  </th>
+                  <th class="text-center" colspan="2">
+    			  	<xe-translate text-value="Team Price"></xe-translate>
+    			  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><xe-translate text-value="Min"></xe-translate></td>
+                  <td><xe-translate text-value="Max"></xe-translate></td>
+                  <td><xe-translate text-value="Per Name"></xe-translate></td>
+                  <td><xe-translate text-value="Per Number"></xe-translate></td>
+                </tr>
+                <tr ng-repeat="pteam in teamPrice">
+                  <td colspan="2">
+                  	<a ng-if="$index == teamPrice.length-1 && $index!= 0" class="range-delete-icon" ng-click="removeTeamPrice($index)" ng-disabled="demoStatus">
+                        <!-- <xe-translate text-value="Remove"></xe-translate> -->
+                        <i class="fa fa-times">
+                        </i>
+                    </a>
+                    <div class="input-group">
+                      <input type="text" class="input-sm form-control" name="start" ng-model="pteam.from" numbers-only="numbers-only">
+                      <span class="input-group-addon">
+                      	<xe-translate text-value="to"></xe-translate>
+                      </span>
+                      <input type="text" class="input-sm form-control" name="end" ng-model="pteam.to" numbers-only="numbers-only">
+                    </div>
+                  </td>
+                  <td>
+                      <input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount" ng-model="pteam.per_name" price-only="price-only">
+                  </td>
+                  <td>
+                      <input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount" ng-model="pteam.per_number" price-only="price-only">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="clearfix" ng-show="printSettings.is_name_number_price == 1">
+        <button class="btn m-b-10 btn-sm btn-success btn-addon" ng-click="addNewTeamPrice()" ng-disabled="demoStatus">
+            <i class="fa fa-plus">
+            </i>
+            <xe-translate text-value="Add Range"></xe-translate>
+        </button>
+    </div>
+</div>

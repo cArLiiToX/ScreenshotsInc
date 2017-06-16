@@ -1,0 +1,134 @@
+<div aria-hidden="false" class="modal fade slide-down disable-scroll" id="aboutVersion" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content-wrapper">
+            <div class="modal-content">
+                <div class="modal-header clearfix text-left">
+                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button">
+                        <i class="pg-close fs-14">
+                        </i>
+                    </button>
+                </div>
+                <div class="modal-body p-a-0">
+                    <div class="row m-t-10">
+                        <div class="col-sm-12">
+                            <div class="panel panel-default upgrade-box">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <img alt="logo" class="brand m-b-10 img-responsive" src="assets/img/inkxe-logo-b.png" ui-jq="unveil"/>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <h3>
+                                            inkXE
+                                        </h3>
+                                        <div class="m-t-10" ng-if="currentInfo">
+                                            <img alt="Progress" class="image-responsive-height demo-mw-30 page-loader" src="assets/img/refresh_loader.gif">
+                                            </img>
+                                        </div>
+                                        <div>
+                                            {{currentVersion}}
+                                           
+                                        </div>
+                                        <p class="m-t-10">
+                                            inkXE is a product of
+                                            <a class="underline" href="http://www.riaxe.com/" target="_blank">
+                                                Riaxe System
+                                            </a>
+                                            , a highly trusted India-based IT solutions firm delivering top-notch services to the world.
+                                        </p>
+                                        <div class="clearfix" ng-show="isNewVersion">
+                                            <div ng-if="checkUpdate">
+                                                <img alt="Progress" class="image-responsive-height demo-mw-30 page-loader" src="assets/img/refresh_loader.gif">
+                                                </img>
+                                            </div>
+      
+                                            <ul class="shortcut-link">
+                                                <li>
+                                                    <a href="" ng-click="gotoUpgradeInfo()">
+                                                        Version {{availableVersion}} - {{releaseDate}}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="clearfix" ng-show="versionInfo">
+                                            <div class="text-danger">
+                                                <xe-translate text-value="upgrade info">
+                                                </xe-translate>
+                                                <br/>
+                                                <div>
+                                                    <input ng-model="api.agreeStatus" type="checkbox">
+                                                        <xe-translate text-value="agree note">
+                                                        </xe-translate>
+                                                    </input>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-success btn-xs m-t-5 m-b-5" ng-click="gotoUpgradeLink(api.key)" ng-disabled="!api.agreeStatus || demoStatus" type="button">
+                                                <xe-translate text-value="Upgrade">
+                                                </xe-translate>
+                                            </button>
+                                        </div>
+                                        <div class="panel-body" ng-show="processUpgrade">
+                                            <div>
+                                                <img alt="Progress" class="image-responsive-height demo-mw-30 page-loader" src="assets/img/refresh_loader.gif">
+                                                </img>
+                                            </div>
+                                        </div>
+                                        <div class="panel-body" ng-show="notificationMsg">
+                                            <div>
+                                                <span ;="" style="color:green">
+                                                    {{versionStatusLabel}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="panel-body" ng-show="notificationMsg1">
+                                            <div>
+                                                <span ;="" style="color:red">
+                                                    {{msg}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <ul class="upgrade-ftr">
+                                    <li>
+                                        <a href="https://inkxe.com/terms-and-conditions/" target="_blank">
+                                            Terms and Conditions
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://inkxe.com/privacy-policy/" target="_blank">
+                                            Privacy Policy
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div class="m-l-100 m-t-10">
+                                    <p class="small no-margin pull-left sm-pull-reset">
+                                        <span class="hint-text">
+                                            Copyright © {{year}}
+                                        </span>
+                                        <span class="font-montserrat">
+                                            inkXE
+                                        </span>
+                                        .
+                                        <span class="hint-text">
+                                            All rights reserved.
+                                        </span>
+                                        <span class="sm-block">
+                                            <a class="m-l-10 m-r-10" href="http://inkxe.com/blog/category/blog/knowledge-base/" target="_blank">
+                                                Knowledge Base
+                                            </a>
+                                        </span>
+                                    </p>
+                                    <div class="clearfix">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+</div>

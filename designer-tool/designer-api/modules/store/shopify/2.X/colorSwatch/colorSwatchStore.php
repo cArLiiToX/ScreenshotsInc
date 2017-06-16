@@ -72,7 +72,7 @@ class ColorSwatchStore extends UTIL
             }
             try {
                 if (isset($imagename) && $imagename != '') {
-                    $this->customRequest(array('value' => str_replace(' ', '_', $option_id), 'imgData' => $imagename, 'imagetype' => $imagetype, 'swatchWidth' => 45, 'swatchHeight' => 45, 'base64Data' => base64_decode($imagename)));
+                    $this->customRequest(array('value' => str_replace(' ', '_', addslashes($option_id)), 'imgData' => $imagename, 'imagetype' => $imagetype, 'swatchWidth' => 45, 'swatchHeight' => 45, 'base64Data' => base64_decode($imagename)));
                     $saveSucss = $this->saveColorSwatch('add');
                     $rsultrsponse['attribute_id'] = str_replace(' ', '_', $option_id);
                     $rsultrsponse['attribute_value'] = str_replace(' ', '_', $option_id);

@@ -1,0 +1,94 @@
+<div class="panel panel-default" ng-hide="addpreloader">
+    <div class="graphics-wrap-height">
+        <div class="panel-body text-center">
+            <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/progress/progress-circle-master.svg" alt="Progress"/>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default" ng-show="addpreloader">
+    <div class="loader-OnUpdate" pg-portlet on-refresh="refreshTest('.loader-OnUpdate')">
+        <div class="panel-body">
+            <div class="col-sm-4 b-r-light">
+                <div class="panel-heading p-l-20 p-r-20 p-t-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Swatch Name">
+                        </xe-translate>
+                    </div>
+                </div>
+                <form id="form-personal" role="form" autocomplete="off" class="p-l-20 p-r-20">
+                    <div class="row clearfix">
+                        <div class="col-sm-8">
+                            <div class="form-group form-group-default required" pg-form-group>
+                                <label>
+                                    <xe-translate text-value="Name">
+                                    </xe-translate>
+                                </label>
+                                <input type="text" class="form-control" name="ColorName" ng-model="swachColor.name"  required/>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-sm-5 p-l-20">
+                <div class="panel-heading padding-0">
+                    <div class="panel-title">
+                        <xe-translate text-value="Preview">
+                        </xe-translate>
+                    </div>
+                </div>
+                <div class="radio radio-info m-t-0 m-b-30">
+                    <input type="radio" value="1" id="uploadSwatchColor" ng-model="colorSwatch.isColor" ng-change="colorSwatch.isColor = 1" ng-checked="colorSwatch.isColor == 1"/>
+                    <label for="uploadSwatchColor">
+                        <xe-translate text-value="Color">
+                        </xe-translate>
+                    </label>
+                    <input type="radio" id="uploadSwatchImage" value="0" ng-model="colorSwatch.isColor"  ng-change="colorSwatch.isColor = 0" ng-checked="colorSwatch.isColor == 0"/>
+                    <label for="uploadSwatchImage">
+                        <xe-translate text-value="Image">
+                        </xe-translate>
+                    </label>
+                </div>
+                <div class="clearfix" ng-show="colorSwatch.isColor == 0">
+                    <div class="gallery-upload-thumb" ng-show="isSelectedSwachVisible">
+                        <img class="img-responsive" ng-src="{{ swachimgUrl }}"/>
+                    </div>
+                    <button class="btn btn-success btn-sm m-t-10" ng-file-select ng-file-change="swachImage($files)">
+                        <xe-translate text-value="Upload Swatch">
+                        </xe-translate>
+                    </button>
+                    <p class="small">
+                        .png .jpg .jpeg
+                    </p>
+                    <p class="small text-danger" ng-show="showError1">
+                        {{ showMsg }}
+                    </p>
+                </div>
+                <div class="clearfix" ng-show="colorSwatch.isColor == 1">
+                    <div class="row">
+                        <div class="col-sm-2 m-t-40">
+                            <spectrum-colorpicker ng-model="colorSwatch.Val"  options="{showInput: true,  showAlpha: false}" format="'hex'"  on-hide="onColorSwatchChange(color)">
+                            </spectrum-colorpicker>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="gallery-upload-thumb">
+                                <img class="img-responsive" style="background-color:{{ colorSwatch.Val }};background-size: contain; background-repeat:no-repeat;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer b-t-none clearfix">
+            <div class="pull-right">
+                <button class="btn btn-info btn-sm" type="button" ng-click="addSwachColor()"  ng-class="{'disabled': !swachColor.name}" ng-disabled="demoStatus">
+                    <xe-translate text-value="Save">
+                    </xe-translate>
+                </button>
+                <button class="btn btn-info btn-sm" type="button" ng-click="cancelAddColorView()">
+                    <xe-translate text-value="Cancel">
+                    </xe-translate>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

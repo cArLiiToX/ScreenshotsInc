@@ -10,7 +10,7 @@
         </li>
         <li ng-class="{'active':tabModel == 'price'}">
             <a data-toggle="tab"  ng-click="changeTab('price')" href="" 
-            ng-class="{'disable-click':prntMethodByProduct.length == 0}">
+            ng-class="{'disable-click':prntMethodByProduct.length == 0}" ng-hide=" boundary.name == 'multipleBoundary' || simpleProductWithoutColor">
                 <span>
                     Price Rules
                 </span>
@@ -24,7 +24,7 @@
             </a>
         </li>
         <button type="button" ng-disabled="isPrintMethodPresent" class="btn btn-info btn-sm pull-right m-b-10 m-r-15"  ng-click="createTemplate()" 
-        ng-hide="isPreDecorated || boundary.name == 'multipleBoundary'">
+        ng-hide="isPreDecorated || boundary.name == 'multipleBoundary' || isSimple">
             <span>
                 <xe-translate text-value="Create Template">
                 </xe-translate>
@@ -69,7 +69,7 @@
                             <div class="row m-t-10" ng-show="boundary.name != 'multipleBoundary'">
                                 <div class="col-xs-3 col-md-2" ng-show="boundary.name == 'bound' || boundary.name == 'customBoundry'">
                                 </div>
-                                <div class="col-xs-3 col-md-8"ng-show="boundary.name == 'mask' || boundary.name == 'variableMask'">
+                                <div class="col-xs-3 col-md-8" ng-show=" boundary.name == 'variableMask'">
                                 </div>
                                 <div class="col-xs-4 col-md-3 col-padd" ng-show="boundary.name == 'bound' || boundary.name == 'customBoundry'">
                                     <span class="custom-label">
@@ -78,7 +78,7 @@
                                     <div class="form-group input-group">
                                         <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].bounds.boundwidth" placeholder="width" type="text" ng-keyup="changeBoundary('w')" ng-show="boundary.name == 'bound'" numbers-only="numbers-only"/>
                                         <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].mask.width" placeholder="width" type="text" ng-keyup="drawBoundary()" ng-show="boundary.name == 'mask'" ng-disabled="true"/>
-                                        <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].customsize.width" placeholder="width" type="text" ng-keyup="drawBoundary()" ng-show="boundary.name == 'customBoundry'" numbers-only="numbers-only"/>
+                                        <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].customsize.width" placeholder="width" type="text" ng-keyup="setDefaultDimension(tempMaskData[selectedThumbIndex].customsize.width,'width')" ng-show="boundary.name == 'customBoundry'" numbers-only="numbers-only"/>
                                         <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].custom_mask.width" placeholder="width" type="text" ng-keyup="drawBoundary()" ng-show="boundary.name == 'variableMask'" ng-disabled="true"/>
                                         <!-- <input class="form-control" 
                                         ng-model="tempMaskData[selectedThumbIndex].bounds.boundwidth" placeholder="width" type="text" ng-keyup="drawBoundary()" /> -->
@@ -98,7 +98,7 @@
                                     <div class="form-group input-group">
                                         <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].bounds.boundheight"  placeholder="height" type="text" ng-keyup="changeBoundary('h')" ng-show="boundary.name == 'bound'" numbers-only="numbers-only"/>
                                         <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].mask.height"  placeholder="height" type="text" ng-keyup="drawBoundary()" ng-show="boundary.name == 'mask'" ng-disabled="true"/>
-                                        <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].customsize.height"  placeholder="height" type="text" ng-keyup="drawBoundary()" ng-show="boundary.name == 'customBoundry'" numbers-only="numbers-only"/>
+                                        <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].customsize.height"  placeholder="height" type="text" ng-keyup="setDefaultDimension(tempMaskData[selectedThumbIndex].customsize.height,'height')" ng-show="boundary.name == 'customBoundry'" numbers-only="numbers-only"/>
                                         <input class="form-control"   ng-model="tempMaskData[selectedThumbIndex].custom_mask.height"  placeholder="height" type="text" ng-keyup="drawBoundary()" ng-show="boundary.name == 'variableMask'" ng-disabled="true"/>
                                         <!-- <input class="form-control" 
                                         ng-model="tempMaskData[selectedThumbIndex].bounds.boundheight" 
@@ -108,27 +108,60 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="col-xs-4 col-md-3 col-padd">
-                                    <div class="position-move-icon pull-right">
-                                        <div class="position-top" ng-click="onPositionChange('t')">
-                                            <i class="fa fa-long-arrow-up">
-                                            </i>
-                                        </div>
-                                        <div class="position-bottom" ng-click="onPositionChange('b')">
-                                            <i class="fa fa-long-arrow-down">
-                                            </i>
-                                        </div>
-                                        <div class="position-left" ng-click="onPositionChange('l')">
-                                            <i class="fa fa-long-arrow-left">
-                                            </i>
-                                        </div>
-                                        <div class="position-right" ng-click="onPositionChange('r')">
-                                            <i class="fa fa-long-arrow-right">
-                                            </i>
+                                <!-- Add scaling for boundary resize. -->
+                                 <div class="col-xs-3 col-md-2" ng-if="boundary.name == 'mask'"></div>
+                                    <div class="col-xs-4 col-md-3 col-padd" ng-if="boundary.name == 'mask'">
+                                        <span class="custom-label">
+                                            width
+                                        </span>
+                                        <div class="form-group input-group">
+                                            <input class="form-control" ng-model="customMaskArea.width" placeholder="width" type="text" ng-keyup="resizeCustomBoundary()" numbers-only="numbers-only">
+                                            <span class="input-group-addon">
+                                                px
+                                            </span>
                                         </div>
                                     </div>
-                                </div>
+                                    <div class="pull-left m-t-25 m-l-10 m-r-10" ng-if="boundary.name == 'mask'">
+                                        <i class="fa fa-exchange pointer" ng-click="resizeCustomBoundary('swap')">
+                                        </i>
+                                    </div>
+                                    <div class="col-xs-4 col-md-3 col-padd" ng-if="boundary.name == 'mask'">
+                                        <span class="custom-label">
+                                            height
+                                        </span>
+                                        <div class="form-group input-group">
+                                            <input class="form-control" ng-model="customMaskArea.height" placeholder="height" type="text" ng-keyup="resizeCustomBoundary()" numbers-only="numbers-only">
+                                            <span class="input-group-addon">
+                                                px
+                                            </span>
+                                        </div>
+                                    </div>
+                                     <!-- Add scaling for boundary resize. -->
+                                   
+                                    <div class="col-xs-4 col-md-3 col-padd">
+                                        <div class="position-move-icon pull-right">
+                                            <div class="position-top" ng-click="onPositionChange('t')">
+                                                <i class="fa fa-long-arrow-up">
+                                                </i>
+                                            </div>
+                                            <div class="position-bottom" ng-click="onPositionChange('b')">
+                                                <i class="fa fa-long-arrow-down">
+                                                </i>
+                                            </div>
+                                            <div class="position-left" ng-click="onPositionChange('l')">
+                                                <i class="fa fa-long-arrow-left">
+                                                </i>
+                                            </div>
+                                            <div class="position-right" ng-click="onPositionChange('r')">
+                                                <i class="fa fa-long-arrow-right">
+                                                </i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
                             </div>
+                             
+                                
                         </div>
                     </div>
                 </div>

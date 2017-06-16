@@ -41,7 +41,7 @@ class Distress extends UTIL
                 $this->response($this->json($result), 200);
             }
             $this->closeConnection();
-            $this->response($this->json($distressArray), 200);
+            $this->response($this->json($distressArray,1), 200);
         } else {
             $msg = array("status" => "invalid" . $apiKey);
             $this->response($this->json($msg), 200);
@@ -73,7 +73,7 @@ class Distress extends UTIL
                     $usql1 = '';
                     $usql2 = '';
                     foreach ($files as $k => $v) {
-
+                        $name = addslashes($name);
                         $distressId[$k] = $this->getDBUniqueId('' . TABLE_PREFIX . 'distress', 'id');
                         $fname[$k] = $distressId[$k] . '.' . $v['type'];
 
@@ -113,7 +113,7 @@ class Distress extends UTIL
         if ($this->isValidCall($apiKey)) {
             try {
                 $id = $this->_request['id'];
-                $name = $this->_request['name'];
+                $name = addslashes($this->_request['name']);
                 $price = $this->_request['price'];
                 $status = 0;
                 $sql = "UPDATE " . TABLE_PREFIX . "distress SET name = '" . $name . "', price = '" . $price . "' WHERE id = '" . $id . "'";

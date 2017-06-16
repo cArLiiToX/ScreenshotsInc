@@ -11,15 +11,23 @@
         <div class="form-group">
             <!-- <label class="col-sm-2 control-label"><xe-translate text-value="Manage Features"></xe-translate></label> -->
             <div class="col-sm-10">
-                <div class="checkbox check-info pull-left w-250" ng-repeat="feature in printFeatureListView">
-                    <input type="checkbox" value="{{ feature.id }}" name="{{ feature.name }}" id="{{ feature.id }}" ng-model="feature.status" ng-change="changedPrintFeatures(feature.status,feature,$index)"  />
-                    <label for="{{ feature.id }}">
-                        {{ feature.name }}
-                        <a ng-href="#" name="selectColor" ng-if = "feature.id == '45' && feature.status == true" ng-click="editMaxNumberOfSelectedColor()" class="inline-icons">
-                            <i class="fa fa-pencil text-info">
-                            </i>
-                        </a>
+                <div class="checkbox check-info pull-left w-50per" ng-repeat="printFeature in printFeatureListView">
+                    <input type="checkbox" name="{{ printFeature.name }}" id="{{ printFeature.id }}_printFeature" ng-model="printFeature.status" ng-change="changedPrintFeaturesTab(printFeature.status,printFeature,$index)" ng-checked="printFeature.status == '1'"/>
+                    <label for="{{ printFeature.id }}_printFeature">
+                        {{ printFeature.name }}
                     </label>
+                    <ul class="xe-feature-list">
+                        <li ng-repeat="subPrintFeature in printFeature.subtabs_list">
+                            <input type="checkbox"  name="{{ subPrintFeature.name }}" id="{{ subPrintFeature.id }}_subPrintFeature" ng-model="subPrintFeature.status " ng-change="changedPrintFeaturesSubTab(subPrintFeature.status,subPrintFeature,$parent.$index,printFeature.subtabs_list)" ng-checked="subPrintFeature.status == '1'"/>
+                            <label for="{{ subPrintFeature.id }}_subPrintFeature">
+                                {{ subPrintFeature.name }}
+                                <a ng-href="#" name="selectColor" ng-if = "subPrintFeature.id == '45' && subPrintFeature.status == 1" ng-click="editMaxNumberOfSelectedColor()" class="inline-icons">
+                                    <i class="fa fa-pencil text-info">
+                                    </i>
+                                </a>
+                            </label>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

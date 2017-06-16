@@ -10,36 +10,33 @@ class Setting extends UTIL
     /**
      *
      *date created (dd-mm-yy)
-     *date modified 15-4-2016(dd-mm-yy)
-     *Update theme settings by tabid
+     *date modified 23-3-2017(dd-mm-yy)
+     *Update theme color settings by theme_type
      *
      *@param (String)apikey
-     *@param (int)themeId
+     *@param (int)themeColor
      *@return json data
      *
      */
     public function updateThemeSetting()
     {
         $status = 0;
-        $msg = array();
+        $msg    = array();
         if (!empty($this->_request) && isset($this->_request['apikey']) && $this->isValidCall($this->_request['apikey'])) {
             extract($this->_request);
-            if ($themeId) {
-                $sql4old = "SELECT brand_primary,border_color,panel_color,stage_color,text_color FROM " . TABLE_PREFIX . "theme WHERE is_default='1' LIMIT 1";
-                $oldrec = $this->executeFetchAssocQuery($sql4old);
+            if ($themeColor) {
+                $sql4old = "SELECT name,theme_type,status FROM " . TABLE_PREFIX . "theme_color WHERE status='1' LIMIT 1";
+                $oldrec  = $this->executeFetchAssocQuery($sql4old);
                 if (!empty($oldrec)) {
                     $oldrec = array_values($oldrec[0]);
-                    if (isset($themeColors) && !empty($themeColors)) {
-                        $newrec = $themeColors;
-                    } else {
-                        $sql4new = "SELECT brand_primary,border_color,panel_color,stage_color,text_color FROM " . TABLE_PREFIX . "theme WHERE id = " . $themeId . " LIMIT 1";
-                        $newrec = $this->executeFetchAssocQuery($sql4new);
-                        $newrec = array_values($newrec[0]);
+                    if (isset($themeColor) && !empty($themeColor)) {
+                        $newrec = $themeColor;
                     }
+                    $oldColor = $oldrec[0];
                     if (!empty($newrec)) {
-                        $file = self::HTML5_THEME_DIR . FOLDER_NAME . '/allless.css';
+                        $file = $this->getBasePath() . LANGUAGE_PATH . '/' . FOLDER_NAME . '/style.css';
                         $file_contents = file_get_contents($file);
-                        $file_contents = str_replace($oldrec, $newrec, $file_contents, $count);
+                        $file_contents = str_replace($oldColor, $newrec, $file_contents, $count);
 
                         if (!file_exists($file)) {
                             $myfile = fopen($file, "w+") or die("Unable to open file!");
@@ -47,20 +44,18 @@ class Setting extends UTIL
                         }
                         $nstatus = file_put_contents($file, $file_contents);
                         if ($count && $nstatus) {
-                            $sql = "UPDATE " . TABLE_PREFIX . "theme SET brand_primary = '" . $newrec[0] . "',border_color='" . $newrec[1] . "',panel_color='" . $newrec[2] . "',stage_color='" . $newrec[3] . "',text_color='" . $newrec[4] . "' WHERE id = " . $themeId;
+                            $sql    = "UPDATE " . TABLE_PREFIX . "theme_color SET status='0' ";
+                            $status = $this->executeGenericDMLQuery($sql);
+                            $sql    = "UPDATE " . TABLE_PREFIX . "theme_color SET name='" . $newrec . "',status='1' WHERE theme_type='custom' ";
                             $status = $this->executeGenericDMLQuery($sql);
                         }
                     }
                 }
-                $sql = "UPDATE " . TABLE_PREFIX . "theme SET is_default = '0'";
-                $this->executeGenericDMLQuery($sql);
-                $sql = "UPDATE " . TABLE_PREFIX . "theme SET is_default = '1' WHERE id = " . $themeId . " LIMIT 1";
-                $status = $this->executeGenericDMLQuery($sql);
             }
             if ($status) {
                 $this->_request['type'] = 'updateFeature';
                 $this->getGeneralSetting();
-                //$this->allSettingsDetails(1);
+
             } else {
                 $msg = array("status" => "failed");
             }
@@ -69,7 +64,6 @@ class Setting extends UTIL
         }
         $this->response($this->json($msg), 200);
     }
-
     /**
      *
      *date created (dd-mm-yy)
@@ -85,9 +79,9 @@ class Setting extends UTIL
     {
         if (!empty($this->_request) && isset($this->_request['apikey']) && $this->isValidCall($this->_request['apikey'])) {
             try {
-                if (!empty($this->_request['languageId'])) {
+                if (!empty($this->_request['languageId']) && !empty($this->_request['adminLanguageVal'])) {
                     $msg = $this->updateSettingLanguage($this->_request['languageId']);
-                    $this->updateLocalSettingsLanguage();
+                    $this->updateLocalSettingsLanguage($this->_request['adminLanguageVal']);
                 } else {
                     $msg = array("status" => "faild");
                     $this->response($this->json($msg), 200);
@@ -118,17 +112,17 @@ class Setting extends UTIL
      */
     public function setGeneralSetting()
     {
-        $status = 0;
+        $status        = 0;
         $msg['status'] = 'Failed';
         try {
             if (!empty($this->_request)) {
                 extract($this->_request);
                 $no_of_cart = $this->_request['settings']['no_of_chars'] ? $this->_request['settings']['no_of_chars'] : 0;
-                $steps = $this->_request['settings']['step'] ? $this->_request['settings']['step'] : 0;
-                $font_min = $this->_request['settings']['font_size_min'] ? $this->_request['settings']['font_size_min'] : 0;
-                $font_max = $this->_request['settings']['font_size_max'] ? $this->_request['settings']['font_size_max'] : 0;
-                $app_id = $this->_request['settings']['app_id'] ? $this->_request['settings']['app_id'] : '';
-                $sql = "UPDATE " . TABLE_PREFIX . "general_setting SET is_popup_enable='" . $this->_request['settings']['is_popup_enable'] . "',
+                $steps      = $this->_request['settings']['step'] ? $this->_request['settings']['step'] : 0;
+                $font_min   = $this->_request['settings']['font_size_min'] ? $this->_request['settings']['font_size_min'] : 0;
+                $font_max   = $this->_request['settings']['font_size_max'] ? $this->_request['settings']['font_size_max'] : 0;
+                $app_id     = $this->_request['settings']['app_id'] ? $this->_request['settings']['app_id'] : '';
+                $sql        = "UPDATE " . TABLE_PREFIX . "general_setting SET is_popup_enable='" . $this->_request['settings']['is_popup_enable'] . "',
                     currency='" . $this->_request['settings']['currency'] . "',unit='" . $this->_request['settings']['unit'] . "',
                     is_direct_cart='" . $this->_request['settings']['is_direct_cart'] . "',
                     terms_condition='" . $this->_request['settings']['terms_condition'] . "',
@@ -139,13 +133,15 @@ class Setting extends UTIL
                     price_prefix='" . $this->_request['settings']['price_prefix'] . "',
                     font_size_min=" . $font_min . ",
                     font_size_max=" . $font_max . ",
-                    step=" . $steps . ",notes='" . ($this->_request['settings']['notes']) . "',
+                    step=" . $steps . ",notes='" . addslashes($this->_request['settings']['notes']) . "',
                     no_of_chars = " . $no_of_cart . ",
                     app_id = '" . $app_id . "',
                     domain_name='" . $this->_request['settings']['domain_name'] . "',
                     site_url='" . $this->_request['settings']['site_url'] . "',
                     is_terms_and_condition_allow='" . $this->_request['settings']['is_terms_and_condition_allow'] . "',
-                    img_terms_condition='" . $this->_request['settings']['img_terms_condition'] . "' WHERE id=" . $this->_request['settings']['id'] . " ";
+                    img_terms_condition='" . addslashes($this->_request['settings']['img_terms_condition']) . "' ,
+                    is_email_allowed='" . $this->_request['settings']['is_email_allowed'] . "',
+                    email='" . $this->_request['settings']['email'] . "' WHERE id=" . $this->_request['settings']['id'] . " ";
                 $status = $this->executeGenericDMLQuery($sql);
             }
             if ($status) {
@@ -174,19 +170,19 @@ class Setting extends UTIL
     public function updateTabSetting()
     {
         try {
-            $tabstatus = 0;
+            $tabstatus    = 0;
             $subtabstatus = 0;
-            $msg = array();
+            $msg          = array();
             if (!empty($this->_request) && isset($this->_request['apikey']) && $this->isValidCall($this->_request['apikey'])) {
                 if (isset($this->_request['defaultTabId']) && !empty($this->_request['tabIds']) && !empty($this->_request['subTabIds'])) {
                     extract($this->_request);
                     $sql = "UPDATE " . TABLE_PREFIX . "tabs SET is_default = '0'";
                     $this->executeGenericDMLQuery($sql);
-                    $sql = "UPDATE " . TABLE_PREFIX . "tabs SET is_default = '1' WHERE id = '" . $defaultTabId . "'";
+                    $sql       = "UPDATE " . TABLE_PREFIX . "tabs SET is_default = '1' WHERE id = '" . $defaultTabId . "'";
                     $tabstatus = $this->executeGenericDMLQuery($sql);
 
                     for ($k = 0; $k < sizeof($tabIds); $k++) {
-                        $sql = "UPDATE " . TABLE_PREFIX . "tabs SET default_subtab_id = '" . $subTabIds[$k] . "' WHERE id = '" . $tabIds[$k] . "'";
+                        $sql          = "UPDATE " . TABLE_PREFIX . "tabs SET default_subtab_id = '" . $subTabIds[$k] . "' WHERE id = '" . $tabIds[$k] . "'";
                         $subtabstatus = $this->executeGenericDMLQuery($sql);
                     }
                 }
@@ -222,12 +218,12 @@ class Setting extends UTIL
     public function updatePreloadItemSetting()
     {
         $status = 0;
-        $msg = array();
+        $msg    = array();
         if (!empty($this->_request) && isset($this->_request['apikey']) && $this->isValidCall($this->_request['apikey'])) {
             if (!empty($this->_request['featureRangeIds']) && !empty($this->_request['featureRangeValues'])) {
                 extract($this->_request);
                 for ($j = 0; $j < sizeof($featureRangeIds); $j++) {
-                    $sql = "UPDATE " . TABLE_PREFIX . "preloaded_items SET value = " . $featureRangeValues[$j] . " WHERE pk_id = " . $featureRangeIds[$j];
+                    $sql    = "UPDATE " . TABLE_PREFIX . "preloaded_items SET value = " . $featureRangeValues[$j] . " WHERE pk_id = " . $featureRangeIds[$j];
                     $status = $this->executeGenericDMLQuery($sql);
                 }
             }
@@ -263,12 +259,12 @@ class Setting extends UTIL
     {
         try {
             $status = 0;
-            $msg = array();
+            $msg    = array();
             if (!empty($this->_request) && isset($this->_request['apikey']) && $this->isValidCall($this->_request['apikey'])) {
                 if (!empty($this->_request['itemIds']) && !empty($this->_request['itemValues'])) {
                     extract($this->_request);
                     for ($j = 0; $j < sizeof($itemIds); $j++) {
-                        $sql = "UPDATE " . TABLE_PREFIX . "items_per_module SET value = " . $itemValues[$j] . " WHERE id = " . $itemIds[$j];
+                        $sql    = "UPDATE " . TABLE_PREFIX . "items_per_module SET value = " . $itemValues[$j] . " WHERE id = " . $itemIds[$j];
                         $status = $this->executeGenericDMLQuery($sql);
                     }
                 }
@@ -301,29 +297,40 @@ class Setting extends UTIL
      *@return json data
      *
      */
-    public function updateFeatureSetting()
+   public function updateFeatureSetting()
     {
+             
         //updateFeatureStatus
         try {
             $status = 0;
-            $msg = array();
+            $msg    = array();
             if (!empty($this->_request) && isset($this->_request['apikey']) && $this->isValidCall($this->_request['apikey'])) {
-                if (!empty($this->_request['featureIds']) && !empty($this->_request['featureStatusArray'])) {
+                if (!empty($this->_request['featureList'])) {
                     extract($this->_request);
-                    if (!empty($featureIds)) {
-                        $usql1 = '';
-                        $usql2 = '';
-                        foreach ($featureIds as $k => $v) {
-                            $usql1 .= ' WHEN ' . $v . " THEN '" . $featureStatusArray[$k] . "'";
-                            $usql2 .= ',' . $v;
+                    if (!empty($featureList)) {
+                        foreach ($featureList as $v) {
+                            $v = (object) $v;
+                            $usql = 'UPDATE ' . TABLE_PREFIX . 'tabs SET status = ' . $v->status . ' WHERE id = ' . $v->id;
+                            $status = $this->executeGenericDMLQuery($usql);
+                            if($v->id == 5)
+                            {
+                                $subSql = 'UPDATE ' . TABLE_PREFIX . 'features SET status = ' . $v->status . ' WHERE tab_id = ' . $v->id;
+                                $statusSubSql = $this->executeGenericDMLQuery($subSql);
+                            }
+                            else {
+                                foreach ($v->subtabs_list as $subv) {
+                                    $subv = (object) $subv;
+                                    $subSql = 'UPDATE ' . TABLE_PREFIX . 'features SET status = ' . $subv->status . ' WHERE id = ' . $subv->id;
+                                    $statusSubSql = $this->executeGenericDMLQuery($subSql);
+                                }
+                                
+                            }
+
                         }
-                        $usql = 'UPDATE ' . TABLE_PREFIX . 'features SET status = CASE id' . $usql1 . ' END WHERE id IN(' . substr($usql2, 1) . ')';
-                        $status = $this->executeGenericDMLQuery($usql);
                     }
-                    if ($status) {
+                    if ($status && $statusSubSql) {
                         $this->_request['type'] = 'updateFeature';
                         $this->getGeneralSetting();
-                        //$this->allSettingsDetails(1);
                     } else {
                         $msg = array("status" => "failed");
                     }
@@ -353,52 +360,52 @@ class Setting extends UTIL
     public function getAllAdminSettings($type = 0)
     {
         try {
-            $print_method_id = (isset($this->_request['print_method_id']) && $this->_request['print_method_id'])?$this->_request['print_method_id']:0;
-            $allAdminSettings = array();
-            $language_sql = "SELECT value FROM " . TABLE_PREFIX . "app_language WHERE status='1' LIMIT 1";
-            $language = $this->executeFetchAssocQuery($language_sql);
+            $print_method_id              = (isset($this->_request['print_method_id']) && $this->_request['print_method_id']) ? $this->_request['print_method_id'] : 0;
+            $allAdminSettings             = array();
+            $language_sql                 = "SELECT value FROM " . TABLE_PREFIX . "app_language WHERE status='1' LIMIT 1";
+            $language                     = $this->executeFetchAssocQuery($language_sql);
             $allAdminSettings['language'] = (!empty($language)) ? $language[0]['value'] : '';
             // getting module limit data
 
-            $allAdminSettings['moduleLimitData'] = $this->getItemsPerModule();
-            $this->_request['returns'] = true;
+            $allAdminSettings['moduleLimitData']  = $this->getItemsPerModule();
+            $this->_request['returns']            = true;
             $allAdminSettings['disabledfeatures'] = $this->getFeatureSettings(); //status='0'    exit(0);
-            $allAdminSettings['config'] = $this->getAdminSettings();
-            $this->_request['customer'] = '1';
-            $sql_category = "SELECT DISTINCT pc.id,pc.name FROM " . TABLE_PREFIX . "print_method pm
+            $allAdminSettings['config']           = $this->getAdminSettings();
+            $this->_request['customer']           = '1';
+            $sql_category                         = "SELECT DISTINCT pc.id,pc.name FROM " . TABLE_PREFIX . "print_method pm
                    JOIN " . TABLE_PREFIX . "print_method_palette_category AS pmpc
                    ON pmpc.print_method_id=pm.pk_id
                    JOIN " . TABLE_PREFIX . "palette_category AS pc
                    ON pc.id=pmpc.palette_category_id
                    WHERE pm.pk_id='" . $print_method_id . "' AND pc.is_available=1";
-            $rows1 = $this->executeGenericDQLQuery($sql_category);
+            $rows1          = $this->executeGenericDQLQuery($sql_category);
             $categoryDetail = array();
             for ($j = 0; $j < sizeof($rows1); $j++) {
-                $categoryDetail[$j]['id'] = $rows1[$j]['id'];
+                $categoryDetail[$j]['id']            = $rows1[$j]['id'];
                 $categoryDetail[$j]['category_name'] = $rows1[$j]['name'];
             }
             $allAdminSettings['palettecategories'] = $categoryDetail;
 
-            $this->_request['srtIndex'] = 0;
-            $this->_request['range'] = '';
+            $this->_request['srtIndex']   = 0;
+            $this->_request['range']      = '';
             $this->_request['categoryId'] = '';
-            $sql = "SELECT DISTINCT p.id, p.name, p.value, p.price, p.is_pattern
+            $sql                          = "SELECT DISTINCT p.id, p.name, p.value, p.price, p.is_pattern
             FROM " . TABLE_PREFIX . "palettes p
             JOIN " . TABLE_PREFIX . "palette_category_rel pcl ON p.id = pcl.palette_id
             LEFT JOIN " . TABLE_PREFIX . "print_method_palette_category tcppr ON pcl.category_id = tcppr.palette_category_id
             WHERE 1 AND tcppr.print_method_id ='" . $print_method_id . "' ORDER BY p.id DESC";
-            $colorArray = array();
-            $i = 0;
+            $colorArray      = array();
+            $i               = 0;
             $colorsFromValue = mysqli_query($this->db, $sql);
             while ($row = mysqli_fetch_array($colorsFromValue)) {
-                $colorArray[$i]['id'] = $row['id'];
-                $colorArray[$i]['value'] = $row['value'];
-                $colorArray[$i]['name'] = $row['name'];
-                $colorArray[$i]['price'] = $row['price'];
+                $colorArray[$i]['id']         = $row['id'];
+                $colorArray[$i]['value']      = $row['value'];
+                $colorArray[$i]['name']       = $row['name'];
+                $colorArray[$i]['price']      = $row['price'];
                 $colorArray[$i]['is_pattern'] = intval($row['is_pattern']);
-                $sql_new = "SELECT DISTINCT category_id FROM " . TABLE_PREFIX . "palette_category_rel WHERE palette_id='" . $row['id'] . "'";
-                $categoryIdsFromValue = mysqli_query($this->db, $sql_new);
-                $categoryIdsArray = array();
+                $sql_new                      = "SELECT DISTINCT category_id FROM " . TABLE_PREFIX . "palette_category_rel WHERE palette_id='" . $row['id'] . "'";
+                $categoryIdsFromValue         = mysqli_query($this->db, $sql_new);
+                $categoryIdsArray             = array();
                 while ($rows = mysqli_fetch_array($categoryIdsFromValue)) {
                     array_push($categoryIdsArray, $rows['category_id']);
                 }
@@ -416,47 +423,47 @@ class Setting extends UTIL
 
             $allAdminSettings['palettes'] = $colorArray; // fetching pallets info
 
-            $sql = "SELECT symbol FROM " . TABLE_PREFIX . "tabs WHERE is_default = 1";
+            $sql    = "SELECT symbol FROM " . TABLE_PREFIX . "tabs WHERE is_default = 1";
             $result = mysqli_query($this->db, $sql);
             if (mysqli_num_rows($result) > 0) {
-                $row = mysqli_fetch_assoc($result);
+                $row                             = mysqli_fetch_assoc($result);
                 $allAdminSettings['default_tab'] = $row['symbol'];
             }
 
             $allAdminSettings['default_sub_tab'] = array();
-            $sql = "SELECT symbol,default_subtab_id FROM " . TABLE_PREFIX . "tabs WHERE default_subtab_id <> 0";
-            $result = mysqli_query($this->db, $sql);
+            $sql                                 = "SELECT symbol,default_subtab_id FROM " . TABLE_PREFIX . "tabs WHERE default_subtab_id <> 0";
+            $result                              = mysqli_query($this->db, $sql);
 
             $i = 0;
             while ($row = mysqli_fetch_array($result)) {
                 $tab_symbol = $row['symbol'];
 
-                $sql = "SELECT type FROM " . TABLE_PREFIX . "features WHERE id = " . $row['default_subtab_id'];
-                $subtab_result = mysqli_query($this->db, $sql);
-                $subtab_row = mysqli_fetch_array($subtab_result);
-                $subtab_type = $subtab_row['type'];
+                $sql                                                  = "SELECT type FROM " . TABLE_PREFIX . "features WHERE id = " . $row['default_subtab_id'];
+                $subtab_result                                        = mysqli_query($this->db, $sql);
+                $subtab_row                                           = mysqli_fetch_array($subtab_result);
+                $subtab_type                                          = $subtab_row['type'];
                 $allAdminSettings['default_sub_tab'][$i][$tab_symbol] = $subtab_type;
 
                 $i++;
             }
 
-            $sql = "SELECT pmsr.print_method_id FROM " . TABLE_PREFIX . "print_method_setting_rel AS pmsr JOIN " . TABLE_PREFIX . "print_setting ps ON pmsr.print_setting_id=ps.pk_id WHERE ps.is_default='1' LIMIT 1";
-            $rec = $this->executeFetchAssocQuery($sql);
+            $sql                                 = "SELECT pmsr.print_method_id FROM " . TABLE_PREFIX . "print_method_setting_rel AS pmsr JOIN " . TABLE_PREFIX . "print_setting ps ON pmsr.print_setting_id=ps.pk_id WHERE ps.is_default='1' LIMIT 1";
+            $rec                                 = $this->executeFetchAssocQuery($sql);
             $allAdminSettings['print_method_id'] = (!empty($rec) && $rec[0]['print_method_id']) ? $rec[0]['print_method_id'] : 0;
 
-            $fetch_sql = "SELECT MAX(id) AS n FROM " . TABLE_PREFIX . "fonts LIMIT 1";
-            $res = $this->executeFetchAssocQuery($fetch_sql);
-            $allAdminSettings['font_heighest_id'] = (!empty($res) && $res[0]['n']) ? $res[0]['n'] : 0;
-            $sql = "SELECT * FROM " . TABLE_PREFIX . "preloaded_items";
-            $res_item = $this->executeFetchAssocQuery($sql);
+            $fetch_sql                                   = "SELECT MAX(id) AS n FROM " . TABLE_PREFIX . "fonts LIMIT 1";
+            $res                                         = $this->executeFetchAssocQuery($fetch_sql);
+            $allAdminSettings['font_heighest_id']        = (!empty($res) && $res[0]['n']) ? $res[0]['n'] : 0;
+            $sql                                         = "SELECT * FROM " . TABLE_PREFIX . "preloaded_items";
+            $res_item                                    = $this->executeFetchAssocQuery($sql);
             $allAdminSettings['items_loaded_per_module'] = $res_item;
-            $allAdminSettings['general_setting'] = $this->fetchGeneralSetting();
-            $allAdminSettings['social_site_values'] = $this->getSocialImageDetails();
+            $allAdminSettings['general_setting']         = $this->fetchGeneralSetting();
+            $allAdminSettings['social_site_values']      = $this->getSocialImageDetails();
             if ($type == 1) {
-                return $this->json($allAdminSettings);
+                return $this->json($allAdminSettings, 1);
             }
 
-            $this->response($this->json($allAdminSettings), 200);
+            $this->response($this->json($allAdminSettings, 1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -476,14 +483,14 @@ class Setting extends UTIL
     public function getItemsPerModule()
     {
         try {
-            $sql = "Select * from " . TABLE_PREFIX . "items_per_module";
+            $sql    = "Select * from " . TABLE_PREFIX . "items_per_module";
             $result = $this->executeFetchAssocQuery($sql);
             if (!empty($result)) {
                 $itemsPerModule = array();
                 foreach ($result as $rows) {
                     $itemsPerModule[] = array(
-                        "id" => $rows['id'],
-                        "name" => $rows['name'],
+                        "id"    => $rows['id'],
+                        "name"  => $rows['name'],
                         "value" => $rows['value']);
                 }
             }
@@ -508,15 +515,46 @@ class Setting extends UTIL
     public function getFeatureSettings()
     {
         try {
-            $sql = "SELECT id,name,type,status FROM " . TABLE_PREFIX . "features";
-            $sql .= (isset($this->_request['returns']) && $this->_request['returns']) ? " WHERE status='0'" : " WHERE mandatory_status='0'";
-            $result = $this->executeFetchAssocQuery($sql . ' ORDER BY name');
-            $featuresStatusData = array();
-            if (!empty($result)) {
+            $sql = "SELECT f.id,f.name,f.type,f.status, t.id as tab_id,t.name as tab_name,t.symbol as tab_symbol, t.status as tab_status 
+            FROM " . TABLE_PREFIX . "features as f left join ". TABLE_PREFIX . "tabs as t on f.tab_id = t.id WHERE t.is_admin_display = 1";
+            $sql .= (isset($this->_request['returns']) && $this->_request['returns']) ? " AND f.status='0'" : " AND mandatory_status='0'";
+            $sql .= " ORDER BY t.name ASC";
+            $result = $this->executeFetchAssocQuery($sql);
+            $moduleArray = array();
+            $tempArray = array();
+            $i=0;            
+			if (!empty($result)) {
                 foreach ($result as $v) {
-                    $featuresStatusData[] = array("id" => $v['id'], "name" => $v['name'], "type" => $v['type'], "status" => $v['status']);
+                    if (empty($moduleArray) || !in_array($v['tab_name'], $tempArray))
+                    {
+                        if (!empty($tempArray)){
+                            $i++;
+                        }
+                        $j=0;
+                        $tempArray[] = $v['tab_name'];
+                        $moduleArray[$i]['id'] = $v['tab_id'];
+                        $moduleArray[$i]['name'] = $v['tab_name'];
+						$moduleArray[$i]['category'] = $v['tab_symbol'];
+                        $moduleArray[$i]['status'] = $v['tab_status'];
+                        if($v['type'] != "nameNumber")
+                        {
+                            $moduleArray[$i]['subtabs_list'][$j]['id'] = $v['id'];
+                            $moduleArray[$i]['subtabs_list'][$j]['name'] = $v['name'];
+                            $moduleArray[$i]['subtabs_list'][$j]['status'] = $v['status'];
+                            $moduleArray[$i]['subtabs_list'][$j]['type'] = $v['type'];
+                        }
+                        else 
+                            $moduleArray[$i]['subtabs_list'] = array();
+                    } else {
+                        $moduleArray[$i]['subtabs_list'][$j]['id'] = $v['id'];
+                        $moduleArray[$i]['subtabs_list'][$j]['name'] = $v['name'];
+                        $moduleArray[$i]['subtabs_list'][$j]['status'] = $v['status'];
+                        $moduleArray[$i]['subtabs_list'][$j]['type'] = $v['type'];
+                    }
+                    $j++;
                 }
             }
+            $featuresStatusData = $moduleArray;
             return $featuresStatusData;
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
@@ -537,9 +575,9 @@ class Setting extends UTIL
     public function getAdminSettings()
     {
         try {
-            $sql = "SELECT * FROM " . TABLE_PREFIX . "settings_config";
-            $responseArray = array();
-            $row = $this->executeFetchAssocQuery($sql);
+            $sql                             = "SELECT * FROM " . TABLE_PREFIX . "settings_config";
+            $responseArray                   = array();
+            $row                             = $this->executeFetchAssocQuery($sql);
             $responseArray['items_per_page'] = $row[0]['items_per_page'];
             //$responseArray['upload_active']= $row[0]['upload_active'];
             $responseArray['perInchPrice'] = $row[0]['price_per_unit'];
@@ -553,7 +591,7 @@ class Setting extends UTIL
 
                 return $responseArray;
             } else {
-                $responseArray['id'] = $row[0]['id'];
+                $responseArray['id']               = $row[0]['id'];
                 $responseArray['pricePerUnitCalc'] = $row[0]['price_per_unit_calculation'];
                 $this->closeConnection();
                 $this->response($this->json($responseArray), 200);
@@ -579,21 +617,21 @@ class Setting extends UTIL
     {
         $admin = $this->getAllAdminSettings(1);
 
-        $pos = strpos($admin, '{');
+        $pos               = strpos($admin, '{');
         $current_timestamp = strtotime("now");
         if ($pos !== false) {
             $admin = substr_replace($admin, '{"revision":"' . $current_timestamp . '",', $pos, 1);
         }
         $printProfile = Flight::printProfile();
-        $print = $printProfile->getAllPrintSettings('', 1);
-        $str = "RIAXEAPP.adminsettings=" . $admin . ";RIAXEAPP.printsettings=" . $print . ";";
+        $print        = $printProfile->getAllPrintSettings('', 1);
+        $str          = "RIAXEAPP.adminsettings=" . $admin . ";RIAXEAPP.printsettings=" . $print . ";";
         if ($type == 1) {
-            $file_name = 'adminsettings.js';
-            $url = $this->getCurrentUrl();
-            $url = explode('/', $url);
+            $file_name     = 'adminsettings.js';
+            $url           = $this->getCurrentUrl();
+            $url           = explode('/', $url);
             $new_file_name = str_ireplace('www.', '', $url[2]);
             $new_file_name = str_replace('.', '_', $new_file_name);
-            $ds = DIRECTORY_SEPARATOR;
+            $ds            = DIRECTORY_SEPARATOR;
             $new_file_name = $new_file_name . $ds . $file_name;
 
             /*$path = __FILE__;
@@ -627,7 +665,7 @@ class Setting extends UTIL
     {
         try {
             $rows = array();
-            $sql = "SELECT * FROM " . TABLE_PREFIX . "general_setting";
+            $sql  = "SELECT * FROM " . TABLE_PREFIX . "general_setting";
             $rows = $this->executeFetchAssocQuery($sql);
             return $rows[0];
         } catch (Exception $e) {
@@ -649,11 +687,11 @@ class Setting extends UTIL
      */
     public function setBoundsGeneralSetting()
     {
-        $status = 0;
+        $status        = 0;
         $msg['status'] = 'Failed';
         try {
             if (!empty($this->_request) && $this->_request['bounds']) {
-                $sql = "UPDATE " . TABLE_PREFIX . "general_setting SET bounds ='" . $this->_request['bounds'] . "'";
+                $sql    = "UPDATE " . TABLE_PREFIX . "general_setting SET bounds ='" . $this->_request['bounds'] . "'";
                 $status = $this->executeGenericDMLQuery($sql);
             }
             if ($status) {
@@ -681,30 +719,31 @@ class Setting extends UTIL
         try {
             $apiKey = $this->_request['apikey'];
             if ($this->isValidCall($apiKey)) {
-                $tabArray = $this->fetchTabDetails();
-                $themeArr = $this->getThemes();
-                $itemsPerModule = $this->getItemsPerModule();
-                $featuresStatusData = $this->getFeatureSettings();
-                $appCurrency = $this->fetchAppCurrency();
-                $appUnit = $this->fetchAppUnit();
-                $sql = "SELECT * FROM " . TABLE_PREFIX . "app_language";
-                $res_language = $this->executeFetchAssocQuery($sql);
-                $sql = "SELECT * FROM " . TABLE_PREFIX . "preloaded_items";
-                $res_item = $this->executeFetchAssocQuery($sql);
-                $response_arr = array();
-                $response_arr['language'] = $res_language;
-                $response_arr['items_loaded_per_module'] = $res_item;
-                $allGeneralSetting = array();
-                $allGeneralSetting = $response_arr;
-                $allGeneralSetting['tab_details'] = $tabArray;
-                $allGeneralSetting['themes'] = $themeArr;
-                $allGeneralSetting['items_per_module'] = $itemsPerModule;
+                $tabArray                                  = $this->fetchTabDetails();
+                $themeArr                                  = $this->getThemes();
+                $itemsPerModule                            = $this->getItemsPerModule();
+                $featuresStatusData                        = $this->getFeatureSettings();
+                $appCurrency                               = $this->fetchAppCurrency();
+                $appUnit                                   = $this->fetchAppUnit();
+                $sql                                       = "SELECT * FROM " . TABLE_PREFIX . "app_language";
+                $res_language                              = $this->executeFetchAssocQuery($sql);
+                $sql                                       = "SELECT * FROM " . TABLE_PREFIX . "preloaded_items";
+                $res_item                                  = $this->executeFetchAssocQuery($sql);
+                $response_arr                              = array();
+                $response_arr['language']                  = $res_language;
+                $response_arr['items_loaded_per_module']   = $res_item;
+                $allGeneralSetting                         = array();
+                $allGeneralSetting                         = $response_arr;
+                $allGeneralSetting['tab_details']          = $tabArray;
+                $allGeneralSetting['themes']               = $themeArr;
+                $allGeneralSetting['items_per_module']     = $itemsPerModule;
                 $allGeneralSetting['features_status_data'] = $featuresStatusData;
-				$allGeneralSetting['social_site_values'] =$this->getSocialImageDetails();
+                $allGeneralSetting['social_site_values']   = $this->getSocialImageDetails();
                 //$allGeneralSetting['app_currency'] = $appCurrency;
-                $allGeneralSetting['app_unit'] = $appUnit;
+                $allGeneralSetting['app_unit']        = $appUnit;
                 $allGeneralSetting['general_setting'] = $this->fetchGeneralSetting();
-		if (isset($this->_request['type']) && $this->_request['type'] == 'updateFeature') {
+                $allGeneralSetting['updated_css']     = $this->getStyleCss();
+                if (isset($this->_request['type']) && $this->_request['type'] == 'updateFeature') {
                     $this->allSettingsDetails(1);
                 }
 
@@ -731,14 +770,14 @@ class Setting extends UTIL
     public function fetchAppCurrency()
     {
         try {
-            $sql = "SELECT id,name,code,is_default,symbol FROM " . TABLE_PREFIX . "app_currency";
+            $sql         = "SELECT id,name,code,is_default,symbol FROM " . TABLE_PREFIX . "app_currency";
             $appCurrency = array();
-            $rows = $this->executeGenericDQLQuery($sql);
+            $rows        = $this->executeGenericDQLQuery($sql);
             for ($i = 0; $i < sizeof($rows); $i++) {
-                $appCurrency[$i]['id'] = $rows[$i]['id'];
-                $appCurrency[$i]['name'] = $rows[$i]['name'];
-                $appCurrency[$i]['symbol'] = $rows[$i]['symbol'];
-                $appCurrency[$i]['code'] = $rows[$i]['code'];
+                $appCurrency[$i]['id']         = $rows[$i]['id'];
+                $appCurrency[$i]['name']       = $rows[$i]['name'];
+                $appCurrency[$i]['symbol']     = $rows[$i]['symbol'];
+                $appCurrency[$i]['code']       = $rows[$i]['code'];
                 $appCurrency[$i]['is_default'] = intval($rows[$i]['is_default']);
             }
             return $appCurrency;
@@ -760,12 +799,12 @@ class Setting extends UTIL
     public function fetchAppUnit()
     {
         try {
-            $sql = "SELECT * FROM " . TABLE_PREFIX . "app_unit";
+            $sql     = "SELECT * FROM " . TABLE_PREFIX . "app_unit";
             $appUnit = array();
-            $rows = $this->executeGenericDQLQuery($sql);
+            $rows    = $this->executeGenericDQLQuery($sql);
             for ($i = 0; $i < sizeof($rows); $i++) {
-                $appUnit[$i]['id'] = $rows[$i]['id'];
-                $appUnit[$i]['name'] = $rows[$i]['name'];
+                $appUnit[$i]['id']         = $rows[$i]['id'];
+                $appUnit[$i]['name']       = $rows[$i]['name'];
                 $appUnit[$i]['is_default'] = intval($rows[$i]['is_default']);
             }
             return $appUnit;
@@ -790,10 +829,10 @@ class Setting extends UTIL
     {
         try {
             $itemsNo = $this->_request['itemsNo'];
-            $sql = "UPDATE " . TABLE_PREFIX . "settings_config SET items_per_page= $itemsNo ";
+            $sql     = "UPDATE " . TABLE_PREFIX . "settings_config SET items_per_page= $itemsNo ";
             $this->executeGenericDMLQuery($sql);
-            $response = array();
-            $response['status'] = "success";
+            $response            = array();
+            $response['status']  = "success";
             $response['message'] = "items per page updated ";
             $this->closeConnection();
             $this->response($this->json($response), 200);
@@ -820,11 +859,11 @@ class Setting extends UTIL
         $apiKey = $this->_request['apikey'];
         if ($this->isValidCall($apiKey)) {
             try {
-                $id = $this->_request['id'];
+                $id                 = $this->_request['id'];
                 $pricePerUnitStatus = $this->_request['pricePerUnitStatus'];
-                $pricePerUnit = $this->_request['pricePerUnit'];
-                $sql = "UPDATE " . TABLE_PREFIX . "settings_config SET price_per_unit=$pricePerUnit, price_per_unit_calculation=$pricePerUnitStatus";
-                $status = $this->executeGenericDMLQuery($sql);
+                $pricePerUnit       = $this->_request['pricePerUnit'];
+                $sql                = "UPDATE " . TABLE_PREFIX . "settings_config SET price_per_unit=$pricePerUnit, price_per_unit_calculation=$pricePerUnitStatus";
+                $status             = $this->executeGenericDMLQuery($sql);
 
                 $msg['status'] = ($status) ? "success" : "failed";
 
@@ -856,7 +895,7 @@ class Setting extends UTIL
         try {
             $apiKey = $this->_request['apikey'];
             if ($this->isValidCall($apiKey)) {
-                $sql = "UPDATE " . TABLE_PREFIX . "settings_config SET is_whitebase=" . $this->_request['wbConfig'];
+                $sql    = "UPDATE " . TABLE_PREFIX . "settings_config SET is_whitebase=" . $this->_request['wbConfig'];
                 $status = $this->executeGenericDMLQuery($sql);
 
                 $msg['status'] = ($status) ? "success" : "failed";
@@ -888,13 +927,12 @@ class Setting extends UTIL
     {
         $id = $this->_request['id'];
         try {
-            $sql = "select * from " . TABLE_PREFIX . "theme where id = $id";
-            $rows = $this->executeGenericDQLQuery($sql);
-            $themeArr['brand_primary'] = $rows[0]['brand_primary'];
-            $themeArr['border_color'] = $rows[0]['border_color'];
-            $themeArr['panel_color'] = $rows[0]['panel_color'];
-            $themeArr['stage_color'] = $rows[0]['stage_color'];
-            $themeArr['text_color'] = $rows[0]['text_color'];
+            $sql                    = "select * from " . TABLE_PREFIX . "theme_color where id = $id";
+            $rows                   = $this->executeGenericDQLQuery($sql);
+            $themeArr['id']         = $rows[0]['id'];
+            $themeArr['name']       = $rows[0]['name'];
+            $themeArr['theme_type'] = $rows[0]['theme_type'];
+            $themeArr['status']     = $rows[0]['status'];
             $this->response($this->json($themeArr), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
@@ -914,19 +952,14 @@ class Setting extends UTIL
     public function getThemes()
     {
         try {
-            $sql = "select * from " . TABLE_PREFIX . "theme";
-            $rows = $this->executeGenericDQLQuery($sql);
+            $sql      = "select * from " . TABLE_PREFIX . "theme_color WHERE status='1' LIMIT 1";
+            $rows     = $this->executeGenericDQLQuery($sql);
             $themeArr = array();
             for ($i = 0; $i < sizeof($rows); $i++) {
-                $themeArr[$i]['id'] = $rows[$i]['id'];
-                $themeArr[$i]['file_name'] = $rows[$i]['file_name'];
-                $themeArr[$i]['theme_name'] = $rows[$i]['theme_name'];
-                $themeArr[$i]['brand_primary'] = $rows[$i]['brand_primary'];
-                $themeArr[$i]['border_color'] = $rows[$i]['border_color'];
-                $themeArr[$i]['panel_color'] = $rows[$i]['panel_color'];
-                $themeArr[$i]['stage_color'] = $rows[$i]['stage_color'];
-                $themeArr[$i]['text_color'] = $rows[$i]['text_color'];
-                $themeArr[$i]['is_default'] = $rows[$i]['is_default'];
+                $themeArr['id']         = $rows[0]['id'];
+                $themeArr['name']       = $rows[0]['name'];
+                $themeArr['theme_type'] = $rows[0]['theme_type'];
+                $themeArr['status']     = $rows[0]['status'];
             }
             return $themeArr;
         } catch (Exception $e) {
@@ -956,11 +989,11 @@ class Setting extends UTIL
                 $sql_currency = "UPDATE " . TABLE_PREFIX . "app_currency SET is_default='0'";
                 $this->executeGenericDMLQuery($sql_currency);
                 $sql_currency = "UPDATE " . TABLE_PREFIX . "app_currency SET is_default='" . $data['currency']['is_default'] . "' WHERE id='" . $data['currency']['id'] . "'";
-                $status = $this->executeGenericDMLQuery($sql_currency);
+                $status       = $this->executeGenericDMLQuery($sql_currency);
                 $this->allSettingsDetails(1);
             }
             $status = ($status) ? 'Success' : 'Failed';
-            $msg = array("status" => $status);
+            $msg    = array("status" => $status);
             $this->response($this->json($msg), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
@@ -989,10 +1022,10 @@ class Setting extends UTIL
                 $sql_unit = "UPDATE " . TABLE_PREFIX . "app_unit SET is_default='0'";
                 $this->executeGenericDMLQuery($sql_unit);
                 $sql_unit = "UPDATE " . TABLE_PREFIX . "app_unit SET is_default='" . $data['unit']['is_default'] . "' WHERE id='" . $data['unit']['id'] . "'";
-                $status = $this->executeGenericDMLQuery($sql_unit);
+                $status   = $this->executeGenericDMLQuery($sql_unit);
             }
             $status = ($status) ? 'Success' : 'Failed';
-            $msg = array("status" => $status);
+            $msg    = array("status" => $status);
             $this->response($this->json($msg), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
@@ -1014,7 +1047,7 @@ class Setting extends UTIL
     public function updateAppCurrency($currencyIds)
     {
         $status = 0;
-        $sql = "UPDATE " . TABLE_PREFIX . "app_currency SET is_default='0'";
+        $sql    = "UPDATE " . TABLE_PREFIX . "app_currency SET is_default='0'";
         $this->executeGenericDMLQuery($sql);
         $sql_currency = "UPDATE " . TABLE_PREFIX . "app_currency SET is_default='1'  WHERE id='" . $currencyIds . "'";
         $status .= $this->executeGenericDMLQuery($sql_currency);
@@ -1041,7 +1074,7 @@ class Setting extends UTIL
     public function updateAppUnit($unitIds)
     {
         $status = 0;
-        $sql = "UPDATE " . TABLE_PREFIX . "app_unit SET is_default='0'";
+        $sql    = "UPDATE " . TABLE_PREFIX . "app_unit SET is_default='0'";
         $this->executeGenericDMLQuery($sql);
         $sql_unit = "UPDATE " . TABLE_PREFIX . "app_unit SET is_default='1' WHERE id='" . $unitIds . "'";
         $status .= $this->executeGenericDMLQuery($sql_unit);
@@ -1066,7 +1099,7 @@ class Setting extends UTIL
      */
     public function updateSettingLanguage($languageIds)
     {
-        $status = 0;
+        $status       = 0;
         $sql_language = "UPDATE " . TABLE_PREFIX . "app_language SET status='0'";
         $this->executeGenericDMLQuery($sql_language);
         $sql_language = "UPDATE " . TABLE_PREFIX . "app_language SET status='1' WHERE id='" . $languageIds . "'";
@@ -1098,7 +1131,7 @@ class Setting extends UTIL
                 $sql_language = "UPDATE " . TABLE_PREFIX . "app_language SET status='0'";
                 $this->executeGenericDMLQuery($sql_language);
                 $sql_language = "UPDATE " . TABLE_PREFIX . "app_language SET status='" . $data['language']['status'] . "' WHERE id='" . $data['language']['id'] . "'";
-                $status = $this->executeGenericDMLQuery($sql_language);
+                $status       = $this->executeGenericDMLQuery($sql_language);
             }
             if (!empty($data['items'])) {
                 $usql1 = '';
@@ -1107,7 +1140,7 @@ class Setting extends UTIL
                     $usql1 .= ' WHEN ' . $v['id'] . " THEN '" . $v['value'] . "'";
                     $usql2 .= ',' . $v['id'];
                 }
-                $usql = "UPDATE " . TABLE_PREFIX . "features SET general_setting_item_value = CASE id'.$usql1.' END WHERE id IN('.substr($usql2,1).')";
+                $usql   = "UPDATE " . TABLE_PREFIX . "features SET general_setting_item_value = CASE id'.$usql1.' END WHERE id IN('.substr($usql2,1).')";
                 $status = $this->executeGenericDMLQuery($usql);
             }
         }
@@ -1137,23 +1170,25 @@ class Setting extends UTIL
     {
         $apiKey = $this->_request['apikey'];
         $status = 0;
-        $name = $this->_request['name'];
-        $value = $this->_request['value'];
-        $tmp = $_FILES['languageFile']['tmp_name'];
+        $name   = $this->_request['name'];
+        $value  = $this->_request['value'];
+        $tmp    = $_FILES['languageFile']['tmp_name'];
+        $tmps   = $_FILES['languageFile']['tmp_name'];
         if ($this->isValidCall($apiKey)) {
             try {
-                $dir = $this->getLanguagePath();
-                $type = 'json';
-                $fname = 'locale' . '-' . $value . '.' . $type;
+                $dir    = $this->getLanguagePath();
+                $type   = 'json';
+                $fname  = 'locale' . '-' . $value . '.' . $type;
+                $status = $this->saveLanguageInAdmin($value, $tmps);
                 $status = move_uploaded_file($tmp, $dir . $fname);
                 if ($status) {
-                    $sql0 = 'Select max(id) as id from  ' . TABLE_PREFIX . 'app_language';
-                    $result0 = $this->getResult($sql0);
-                    $maxId = $result0[0]['id'] + 1;
+                    $sql0      = 'Select max(id) as id from  ' . TABLE_PREFIX . 'app_language';
+                    $result0   = $this->getResult($sql0);
+                    $maxId     = $result0[0]['id'] + 1;
                     $sql_check = 'SELECT * FROM ' . TABLE_PREFIX . 'app_language WHERE name = "' . $name . '"';
-                    $rows = $this->executeFetchAssocQuery($sql_check);
+                    $rows      = $this->executeFetchAssocQuery($sql_check);
                     if (count($rows) == 0) {
-                        $sql = 'INSERT INTO ' . TABLE_PREFIX . 'app_language(id,name,value) VALUES("' . $maxId . '","' . $name . '","' . $value . '")';
+                        $sql    = 'INSERT INTO ' . TABLE_PREFIX . 'app_language(id,name,value) VALUES("' . $maxId . '","' . $name . '","' . $value . '")';
                         $status = $this->executeGenericDMLQuery($sql);
                     }
                     if ($status) {
@@ -1171,6 +1206,13 @@ class Setting extends UTIL
         }
 
         $this->response($this->json($msg), 200);
+    }
+    public function saveLanguageInAdmin($value, $tmp)
+    {
+        $type     = 'json';
+        $fname    = 'locale' . '-' . $value . '.' . $type;
+        $adminDir = $this->getLanguagePathAdmin();
+        $status   = copy($tmp, $adminDir . $fname);
     }
 
     /**
@@ -1190,12 +1232,14 @@ class Setting extends UTIL
         if (!empty($this->_request) && isset($this->_request['apikey']) && $this->isValidCall($this->_request['apikey'])) {
             $id = $this->_request['id'];
             try {
-                $sql = "SELECT value FROM " . TABLE_PREFIX . "app_language WHERE  id='" . $id . "' LIMIT 1";
-                $res = $this->executeFetchAssocQuery($sql);
-                $dir = $this->getLanguagePath();
-                $tmp = $_FILES['languageFile']['tmp_name'];
+                $sql          = "SELECT value FROM " . TABLE_PREFIX . "app_language WHERE  id='" . $id . "' LIMIT 1";
+                $res          = $this->executeFetchAssocQuery($sql);
+                $dir          = $this->getLanguagePath();
+                $tmp          = $_FILES['languageFile']['tmp_name'];
+                $tmps         = $_FILES['languageFile']['tmp_name'];
                 $languagePath = $dir . 'locale-' . $res[0]['value'] . '.json';
-                $status = move_uploaded_file($tmp, $languagePath);
+                $status       = $this->saveLanguageInAdmin($res[0]['value'], $tmps);
+                $status       = move_uploaded_file($tmp, $languagePath);
                 if ($status) {
                     $this->getGeneralSetting();
                 } else {
@@ -1218,21 +1262,21 @@ class Setting extends UTIL
      *Update language value in localsettings
      *
      */
-    private function updateLocalSettingsLanguage()
+    private function updateLocalSettingsLanguage($languageValue)
     {
         try {
-            $sqlLanguage = "select value from " . TABLE_PREFIX . "app_language where status = '1' LIMIT 1";
-            $languageValue = $this->executeFetchAssocQuery($sqlLanguage);
-            $localSettingsPath = DOC_ROOT.'/designer-tool/localsettings.js';
-            $newData = file_get_contents($localSettingsPath);
-            $pos = strpos($newData, '"');
-            $newData = substr($newData, $pos);
-            $newData = '{' . str_replace(';', '', $newData);
-            $newData = $this->formatJSONToArray($newData);
-            $newData['language'] = $languageValue[0]['value'];
-            $updatedData = json_encode($newData);
-            $updatedData = 'var RIAXEAPP ={};RIAXEAPP.localSettings = ' . $updatedData . ';';
-            file_put_contents($localSettingsPath, $updatedData);
+            $localSettingsPath = DOC_ROOT . '/designer-tool/localsettings.js';
+            $newData           = file_get_contents($localSettingsPath);
+            $pos               = strpos($newData, '"');
+            $newData           = substr($newData, $pos);
+            $newData           = '{' . str_replace(';', '', $newData);
+            $newData           = $this->formatJSONToArray($newData);
+            if ($newData['language'] != $languageValue) {
+                $newData['language'] = $languageValue;
+                $updatedData         = json_encode($newData);
+                $updatedData         = 'var RIAXEAPP ={};RIAXEAPP.localSettings = ' . $updatedData . ';';
+                file_put_contents($localSettingsPath, $updatedData);
+            }
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             return $result;
@@ -1253,12 +1297,12 @@ class Setting extends UTIL
     public function getLanguages()
     {
         try {
-            $sql = "select * from " . TABLE_PREFIX . "app_language";
-            $rows = $this->executeGenericDQLQuery($sql);
+            $sql         = "select * from " . TABLE_PREFIX . "app_language";
+            $rows        = $this->executeGenericDQLQuery($sql);
             $languageArr = array();
             for ($i = 0; $i < sizeof($rows); $i++) {
-                $languageArr[$i]['id'] = $rows[$i]['id'];
-                $languageArr[$i]['name'] = $rows[$i]['name'];
+                $languageArr[$i]['id']     = $rows[$i]['id'];
+                $languageArr[$i]['name']   = $rows[$i]['name'];
                 $languageArr[$i]['status'] = $rows[$i]['status'];
             }
             $this->response($this->json($languageArr), 200);
@@ -1283,10 +1327,10 @@ class Setting extends UTIL
     {
         $id = $this->_request['id'];
         try {
-            $sql = "UPDATE " . TABLE_PREFIX . "app_language SET status = 'false'";
-            $status1 = $this->executeGenericDMLQuery($sql);
-            $sql = "UPDATE " . TABLE_PREFIX . "app_language SET status = '" . true . "' WHERE id = " . $id;
-            $status = $this->executeGenericDMLQuery($sql);
+            $sql           = "UPDATE " . TABLE_PREFIX . "app_language SET status = 'false'";
+            $status1       = $this->executeGenericDMLQuery($sql);
+            $sql           = "UPDATE " . TABLE_PREFIX . "app_language SET status = '" . true . "' WHERE id = " . $id;
+            $status        = $this->executeGenericDMLQuery($sql);
             $msg['status'] = ($status) ? 'success' : 'failed';
         } catch (Exception $e) {
             $msg = array('Caught exception:' => $e->getMessage());
@@ -1318,8 +1362,8 @@ class Setting extends UTIL
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
         }
-        $response = array();
-        $response['status'] = "success";
+        $response            = array();
+        $response['status']  = "success";
         $response['message'] = "language deleted successfully !";
         $this->response($this->json($response), 200);
     }
@@ -1339,15 +1383,15 @@ class Setting extends UTIL
         $apiKey = $this->_request['apikey'];
         if ($this->isValidCall($apiKey)) {
             try {
-                $sql = "Select * from " . TABLE_PREFIX . "theme_color";
+                $sql    = "Select * from " . TABLE_PREFIX . "theme_color";
                 $result = $this->executeGenericDQLQuery($sql);
                 if (!empty($result)) {
                     $themeColors = array();
                     foreach ($result as $rows) {
-                        $name = $rows['name'];
-                        $id = $rows['id'];
-                        $value = $rows['value'];
-                        $data = array("id" => $id, "name" => $name, "value" => $value);
+                        $name          = $rows['name'];
+                        $id            = $rows['id'];
+                        $value         = $rows['value'];
+                        $data          = array("id" => $id, "name" => $name, "value" => $value);
                         $themeColors[] = $data;
                     }
                     $this->closeConnection();
@@ -1375,23 +1419,23 @@ class Setting extends UTIL
     public function fetchTabDetails()
     {
         try {
-            $sql = "SELECT * FROM " . TABLE_PREFIX . "tabs";
+            $sql = "SELECT * FROM " . TABLE_PREFIX . "tabs WHERE allow_default = '1'";
             $tabsFromValue = mysqli_query($this->db, $sql);
             $tabArray['tabs'] = array();
-            $i = 0;
+            $i                = 0;
             while ($row = mysqli_fetch_array($tabsFromValue)) {
-                $tabArray['tabs'][$i]['id'] = $row['id'];
-                $tabArray['tabs'][$i]['name'] = $row['name'];
-                $tabArray['tabs'][$i]['is_default'] = $row['is_default'];
+                $tabArray['tabs'][$i]['id']                = $row['id'];
+                $tabArray['tabs'][$i]['name']              = $row['name'];
+                $tabArray['tabs'][$i]['is_default']        = $row['is_default'];
                 $tabArray['tabs'][$i]['default_subtab_id'] = $row['default_subtab_id'];
-                $tabArray['tabs'][$i]['subtabs'] = array();
+                $tabArray['tabs'][$i]['subtabs']           = array();
 
                 if ($row['default_subtab_id'] != 0) {
-                    $sql = "SELECT id, name FROM " . TABLE_PREFIX . "features WHERE tab_id=" . $row['id'];
+                    $sql              = "SELECT id, name FROM " . TABLE_PREFIX . "features WHERE tab_id=" . $row['id'];
                     $subtabsFromValue = mysqli_query($this->db, $sql);
-                    $j = 0;
+                    $j                = 0;
                     while ($cRow = mysqli_fetch_array($subtabsFromValue)) {
-                        $tabArray['tabs'][$i]['subtabs'][$j]['id'] = $cRow['id'];
+                        $tabArray['tabs'][$i]['subtabs'][$j]['id']   = $cRow['id'];
                         $tabArray['tabs'][$i]['subtabs'][$j]['name'] = $cRow['name'];
                         $j++;
                     }
@@ -1404,8 +1448,8 @@ class Setting extends UTIL
             $this->response($this->json($result), 200);
         }
     }
-	
-	/**
+
+    /**
      *
      *date created 15-12-2016 (dd-mm-yy)
      *getSocialImageDetails
@@ -1414,34 +1458,34 @@ class Setting extends UTIL
      *@return json data  or fetch social image data.
      *
      */
-	public function getSocialImageDetails()
-    {	
+    public function getSocialImageDetails()
+    {
         try {
-            $sql = "SELECT * FROM " . TABLE_PREFIX . "social_sites ";
+            $sql    = "SELECT * FROM " . TABLE_PREFIX . "social_sites ";
             $result = $this->executeFetchAssocQuery($sql);
             if (!empty($result)) {
                 $socialImageDetail = array();
-				$resultArr = array();
-                foreach ($result as $k=>$rows) {
-					$socialImageDetail[$k]['site_id'] = $rows['id'];
-					$socialImageDetail[$k]['name'] = $rows['name'];
-					$sql_fetch = "SELECT key_index,key_value FROM " . TABLE_PREFIX . "social_site_values WHERE site_id =".$rows['id']." ";
-					$data = $this->executeFetchAssocQuery($sql_fetch);
-					foreach ($data as $k1=>$v) {
-						$resultArr[$k1]['key_index'] = $v['key_index'];
-						$resultArr[$k1]['key_value'] = $v['key_value'];
-					}
-					$socialImageDetail[$k]['keyArra'] = $resultArr;
+                $resultArr         = array();
+                foreach ($result as $k => $rows) {
+                    $socialImageDetail[$k]['site_id'] = $rows['id'];
+                    $socialImageDetail[$k]['name']    = $rows['name'];
+                    $sql_fetch                        = "SELECT key_index,key_value FROM " . TABLE_PREFIX . "social_site_values WHERE site_id =" . $rows['id'] . " ";
+                    $data                             = $this->executeFetchAssocQuery($sql_fetch);
+                    foreach ($data as $k1 => $v) {
+                        $resultArr[$k1]['key_index'] = $v['key_index'];
+                        $resultArr[$k1]['key_value'] = $v['key_value'];
+                    }
+                    $socialImageDetail[$k]['keyArra'] = $resultArr;
                 }
             }
-			//$this->response($this->json($socialImageDetail), 200);
+            //$this->response($this->json($socialImageDetail), 200);
             return $socialImageDetail;
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
         }
     }
-	/**
+    /**
      *
      *date created 15-12-2016 (dd-mm-yy)
      *addSocialImageDetails
@@ -1450,27 +1494,28 @@ class Setting extends UTIL
      *@return json data
      *
      */
-	public function addSocialImageDetails(){
-		$social_sites_values_rel_sql = '';
-		foreach($this->_request as $k1=>$v1){
-			if(!empty($v1) && isset($v1['name'])){
-				extract($this->_request);
-				$sql="INSERT INTO ".TABLE_PREFIX."social_sites(name)VALUES('".$v1['name']."')";
-				$social_sites_id = $this->executeGenericInsertQuery($sql);
-			}
-			foreach ($v1['keyArra'] as $k => $v) {
-				$social_sites_values_rel_sql = "INSERT INTO " . TABLE_PREFIX . " social_site_values(site_id	,key_index,key_value)VALUES('".$social_sites_id."','".$v['key_index']."','".$v['key_value']."')";
-				$status = $this->executeGenericInsertQuery($social_sites_values_rel_sql);
-			} 
-		}
-		if ($status) {
-			$this->_request['type'] = 'updateFeature';
-			$this->getGeneralSetting();
-		} else {
-			$msg = array("status" => "failed");
-		} 
-	}
-	/**
+    public function addSocialImageDetails()
+    {
+        $social_sites_values_rel_sql = '';
+        foreach ($this->_request as $k1 => $v1) {
+            if (!empty($v1) && isset($v1['name'])) {
+                extract($this->_request);
+                $sql             = "INSERT INTO " . TABLE_PREFIX . "social_sites(name)VALUES('" . $v1['name'] . "')";
+                $social_sites_id = $this->executeGenericInsertQuery($sql);
+            }
+            foreach ($v1['keyArra'] as $k => $v) {
+                $social_sites_values_rel_sql = "INSERT INTO " . TABLE_PREFIX . " social_site_values(site_id ,key_index,key_value)VALUES('" . $social_sites_id . "','" . $v['key_index'] . "','" . $v['key_value'] . "')";
+                $status                      = $this->executeGenericInsertQuery($social_sites_values_rel_sql);
+            }
+        }
+        if ($status) {
+            $this->_request['type'] = 'updateFeature';
+            $this->getGeneralSetting();
+        } else {
+            $msg = array("status" => "failed");
+        }
+    }
+    /**
      *
      *date created 15-12-2016 (dd-mm-yy)
      *updateSocialImageDetails
@@ -1479,25 +1524,68 @@ class Setting extends UTIL
      *@return json data
      *
      */
-	public function updateSocialImageDetails(){
-		if (!empty($this->_request) && isset($this->_request['apikey']) && $this->isValidCall($this->_request['apikey'])) {
-			foreach($this->_request['socialIds'] as $k1=>$v1){
-				foreach ($this->_request['socialKeyValues'] as $k => $v) {
-					$social_sites_values_rel_sql = "UPDATE " . TABLE_PREFIX . " social_site_values SET key_value ='".$v."'  WHERE site_id = ".$v1." and key_index = '".$this->_request['socialKeyIndex'][0]."'";
-					$status = $this->executeGenericDMLQuery($social_sites_values_rel_sql);
-					//echo ($social_sites_values_rel_sql); exit;	
-				} 
-			}
-			if ($status) {
-				$this->_request['type'] = 'updateFeature';
-				$this->getGeneralSetting();
-			} else {
-				$msg = array("status" => "failed");
-			}
-		} else {
+    public function updateSocialImageDetails()
+    {
+        if (!empty($this->_request) && isset($this->_request['apikey']) && $this->isValidCall($this->_request['apikey'])) {
+            foreach ($this->_request['socialIds'] as $k1 => $v1) {
+                foreach ($this->_request['socialKeyValues'] as $k => $v) {
+                    $social_sites_values_rel_sql = "UPDATE " . TABLE_PREFIX . " social_site_values SET key_value ='" . $v . "'  WHERE site_id = " . $v1 . " and key_index = '" . $this->_request['socialKeyIndex'][0] . "'";
+                    $status                      = $this->executeGenericDMLQuery($social_sites_values_rel_sql);
+                    //echo ($social_sites_values_rel_sql); exit;
+                }
+            }
+            if ($status) {
+                $this->_request['type'] = 'updateFeature';
+                $this->getGeneralSetting();
+            } else {
+                $msg = array("status" => "failed");
+            }
+        } else {
             $msg = array("status" => "invalidkey");
         }
-		$this->response($this->json($msg), 200);
-	}
-	
+        $this->response($this->json($msg), 200);
+    }
+
+    /**
+     *getStyleCss
+     *
+     *@return string
+     *
+     */
+    public function getStyleCss()
+    {
+        $file = $this->getBasePath() . LANGUAGE_PATH . '/' . FOLDER_NAME . '/style.css';
+        if (file_exists($file)) {
+            $data = @file_get_contents($file);
+            return base64_encode($data);
+        } else {
+            return '';
+        }
+
+    }
+
+    /**
+     *updateStyleCss
+     *
+     *@param (String)apikey
+     *@param (String)cssText
+     *@return json data with status
+     *
+     */
+    public function updateStyleCss()
+    {
+        $status = 'failed';
+        if (!empty($this->_request) && isset($this->_request['apikey']) && $this->isValidCall($this->_request['apikey'])) {
+            extract($this->_request);
+            $file = $this->getBasePath() . LANGUAGE_PATH . '/' . FOLDER_NAME . '/style.css';
+            $data = base64_decode($cssText);
+            if (file_put_contents($file, $data)) {
+                $this->_request['type'] = 'updateFeature';
+            }
+            $this->getGeneralSetting();
+            $status = 'Success';
+        }
+        $msg['status'] = $status;
+        $this->response($this->json($msg), 200);
+    }
 }

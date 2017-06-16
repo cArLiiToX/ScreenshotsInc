@@ -1,6 +1,7 @@
 <?php
 ini_set('display_errors', 'on');
 require_once dirname(__FILE__) . '/../../../../../../../config/config.inc.php';
+require_once dirname(__FILE__) . '/../../../../../../../init.php';
 
 class Datalayer
 {
@@ -115,6 +116,13 @@ class Datalayer
                     // get image full URL
                     $thumbnail = $baseUrl . _THEME_PROD_DIR_ . $image->getExistingImgPath() . "-small_default.jpg";
                 }
+                $sql_simple = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute WHERE id_product='" . $v['id_product'] . "' ";
+                $exist_simple = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_simple);
+                if (empty($exist_simple[0]['id_product_attribute'])) {
+                    $resultArr[$k]['ptype'] = 'simple';
+                } else {
+                    $resultArr[$k]['ptype'] = 'configurable';
+                }
                 $resultArr[$k]['id'] = $v['id_product'];
                 $resultArr[$k]['name'] = $v['name'];
                 $resultArr[$k]['description'] = trim(strip_tags($v['description']));
@@ -147,9 +155,9 @@ class Datalayer
         try {
             $id_lang = Context::getContext()->language->id;
             $shop_id = Context::getContext()->shop->id;
-            $sql = "SELECT distinct c.id_category,cl.name FROM " . _DB_PREFIX_ . "category AS c," . _DB_PREFIX_ . "category_lang AS cl
-			WHERE c.id_category = cl.id_category
-			AND cl.id_lang='$id_lang' AND cl.id_shop='$shop_id' AND cl.name !='ROOT' AND c.id_parent = 2 order by c.id_category asc";
+            $sql = "SELECT DISTINCT c.id_category,cl.name FROM " . _DB_PREFIX_ . "category AS c," . _DB_PREFIX_ . "category_lang AS cl
+            WHERE c.id_category = cl.id_category
+            AND cl.id_lang=" . $id_lang . " AND cl.id_shop=" . $shop_id . " AND cl.name !='ROOT' ORDER BY cl.name";
             $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
             $result = array();
             if (!empty($rows)) {
@@ -176,8 +184,8 @@ class Datalayer
             $id_lang = Context::getContext()->language->id;
             $shop_id = Context::getContext()->shop->id;
             $sql = "SELECT c.id_category,cl.name FROM " . _DB_PREFIX_ . "category AS c," . _DB_PREFIX_ . "category_lang AS cl
-			WHERE c.id_category = cl.id_category and c.id_parent = '$categoryId'
-			AND cl.id_lang='$id_lang' AND cl.id_shop='$shop_id' AND cl.name !='ROOT' order by c.id_category asc";
+            WHERE c.id_category = cl.id_category and c.id_parent = '$categoryId'
+            AND cl.id_lang='$id_lang' AND cl.id_shop='$shop_id' AND cl.name !='ROOT' ORDER BY cl.name";
             $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
             $result = array();
             if (!empty($rows)) {
@@ -198,7 +206,7 @@ class Datalayer
      * @param (int)configId
      * @return array category details
      */
-    public function getSimpleProducts($pvid, $configId)
+    public function getSimpleProducts($pvid, $configId, $color, $size)
     {
         try {
             $context = \Context::getContext();
@@ -219,111 +227,160 @@ class Datalayer
             $result = array();
             $tiers_price = array();
             $result['isPreDecorated'] = false;
-            if ($configId == $pvid) {
-                $sql = "SELECT count(*) count FROM " . _DB_PREFIX_ . "product WHERE 	id_product='$configId' AND xe_is_temp='1'";
-                $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-                if ($row[0]['count']) {
-                    $result['isPreDecorated'] = true;
-                    $sql_exit = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute WHERE id_product='" . $configId . "' AND id_product_attribute='" . $pvid . "' AND xe_is_temp='0'";
-                    $exist = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_exit);
-                    if (!empty($exist)) {
-                        $combinationsId = $exist[0]['id_product_attribute'];
-                    } else {
-                        $sql_fetch = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute WHERE id_product='" . $configId . "' AND xe_is_temp='0'";
-                        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_fetch);
-                        $combinationsId = $row[0]['id_product_attribute'];
-                    }
-                } else {
-                    $sql_exit = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute WHERE id_product='" . $configId . "' AND id_product_attribute='" . $pvid . "'";
-                    $exist = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_exit);
-                    if (!empty($exist)) {
-                        $combinationsId = $pvid;
-                    } else {
-                        $sql_fetch = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute WHERE id_product='" . $configId . "'";
-                        $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_fetch);
-                        $combinationsId = $rows[0]['id_product_attribute'];
-                    }
-                }
+            $sql_simple = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute WHERE id_product='" . $pvid . "' ";
+            $exist_simple = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_simple);
+            if (empty($exist_simple[0]['id_product_attribute'])) {
+                $result = $this->getSimpleProductById($baseUrl, $pvid, $lang_id, $id_shop);
+                $price = $result['price'];
+                $id_tax_rules_group = $result['id_tax_rules_group'];
+                $price = $result['price'];
+                unset($result['id_tax_rules_group']);
             } else {
-                $sql = "SELECT count(*) count FROM " . _DB_PREFIX_ . "product WHERE 	id_product='$configId' AND xe_is_temp='1'";
-                $exist = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-                if ($exist[0]['count']) {
-                    $result['isPreDecorated'] = true;
-                    $sql_exit = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute WHERE id_product='" . $configId . "' AND id_product_attribute='" . $pvid . "' AND xe_is_temp='1'";
-                    $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_exit);
-                    $context = \Context::getContext();
-                    $product = new Product($configId, false, $context->language->id);
-                    $combinations = $product->getAttributeCombinations((int) ($context->cookie->id_lang));
-                    foreach ($combinations as $v1) {
-                        if ($v1['id_product_attribute'] == $row[0]['id_product_attribute']) {
-                            if ($v1['is_color_group'] == 0 && $v1['group_name'] != 'Pdp') {
-                                $size_id = $v1['id_attribute'];
-                            }
-                            if (($v1['is_color_group'] == 1) && ($v1['group_name'] == 'Color')) {
-                                $color_id = $v1['id_attribute'];
-                            }
-                        }
-                    }
-                    $sql1 = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute_combination WHERE id_attribute ='$color_id' AND xe_is_temp='1' ";
-                    $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql1);
-                    foreach ($rows as $v) {
-                        $sql2 = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute_combination WHERE id_attribute ='$size_id' AND id_product_attribute='" . $v['id_product_attribute'] . "' AND xe_is_temp='1' ";
-                        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql2);
-                        if (!empty($row)) {
+                if ($configId == $pvid) {
+                    $sql = "SELECT count(*) count FROM " . _DB_PREFIX_ . "product WHERE id_product='$pvid' AND xe_is_temp='1'";
+                    $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+                    if ($row[0]['count']) {
+                        $result['isPreDecorated'] = true;
+                        $sql_exit = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute WHERE id_product='" . $pvid . "' AND id_product_attribute='" . $configId . "' AND xe_is_temp='0'";
+                        $exist = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_exit);
+                        if (!empty($exist)) {
+                            $combinationsId = $exist[0]['id_product_attribute'];
+                        } else {
+                            $sql_fetch = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute WHERE id_product='" . $pvid . "' AND xe_is_temp='0'";
+                            $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_fetch);
                             $combinationsId = $row[0]['id_product_attribute'];
                         }
+                    } else {
+                        $sql_exit = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute WHERE id_product='" . $pvid . "' AND id_product_attribute='" . $configId . "'";
+                        $exist = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_exit);
+                        if (!empty($exist)) {
+                            $combinationsId = $configId;
+                        } else {
+                            $sql_fetch = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute WHERE id_product='" . $pvid . "'";
+                            $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_fetch);
+                            $combinationsId = $rows[0]['id_product_attribute'];
+                        }
                     }
                 } else {
-                    $combinationsId = $pvid;
+                    $sql = "SELECT count(*) count FROM " . _DB_PREFIX_ . "product WHERE id_product='$pvid' AND xe_is_temp='1'";
+                    $exist = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+                    if ($exist[0]['count']) {
+                        $result['isPreDecorated'] = true;
+                        $sql_exit = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute WHERE id_product='" . $pvid . "' AND id_product_attribute='" . $configId . "' AND xe_is_temp='1'";
+                        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_exit);
+                        $context = \Context::getContext();
+                        $product = new Product($pvid, false, $context->language->id);
+                        $combinations = $product->getAttributeCombinations((int) ($context->cookie->id_lang));
+                        foreach ($combinations as $v1) {
+                            if ($v1['id_product_attribute'] == $row[0]['id_product_attribute']) {
+                                if ($v1['group_name'] == $size && $v1['group_name'] != 'Pdp') {
+                                    $size_id = $v1['id_attribute'];
+                                }
+                                if (($v1['is_color_group'] == 1) && ($v1['group_name'] == $color)) {
+                                    $color_id = $v1['id_attribute'];
+                                }
+                            }
+                        }
+                        $sql_attr = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute_combination WHERE id_attribute ='$color_id' AND xe_is_temp='1' ";
+                        $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_attr);
+                        foreach ($rows as $v) {
+                            $sql2 = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute_combination WHERE id_attribute ='$size_id' AND id_product_attribute='" . $v['id_product_attribute'] . "' AND xe_is_temp='1' ";
+                            $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql2);
+                            if (!empty($row)) {
+                                $combinationsId = $row[0]['id_product_attribute'];
+                            }
+                        }
+                    } else {
+                        $combinationsId = $configId;
+                    }
+                }
+                $product_sql = "SELECT p.id_product,p.id_tax_rules_group,p.price,pl.name,pl.description_short,pa.minimal_quantity FROM " . _DB_PREFIX_ . "product as p," . _DB_PREFIX_ . "product_lang as pl," . _DB_PREFIX_ . "product_attribute as pa 
+				WHERE p.id_product =".$pvid." AND p.id_product = pa.id_product AND
+                p.id_product = pl.id_product AND pl.id_lang =".$lang_id." AND pl.id_shop =".$id_shop."";
+                $rowsData = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($product_sql);
+                $id_tax_rules_group = $rowsData[0]['id_tax_rules_group'];
+                $result['pid'] = $rowsData[0]['id_product'];
+                $result['pidtype'] = 'configurable';
+                $result['pname'] = $rowsData[0]['name'];
+                $result['minQuantity'] = $rowsData[0]['minimal_quantity'];
+                $result['shortdescription'] = trim(strip_tags($rowsData[0]['description_short']));
+				//Fetch all category
+                $category_sql = "SELECT cp.id_category FROM " . _DB_PREFIX_ . "product as p,
+				" . _DB_PREFIX_ . "product_lang as pl," . _DB_PREFIX_ . "category_product as cp 
+				WHERE p.id_product =".$pvid." AND p.id_product = pl.id_product 
+				AND p.id_product = cp.id_product AND pl.id_lang =".$lang_id." AND pl.id_shop =".$id_shop."";
+				$rowsCatagory = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($category_sql);
+				foreach ($rowsCatagory as $v) {
+					$result['category'][] = $v['id_category'];
+				}
+
+                $result['pvid'] = $combinationsId;
+                $result['pvname'] = $rowsData[0]['name'];
+                //fetch size name and id by combination id//
+                $sql_size = "select sa.quantity,al.id_attribute,al.name from " . _DB_PREFIX_ . "attribute_lang as al
+                    left join " . _DB_PREFIX_ . "product_attribute_combination as pac on al.id_attribute = pac.id_attribute
+                    left join " . _DB_PREFIX_ . "attribute atr on al.id_attribute = atr.id_attribute
+                    join " . _DB_PREFIX_ . "stock_available sa on  pac.id_product_attribute = sa.id_product_attribute
+                    where atr.color =''
+                    and atr.id_attribute = al.id_attribute
+                    and atr.id_attribute_group=(select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where agl.name='" . $size . "' and agl.id_attribute_group = ag.id_attribute_group and id_lang=" . $lang_id . " limit 1)
+                    and pac.id_product_attribute = '" . $combinationsId . "' ";
+                $result_size = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_size);
+                //fetch color name and id by combination id//
+                $sql_color = "select atr.color,atr.id_attribute as color_id,al.name from " . _DB_PREFIX_ . "attribute_lang as al,
+                " . _DB_PREFIX_ . "product_attribute_combination as pac,
+                " . _DB_PREFIX_ . "attribute as atr
+                where al.id_attribute = pac.id_attribute
+                and atr.id_attribute = al.id_attribute
+                and atr.id_attribute_group=(select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where ag.is_color_group=1 and agl.name='" . $color . "' and agl.id_attribute_group = ag.id_attribute_group and id_lang=" . $lang_id . " limit 1)
+                and pac.id_product_attribute = '" . $combinationsId . "' ";
+                $result_color = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_color);
+                $imageUrlExit = file_exists(_PS_IMG_DIR_ . 'co' . '/' . (int) $result_color[0]['color_id'] . '.jpg');
+                $imageUrl = $basepath . 'img/' . 'co' . '/' . (int) $result_color[0]['color_id'] . '.jpg';
+                $result['xecolor'] = $result_color ? $result_color[0]['name'] : '';
+                $result['colorSwatch'] = $imageUrlExit ? $imageUrl : ($result_color[0]['color'] ? $result_color[0]['color'] : '');
+                $result['xesize'] = $result_size ? $result_size[0]['name'] : '';
+                $result['xe_color_id'] = $result_color ? $result_color[0]['color_id'] : '';
+                $result['xe_size_id'] = $result_size ? $result_size[0]['id_attribute'] : '';
+                $result['quanntity'] = $result_size ? intval($result_size[0]['quantity']) : '';
+
+                $result['price'] = $price = $rowsData[0]['price'];
+
+                //fetch product thumbnail by combination id
+                $sql = "Select pai.id_image from " . _DB_PREFIX_ . "product_attribute_image as pai
+                join " . _DB_PREFIX_ . "image as im on im.id_image = pai.id_image
+                where pai.id_product_attribute = " . $combinationsId . " order by im.position asc";
+                $rq = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+                if (!empty($rq)) {
+                    foreach ($rq as $k2 => $v2) {
+                        if (sizeof($v2) > 0) {
+                            $image = new Image($v2['id_image']);
+                            // get image full URL
+                            $sideIamgeUrl = $baseUrl . _THEME_PROD_DIR_ . $image->getExistingImgPath() . ".jpg"; //for product thumbnail
+                            $thumbnail = $baseUrl . _THEME_PROD_DIR_ . $image->getExistingImgPath() . "-small_default.jpg"; //for prduct side image
+                        }
+                        $result['thumbsides'][] = $thumbnail;
+                        $result['sides'][] = $sideIamgeUrl;
+                        //fetch all labels by imageid
+                        $sql_data = "select legend from " . _DB_PREFIX_ . "image_lang where id_image='" . $v2['id_image'] . "' and id_lang='$lang_id'";
+                        $result_sql = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_data);
+                        foreach ($result_sql as $v3) {
+                            $result['labels'][] = $v3['legend'];
+                        }
+                    }
+                } else {
+                    $result['thumbsides'] = [];
+                    $result['sides'] = [];
+                    $result['labels'] = [];
                 }
             }
-            $product_sql = "SELECT p.id_product,p.id_tax_rules_group,p.price,pl.name,pl.description_short,cp.id_category FROM " . _DB_PREFIX_ . "product as p,
-			" . _DB_PREFIX_ . "product_lang as pl," . _DB_PREFIX_ . "category_product as cp WHERE p.id_product ='$configId' AND
-			p.id_product = pl.id_product AND p.id_product = cp.id_product AND pl.id_lang ='$lang_id' AND pl.id_shop ='$id_shop'";
-            $rowsData = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($product_sql);
-
-            $result['pid'] = $rowsData[0]['id_product'];
-            $result['pidtype'] = 'simple';
-            $result['pname'] = $rowsData[0]['name'];
-            $result['shortdescription'] = trim(strip_tags($rowsData[0]['description_short']));
-            foreach ($rowsData as $v) {
-                $result['category'][] = $v['id_category'];
-            }
-
-            $result['pvid'] = $combinationsId;
-            $result['pvname'] = $rowsData[0]['name'];
-            //fetch size name and id by combination id//
-            $sql_size = "select sa.quantity,al.id_attribute,al.name from " . _DB_PREFIX_ . "attribute_lang as al
-				left join " . _DB_PREFIX_ . "product_attribute_combination as pac on al.id_attribute = pac.id_attribute
-				left join " . _DB_PREFIX_ . "attribute atr on al.id_attribute = atr.id_attribute
-				join " . _DB_PREFIX_ . "stock_available sa on  pac.id_product_attribute = sa.id_product_attribute
-				where atr.color =''
-				and pac.id_product_attribute = '" . $combinationsId . "' ";
-            $result_size = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_size);
-            //fetch color name and id by combination id//
-            $sql_color = "select atr.color,atr.id_attribute as color_id,al.name from " . _DB_PREFIX_ . "attribute_lang as al,
-			" . _DB_PREFIX_ . "product_attribute_combination as pac,
-			" . _DB_PREFIX_ . "attribute as atr
-			where al.id_attribute = pac.id_attribute
-			and atr.id_attribute = al.id_attribute
-			and atr.id_attribute_group=(select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where ag.is_color_group=1 and agl.id_attribute_group = ag.id_attribute_group and id_lang='$lang_id' limit 1)
-			and pac.id_product_attribute = '" . $combinationsId . "' ";
-            $result_color = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_color);
-            $imageUrlExit = file_exists(_PS_IMG_DIR_ . 'co' . '/' . (int) $result_color[0]['color_id'] . '.jpg');
-            $imageUrl = $basepath . 'img/' . 'co' . '/' . (int) $result_color[0]['color_id'] . '.jpg';
-            $result['xecolor'] = $result_color ? $result_color[0]['name'] : '';
-            $result['colorSwatch'] = $imageUrlExit ? $imageUrl : ($result_color[0]['color'] ? $result_color[0]['color'] : '');
-            $result['xesize'] = $result_size ? $result_size[0]['name'] : '';
-            $result['xe_color_id'] = $result_color ? $result_color[0]['color_id'] : '';
-            $result['xe_size_id'] = $result_size ? $result_size[0]['id_attribute'] : '';
-            $result['quanntity'] = $result_size ? intval($result_size[0]['quantity']) : '';
             /*fetch extra tax */
-            if ($rowsData[0]['id_tax_rules_group']) {
+            if ($id_tax_rules_group) {
                 $sql = "SELECT price_display_method from " . _DB_PREFIX_ . "group WHERE id_group='" . $context->customer->id_default_group . "'";
-                $rq = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-                if ($rq['0']['price_display_method'] == 0) {
-                    $tax_sql = "SELECT t.rate FROM " . _DB_PREFIX_ . "tax AS t," . _DB_PREFIX_ . "tax_rule AS tr WHERE id_tax_rules_group=" . $rowsData[0]['id_tax_rules_group'] . "
-					AND tr.id_country = " . $context->country->id . " AND tr.id_tax = t.id_tax";
+                $result_price = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+                if ($result_price['0']['price_display_method'] == 0) {
+                    $tax_sql = "SELECT t.rate FROM " . _DB_PREFIX_ . "tax AS t," . _DB_PREFIX_ . "tax_rule AS tr WHERE tr.id_tax_rules_group=" . $id_tax_rules_group . "
+                    AND tr.id_country = " . $context->country->id . " AND tr.id_tax = t.id_tax";
                     $result_tax = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($tax_sql);
                     $result['taxrate'] = $result_tax ? $result_tax[0]['rate'] : 0;
                 } else {
@@ -332,16 +389,15 @@ class Datalayer
             } else {
                 $result['taxrate'] = 0;
             }
-            $result['price'] = $rowsData[0]['price'];
             $country_id = (int) Context::getContext()->country->id;
-            //tier price get by spacified country id
+            //tier price get by specified country id
             $tire_sql = "SELECT reduction,from_quantity FROM " . _DB_PREFIX_ . "specific_price_rule WHERE id_country = " . $country_id . "";
             $result_tier_price = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($tire_sql);
             if (!empty($result_tier_price)) {
                 foreach ($result_tier_price as $k => $v) {
                     $tiers_price[$k]['tierQty'] = intval($v['from_quantity']);
                     $tiers_price[$k]['percentage'] = floatval($v['reduction']);
-                    $tiers_price[$k]['tierPrice'] = number_format($result['price'] - $v['reduction'], 5);
+                    $tiers_price[$k]['tierPrice'] = number_format($price - $v['reduction'], 5);
                 }
             } else {
                 $tire_price_country_sql = "SELECT reduction,from_quantity FROM " . _DB_PREFIX_ . "specific_price_rule "; //Tier price for all country
@@ -349,52 +405,25 @@ class Datalayer
                 foreach ($result_tire_price_country as $k1 => $v1) {
                     $tiers_price[$k1]['tierQty'] = intval($v1['from_quantity']);
                     $tiers_price[$k1]['percentage'] = floatval($v1['reduction']);
-                    $tiers_price[$k1]['tierPrice'] = number_format($result['price'] - $v1['reduction'], 5);
+                    $tiers_price[$k1]['tierPrice'] = number_format($price - $v1['reduction'], 5);
                 }
             }
             $result['tierPrices'] = $tiers_price;
-            //fetch product thumbnail by combination id
-            $sql = "Select pai.id_image from " . _DB_PREFIX_ . "product_attribute_image as pai
-			join " . _DB_PREFIX_ . "image as im on im.id_image = pai.id_image
-			where pai.id_product_attribute = " . $combinationsId . " order by im.position asc";
-            $rq = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-            if (!empty($rq)) {
-                foreach ($rq as $k2 => $v2) {
-                    if (sizeof($v2) > 0) {
-                        $image = new Image($v2['id_image']);
-                        // get image full URL
-                        $sideIamgeUrl = $baseUrl . _THEME_PROD_DIR_ . $image->getExistingImgPath() . ".jpg"; //for product thumbnail
-                        $thumbnail = $baseUrl . _THEME_PROD_DIR_ . $image->getExistingImgPath() . "-small_default.jpg"; //for prduct side image
-                    }
-                    $result['thumbsides'][] = $thumbnail;
-                    $result['sides'][] = $sideIamgeUrl;
-                    //fetch all labels by imageid
-                    $sql_data = "select legend from " . _DB_PREFIX_ . "image_lang where id_image='" . $v2['id_image'] . "' and id_lang='$lang_id'";
-                    $result_sql = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_data);
-                    foreach ($result_sql as $v3) {
-                        $result['labels'][] = $v3['legend'];
-                    }
-                }
-            } else {
-                $result['thumbsides'] = [];
-                $result['sides'] = [];
-                $result['labels'] = [];
-            }
             //Start extra attribute for product
-            $products = new Product($result['pid'], false, $context->language->id);
+            $products = new Product($pvid, false, $context->language->id);
             $combinationsIds = $products->getAttributeCombinations((int) ($context->cookie->id_lang));
             $attribe = array();
             foreach ($combinationsIds as $k => $v) {
                 if ($v['id_product_attribute'] == $combinationsId) {
-                    if ($v['group_name'] == 'Color') {
+                    if ($v['group_name'] == $color) {
                         $attribe['xe_color'] = $v['attribute_name'];
                         $attribe['xe_color_id'] = $v['id_attribute'];
                     }
-                    if ($v['group_name'] == 'Size') {
+                    if ($v['group_name'] == $size) {
                         $attribe['xe_size'] = $v['attribute_name'];
                         $attribe['xe_size_id'] = $v['id_attribute'];
                     }
-                    if (($v['group_name'] != 'Size') && ($v['group_name'] != 'Color') && ($v['group_name'] != 'Pdp')) {
+                    if (($v['group_name'] != $size) && ($v['group_name'] != $color) && ($v['group_name'] != 'Pdp')) {
                         $attribe[$v['group_name']] = $v['attribute_name'];
                     }
                 }
@@ -402,6 +431,79 @@ class Datalayer
             $result['attributes'] = $attribe;
             //End extra attribute for product
             return json_encode($result);
+        } catch (PrestaShopDatabaseException $ex) {
+            echo 'Other error: <br />' . $ex->getMessage();
+        }
+    }
+    /**
+     * Get simple product by produt id from store
+     *
+     * @param (String)baseUrl
+     * @param (int)pid
+     * @param (int)lang_id
+     * @param (int)id_shop
+     * @return array
+     */
+    public function getSimpleProductById($baseUrl, $pid, $lang_id, $id_shop)
+    {
+        try{
+            $sql = "SELECT count(*) count FROM " . _DB_PREFIX_ . "product WHERE id_product=" . $pid . " AND xe_is_temp='1'";
+            $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+            if ($rows[0]['count']) {
+                $result['isPreDecorated'] = true;
+            }
+            $product_sql = "SELECT p.id_product,p.id_tax_rules_group,p.price,pl.name,pl.description_short,cp.id_category,p.minimal_quantity FROM " . _DB_PREFIX_ . "product as p," . _DB_PREFIX_ . "product_lang as pl," . _DB_PREFIX_ . "category_product as cp WHERE p.id_product =" . $pid . " AND
+            p.id_product = pl.id_product AND p.id_product = cp.id_product AND pl.id_lang =" . $lang_id . " AND pl.id_shop =" . $id_shop . "";
+            $rowsData = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($product_sql);
+            $result['pid'] = $rowsData[0]['id_product'];
+            $result['pidtype'] = 'simple';
+            $result['pname'] = $rowsData[0]['name'];
+            $result['minQuantity'] = $rowsData[0]['minimal_quantity'];
+            $result['shortdescription'] = trim(strip_tags($rowsData[0]['description_short']));
+            $result['id_tax_rules_group'] = $rowsData[0]['id_tax_rules_group'];
+            foreach ($rowsData as $v) {
+                $result['category'][] = $v['id_category'];
+            }
+            $sql_quant = "SELECT quantity FROM " . _DB_PREFIX_ . "stock_available WHERE id_product = " . $pid . " AND id_shop =" . $id_shop . "";
+            $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_quant);
+
+            $result['pvid'] = $rowsData[0]['id_product'];
+            $result['pvname'] = $rowsData[0]['name'];
+            $result['xecolor'] = '';
+            $result['colorSwatch'] = '';
+            $result['xesize'] = '';
+            $result['xe_color_id'] = '';
+            $result['xe_size_id'] = '';
+            $result['quanntity'] = $row ? intval($row[0]['quantity']) : '';
+            $result['price'] = $rowsData[0]['price'];
+            //fetch product thumbnail by product id
+            $sql = "Select id_image from " . _DB_PREFIX_ . "image
+            where id_product = " . $rowsData[0]['id_product'] . " order by position asc";
+            $rq = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+            if (!empty($rq)) {
+                foreach ($rq as $k2 => $v2) {
+                    if (sizeof($v2) > 0) {
+                        $image = new Image($v2['id_image']);
+                        $thumbnail = $baseUrl . _THEME_PROD_DIR_ . $image->getExistingImgPath() . "-small_default.jpg";
+                        $sideIamgeUrl = $baseUrl . _THEME_PROD_DIR_ . $image->getExistingImgPath() . ".jpg";
+
+                    }
+                    $result['thumbsides'][] = $thumbnail;
+                    $result['sides'][] = $sideIamgeUrl;
+                    $result['labels'] = [];
+                    //fetch all labels by imageid
+                    $sql_data = "select legend from " . _DB_PREFIX_ . "image_lang where id_image='" . $v2['id_image'] . "' and id_lang=" . $lang_id . "";
+                    $result_sql = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_data);
+                    foreach ($result_sql as $v3) {
+                        $result['labels'][] = $v3['legend'];
+                    }
+                }
+            } else {
+                $result['thumbsides'][] = $thumbnail;
+                $result['sides'][] = $sideIamgeUrl;
+                $result['labels'] = [];
+            }
+            return $result;
         } catch (PrestaShopDatabaseException $ex) {
             echo 'Other error: <br />' . $ex->getMessage();
         }
@@ -416,8 +518,8 @@ class Datalayer
     {
         try {
             $sql_ref = "SELECT distinct o.id_order,o.date_add FROM " . _DB_PREFIX_ . "orders as o,
-			" . _DB_PREFIX_ . "cart_product as cp
-			where  o.id_cart = cp.id_cart and cp.ref_id>0";
+            " . _DB_PREFIX_ . "cart_product as cp
+            where  o.id_cart = cp.id_cart and cp.ref_id>0";
             $rq_ref = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_ref);
             $i = 0;
             foreach ($rq_ref as $k => $order) {
@@ -455,25 +557,27 @@ class Datalayer
      * @param (int)combinationsId
      * @return json array
      */
-    public function getSizeAndQuantity($productId, $combinationsId)
+    public function getSizeAndQuantity($productId, $combinationsId, $color, $size)
     {
         try {
             $context = \Context::getContext();
             $lang_id = (int) Context::getContext()->cookie->id_lang;
             $id_shop = (int) Context::getContext()->shop->id;
             $product_sql = "SELECT p.id_product,p.price,pa.id_product_attribute,pa.minimal_quantity FROM " . _DB_PREFIX_ . "product as p,
-			" . _DB_PREFIX_ . "product_lang as pl," . _DB_PREFIX_ . "product_attribute as pa WHERE p.id_product = '$productId' AND
-			p.id_product = pl.id_product AND p.id_product = pa.id_product AND pl.id_lang = '$lang_id' AND pl.id_shop = '$id_shop'";
+            " . _DB_PREFIX_ . "product_lang as pl," . _DB_PREFIX_ . "product_attribute as pa WHERE p.id_product = '$productId' AND
+            p.id_product = pl.id_product AND p.id_product = pa.id_product AND pl.id_lang = '$lang_id' AND pl.id_shop = '$id_shop'";
             $rows_data = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($product_sql);
             $result = array();
             $tiers_price = array();
+            $attribes = array();
+            $attribe = array();
             $sql_color = "select al.name as colorName,atr.id_attribute as color_id from " . _DB_PREFIX_ . "attribute_lang as al,
-				" . _DB_PREFIX_ . "product_attribute_combination as pac," . _DB_PREFIX_ . "attribute as atr
-				where al.id_attribute = pac.id_attribute
-				and atr.id_attribute = al.id_attribute
-				and atr.id_attribute_group = (select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where ag.is_color_group=1 and agl.id_attribute_group = ag.id_attribute_group and id_lang='$lang_id' limit 1)
-				and al.id_lang = '$lang_id'
-				and pac.id_product_attribute = '" . $combinationsId . "' ";
+                " . _DB_PREFIX_ . "product_attribute_combination as pac," . _DB_PREFIX_ . "attribute as atr
+                where al.id_attribute = pac.id_attribute
+                and atr.id_attribute = al.id_attribute
+                and atr.id_attribute_group = (select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where ag.is_color_group=1 and agl.name='" . $color . "' and agl.id_attribute_group = ag.id_attribute_group and agl.id_lang='$lang_id' limit 1)
+                and al.id_lang = '$lang_id'
+                and pac.id_product_attribute = '" . $combinationsId . "' ";
             $result_color = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_color);
             $sql_chk .= "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute_combination WHERE id_attribute='" . $result_color[0]['color_id'] . "'";
             $sql_chk .= $result_check[0]['no'] ? " and xe_is_temp='1'" : " and xe_is_temp='0'";
@@ -508,48 +612,86 @@ class Datalayer
                         //Start product extra atrribute
                         foreach ($combinationsIds as $k2 => $v2) {
                             if ($v2['id_product_attribute'] == $result[$k1]['simpleProductId']) {
-                                if ($v2['group_name'] == 'Color') {
+                                if ($v2['group_name'] == $color) {
                                     $attribe['xe_color'] = $v2['attribute_name'];
                                     $attribe['xe_color_id'] = $v2['id_attribute'];
                                 }
-                                if ($v2['group_name'] == 'Size') {
+                                if ($v2['group_name'] == $size) {
                                     $attribe['xe_size'] = $v2['attribute_name'];
                                     $attribe['xe_size_id'] = $v2['id_attribute'];
                                 }
-                                if (($v2['group_name'] != 'Size') && ($v2['group_name'] != 'Color') && ($v2['group_name'] != 'Pdp')) {
+                                if (($v2['group_name'] != $color) && ($v2['group_name'] != $size) && ($v2['group_name'] != 'Pdp')) {
                                     $attribe[$v2['group_name']] = $v2['attribute_name'];
+                                    //get size array
+                                    $sql_sizes = "select sa.quantity,al.id_attribute,al.name from " . _DB_PREFIX_ . "attribute_lang as al
+                                    left join " . _DB_PREFIX_ . "product_attribute_combination as pac on al.id_attribute = pac.id_attribute
+                                    left join " . _DB_PREFIX_ . "attribute atr on al.id_attribute = atr.id_attribute
+                                    join " . _DB_PREFIX_ . "stock_available sa on pac.id_product_attribute = sa.id_product_attribute
+                                    where atr.color = ''
+                                    and atr.id_attribute_group=(select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where  agl.name='" . $size . "' and agl.id_attribute_group = ag.id_attribute_group and agl.id_lang = " . $lang_id . " limit 1)
+                                    and al.name !='active' and al.name!='inactive'
+                                    and al.id_lang = " . $lang_id . "
+                                    and pac.id_product_attribute = '" . $v1['id_product_attribute'] . "' ";
+                                    $result_sizes = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_sizes);
+                                    $result[$k1]['xe_size'] = $result_sizes[0]['name'];
+                                    $result[$k1]['xe_size_id'] = $result_sizes[0]['id_attribute'];
+                                    $result[$k1]['quantity'] = intval($result_sizes[0]['quantity']);
+                                    $result[$k1]['minQuantity'] = intval($v['minimal_quantity']);
+                                    //get color array
+                                    $sql_colors = "select al.name as colorName,atr.id_attribute as color_id from " . _DB_PREFIX_ . "attribute_lang as al,
+                                        " . _DB_PREFIX_ . "product_attribute_combination as pac," . _DB_PREFIX_ . "attribute as atr
+                                        where al.id_attribute = pac.id_attribute
+                                        and atr.id_attribute = al.id_attribute
+                                        and al.id_lang = " . $lang_id . "
+                                        and atr.id_attribute_group=(select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where ag.is_color_group=1 and
+                                        agl.name='" . $color . "' and agl.id_attribute_group = ag.id_attribute_group and agl.id_lang = " . $lang_id . " limit 1)
+                                        and pac.id_product_attribute = '" . $v1['id_product_attribute'] . "' ";
+                                    $result_colors = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_colors);
+                                    $result[$k1]['xe_color'] = $result_colors[0]['colorName'];
+                                    $result[$k1]['xe_color_id'] = $result_colors[0]['color_id'];
+                                    $result[$k1]['price'] = $rows_data[0]['price'];
+                                    $result[$k1]['tierPrices'] = $tiers_price;
+                                    $result[$k1]['attributes'] = $attribe;
+                                } else {
+                                    //get size array
+                                    $sql_sizes = "select sa.quantity,al.id_attribute,al.name from " . _DB_PREFIX_ . "attribute_lang as al
+                                    left join " . _DB_PREFIX_ . "product_attribute_combination as pac on al.id_attribute = pac.id_attribute
+                                    left join " . _DB_PREFIX_ . "attribute atr on al.id_attribute = atr.id_attribute
+                                    join " . _DB_PREFIX_ . "stock_available sa on pac.id_product_attribute = sa.id_product_attribute
+                                    where atr.id_attribute_group=(select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where agl.name='" . $size . "' and agl.id_attribute_group = ag.id_attribute_group and agl.id_lang = " . $lang_id . " limit 1)
+                                    and al.name !='active' and al.name!='inactive'
+                                    and al.id_lang = " . $lang_id . "
+                                    and pac.id_product_attribute = '" . $v1['id_product_attribute'] . "' ";
+                                    $result_sizes = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_sizes);
+                                    $result[$k1]['xe_size'] = $result_sizes[0]['name'];
+                                    $result[$k1]['xe_size_id'] = $result_sizes[0]['id_attribute'];
+                                    $result[$k1]['quantity'] = intval($result_sizes[0]['quantity']);
+                                    $result[$k1]['minQuantity'] = intval($v['minimal_quantity']);
+                                    //get color array
+                                    $sql_colors = "select al.name as colorName,atr.id_attribute as color_id from " . _DB_PREFIX_ . "attribute_lang as al,
+                                        " . _DB_PREFIX_ . "product_attribute_combination as pac," . _DB_PREFIX_ . "attribute as atr
+                                        where al.id_attribute = pac.id_attribute
+                                        and atr.id_attribute = al.id_attribute
+                                        and al.id_lang = " . $lang_id . "
+                                        and atr.id_attribute_group =(select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where ag.is_color_group = 1 and agl.name='" . $color . "' and agl.id_attribute_group = ag.id_attribute_group and agl.id_lang=" . $lang_id . " limit 1)
+                                        and pac.id_product_attribute = '" . $v1['id_product_attribute'] . "' ";
+                                    $result_colors = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_colors);
+                                    $result[$k1]['xe_color'] = $result_colors[0]['colorName'];
+                                    $result[$k1]['xe_color_id'] = $result_colors[0]['color_id'];
+                                    $result[$k1]['price'] = $rows_data[0]['price'];
+                                    $result[$k1]['tierPrices'] = $tiers_price;
+                                    if ($v2['group_name'] == $color) {
+                                        $attribes['xe_color'] = $v2['attribute_name'];
+                                        $attribes['xe_color_id'] = $v2['id_attribute'];
+                                    }
+                                    if ($v2['group_name'] == $size) {
+                                        $attribes['xe_size'] = $v2['attribute_name'];
+                                        $attribes['xe_size_id'] = $v2['id_attribute'];
+                                    }
+                                    $result[$k1]['attributes'] = $attribes;
                                 }
                             }
                         }
-                        //End product extra atrribute
-                        //get size array
-                        $sql_sizes = "select sa.quantity,al.id_attribute,al.name from " . _DB_PREFIX_ . "attribute_lang as al
-						left join " . _DB_PREFIX_ . "product_attribute_combination as pac on al.id_attribute = pac.id_attribute
-						left join " . _DB_PREFIX_ . "attribute atr on al.id_attribute = atr.id_attribute
-						join " . _DB_PREFIX_ . "stock_available sa on pac.id_product_attribute = sa.id_product_attribute
-						where atr.color ='' and al.name !='active' and al.name!='inactive'
-						and al.id_lang ='$lang_id'
-						and pac.id_product_attribute = '" . $v1['id_product_attribute'] . "' ";
-                        $result_sizes = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_sizes);
-                        $result[$k1]['xe_size'] = $result_sizes[0]['name'];
-                        $result[$k1]['xe_size_id'] = $result_sizes[0]['id_attribute'];
-                        $result[$k1]['quantity'] = intval($result_sizes[0]['quantity']);
-                        $result[$k1]['minQuantity'] = intval($v['minimal_quantity']);
-                        //get color array
-                        $sql_colors = "select al.name as colorName,atr.id_attribute as color_id from " . _DB_PREFIX_ . "attribute_lang as al,
-							" . _DB_PREFIX_ . "product_attribute_combination as pac," . _DB_PREFIX_ . "attribute as atr
-							where al.id_attribute = pac.id_attribute
-							and atr.id_attribute = al.id_attribute
-							and al.id_lang ='$lang_id'
-							and atr.id_attribute_group=(select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where ag.is_color_group=1 and agl.id_attribute_group = ag.id_attribute_group and id_lang='$lang_id' limit 1)
-							and pac.id_product_attribute = '" . $v1['id_product_attribute'] . "' ";
-                        $result_colors = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_colors);
-                        $result[$k1]['xe_color'] = $result_colors[0]['colorName'];
-                        $result[$k1]['xe_color_id'] = $result_colors[0]['color_id'];
-                        $result[$k1]['price'] = $rows_data[0]['price'];
-                        $result[$k1]['tierPrices'] = $tiers_price;
-                        $result[$k1]['attributes'] = $attribe;
-
                     }
                 }
             }
@@ -574,9 +716,9 @@ class Datalayer
             $start = 0;
         }
         $sql = 'SELECT distinct o.id_order,o.date_add,c.firstname,c.lastname FROM ' . _DB_PREFIX_ . 'orders as o
-		join ' . _DB_PREFIX_ . 'customer c on o.id_customer = c.id_customer
-		left join ' . _DB_PREFIX_ . 'cart_product as cp on o.id_cart = cp.id_cart
-		left join ' . _DB_PREFIX_ . 'order_history oh on o.id_order = oh.id_order where cp.ref_id >0 and ';
+        join ' . _DB_PREFIX_ . 'customer c on o.id_customer = c.id_customer
+        left join ' . _DB_PREFIX_ . 'cart_product as cp on o.id_cart = cp.id_cart
+        left join ' . _DB_PREFIX_ . 'order_history oh on o.id_order = oh.id_order where cp.ref_id >0 and ';
         $sql .= ($lastOrderId) ? ' o.id_order<' . $lastOrderId . '' : ' o.id_order>' . $lastOrderId . '';
         $sql .= ' order by o.id_order desc limit ' . $start . ',' . $range . '';
         $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
@@ -585,7 +727,7 @@ class Datalayer
         foreach ($rows as $k => $order) {
             $resutl[$k]['order_id'] = $order['id_order'];
             $sql_status = 'SELECT distinct osl.name from ' . _DB_PREFIX_ . 'order_history oh,
-			' . _DB_PREFIX_ . 'order_state_lang osl where oh.id_order_state = osl.id_order_state and oh.id_order=' . $order['id_order'] . ' order by oh.id_order_history desc limit 1';
+            ' . _DB_PREFIX_ . 'order_state_lang osl where oh.id_order_state = osl.id_order_state and oh.id_order=' . $order['id_order'] . ' order by oh.id_order_history desc limit 1';
             $rows_status = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_status);
             $resutl[$k]['order_incremental_id'] = $order['id_order'];
             $resutl[$k]['order_status'] = $rows_status[0]['name'];
@@ -707,7 +849,7 @@ class Datalayer
         $orderDetails['order_id'] = $orderId;
         $orderDetails['order_incremental_id'] = $orderId;
         $sql = "SELECT distinct osl.name FROM " . _DB_PREFIX_ . "order_history as oh ," . _DB_PREFIX_ . "order_state_lang as osl
-		where oh.id_order_state = osl.id_order_state and oh.id_order =" . $orderId . " ";
+        where oh.id_order_state = osl.id_order_state and oh.id_order =" . $orderId . " ";
         $resul = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
         $orderDetails['order_status'] = $resul['0']['name'];
         $orderDetails['order_date'] = $orderArr['order']['date_add'];
@@ -766,7 +908,7 @@ class Datalayer
             $lang_id = (int) Context::getContext()->cookie->id_lang;
             $id_shop = (int) Context::getContext()->shop->id;
             $product_sql = "SELECT cp.id_category FROM " . _DB_PREFIX_ . "product_lang as pl," . _DB_PREFIX_ . "category_product as cp WHERE pl.id_product ='$productId' AND
-			 pl.id_product = cp.id_product AND pl.id_lang ='$lang_id' AND pl.id_shop ='$id_shop'";
+             pl.id_product = cp.id_product AND pl.id_lang ='$lang_id' AND pl.id_shop ='$id_shop'";
             $rowsData = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($product_sql);
             foreach ($rowsData as $v) {
                 $result[] = $v['id_category'];
@@ -808,7 +950,7 @@ class Datalayer
             $rq = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
             if ($rq['0']['price_display_method'] == 0) {
                 $tax_sql = "SELECT t.rate FROM " . _DB_PREFIX_ . "tax AS t," . _DB_PREFIX_ . "tax_rule AS tr WHERE id_tax_rules_group=" . $product->id_tax_rules_group . "
-				AND tr.id_country = " . $context->country->id . " AND tr.id_tax = t.id_tax";
+                AND tr.id_country = " . $context->country->id . " AND tr.id_tax = t.id_tax";
                 $result_tax = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($tax_sql);
                 $tax = $result_tax ? $result_tax[0]['rate'] : 0;
             } else {
@@ -835,7 +977,7 @@ class Datalayer
             if (!in_array($comb['id_product_attribute'], $id_product_attribute_arrayyy2)) {
                 array_push($id_product_attribute_arrayyy2, $comb['id_product_attribute']);
             }
-            if (($comb['is_color_group'] == '1') && ($comb['group_name'] == 'Color') && (!in_array($comb['attribute_name'], $color_array))) {
+            if (($comb['is_color_group'] == '1') && ($comb['group_name'] == $params['color']) && (!in_array($comb['attribute_name'], $color_array))) {
                 array_push($color_array, $comb['attribute_name']);
                 $id_product_attribute = $comb['id_product_attribute'];
                 if (!in_array($id_product_attribute, $id_product_attribute_array)) {
@@ -848,7 +990,7 @@ class Datalayer
 
                     // for Thumbnail //
                     $sql = "Select pai.id_image from " . _DB_PREFIX_ . "product_attribute_image as pai join " . _DB_PREFIX_ . "image as im on im.id_image = pai.id_image
-					where pai.id_product_attribute=" . $id_product_attribute . " order by im.position asc";
+                    where pai.id_product_attribute=" . $id_product_attribute . " order by im.position asc";
                     $rq = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
                     $thumbnail = '';
                     if (sizeof($rq) > 0) {
@@ -882,7 +1024,7 @@ class Datalayer
         $id_product_attribute_array3 = array();
         foreach ($combinations3 as $key3 => $comb3) {
             $id_product_attribute = $comb3['id_product_attribute'];
-            if ($comb3['is_color_group'] == '0' && $comb3['id_product_attribute'] == $variants[$id_product_attribute]['id']) {
+            if ($comb3['group_name'] == $params['size'] && $comb3['id_product_attribute'] == $variants[$id_product_attribute]['id']) {
                 $variants[$id_product_attribute]['xe_size_id'] = $comb3['id_attribute'];
             }
             $tot_counter3++;
@@ -910,7 +1052,7 @@ class Datalayer
         $id_lang = Context::getContext()->language->id;
         //insert color value and name
         $insert_sql = 'INSERT INTO `' . _DB_PREFIX_ . 'attribute` (`id_attribute_group`, `color`,`position`) VALUES
-		 (' . intval($result[0]['id_attribute_group']) . ",'" . $imagename . "'," . intval($result_data['0']['MAX( position )'] + 1) . ')';
+         (' . intval($result[0]['id_attribute_group']) . ",'" . $imagename . "'," . intval($result_data['0']['MAX( position )'] + 1) . ')';
         Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($insert_sql);
         $lastId = Db::getInstance()->Insert_ID();
         $sql = 'INSERT INTO `' . _DB_PREFIX_ . 'attribute_lang` (`id_attribute`,`id_lang`, `name`) VALUES (' . intval($lastId) . "," . intval($id_lang) . ",'" . $colorname . "')";
@@ -932,13 +1074,13 @@ class Datalayer
      * @return color array
      *
      */
-    public function getColorArr($lastLoaded, $loadCount, $productid)
+    public function getColorArr($lastLoaded, $loadCount, $productid, $color)
     {
         if (isset($lastLoaded) && isset($loadCount)) {
             $sql_fetch = "SELECT al.name as label,al.id_attribute as value FROM " . _DB_PREFIX_ . "attribute_group_lang as agl,
-			" . _DB_PREFIX_ . "attribute_lang as al, " . _DB_PREFIX_ . "attribute as at
-			 WHERE agl.name = 'Color' and at.id_attribute_group = agl.id_attribute_group
-			 and al.id_attribute= at.id_attribute order by al.id_attribute desc limit " . $lastLoaded . "," . $loadCount . "";
+            " . _DB_PREFIX_ . "attribute_lang as al, " . _DB_PREFIX_ . "attribute as at
+             WHERE agl.name = '" . $color . "' and at.id_attribute_group = agl.id_attribute_group
+             and al.id_attribute= at.id_attribute order by al.id_attribute desc limit " . $lastLoaded . "," . $loadCount . "";
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_fetch);
         } else {
             $context = \Context::getContext();
@@ -946,7 +1088,7 @@ class Datalayer
             $combinations = $product->getAttributeCombinations((int) ($context->cookie->id_lang));
             $resultArr = array();
             foreach ($combinations as $k => $v) {
-                if (($v['is_color_group'] == 1) && ($v['group_name'] == 'Color')) {
+                if (($v['is_color_group'] == 1) && ($v['group_name'] == $color)) {
                     $resultArr[$k]['value'] = $v['id_attribute'];
                     $resultArr[$k]['label'] = $v['attribute_name'];
                     $resultArr[$k]['swatchImage'] = '';
@@ -992,7 +1134,11 @@ class Datalayer
         $context = \Context::getContext();
         $cart = null;
         $errors = [];
-
+        $sql_simple = "SELECT id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute WHERE id_product='" . $data['id'] . "' ";
+        $exist_simple = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_simple);
+        if (empty($exist_simple[0]['id_product_attribute'])) {
+            $data['id_product_attribute'] = '';
+        }
         // Initialize Cart //
         $cartObj = new CartCore();
         $cartObj->id = (int) $context->cookie->id_cart;
@@ -1127,7 +1273,7 @@ class Datalayer
         global $cookie;
         $context = \Context::getContext();
         $sql = "SELECT count(*) as no FROM " . _DB_PREFIX_ . "product where id_product = " . $productid . " and
-		active = 1 and available_for_order=1 and customize = 1";
+        active = 1 and available_for_order=1 and customize = 1";
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
         $resultArr = array();
         $resultArr[0]['active_product'] = $result[0]['no'] ? 1 : 0;
@@ -1241,158 +1387,181 @@ class Datalayer
      */
     public function installModule()
     {
-        $this->addTableAndColumn(); //to call to create table
-        $this->alterTable(); //alter a table and a composite key
-        /* $path = XEPATH."xetool/module_list.json";//get mdule list
+        $path = XEPATH . "xetool/install/prestashop17/module_list.json"; //get mdule list
         $data = file_get_contents($path);
-        $module_list = json_decode($data,true);
+        $module_list = json_decode($data, true);
+
+        //echo $module_list['module_list'][0]['name'];exit;
         $resultData = Module::isInstalled($module_list['module_list'][0]['name']);
-        if(empty($resultData)){
-        $this->addTableAndColumn();//to call to create table
-        $this->alterTable();//alter a table and a composite key
-        foreach ($module_list['module_list'] as $k => $v) {
-        $this->name = $v['name'];
-        $hook_name = $v['hook_name'];
-        $version = $v['version'];
-        $shop_list = null;
-        $return = true;
-        if (is_array($hook_name)) {
-        $hook_names = $hook_name;
+        if (empty($resultData)) {
+            $this->addTableAndColumn(); //to call to create table
+            $this->alterTable(); //alter a table and a composite key
+            foreach ($module_list['module_list'] as $k => $v) {
+                $this->name = $v['name'];
+                $hook_name = $v['hook_name'];
+                $version = $v['version'];
+                $shop_list = null;
+                $return = true;
+                if (is_array($hook_name)) {
+                    $hook_names = $hook_name;
+                } else {
+                    $hook_names = array($hook_name);
+                }
+                //module in install
+                //Check module name validation
+                if (!Validate::isModuleName($this->name)) {
+                    $msg = 'Unable to install the module (Module name is not valid).';
+                }
+                // Check PS version compliancy
+                if (!$this->checkCompliancy()) {
+                    $msg = 'The version of your module is not compliant with your PrestaShop version.';
+                }
+                // Check if module is installed
+                $result = Module::isInstalled($this->name);
+                if ($result) {
+                    $msg = 'This module has already been installed';
+                }
+                // Install overrides
+                if ($v['name'] == 'inkxecustomprice' || $v['name'] == 'inkxeorderdetials') {
+                    $this->installOverride($this->name);
+                }
+                // Install module and retrieve the installation id
+                $result = Db::getInstance()->insert('module', array(
+                    'name' => $this->name,
+                    'active' => 1,
+                    'version' => $version,
+                ));
+                if (!$result) {
+                    $msg = 'Technical error: PrestaShop could not install this module.';
+                }
+                $this->id = Db::getInstance()->Insert_ID();
+                Cache::clean('Module::isInstalled' . $this->name);
+                // Enable the module for current shops in context
+                $this->enable();
+                // Permissions management
+                Db::getInstance()->execute('
+                    INSERT INTO `' . _DB_PREFIX_ . 'module_access` (`id_profile`, `id_module`, `view`, `configure`, `uninstall`) (
+                        SELECT id_profile, ' . (int) $this->id . ', 1, 1, 1
+                        FROM ' . _DB_PREFIX_ . 'access a
+                        WHERE id_tab = (
+                            SELECT `id_tab` FROM ' . _DB_PREFIX_ . 'tab
+                            WHERE class_name = \'AdminModules\' LIMIT 1)
+                        AND a.`view` = 1)');
+
+                Db::getInstance()->execute('
+                    INSERT INTO `' . _DB_PREFIX_ . 'module_access` (`id_profile`, `id_module`, `view`, `configure`, `uninstall`) (
+                        SELECT id_profile, ' . (int) $this->id . ', 1, 0, 0
+                        FROM ' . _DB_PREFIX_ . 'access a
+                        WHERE id_tab = (
+                            SELECT `id_tab` FROM ' . _DB_PREFIX_ . 'tab
+                            WHERE class_name = \'AdminModules\' LIMIT 1)
+                        AND a.`view` = 0)');
+
+                // Adding Restrictions for client groups
+                Group::addRestrictionsForModule($this->id, Shop::getShops(true, null, true));
+                Hook::exec('actionModuleInstallAfter', array('object' => $this));
+                //end module intasll//
+                foreach ($hook_names as $hook_name) {
+                    if (!isset($this->id) || !is_numeric($this->id)) {
+                        return false;
+                    }
+
+                    // Retrocompatibility
+                    $hook_name_bak = $hook_name;
+                    if ($alias = Hook::getRetroHookName($hook_name)) {
+                        $hook_name = $alias;
+                    }
+                    // Get hook id
+                    $id_hook = Hook::getIdByName($hook_name);
+                    // If hook does not exist, we create it
+                    if (!$id_hook) {
+                        $new_hook = new Hook();
+                        $new_hook->name = pSQL($hook_name);
+                        $new_hook->title = pSQL($hook_name);
+                        $new_hook->live_edit = (bool) preg_match('/^display/i', $new_hook->name);
+                        $new_hook->position = (bool) $new_hook->live_edit;
+                        $new_hook->add();
+                        $id_hook = $new_hook->id;
+                        if (!$id_hook) {
+                            return false;
+                        }
+                    }
+                    // If shop lists is null, we fill it with all shops
+                    if (is_null($shop_list)) {
+                        $shop_list = Shop::getCompleteListOfShopsID();
+                    }
+
+                    $shop_list_employee = Shop::getShops(true, null, true);
+
+                    foreach ($shop_list as $shop_id) {
+                        // Check if already register
+                        $sql = 'SELECT hm.`id_module`
+                            FROM `' . _DB_PREFIX_ . 'hook_module` hm, `' . _DB_PREFIX_ . 'hook` h
+                            WHERE hm.`id_module` = ' . (int) $this->id . ' AND h.`id_hook` = ' . $id_hook . '
+                            AND h.`id_hook` = hm.`id_hook` AND `id_shop` = ' . (int) $shop_id;
+                        if (Db::getInstance()->getRow($sql)) {
+                            continue;
+                        }
+                        // Get module position in hook
+                        $sql = 'SELECT MAX(`position`) AS position
+                            FROM `' . _DB_PREFIX_ . 'hook_module`
+                            WHERE `id_hook` = ' . (int) $id_hook . ' AND `id_shop` = ' . (int) $shop_id;
+                        if (!$position = Db::getInstance()->getValue($sql)) {
+                            $position = 0;
+                        }
+                        // Register module in hook
+                        $return &= Db::getInstance()->insert('hook_module', array(
+                            'id_module' => (int) $this->id,
+                            'id_hook' => (int) $id_hook,
+                            'id_shop' => (int) $shop_id,
+                            'position' => (int) ($position + 1),
+                        ));
+
+                        if (!in_array($shop_id, $shop_list_employee)) {
+                            $where = '`id_module` = ' . (int) $this->id . ' AND `id_shop` = ' . (int) $shop_id;
+                            $return &= Db::getInstance()->delete('module_shop', $where);
+                        }
+                    }
+                }
+            }
+            if ($this->id) {
+                $this->tableValueInterChange();
+                $msg = "Module installed";
+            }
         } else {
-        $hook_names = array($hook_name);
+            $msg = "Module installed";
         }
-        //module in install
-        //Check module name validation
-        if (!Validate::isModuleName($this->name)) {
-        $msg = 'Unable to install the module (Module name is not valid).';
-        }
-        // Check PS version compliancy
-        if (!$this->checkCompliancy()) {
-        $msg = 'The version of your module is not compliant with your PrestaShop version.';
-        }
-        // Check if module is installed
-        $result = Module::isInstalled($this->name);
-        if ($result) {
-        $msg = 'This module has already been installed';
-        }
-        // Install overrides
-        try {
-        $this->installOverrides($this->name);
-        } catch (Exception $e) {
-        $msg = sprintf(Tools::displayError('Unable to install override: %s'), $e->getMessage());
-        $this->uninstallOverrides();
-        }
-        if (!$this->installControllers()) {
-        $msg = 'Technical error: PrestaShop could not install this module in installControllers.';
-        //return false;
-        }
-        // Install module and retrieve the installation id
-        $result = Db::getInstance()->insert('module', array(
-        'name' => $this->name,
-        'active' => 1,
-        'version' => $version,
-        ));
-        if (!$result) {
-        $msg = 'Technical error: PrestaShop could not install this module.';
-        }
-        $this->id = Db::getInstance()->Insert_ID();
-        Cache::clean('Module::isInstalled'.$this->name);
-        // Enable the module for current shops in context
-        $this->enable();
-        // Permissions management
-        Db::getInstance()->execute('
-        INSERT INTO `'._DB_PREFIX_.'module_access` (`id_profile`, `id_module`, `view`, `configure`, `uninstall`) (
-        SELECT id_profile, '.(int)$this->id.', 1, 1, 1
-        FROM '._DB_PREFIX_.'access a
-        WHERE id_tab = (
-        SELECT `id_tab` FROM '._DB_PREFIX_.'tab
-        WHERE class_name = \'AdminModules\' LIMIT 1)
-        AND a.`view` = 1)');
+        return $msg;
+    }
+    /**
+     * Install overrides files for the module
+     *
+     * @return bool
+     */
+    public function installOverride($name)
+    {
+        if ($name == 'inkxecustomprice' || $name == 'inkxeorderdetials') {
+            if ($name == 'inkxeorderdetials') {
+                $override = array('classes/order/OrderDetail.php');
+            } else {
+                $override = array('classes/Cart.php', 'classes/Product.php', 'controllers/front/CartController.php');
+            }
 
-        Db::getInstance()->execute('
-        INSERT INTO `'._DB_PREFIX_.'module_access` (`id_profile`, `id_module`, `view`, `configure`, `uninstall`) (
-        SELECT id_profile, '.(int)$this->id.', 1, 0, 0
-        FROM '._DB_PREFIX_.'access a
-        WHERE id_tab = (
-        SELECT `id_tab` FROM '._DB_PREFIX_.'tab
-        WHERE class_name = \'AdminModules\' LIMIT 1)
-        AND a.`view` = 0)');
-
-        // Adding Restrictions for client groups
-        Group::addRestrictionsForModule($this->id, Shop::getShops(true, null, true));
-        Hook::exec('actionModuleInstallAfter', array('object' => $this));
-        //end module intasll//
-        foreach ($hook_names as $hook_name) {
-        if (!isset($this->id) || !is_numeric($this->id)) {
-        return false;
+            foreach ($override as $file) {
+                $explode = explode("/", $file);
+                $file_name = $explode[count($explode) - 1];
+                unset($explode[count($explode) - 1]);
+                $folder = implode("/", $explode);
+                @mkdir(_PS_OVERRIDE_DIR_ . $folder, 0777, true);
+                @copy(_PS_MODULE_DIR_ . $name . '/override/' . $folder . "/" . $file_name, _PS_OVERRIDE_DIR_ . $folder . "/" . $file_name);
+                $old = @umask(0);
+                @chmod(_PS_OVERRIDE_DIR_ . $folder . "/" . $file_name, 0777);
+                @umask($old);
+            }
+        } else {
+            return true;
         }
 
-        // Retrocompatibility
-        $hook_name_bak = $hook_name;
-        if ($alias = Hook::getRetroHookName($hook_name)) {
-        $hook_name = $alias;
-        }
-        // Get hook id
-        $id_hook = Hook::getIdByName($hook_name);
-        // If hook does not exist, we create it
-        if (!$id_hook) {
-        $new_hook = new Hook();
-        $new_hook->name = pSQL($hook_name);
-        $new_hook->title = pSQL($hook_name);
-        $new_hook->live_edit = (bool)preg_match('/^display/i', $new_hook->name);
-        $new_hook->position = (bool)$new_hook->live_edit;
-        $new_hook->add();
-        $id_hook = $new_hook->id;
-        if (!$id_hook) {
-        return false;
-        }
-        }
-        // If shop lists is null, we fill it with all shops
-        if (is_null($shop_list)) {
-        $shop_list = Shop::getCompleteListOfShopsID();
-        }
-
-        $shop_list_employee = Shop::getShops(true, null, true);
-
-        foreach ($shop_list as $shop_id) {
-        // Check if already register
-        $sql = 'SELECT hm.`id_module`
-        FROM `'._DB_PREFIX_.'hook_module` hm, `'._DB_PREFIX_.'hook` h
-        WHERE hm.`id_module` = '.(int)$this->id.' AND h.`id_hook` = '.$id_hook.'
-        AND h.`id_hook` = hm.`id_hook` AND `id_shop` = '.(int)$shop_id;
-        if (Db::getInstance()->getRow($sql)) {
-        continue;
-        }
-        // Get module position in hook
-        $sql = 'SELECT MAX(`position`) AS position
-        FROM `'._DB_PREFIX_.'hook_module`
-        WHERE `id_hook` = '.(int)$id_hook.' AND `id_shop` = '.(int)$shop_id;
-        if (!$position = Db::getInstance()->getValue($sql)) {
-        $position = 0;
-        }
-        // Register module in hook
-        $return &= Db::getInstance()->insert('hook_module', array(
-        'id_module' => (int)$this->id,
-        'id_hook' => (int)$id_hook,
-        'id_shop' => (int)$shop_id,
-        'position' => (int)($position + 1),
-        ));
-
-        if (!in_array($shop_id, $shop_list_employee)) {
-        $where = '`id_module` = '.(int)$this->id.' AND `id_shop` = '.(int)$shop_id;
-        $return &= Db::getInstance()->delete('module_shop', $where);
-        }
-        }
-        }
-        }
-        if($this->id){
-        $this->tableValueInterChange();
-        $msg = "Module installed";
-        }
-        }else{
-        $msg = "Module installed";
-        } */
-        return $msg = "Module installed";
     }
     /**
      *Uninstall overides file
@@ -1441,14 +1610,14 @@ class Datalayer
     {
         $sql = array();
         $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'inkxe_cart_custom_price` (
-			  `id_cart` int(10) unsigned NOT NULL,
-			  `id_product` int(10) unsigned NOT NULL,
-			  `id_product_attribute` int(10) unsigned NOT NULL,
-			  `id_shop` int(10) unsigned NOT NULL,
-			  `custom_price` decimal(20,6) NOT NULL,
-			  `ref_id` int(10) unsigned NOT NULL,
-			  PRIMARY KEY  (`id_cart`, `id_product`, `id_product_attribute`, `id_shop`, `ref_id`)
-			) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8';
+              `id_cart` int(10) unsigned NOT NULL,
+              `id_product` int(10) unsigned NOT NULL,
+              `id_product_attribute` int(10) unsigned NOT NULL,
+              `id_shop` int(10) unsigned NOT NULL,
+              `custom_price` decimal(20,6) NOT NULL,
+              `ref_id` int(10) unsigned NOT NULL,
+              PRIMARY KEY  (`id_cart`, `id_product`, `id_product_attribute`, `id_shop`, `ref_id`)
+            ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8';
         foreach ($sql as $_sql) {
             Db::getInstance()->Execute($_sql);
         }
@@ -1504,7 +1673,7 @@ class Datalayer
             return false;
         }
         $sql = 'SELECT `id_shop` FROM `' . _DB_PREFIX_ . 'module_shop`
-				WHERE `id_module` = ' . (int) $this->id .
+                WHERE `id_module` = ' . (int) $this->id .
             ((!$force_all) ? ' AND `id_shop` IN(' . implode(', ', $list) . ')' : '');
         // Store the results in an array
         $items = array();
@@ -1732,6 +1901,9 @@ class Datalayer
      */
     public function addProduct()
     {
+        $size = $_REQUEST['size'];
+        $color = $_REQUEST['color'];
+        $check = $_REQUEST['check'];
         //added new predecoproduct
         $this->alterProdutTable();
         $lang_id = Context::getContext()->language->id;
@@ -1759,14 +1931,14 @@ class Datalayer
             $sku = 'inkxe_demo';
             $id_shop = (int) Context::getContext()->shop->id;
             $insert_sql = "INSERT INTO " . _DB_PREFIX_ . "product(id_supplier,id_manufacturer,id_category_default,id_tax_rules_group,price,reference,active,redirect_type,indexed,cache_default_attribute,date_add,date_upd,customize)
-			VALUES('1','1','$id_category','1','$price','$sku','1','404','1','','$now','$now','1')";
+            VALUES('1','1','$id_category','1','$price','$sku','1','404','1','','$now','$now','1')";
             Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($insert_sql);
             $productId = Db::getInstance()->Insert_ID();
             //ps_product_shop
             $product_shop_sql = "INSERT INTO `" . _DB_PREFIX_ . "product_shop` (`id_product`, `id_shop`, `id_category_default`, `id_tax_rules_group`,
-			`minimal_quantity`, `price`, `active`, `redirect_type`, `id_product_redirected`, `available_for_order`, `condition`, `show_price`, `indexed`, `visibility`,
-			`cache_default_attribute`, `advanced_stock_management`, `date_add`, `date_upd`, `pack_stock_type`)
-			 VALUES ('$productId', '$id_shop', '$id_category', '1', '1', '$price', '1', '404', '0', '1', 'new', '1', '1', 'both', '0', '0', '$now', '$now', '3')";
+            `minimal_quantity`, `price`, `active`, `redirect_type`, `id_product_redirected`, `available_for_order`, `condition`, `show_price`, `indexed`, `visibility`,
+            `cache_default_attribute`, `advanced_stock_management`, `date_add`, `date_upd`, `pack_stock_type`)
+             VALUES ('$productId', '$id_shop', '$id_category', '1', '1', '$price', '1', '404', '0', '1', 'new', '1', '1', 'both', '0', '0', '$now', '$now', '3')";
             Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($product_shop_sql);
             //ps_product_lang
             $link_rewrite = strtolower($n_link_rewrite);
@@ -1775,21 +1947,28 @@ class Datalayer
             }
             foreach ($lang_ids as $v) {
                 $product_lang_sql = "INSERT INTO " . _DB_PREFIX_ . "product_lang(id_product,id_shop,id_lang,description,description_short,link_rewrite,
-				meta_description,meta_keywords,meta_title,name,available_now,available_later)
-				VALUES('$productId','$id_shop','" . $v['id_lang'] . "','$description','$short_description','$link_rewrite','$n_meta_description','$n_meta_keywords','$n_meta_title','$product_name','$n_available_now','$n_available_later')";
+                meta_description,meta_keywords,meta_title,name,available_now,available_later)
+                VALUES('$productId','$id_shop','" . $v['id_lang'] . "','$description','$short_description','$link_rewrite','$n_meta_description','$n_meta_keywords','$n_meta_title','$product_name','$n_available_now','$n_available_later')";
                 Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($product_lang_sql);
             }
             //add Category to product //
             $this->addToCategoriesToProduct($id_category, $productId);
             //product image add
-            $url[] = PS_SHOP_PATH . "xetool/wizard/images/install_image/configurable.png";
+            $url[] = PS_SHOP_PATH . "xetool/install/prestashop17/wizard/images/install_image/configurable.png";
             $image_id = $this->addImageByProductId($url, $productId, $product_name, $lang_ids, $id_shop);
             //addAttributeToProduct//
-            $attArr = $this->addAttributes($lang_ids);
-            $color_id = $attArr['color_id'];
-            $size_id = $attArr['size_id'];
+            if ($check == 'value') {
+                $attArr = $this->addAttributes($lang_ids);
+                $color_id = $attArr['color_id'];
+                $size_id = $attArr['size_id'];
+            } else {
+                $attArrs = $this->addAttributesValue($color, $size);
+                $color_id = $attArrs['color_id'];
+                $size_id = $attArrs['size_id'];
+            }
             $attrId = $this->addProductAttributesByProductIds($size_id, $productId, $sku, $color_id, $attr_id, $id_shop);
             if ($attrId) {
+                $this->upadteCacheProductAttrId($productId, $attrId);
                 $this->addProductStock($attrId, $productId, $totalQantity, $qty);
                 $this->updateTotalQuantityByPid($productId);
                 $this->addImageAttributes($attrId, $image_id);
@@ -1800,7 +1979,56 @@ class Datalayer
         }
         return $msg;
     }
-    public function addAttributes($lang_ids)
+    /**
+     *Add product attribute value by group id in store backend
+     *
+     * @param Int(color_attr_id)
+     * @param Int(size_attr_id)
+     * @return Array
+     *
+     */
+    public function addAttributesValue($color_attr_id, $size_attr_id)
+    {
+        $id_lang = Context::getContext()->language->id;
+        $id_shop = (int) Context::getContext()->shop->id;
+        $checkExit = $this->isAttributeExit($color_attr_id, 'Black', $id_lang);
+        if (empty($checkExit)) {
+            $newAttribute = new Attribute();
+            $newAttribute->name = $this->createMultiLangFields('Black');
+            $newAttribute->id_attribute_group = $color_attr_id;
+            $newAttribute->color = '#434A54';
+            $newAttribute->position = 0;
+            $id = $newAttribute->add();
+        }
+        $exitResult = $this->isAttributeExit($size_attr_id, 'L', $id_lang);
+        if (empty($exitResult)) {
+            $attribute = new Attribute();
+            $attribute->name = $this->createMultiLangFields('L');
+            $attribute->id_attribute_group = $size_attr_id;
+            $attribute->color = '';
+            $attribute->position = 0;
+            $attribute->add();
+        }
+        $size_sql   = "SELECT al.id_attribute from " . _DB_PREFIX_ . "attribute_lang as al,
+		" . _DB_PREFIX_ . "attribute as atr
+		where id_attribute_group =".$size_attr_id." and atr.id_attribute = al.id_attribute and al.name='L' and al.id_lang=" . intval($id_lang) . "";
+        $row_size   = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($size_sql);
+        $size_color = "SELECT al.id_attribute from " . _DB_PREFIX_ . "attribute_lang as al,
+		" . _DB_PREFIX_ . "attribute as atr
+		where id_attribute_group =".$color_attr_id." and atr.id_attribute = al.id_attribute and al.name='Black' and al.id_lang=" . intval($id_lang) . "";
+        $row_color  = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($size_color);
+        $attArr['size_id']  = $row_size[0]['id_attribute'];
+        $attArr['color_id'] = $row_color[0]['id_attribute'];
+        return $attArr;
+    }
+    public function upadteCacheProductAttrId($productId, $attrId)
+    {
+        $upadteSql = "UPDATE " . _DB_PREFIX_ . "product set cache_default_attribute =" . $attrId[0] . " WHERE id_product = " . $productId . "";
+        Db::getInstance()->Execute($upadteSql);
+        $sql = "UPDATE " . _DB_PREFIX_ . "product_shop set cache_default_attribute =" . $attrId[0] . " WHERE id_product = " . $productId . "";
+        Db::getInstance()->Execute($sql);
+    }
+   public function addAttributes($lang_ids)
     {
         $id_lang = Context::getContext()->language->id;
         $id_shop = (int) Context::getContext()->shop->id;
@@ -1813,7 +2041,7 @@ class Datalayer
             $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
             $insert_sql = "INSERT INTO `" . _DB_PREFIX_ . "attribute_group` (`group_type`,`is_color_group`,`position`) VALUES('color','1','" . intval($row['0']['position'] + 1) . "')";
             Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($insert_sql);
-            $groupId = Db::getInstance()->Insert_ID();
+			$colorGroupId  = $groupId = Db::getInstance()->Insert_ID();
             foreach ($lang_ids as $v) {
                 $insert_sql1 = "INSERT INTO " . _DB_PREFIX_ . "attribute_group_lang (id_attribute_group,id_lang,name,public_name) VALUES(" . $groupId . ",'" . $v['id_lang'] . "','$colornName','color')";
                 Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($insert_sql1);
@@ -1828,6 +2056,7 @@ class Datalayer
             $newAttribute->position = 0;
             $id = $newAttribute->add();
         } else {
+			$colorGroupId  = $result[0]['id_attribute_group'];
             $checkExit = $this->isAttributeExit($result[0]['id_attribute_group'], 'Black', $id_lang);
             if (empty($checkExit)) {
                 $newAttribute = new Attribute();
@@ -1847,7 +2076,7 @@ class Datalayer
             $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
             $insert_sql = "INSERT INTO `" . _DB_PREFIX_ . "attribute_group` (`group_type`,`position`) VALUES('select','" . intval($row['0']['position'] + 1) . "')";
             Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($insert_sql);
-            $groupId = Db::getInstance()->Insert_ID();
+            $sizeGroupId  = $groupId = Db::getInstance()->Insert_ID();
             foreach ($lang_ids as $v1) {
                 $insert_sql1 = "INSERT INTO " . _DB_PREFIX_ . "attribute_group_lang (id_attribute_group,id_lang,name,public_name) VALUES(" . $groupId . ",'" . $v1['id_lang'] . "','$sizeName','size')";
                 Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($insert_sql1);
@@ -1861,6 +2090,7 @@ class Datalayer
             $attribute->position = 0;
             $attribute->add();
         } else {
+			$sizeGroupId  = $resultSize[0]['id_attribute_group'];
             $exitResult = $this->isAttributeExit($resultSize[0]['id_attribute_group'], 'L', $id_lang);
             if (empty($exitResult)) {
                 $attribute = new Attribute();
@@ -1871,15 +2101,17 @@ class Datalayer
                 $attribute->add();
             }
         }
-        $size_sql = "SELECT id_attribute from " . _DB_PREFIX_ . "attribute_lang where name='L' and id_lang=" . intval($id_lang) . "";
-        $row_size = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($size_sql);
-        $size_color = "SELECT id_attribute from " . _DB_PREFIX_ . "attribute_lang where name='Black' and id_lang=" . intval($id_lang) . "";
-        $row_color = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($size_color);
-
-        $attArr['size_id'] = $row_size[0]['id_attribute'];
+		$size_sql   = "SELECT al.id_attribute from " . _DB_PREFIX_ . "attribute_lang as al,
+		" . _DB_PREFIX_ . "attribute as atr
+		where id_attribute_group =".$sizeGroupId." and atr.id_attribute = al.id_attribute and al.name='L' and al.id_lang=" . intval($id_lang) . "";
+        $row_size   = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($size_sql);
+        $size_color = "SELECT al.id_attribute from " . _DB_PREFIX_ . "attribute_lang as al,
+		" . _DB_PREFIX_ . "attribute as atr
+		where id_attribute_group =".$colorGroupId." and atr.id_attribute = al.id_attribute and al.name='Black' and al.id_lang=" . intval($id_lang) . "";
+		$row_color   = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($size_color);
+        $attArr['size_id']  = $row_size[0]['id_attribute'];
         $attArr['color_id'] = $row_color[0]['id_attribute'];
         return $attArr;
-
     }
     public function addProductAttributesByProductIds($size_id, $productId, $sku, $color_id, $attr_id, $id_shop)
     {
@@ -1893,7 +2125,7 @@ class Datalayer
         Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($sql_insert1);
         //ps_product_atrribute_shop
         $sql_pashop = "INSERT INTO " . _DB_PREFIX_ . "product_attribute_shop(id_product,id_product_attribute,id_shop,default_on)
-		VALUES('$productId','$attr_id','$id_shop','1')";
+        VALUES('$productId','$attr_id','$id_shop','1')";
         Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($sql_pashop);
         return $attrId;
 
@@ -2160,11 +2392,11 @@ class Datalayer
         $id = Context::getContext()->shop->id;
         $id_shop = $id ? $id : Configuration::get('PS_SHOP_DEFAULT');
         $categories = Db::getInstance()->executeS('
-		SELECT c.`id_category`, c.`id_parent`
-		FROM `' . _DB_PREFIX_ . 'category` c
-		LEFT JOIN `' . _DB_PREFIX_ . 'category_shop` cs
-		ON (c.`id_category` = cs.`id_category` AND cs.`id_shop` = ' . (int) $id_shop . ')
-		ORDER BY c.`id_parent`, cs.`position` ASC');
+        SELECT c.`id_category`, c.`id_parent`
+        FROM `' . _DB_PREFIX_ . 'category` c
+        LEFT JOIN `' . _DB_PREFIX_ . 'category_shop` cs
+        ON (c.`id_category` = cs.`id_category` AND cs.`id_shop` = ' . (int) $id_shop . ')
+        ORDER BY c.`id_parent`, cs.`position` ASC');
         $categories_array = array();
         foreach ($categories as $category) {
             $categories_array[$category['id_parent']]['subcategories'][] = $category['id_category'];
@@ -2193,9 +2425,9 @@ class Datalayer
         }
         $right = (int) $n++;
         Db::getInstance()->execute('
-		UPDATE ' . _DB_PREFIX_ . 'category
-		SET nleft = ' . (int) $left . ', nright = ' . (int) $right . '
-		WHERE id_category = ' . (int) $id_category . ' LIMIT 1');
+        UPDATE ' . _DB_PREFIX_ . 'category
+        SET nleft = ' . (int) $left . ', nright = ' . (int) $right . '
+        WHERE id_category = ' . (int) $id_category . ' LIMIT 1');
     }
     /**
      * Get the depth level for the category
@@ -2241,19 +2473,19 @@ class Datalayer
     public function isAttributeExit($id_attribute_group, $name, $id_lang)
     {
         $result = Db::getInstance()->getValue('
-			SELECT COUNT(*)
-			FROM `' . _DB_PREFIX_ . 'attribute_group` ag
-			LEFT JOIN `' . _DB_PREFIX_ . 'attribute_group_lang` agl
-				ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = ' . (int) $id_lang . ')
-			LEFT JOIN `' . _DB_PREFIX_ . 'attribute` a
-				ON a.`id_attribute_group` = ag.`id_attribute_group`
-			LEFT JOIN `' . _DB_PREFIX_ . 'attribute_lang` al
-				ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = ' . (int) $id_lang . ')
-			' . Shop::addSqlAssociation('attribute_group', 'ag') . '
-			' . Shop::addSqlAssociation('attribute', 'a') . '
-			WHERE al.`name` = \'' . pSQL($name) . '\' AND ag.`id_attribute_group` = ' . (int) $id_attribute_group . '
-			ORDER BY agl.`name` ASC, a.`position` ASC
-		');
+            SELECT COUNT(*)
+            FROM `' . _DB_PREFIX_ . 'attribute_group` ag
+            LEFT JOIN `' . _DB_PREFIX_ . 'attribute_group_lang` agl
+                ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = ' . (int) $id_lang . ')
+            LEFT JOIN `' . _DB_PREFIX_ . 'attribute` a
+                ON a.`id_attribute_group` = ag.`id_attribute_group`
+            LEFT JOIN `' . _DB_PREFIX_ . 'attribute_lang` al
+                ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = ' . (int) $id_lang . ')
+            ' . Shop::addSqlAssociation('attribute_group', 'ag') . '
+            ' . Shop::addSqlAssociation('attribute', 'a') . '
+            WHERE al.`name` = \'' . pSQL($name) . '\' AND ag.`id_attribute_group` = ' . (int) $id_attribute_group . '
+            ORDER BY agl.`name` ASC, a.`position` ASC
+        ');
         return ((int) $result > 0);
     }
     /**
@@ -2273,13 +2505,13 @@ class Datalayer
         $sql_hook1 = "SELECT id_module from " . _DB_PREFIX_ . "module where name='productpaymentlogos' ";
         $row_module1 = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_hook1);
         $sql = "UPDATE
-		    " . _DB_PREFIX_ . "hook_module AS rule1
-		    JOIN " . _DB_PREFIX_ . "hook_module AS rule2 ON
-		           ( rule1.id_module = " . $row_module1[0]['id_module'] . " AND rule2.id_module = " . $row_module[0]['id_module'] . " AND rule1.id_hook = " . $row[0]['id_hook'] . " AND rule2.id_hook = " . $row[0]['id_hook'] . ")
-		        OR ( rule1.id_module = " . $row_module[0]['id_module'] . " AND rule2.id_module = " . $row_module1[0]['id_module'] . " AND rule1.id_hook = " . $row[0]['id_hook'] . " AND rule2.id_hook = " . $row[0]['id_hook'] . ")
-		SET
-		    rule1.position = rule2.position,
-		    rule2.position = rule1.position";
+            " . _DB_PREFIX_ . "hook_module AS rule1
+            JOIN " . _DB_PREFIX_ . "hook_module AS rule2 ON
+                   ( rule1.id_module = " . $row_module1[0]['id_module'] . " AND rule2.id_module = " . $row_module[0]['id_module'] . " AND rule1.id_hook = " . $row[0]['id_hook'] . " AND rule2.id_hook = " . $row[0]['id_hook'] . ")
+                OR ( rule1.id_module = " . $row_module[0]['id_module'] . " AND rule2.id_module = " . $row_module1[0]['id_module'] . " AND rule1.id_hook = " . $row[0]['id_hook'] . " AND rule2.id_hook = " . $row[0]['id_hook'] . ")
+        SET
+            rule1.position = rule2.position,
+            rule2.position = rule1.position";
         Db::getInstance()->Execute($sql);
     }
     /**
@@ -2305,8 +2537,8 @@ class Datalayer
     public function customizeOrder($order_id)
     {
         $sql_ref = "SELECT count(*) as nos FROM " . _DB_PREFIX_ . "cart_product as cp,
-		" . _DB_PREFIX_ . "orders as o
-		where o.id_order ='" . $order_id . "' and o.id_cart =cp.id_cart and cp.ref_id>0";
+        " . _DB_PREFIX_ . "orders as o
+        where o.id_order ='" . $order_id . "' and o.id_cart =cp.id_cart and cp.ref_id>0";
         $rq_ref = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_ref);
         return $rq_ref[0]['nos'] ? 1 : 0;
     }
@@ -2353,12 +2585,13 @@ class Datalayer
      * @return array
      *
      */
-    public function getSizeArr()
+    public function getSizeArr($size)
     {
         $lang_id = (int) Context::getContext()->cookie->id_lang;
         $sql = "select al.id_attribute,al.name from " . _DB_PREFIX_ . "attribute_lang as al," . _DB_PREFIX_ . "attribute atr
-		where  al.id_attribute = atr.id_attribute and al.id_lang ='$lang_id'
-		and atr.color ='' and (al.name !='active' and al.name !='inactive')";
+        where  al.id_attribute = atr.id_attribute and al.id_lang ='$lang_id'
+        and atr.id_attribute_group = (select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where agl.name ='" . $size . "' and agl.id_attribute_group = ag.id_attribute_group and id_lang = " . $lang_id . " limit 1)
+        and (al.name !='active' and al.name !='inactive')";
         $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
         $resultArr = array();
         foreach ($rows as $k => $v) {
@@ -2385,117 +2618,123 @@ class Datalayer
         $product = new Product($pid, false, $context->language->id);
         $combinations = $product->getAttributeCombinations((int) ($context->cookie->id_lang));
         foreach ($combinations as $v1) {
-            if (($v1['is_color_group'] == 1) && ($v1['group_name'] == 'Color') && ($varColor == $v1['id_attribute'])) {
-                $attributeIdArr = $v1['id_product_attribute'];
-            }
-        }
-        $now = date('Y-m-d H:i:s', time());
-        $sql_lang = "Select id_lang FROM " . _DB_PREFIX_ . "lang";
-        $lang_id = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_lang);
-        $id_shop = (int) Context::getContext()->shop->id;
-        $sizeCount = count($varSize);
-        $quantity = $totalQantity = $sizeCount ? $qty * $sizeCount : $qty;
-        // Custom attribute 'Pdp' added for predeco product
-        $customAttr = $this->addNewCustomAttribute($lang_id);
-        $product_name = pSQL($product_name);
-        $sku = pSQL($sku);
-        $description = pSQL($description);
-        $short_description = pSQL($short_description);
-        //After configurable product added successfully then added new combination/variant
-        if ($conf_id) {
-            $image_id = $this->addImageByProductId($configFile, $conf_id, $product_name, $lang_id, $id_shop);
-            //addAttributeToProduct//
-            $attrId = $this->addProductAttributesByProductId($varSize, $conf_id, $sku, $varColor, $attr_id, $id_shop, false, true, $customAttr['activeId'], $pdpInact = '');
-            if ($attrId) {
-                $this->addProductStock($attrId, $conf_id, $totalQantity, $qty, $product_id = '');
-                $this->addImageAttributes($attrId, $image_id);
-            }
-        } else {
-            //added new predecoproduct
-            $insert_sql = "INSERT INTO " . _DB_PREFIX_ . "product(id_supplier,id_manufacturer,id_category_default,id_tax_rules_group,price,reference,active,redirect_type,indexed,cache_default_attribute,date_add,date_upd,customize,xe_is_temp)
-			VALUES('1','1','$cat_id[0]','1','$price','$sku','1','404','1','','$now','$now','$is_customized','1')";
-            Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($insert_sql);
-            $productId = Db::getInstance()->Insert_ID();
-            //ps_product_shop
-            $product_shop_sql = "INSERT INTO `" . _DB_PREFIX_ . "product_shop` (`id_product`, `id_shop`, `id_category_default`, `id_tax_rules_group`,
-			 `minimal_quantity`, `price`, `active`, `redirect_type`, `id_product_redirected`, `available_for_order`, `condition`, `show_price`, `indexed`, `visibility`,
-				`cache_default_attribute`, `advanced_stock_management`, `date_add`, `date_upd`, `pack_stock_type`)
-			 VALUES ('$productId', '$id_shop', '$cat_id[0]', '1', '1', '$price', '1', '404', '0', '1', 'new', '1', '1', 'both', '0', '0', '$now', '$now', '3')";
-            Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($product_shop_sql);
-            //ps_product_lang
-            $link_rewrite = strtolower($product_name);
-            if (preg_match('/\s/', $link_rewrite)) {
-                $link_rewrite = str_replace(' ', '-', $link_rewrite);
-            }
-            foreach ($lang_id as $v) {
-                $product_lang_sql = "INSERT INTO " . _DB_PREFIX_ . "product_lang(id_product,id_shop,id_lang,description,description_short,link_rewrite,
-					meta_description,meta_keywords,meta_title,name,available_now,available_later)
-				VALUES('$productId','$id_shop','" . $v['id_lang'] . "','$description','$short_description','$link_rewrite','','','','$product_name','','')";
-                Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($product_lang_sql);
-            }
-            //add Category to product //
-            $this->addToCategoriesToProduct($cat_id, $productId);
-            //product image add
-            $image_id = $this->addImageByProductId($configFile, $productId, $product_name, $lang_id, $id_shop);
-            //addAttributeToProduct//
-            $attrId = $this->addProductAttributesByProductId($varSize, $productId, $sku, $varColor, $attr_id, $id_shop, false, false, $customAttr['activeId'], $pdpInact = '');
-            if ($attrId) {
-                $this->addProductStock($attrId, $productId, $totalQantity, $qty);
-                $this->addImageAttributes($attrId, $image_id);
-            }
-        }
-        $productId = $conf_id ? $conf_id : $productId;
-        //After configurable product added success add simple product by cofigurable product
-        if ($productId) {
-            $congId = $attributeIdArr;
-            $productDetails = $this->getSimpleProducts($congId, $pid);
-            $productDetails = json_decode($productDetails, true);
-            extract($productDetails);
-            if ($conf_id) {
-                $sql_quant = "SELECT sa.quantity FROM " . _DB_PREFIX_ . "stock_available as sa," . _DB_PREFIX_ . "product_attribute as pa
-				WHERE sa.id_product_attribute=pa.id_product_attribute
-				AND pa.xe_is_temp ='0' AND sa.id_product='$conf_id' ORDER by sa.quantity DESC limit 1";
-                $result_qunt = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_quant);
-                $quanntity = $result_qunt[0]['quantity'];
-                $sql_totquant = "SELECT quantity FROM " . _DB_PREFIX_ . "stock_available WHERE id_product_attribute=0 AND id_product=$conf_id ";
-                $result_totqunt = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_totquant);
-                $totalQantity = $result_totqunt[0]['quantity'] + $quantity;
-
-            } else {
-                $totalQantity = $totalQantity + $quanntity;
-            }
-            $varColor1 = $xe_color_id;
-            $xeSizeArr[] = $xe_size_id;
-            //Add product image add
-            $image_id1 = $this->addImageByProductId($sides, $productId, pSQL($pname), $lang_id, $id_shop, true);
-            //Add attribute to product//
-            $attrId1 = $this->addProductAttributesByProductId($varSize, $productId, pSQL($reference), $varColor, $attrId1, $id_shop, true, false, $pdpAct = '', $customAttr['inActiveId']);
-            if ($attrId1) {
-                $this->addProductStock($attrId1, $productId, $totalQantity, $quanntity, true, 0);
-                $this->addImageAttributes($attrId1, $image_id1);
-            }
-            $context = \Context::getContext();
-            $product = new Product($productId, false, $context->language->id);
-            $combinations1 = $product->getAttributeCombinations((int) ($context->cookie->id_lang));
-            $resultArr[0]['status'] = 'success';
-            $resultArr[0]['conf_id'] = $productId;
-            foreach ($combinations1 as $k => $v) {
-                foreach ($attrId as $k2 => $v2) {
-                    if ($v['id_product_attribute'] == $v2) {
-                        if ($v['is_color_group'] == 0 && $v['group_name'] != 'Pdp') {
-                            $result[$k2]['color_id'] = $varColor;
-                            $result[$k2]['var_id'] = $v2;
-                            $result[$k2]['sizeid'][] = $v['id_attribute'];
+            if (($v1['is_color_group'] == 1) && ($v1['group_name'] == $color) && ($varColor == $v1['id_attribute'])) {
+                $productDetails = $this->getSimpleProducts($pid, $v1['id_product_attribute']);
+                $productDetails = json_decode($productDetails, true);
+                extract($productDetails);
+                if (!empty($sides)) {
+                    $now = date('Y-m-d H:i:s', time());
+                    $sql_lang = "Select id_lang FROM " . _DB_PREFIX_ . "lang";
+                    $lang_id = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_lang);
+                    $id_shop = (int) Context::getContext()->shop->id;
+                    $sizeCount = count($varSize);
+                    $quantity = $totalQantity = $sizeCount ? $qty * $sizeCount : $qty;
+                    // Custom attribute 'Pdp' added for predeco product
+                    $customAttr = $this->addNewCustomAttribute($lang_id);
+                    $product_name = pSQL($product_name);
+                    $sku = pSQL($sku);
+                    $description = pSQL($description);
+                    $short_description = pSQL($short_description);
+                    //After configurable product added successfully then added new combination/variant
+                    if ($conf_id) {
+                        $image_id = $this->addImageByProductId($configFile, $conf_id, $product_name, $lang_id, $id_shop);
+                        //addAttributeToProduct//
+                        $attrId = $this->addProductAttributesByProductId($varSize, $conf_id, $sku, $varColor, $attr_id, $id_shop, false, true, $customAttr['activeId'], $pdpInact = '');
+                        if ($attrId) {
+                            $this->addProductStock($attrId, $conf_id, $totalQantity, $qty, $product_id = '');
+                            $this->addImageAttributes($attrId, $image_id);
                         }
+                    } else {
+                        //added new predecoproduct
+                        $insert_sql = "INSERT INTO " . _DB_PREFIX_ . "product(id_supplier,id_manufacturer,id_category_default,id_tax_rules_group,price,reference,active,redirect_type,indexed,cache_default_attribute,date_add,date_upd,customize,xe_is_temp)
+                        VALUES('1','1','$cat_id[0]','1','$price','$sku','1','404','1','','$now','$now','$is_customized','1')";
+                        Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($insert_sql);
+                        $productId = Db::getInstance()->Insert_ID();
+                        //ps_product_shop
+                        $product_shop_sql = "INSERT INTO `" . _DB_PREFIX_ . "product_shop` (`id_product`, `id_shop`, `id_category_default`, `id_tax_rules_group`,
+                         `minimal_quantity`, `price`, `active`, `redirect_type`, `id_product_redirected`, `available_for_order`, `condition`, `show_price`, `indexed`, `visibility`,
+                            `cache_default_attribute`, `advanced_stock_management`, `date_add`, `date_upd`, `pack_stock_type`)
+                         VALUES ('$productId', '$id_shop', '$cat_id[0]', '1', '1', '$price', '1', '404', '0', '1', 'new', '1', '1', 'both', '0', '0', '$now', '$now', '3')";
+                        Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($product_shop_sql);
+                        //ps_product_lang
+                        $link_rewrite = strtolower($product_name);
+                        if (preg_match('/\s/', $link_rewrite)) {
+                            $link_rewrite = str_replace(' ', '-', $link_rewrite);
+                        }
+                        foreach ($lang_id as $v) {
+                            $product_lang_sql = "INSERT INTO " . _DB_PREFIX_ . "product_lang(id_product,id_shop,id_lang,description,description_short,link_rewrite,
+                                meta_description,meta_keywords,meta_title,name,available_now,available_later)
+                            VALUES('$productId','$id_shop','" . $v['id_lang'] . "','$description','$short_description','$link_rewrite','','','','$product_name','','')";
+                            Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($product_lang_sql);
+                        }
+                        //add Category to product //
+                        $this->addToCategoriesToProduct($cat_id, $productId);
+                        //product image add
+                        $image_id = $this->addImageByProductId($configFile, $productId, $product_name, $lang_id, $id_shop);
+                        //addAttributeToProduct//
+                        $attrId = $this->addProductAttributesByProductId($varSize, $productId, $sku, $varColor, $attr_id, $id_shop, false, false, $customAttr['activeId'], $pdpInact = '');
+                        if ($attrId) {
+                            $this->addProductStock($attrId, $productId, $totalQantity, $qty);
+                            $this->addImageAttributes($attrId, $image_id);
+                        }
+                    }
+                    $productId = $conf_id ? $conf_id : $productId;
+                    //After configurable product added success add simple product by cofigurable product
+                    if ($productId) {
+                        $congId = $v1['id_product_attribute'];
+                        $productDetails = $this->getSimpleProducts($pid, $congId);
+                        $productDetails = json_decode($productDetails, true);
+                        extract($productDetails);
+                        if ($conf_id) {
+                            $sql_quant = "SELECT sa.quantity FROM " . _DB_PREFIX_ . "stock_available as sa," . _DB_PREFIX_ . "product_attribute as pa
+                            WHERE sa.id_product_attribute=pa.id_product_attribute
+                            AND pa.xe_is_temp ='0' AND sa.id_product='$conf_id' ORDER by sa.quantity DESC limit 1";
+                            $result_qunt = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_quant);
+                            $quanntity = $result_qunt[0]['quantity'];
+                            $sql_totquant = "SELECT quantity FROM " . _DB_PREFIX_ . "stock_available WHERE id_product_attribute=0 AND id_product=$conf_id ";
+                            $result_totqunt = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_totquant);
+                            $totalQantity = $result_totqunt[0]['quantity'] + $quantity;
+
+                        } else {
+                            $quanntity = $quanntity ? $quanntity : $qty;
+                            $totalQantity = $totalQantity + $quanntity;
+                        }
+                        $varColor1 = $xe_color_id;
+                        $xeSizeArr[] = $xe_size_id;
+                        //Add product image add
+                        $image_id1 = $this->addImageByProductId($sides, $productId, pSQL($pname), $lang_id, $id_shop, true);
+                        //Add attribute to product//
+                        $attrId1 = $this->addProductAttributesByProductId($varSize, $productId, pSQL($reference), $varColor, $attrId1, $id_shop, true, false, $pdpAct = '', $customAttr['inActiveId']);
+                        if ($attrId1) {
+                            $this->addProductStock($attrId1, $productId, $totalQantity, $quanntity, true, 0);
+                            $this->addImageAttributes($attrId1, $image_id1);
+                        }
+                        $context = \Context::getContext();
+                        $product = new Product($productId, false, $context->language->id);
+                        $combinations1 = $product->getAttributeCombinations((int) ($context->cookie->id_lang));
+                        $resultArr[0]['status'] = 'success';
+                        $resultArr[0]['conf_id'] = $productId;
+                        foreach ($combinations1 as $k => $v) {
+                            foreach ($attrId as $k2 => $v2) {
+                                if ($v['id_product_attribute'] == $v2) {
+                                    if ($v['group_name'] == $size && $v['group_name'] != 'Pdp') {
+                                        $result[$k2]['color_id'] = $varColor;
+                                        $result[$k2]['var_id'] = $v2;
+                                        $result[$k2]['sizeid'][] = $v['id_attribute'];
+                                    }
+                                }
+                            }
+                        }
+                        $msg = $this->updateTotalQuantityByPid($productId);
+                        if ($msg) {
+                            return json_encode(array("status" => "success", "conf_id" => $productId, "variants" => $result));
+                        }
+                    } else {
+                        return json_encode(array("status" => "failed"));
                     }
                 }
             }
-            $this->updateTotalQuantityByPid($productId);
-            return json_encode(array("status" => "success", "conf_id" => $productId, "variants" => $result));
-        } else {
-            return json_encode(array("status" => "failed"));
         }
-
     }
     /**
      *add pre decorated  product iamge by product id
@@ -2595,7 +2834,7 @@ class Datalayer
                 Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($sql_insert2);
                 //ps_product_atrribute_shop
                 $sql_pashop = "INSERT INTO " . _DB_PREFIX_ . "product_attribute_shop(id_product,id_product_attribute,id_shop)
-				VALUES('$productId','$attr_id','$id_shop')";
+                VALUES('$productId','$attr_id','$id_shop')";
                 Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($sql_pashop);
 
             }
@@ -2617,7 +2856,7 @@ class Datalayer
                     Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($sql_insert2);
                     //ps_product_atrribute_shop
                     $sql_pashop = "INSERT INTO " . _DB_PREFIX_ . "product_attribute_shop(id_product,id_product_attribute,id_shop)
-					VALUES('$productId','$attr_id','$id_shop')";
+                    VALUES('$productId','$attr_id','$id_shop')";
                     Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($sql_pashop);
                 } else {
                     if ($j == 0) {
@@ -2633,7 +2872,7 @@ class Datalayer
                         Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($sql_insert2);
                         //ps_product_atrribute_shop
                         $sql_pashop = "INSERT INTO " . _DB_PREFIX_ . "product_attribute_shop(id_product,id_product_attribute,id_shop,default_on)
-						VALUES('$productId','$attr_id','$id_shop','1')";
+                        VALUES('$productId','$attr_id','$id_shop','1')";
                         Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($sql_pashop);
 
                     } else {
@@ -2649,7 +2888,7 @@ class Datalayer
                         Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($sql_insert2);
                         //ps_product_atrribute_shop
                         $sql_pashop = "INSERT INTO " . _DB_PREFIX_ . "product_attribute_shop(id_product,id_product_attribute,id_shop)
-						VALUES('$productId','$attr_id','$id_shop')";
+                        VALUES('$productId','$attr_id','$id_shop')";
                         Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($sql_pashop);
                     }
                 }
@@ -2678,16 +2917,16 @@ class Datalayer
             Db::getInstance()->Execute($query);
             foreach ($attrId as $k => $v) {
                 $sql = "INSERT INTO " . _DB_PREFIX_ . "stock_available (id_product,id_product_attribute,id_shop,id_shop_group,quantity,
-		       		out_of_stock) VALUES('$productId','$v','$id_shop','','$qty','2')";
+                    out_of_stock) VALUES('$productId','$v','$id_shop','','$qty','2')";
                 Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($sql);
             }
         } else {
             $sql = "INSERT INTO " . _DB_PREFIX_ . "stock_available (id_product,id_product_attribute,id_shop,id_shop_group,quantity,
-			       		out_of_stock) VALUES('$productId','','$id_shop','','$totalQantity','2')";
+                        out_of_stock) VALUES('$productId','','$id_shop','','$totalQantity','2')";
             Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($sql);
             foreach ($attrId as $k => $v) {
                 $sql = "INSERT INTO " . _DB_PREFIX_ . "stock_available (id_product,id_product_attribute,id_shop,id_shop_group,quantity,
-		       		out_of_stock) VALUES('$productId','$v','$id_shop','','$qty','2')";
+                    out_of_stock) VALUES('$productId','$v','$id_shop','','$qty','2')";
                 Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($sql);
             }
         }
@@ -2730,10 +2969,10 @@ class Datalayer
         $current_categories = array_map('intval', $current_categories);
         // for new categ, put product at last position
         $res_categ_new_pos = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-			SELECT id_category, MAX(position)+1 newPos
-			FROM `' . _DB_PREFIX_ . 'category_product`
-			WHERE `id_category` IN(' . implode(',', $categories) . ')
-			GROUP BY id_category');
+            SELECT id_category, MAX(position)+1 newPos
+            FROM `' . _DB_PREFIX_ . 'category_product`
+            WHERE `id_category` IN(' . implode(',', $categories) . ')
+            GROUP BY id_category');
         foreach ($res_categ_new_pos as $array) {
             $new_categories[(int) $array['id_category']] = (int) $array['newPos'];
         }
@@ -2855,7 +3094,7 @@ class Datalayer
             $totalQantity += $v['quantity'];
         }
         $query = "UPDATE " . _DB_PREFIX_ . "stock_available SET quantity= '" . $totalQantity . "' WHERE id_product = " . $productId . " AND id_product_attribute='0'";
-        Db::getInstance()->Execute($query);
+        return Db::getInstance()->Execute($query);
     }
     /**
      *Fetch product info by productId in when predeco product addtocart
@@ -2879,11 +3118,11 @@ class Datalayer
         $resultArr[0]['addedprice'] = "0";
         foreach ($combinations as $v) {
             if ($v['id_product_attribute'] == $configId) {
-                if ($v['is_color_group'] == 0 && $v['group_name'] != 'Pdp') {
+                if ($v['group_name'] == $data['size'] && $v['group_name'] != 'Pdp') {
                     $result['xe_size'] = $v['attribute_name'];
                     $result['xe_size_id'] = $v['id_attribute'];
                 }
-                if (($v['is_color_group'] == 1) && ($v['group_name'] == 'Color')) {
+                if (($v['is_color_group'] == 1) && ($v['group_name'] == $data['color'])) {
                     $color_id = $v['id_attribute'];
                 }
             }
@@ -2921,10 +3160,10 @@ class Datalayer
         $cache_id = 'Product::getCover_' . (int) $id_product . '-' . (int) $context->shop->id;
         if (!Cache::isStored($cache_id)) {
             $sql = 'SELECT image_shop.`id_image`
-					FROM `' . _DB_PREFIX_ . 'image` i
-					' . Shop::addSqlAssociation('image', 'i') . '
-					WHERE i.`id_product` = ' . (int) $id_product . '
-					AND image_shop.`cover` = 1';
+                    FROM `' . _DB_PREFIX_ . 'image` i
+                    ' . Shop::addSqlAssociation('image', 'i') . '
+                    WHERE i.`id_product` = ' . (int) $id_product . '
+                    AND image_shop.`cover` = 1';
             $result = Db::getInstance()->getRow($sql);
             Cache::store($cache_id, $result);
             return $result;
@@ -2938,38 +3177,39 @@ class Datalayer
      * @param (int)combinationsId
      * @return json array
      */
-    public function getSizeVariants($productId, $combinationsId)
+    public function getSizeVariants($productId, $combinationsId, $color, $size)
     {
         try {
             $lang_id = (int) Context::getContext()->cookie->id_lang;
             $id_shop = (int) Context::getContext()->shop->id;
             $product_sql = "SELECT p.id_product,p.price,pa.id_product_attribute FROM " . _DB_PREFIX_ . "product as p,
-			" . _DB_PREFIX_ . "product_lang as pl," . _DB_PREFIX_ . "product_attribute as pa WHERE p.id_product = " . $productId . " AND
-			p.id_product = pl.id_product AND p.id_product = pa.id_product AND pl.id_lang = " . $lang_id . " AND pl.id_shop = " . $id_shop . "";
+            " . _DB_PREFIX_ . "product_lang as pl," . _DB_PREFIX_ . "product_attribute as pa WHERE p.id_product = " . $productId . " AND
+            p.id_product = pl.id_product AND p.id_product = pa.id_product AND pl.id_lang = " . $lang_id . " AND pl.id_shop = " . $id_shop . "";
             $rowsData = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($product_sql);
 
             foreach ($rowsData as $k1 => $v) {
                 $result[$k1]['simpleProductId'] = $v['id_product_attribute'];
                 //get size array
                 $sql_sizes = "select sa.quantity,al.id_attribute,al.name from " . _DB_PREFIX_ . "attribute_lang as al
-				left join " . _DB_PREFIX_ . "product_attribute_combination as pac on al.id_attribute = pac.id_attribute
-				left join " . _DB_PREFIX_ . "attribute atr on al.id_attribute = atr.id_attribute
-				join " . _DB_PREFIX_ . "stock_available sa on pac.id_product_attribute = sa.id_product_attribute
-				where atr.color = '' and al.name !='active' and al.name != 'inactive'
-				and al.id_lang = " . $lang_id . "
-				and pac.id_product_attribute = '" . $v['id_product_attribute'] . "' ";
+                left join " . _DB_PREFIX_ . "product_attribute_combination as pac on al.id_attribute = pac.id_attribute
+                left join " . _DB_PREFIX_ . "attribute atr on al.id_attribute = atr.id_attribute
+                join " . _DB_PREFIX_ . "stock_available sa on pac.id_product_attribute = sa.id_product_attribute
+                where atr.id_attribute_group = (select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where agl.name ='" . $size . "' and agl.id_attribute_group = ag.id_attribute_group and id_lang = " . $lang_id . " limit 1)
+                and al.name !='active' and al.name != 'inactive'
+                and al.id_lang = " . $lang_id . "
+                and pac.id_product_attribute = '" . $v['id_product_attribute'] . "' ";
                 $result_sizes = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_sizes);
                 $result[$k1]['xe_size'] = $result_sizes[0]['name'];
                 $result[$k1]['xe_size_id'] = $result_sizes[0]['id_attribute'];
                 $result[$k1]['quantity'] = intval($result_sizes[0]['quantity']);
                 //get color array
                 $sql_colors = "select al.name as colorName,atr.id_attribute as color_id from " . _DB_PREFIX_ . "attribute_lang as al,
-					" . _DB_PREFIX_ . "product_attribute_combination as pac," . _DB_PREFIX_ . "attribute as atr
-					where al.id_attribute = pac.id_attribute
-					and atr.id_attribute = al.id_attribute
-					and al.id_lang = " . $lang_id . "
-					and atr.id_attribute_group = (select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where ag.is_color_group = 1 and agl.id_attribute_group = ag.id_attribute_group and id_lang = " . $lang_id . " limit 1)
-					and pac.id_product_attribute = '" . $v['id_product_attribute'] . "' ";
+                    " . _DB_PREFIX_ . "product_attribute_combination as pac," . _DB_PREFIX_ . "attribute as atr
+                    where al.id_attribute = pac.id_attribute
+                    and atr.id_attribute = al.id_attribute
+                    and al.id_lang = " . $lang_id . "
+                    and atr.id_attribute_group = (select ag.id_attribute_group from " . _DB_PREFIX_ . "attribute_group as ag, " . _DB_PREFIX_ . "attribute_group_lang agl where ag.is_color_group = 1 and agl.name ='" . $color . "' and agl.id_attribute_group = ag.id_attribute_group and id_lang = " . $lang_id . " limit 1)
+                    and pac.id_product_attribute = '" . $v['id_product_attribute'] . "' ";
                 $result_colors = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql_colors);
                 $result[$k1]['xe_color'] = $result_colors[0]['colorName'];
                 $result[$k1]['xe_color_id'] = $result_colors[0]['color_id'];
@@ -3008,5 +3248,34 @@ class Datalayer
         $cart_item_result['totalCartItem'] = $rows[0]['Total'] ? $rows[0]['Total'] : 0;
         $cart_item_result['checkoutURL'] = $cart_url;
         return $cart_item_result;
+    }
+    /**
+     * Get refid by order_details_id
+     *
+     * @param   Int($orderDetailId)
+     * @return  Int
+     *
+     */
+    public function getRefIdByOrderDetailId($orderDetailId)
+    {
+        $sql = "SELECT ref_id from " . _DB_PREFIX_ . "order_detail where id_order_detail='" . $orderDetailId . "'";
+        $resultSize = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return $resultSize[0]['ref_id'];
+    }
+    /**
+     * get pending order count by last order id
+     *
+     * @param   Int($last_id)
+     * @return  Array($result)
+     *
+     */
+    public function getPendingOrdersCount($lastId)
+    {
+        $sql = 'SELECT distinct o.id_order FROM ' . _DB_PREFIX_ . 'orders as o
+        left join ' . _DB_PREFIX_ . 'cart_product as cp on o.id_cart = cp.id_cart
+        left join ' . _DB_PREFIX_ . 'order_history oh on o.id_order = oh.id_order where cp.ref_id >0 and o.id_order >' . $lastId . '';
+        $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        $result = array("lastOrderID" => $lastId, "pendingOrderCount" => count($rows));
+        return $result;
     }
 }

@@ -32,11 +32,11 @@
                                     </button>
                                 </div>
                                 <div class="clearfix category-list modal-scroll-height m-t-10">
-                                    <ul>
-                                        <li ng-repeat="category in designCategoryList"  ng-mouseenter="showCategoryClosebtn[$index]=true" ng-mouseleave="showCategoryClosebtn[$index]=false; showCategoryBadge[$index]=false"  ng-class="{'active': $index == selectedCatIndex || category == selectedCateg}">
-                                            <a href="" ng-click="loadSelectedSubCategories(category,$index)">
+                                    <ul dnd-list="designCategoryList" dnd-drop="dropCallback(index, item)">
+                                        <li ng-repeat="category in designCategoryList" dnd-draggable="category" dnd-moved="designCategoryList.splice($index, 1)"  dnd-effect-allowed="move" dnd-selected="models.selected = category" ng-mouseenter="showCategoryClosebtn[$index]=true" dnd-dragstart="getCurrentIndex(category)" dnd-dragend ="getUpdateIndex(category)" ng-mouseleave="showCategoryClosebtn[$index]=false; showCategoryBadge[$index]=false;"  ng-class="{'active': $index == selectedCatIndex || category == selectedCateg}">
+                                            <span ng-click="loadSelectedSubCategories(category,$index)">
                                                 {{ category.category_name }}
-                                            </a>
+                                            </span>
                                             <!-- <a href="" ng-click="loadSelectedSubCategories(category,$index)">
                                             									<i class="pg-arrow_right m-r-5 m-l-5 pull-right"></i>
                                             								</a> -->
@@ -67,11 +67,9 @@
                                     </button>
                                 </div>
                                 <div class="clearfix sub-category-list modal-scroll-height m-t-10">
-                                    <ul>
-                                        <li ng-repeat="subCat in manageSubCategoryList" ng-mouseenter="showSubCategoryClosebtn[$index]=true" ng-mouseleave="showSubCategoryClosebtn[$index]=false; showSubCategoryBadge[$index]=false">
-                                            <a href="#">
-                                                {{ subCat.sub_category }}
-                                            </a>
+                                    <ul dnd-list="manageSubCategoryList" dnd-drop="dropSubCallback(index, item)">
+                                        <li ng-repeat="subCat in manageSubCategoryList" dnd-draggable="subCat" dnd-moved="manageSubCategoryList.splice($index, 1)" nd-dragstart="getSubCatCurrentIndex(subCat)" dnd-dragend ="getSubCatUpdateIndex(subCat)" ng-mouseenter="showSubCategoryClosebtn[$index]=true" ng-mouseleave="showSubCategoryClosebtn[$index]=false; showSubCategoryBadge[$index]=false">                                          
+                                                {{ subCat.sub_category }}                                            
                                             <div class="pull-right ">
                                                 <a href="" ng-show="showSubCategoryClosebtn[$index]"  ng-click="editSubCategory($index)">
                                                     <i class="fa fa-pencil text-info m-r-5 m-l-5">

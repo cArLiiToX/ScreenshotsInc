@@ -22,11 +22,12 @@ class ColorSwatchStore extends UTIL
             try {
                 $filters = array(
                     'colorname' => $colorname,
+                    'color' => $this->getStoreAttributes("xe_color"),
                     'store' => $this->getDefaultStoreId(),
                 );
                 $result = $this->proxy->call($key, 'cedapi_product.addAttributeColorOptionValue', $filters);
-
                 $rsultrsponse = json_decode($result, true);
+                $option_id = $rsultrsponse['attribute_id'];
                 if (isset($imagename) && $imagename != '') {
                     $this->customRequest(array('value' => $option_id, 'imgData' => $imagename, 'imagetype' => $imagetype, 'swatchWidth' => 45, 'swatchHeight' => 45, 'base64Data' => base64_decode($imagename)));
                     $saveSucss = $this->saveColorSwatch('add');
@@ -70,6 +71,7 @@ class ColorSwatchStore extends UTIL
                 $filters = array(
                     'option_id' => $option_id,
                     'colorname' => $colorname,
+                    'color' => $this->getStoreAttributes("xe_color"),
                     'store' => $this->getDefaultStoreId(),
                 );
                 $result = $this->proxy->call($key, 'cedapi_product.editAttributeColorOptionValue', $filters);

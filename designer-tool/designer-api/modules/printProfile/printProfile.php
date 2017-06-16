@@ -40,7 +40,7 @@ class PrintProfile extends UTIL {
 					}
 				}
 			}
-			$this->response($this->json($activePrintSetting), 200);
+			$this->response($this->json($activePrintSetting,1), 200);
 		}catch(Exception $e) {
 			$result = array('Caught exception:'=>$e->getMessage());
 			$this->response($this->json($result), 200);
@@ -64,6 +64,7 @@ class PrintProfile extends UTIL {
 		$status=0;
 		if(!empty($req_arr) && isset($req_arr) && isset($req_arr['apikey']) && isset($req_arr['name'])){
 			extract($req_arr);
+			$name = addslashes($name);
 			try{
 				if(isset($print_id) && $print_id){
 					$update_sql = "UPDATE ".TABLE_PREFIX."print_method SET updated_on=NOW(), name='".$name."'";
@@ -154,17 +155,24 @@ class PrintProfile extends UTIL {
 	*/
 	public function addUpdatePrintFeature(){//Related Table : Multiple Entry
 		try{
-			$status =0;
+			$status = 0;
+			$featureId = 0;
 			if(!empty($this->_request) && isset($this->_request['print_method_id'])){//update case
 				// Delete from print_method_feature_rel During Update
 				$sql = "DELETE FROM ".TABLE_PREFIX."print_method_feature_rel WHERE print_method_id='".$this->_request['print_method_id']."'";
 				$this->executeGenericDMLQuery($sql);
 			}
 			// For Multiple Insertion
-			if(!empty($this->_request) && isset($this->_request['features'])){
+			if(!empty($this->_request)){
 					$feature_rel  = "INSERT INTO ".TABLE_PREFIX."print_method_feature_rel(print_method_id,feature_id) VALUES";
 					foreach($this->_request['features'] as $v){
-					$feature_rel .= "('".$this->_request['print_method_id']."','".$v['id']."'),";
+						if($v['is_name_number'] == 1)
+						{
+							$featureId = $this->getFeatureIdByTabId($v['id']);
+						}
+						else 
+							$featureId = $v['id'];
+					$feature_rel .= "('".$this->_request['print_method_id']."','".$featureId."'),";
 				}
 				$feature_rel = substr($feature_rel,0,strlen($feature_rel)-1);    
 				$status = $this->executeGenericDMLQuery($feature_rel);
@@ -507,7 +515,7 @@ class PrintProfile extends UTIL {
 				$print_method_id = $this->_request['print_method_id'];
 			}
 			$sql ="SELECT distinct pm.pk_id,pm.name,pm.is_enable,pm.file_type,pm.text_fillcolor,pm.text_strokecolor,pm.wc_color1,pm.wc_color2,pm.wc_color3,
-				pst.is_default,pst.pk_id as print_setting_id, pst.is_min_order, pst.min_order_quantity, pst.is_white_base, pst.white_base_price, pst.is_clip_art,pst.is_font,pst.is_additional_price, pst.additional_price, pst.is_setup_cost, pst.setup_cost, pst.is_scalling, pst.scalling_price,pst.is_color_price_range, pst.is_percentage,pst.is_print_size,pst.is_color_group_price,pst.is_used_colors,pst.is_color_chooser,				   pst.is_product_side,pst.is_single_order,pst.is_no_of_used_colors,pst.other_color_group_price,pst.is_max_palettes,pst.max_palettes,pst.is_gray_scale,pst.is_qrcode_whitebase,pst.screen_cost,pst.is_forcecolor,pst.is_palette,pst.is_color_area_price,pst.is_print_area_percentage,pst.is_multiline_text_price,pst.is_background,pst.is_image_upload_price,pst.is_calulate_multiple_side,pst.image_upload_price,pst.is_engrave,pst.is_browse_allow
+				pst.is_default,pst.pk_id as print_setting_id, pst.is_min_order, pst.min_order_quantity, pst.is_white_base, pst.white_base_price, pst.is_clip_art,pst.is_font,pst.is_additional_price, pst.additional_price, pst.is_setup_cost, pst.setup_cost, pst.is_scalling, pst.scalling_price,pst.is_color_price_range, pst.is_percentage,pst.is_print_size,pst.is_color_group_price,pst.is_used_colors,pst.is_color_chooser,				   pst.is_product_side,pst.is_single_order,pst.is_no_of_used_colors,pst.other_color_group_price,pst.is_max_palettes,pst.max_palettes,pst.is_gray_scale,pst.is_qrcode_whitebase,pst.screen_cost,pst.is_forcecolor,pst.is_palette,pst.is_color_area_price,pst.is_print_area_percentage,pst.is_multiline_text_price,pst.is_background,pst.is_background_pattern,pst.is_image_upload_price,pst.is_calulate_multiple_side,pst.image_upload_price,pst.is_engrave,pst.is_browse_allow,pst.is_name_number_price,pst.is_extra_side_price
 				FROM ".TABLE_PREFIX."print_method pm
 				LEFT JOIN ".TABLE_PREFIX."print_setting  pst ON pm.pk_id=pst.pk_id
 				LEFT JOIN ".TABLE_PREFIX."print_method_setting_rel pmsr ON pst.pk_id=pmsr.print_setting_id ";
@@ -564,11 +572,14 @@ class PrintProfile extends UTIL {
 				$getPrintData[$i]['settings']['is_print_area_percentage'] = intval($rows['is_print_area_percentage']);
 				$getPrintData[$i]['settings']['is_multiline_text_price'] = intval($rows['is_multiline_text_price']);
 				$getPrintData[$i]['settings']['is_background'] = intval($rows['is_background']);
+				$getPrintData[$i]['settings']['is_background_pattern'] = intval($rows['is_background_pattern']);
 				$getPrintData[$i]['settings']['is_image_upload_price'] = intval($rows['is_image_upload_price']);
 				$getPrintData[$i]['settings']['is_calulate_multiple_side'] = intval($rows['is_calulate_multiple_side']);
 				$getPrintData[$i]['settings']['image_upload_price'] = $rows['image_upload_price'];
 				$getPrintData[$i]['settings']['is_engrave'] = intval($rows['is_engrave']);
 				$getPrintData[$i]['settings']['is_browse_allow'] = intval($rows['is_browse_allow']);
+				$getPrintData[$i]['settings']['is_name_number_price'] = intval($rows['is_name_number_price']);
+				$getPrintData[$i]['settings']['is_extra_side_price'] = intval($rows['is_extra_side_price']);
 				
 				//$getPrintData[$i]['settings']['is_pattern'] = intval($rows['is_pattern']);
 				
@@ -660,13 +671,13 @@ class PrintProfile extends UTIL {
 				$getPrintData[$i]['template_category']=$templateCategory;
 				
 				//fetch all pallete category by printId   //palette_category_rel
-				$sql="SELECT distinct pc.id,pc.name,pmpc.is_enable
+				$sql="SELECT distinct pc.id,pc.name,pc.sort_order,pmpc.is_enable
 				   FROM ".TABLE_PREFIX."print_method pm
 				   INNER JOIN ".TABLE_PREFIX."print_method_palette_category pmpc
 				   ON pmpc.print_method_id=pm.pk_id
 				   INNER JOIN ".TABLE_PREFIX."palette_category pc
 				   ON pc.id=pmpc.palette_category_id
-				   WHERE pm.pk_id=".$rows['pk_id']."";
+				   WHERE pm.pk_id=".$rows['pk_id']." order by pc.sort_order";
 				   
 				   
 				   
@@ -681,7 +692,7 @@ class PrintProfile extends UTIL {
 				$getPrintData[$i]['pallete_category']=$palleteCategory;
 
 				//fetch all features by print metod id
-				$sql="SELECT pmfr.feature_id,f.type FROM ".TABLE_PREFIX."features f
+				/*$sql="SELECT pmfr.feature_id,f.type FROM ".TABLE_PREFIX."features f
 				JOIN ".TABLE_PREFIX."print_method_feature_rel pmfr
 				ON pmfr.print_method_id=".$rows['pk_id']."
 				AND pmfr.feature_id=f.id";
@@ -693,7 +704,8 @@ class PrintProfile extends UTIL {
 				   $features[$j]['id']  = $rows3[$j]['feature_id'];
 				   $features[$j]['name']  = $rows3[$j]['type'];
 				}
-				$getPrintData[$i]['features'] = $features;
+				$getPrintData[$i]['features'] = $features;*/
+				$getPrintData[$i]['features'] = $this->getFeaturesByPrintId($rows['pk_id']);
 					  
 				//fetching print size
 				$sql="SELECT distinct ps.pk_id,ps.name,ps.is_user_defined,ps.height,ps.width,psmr.price,psmr.percentage
@@ -828,12 +840,43 @@ class PrintProfile extends UTIL {
 					$patternCategory[$p]['is_enable'] = intval($pcategoryRows[$p]['is_enable']);
 				}
 				$getPrintData[$i]['pattern_category']=$patternCategory;
+
+				//fetch all name number prices by print_method_id
+				$nameNumberPrice_sql = "SELECT start_range, end_range, each_name_price, each_number_price FROM ".TABLE_PREFIX."print_method_name_number_price WHERE print_method_id=".$rows['pk_id'];
+				$nNPriceRows  = $this->executeGenericDQLQuery($nameNumberPrice_sql);
+				$nameNumberPrice = array();
+				for($p = 0; $p < sizeof($nNPriceRows); $p++) {
+					$nameNumberPrice[$p]['from'] = $nNPriceRows[$p]['start_range'];
+					$nameNumberPrice[$p]['to'] = $nNPriceRows[$p]['end_range'];
+					$nameNumberPrice[$p]['per_name'] = $nNPriceRows[$p]['each_name_price'];
+					$nameNumberPrice[$p]['per_number'] = $nNPriceRows[$p]['each_number_price'];
+				}
+				$getPrintData[$i]['name_number_price']=$nameNumberPrice;
+
+				//fetch all extra side prices by print_method_id
+				$esr_sql = "SELECT * FROM ".TABLE_PREFIX."print_method_extra_side_range WHERE print_method_id = ".$rows['pk_id'];
+				$extraSideRangeRows = $this->executeGenericDQLQuery($esr_sql);
+				$extraSidePrice = array();
+				for($p = 0; $p < sizeof($extraSideRangeRows); $p++) {
+					$extraSidePrice[$p]['from'] = $extraSideRangeRows[$p]['start_range'];
+					$extraSidePrice[$p]['to'] = $extraSideRangeRows[$p]['end_range'];
+					$esp_sql = "SELECT * FROM ".TABLE_PREFIX."print_method_extra_side_price WHERE extra_side_range_id = ".$extraSideRangeRows[$p]['id'];
+					$extraSidePriceRows = $this->executeGenericDQLQuery($esp_sql);
+					$overRidePrice = array();
+					for($d = 0; $d < sizeof($extraSidePriceRows); $d++) {
+						$overRidePrice[$d]['sideName'] = $extraSidePriceRows[$d]['side_name'];
+						$overRidePrice[$d]['price'] = $extraSidePriceRows[$d]['side_price'];						
+					}
+					
+					$extraSidePrice[$p]['overridePrice'] = $overRidePrice;
+				}
+				$getPrintData[$i]['extra_side_price']=$extraSidePrice;
 				$i++;
 			}
 			if($getPrintData){
 				//$getPrintData=array_values($getPrintData);
-				if($type==1)return $this->json($getPrintData);
-				$this->response($this->json($getPrintData), 200);
+				if($type==1)return $this->json($getPrintData,1);
+				$this->response($this->json($getPrintData,1), 200);
 			}else{
 				$msg=array("status"=>"invalid");
 				$this->response($this->json($msg), 200);
@@ -843,6 +886,7 @@ class PrintProfile extends UTIL {
 			$this->response($this->json($result), 200);
 		}
 	}
+	
 	
 	/**
 	*
@@ -1256,7 +1300,7 @@ class PrintProfile extends UTIL {
 				from ".TABLE_PREFIX."print_size_range psr,
 				".TABLE_PREFIX."print_size_method_rel psmr
 				where psmr.print_size_range_id =psr.pk_id
-				and psmr.print_method_id='".$print_id."' group by psmr.print_size_range_id";
+				and psmr.print_method_id='".$print_id."' group by psmr.print_size_range_id,psr.pk_id,psr.from_range,psr.to_range";
 				$rows = $this->executeGenericDQLQuery($sql_fetch);
 				$result= array();
 				$rowoSize = sizeof($rows);
@@ -1269,7 +1313,7 @@ class PrintProfile extends UTIL {
 					where psmr.print_method_id='".$print_id."'
 					and psmr.print_size_range_id='".$rows[$i]['pk_id']."'
 					and psmr.print_size_id ='0'
-					group by psmr.print_size_range_id";
+					group by psmr.print_size_range_id, psmr.is_fixed,psmr.price,psmr.percentage,psmr.is_whitebase ";
 					$rows2 = $this->executeGenericDQLQuery($sql);
 					//$l =0;
 					foreach($rows2 as $k2=>$v2){
@@ -1310,7 +1354,7 @@ class PrintProfile extends UTIL {
 					from ".TABLE_PREFIX."print_size_method_rel psmr,".TABLE_PREFIX."print_size ps
 					where ps.pk_id = psmr.print_size_id 
 					and psmr.print_size_range_id ='0'
-					and psmr.is_fixed='0' group by ps.pk_id order by ps.pk_id ASC";
+					and psmr.is_fixed='0' group by ps.pk_id,psmr.price,psmr.percentage,ps.name,psmr.is_fixed order by ps.pk_id ASC";
 				$rows5 = $this->executeGenericDQLQuery($sql_data);
 				$newArr = array();
 				$j =0;
@@ -1357,7 +1401,7 @@ class PrintProfile extends UTIL {
 					from ".TABLE_PREFIX."print_quantity_range pqr,
 					".TABLE_PREFIX."print_method_quantity_range_rel pmqrr
 					where pmqrr.print_quantity_range_id =pqr.pk_id
-					and pmqrr.print_method_id='".$print_method_id."' group by pmqrr.print_quantity_range_id";
+					and pmqrr.print_method_id='".$print_method_id."' group by pmqrr.print_quantity_range_id,pmqrr.no_of_colors,pqr.pk_id,pqr.from_range,pqr.to_range";
 					$rows = $this->executeGenericDQLQuery($sql_fetch);
 					$result= array();
 					$resultArrNew['no_of_colors']= $rows[0]['no_of_colors'];
@@ -1372,7 +1416,7 @@ class PrintProfile extends UTIL {
 						where pmqrr.print_method_id='".$print_method_id."'
 						and pmqrr.print_quantity_range_id='".$rows[$i]['pk_id']."'
 						and pmqrr.is_check ='1'
-						group by pmqrr.print_quantity_range_id";
+						group by pmqrr.print_quantity_range_id, pmqrr.is_fixed,pmqrr.white_base_price,pmqrr.white_base_percentage";
 						$rows2 = $this->executeGenericDQLQuery($sql);
 						foreach($rows2 as $k2=>$v2){
 							$whiteBaseArr['price']= $v2['white_base_price'];
@@ -1402,7 +1446,7 @@ class PrintProfile extends UTIL {
 					from ".TABLE_PREFIX."print_quantity_range pqr,
 					".TABLE_PREFIX."print_method_quantity_range_rel pmqrr
 					where pmqrr.print_quantity_range_id =pqr.pk_id
-					and pmqrr.print_method_id='".$print_method_id."' group by pmqrr.print_quantity_range_id";
+					and pmqrr.print_method_id='".$print_method_id."' group by pmqrr.print_quantity_range_id,pmqrr.no_of_colors, pqr.pk_id,pqr.from_range,pqr.to_range";
 					$rows = $this->executeGenericDQLQuery($sql_fetch);
 					$result= array();
 					$resultArrNew['no_of_colors']= isset($rows[0]['no_of_colors'])?$rows[0]['no_of_colors']:0;
@@ -1415,7 +1459,7 @@ class PrintProfile extends UTIL {
 						from  ".TABLE_PREFIX."print_method_quantity_range_rel pmqrr
 						where pmqrr.print_method_id='".$print_method_id."'
 						and pmqrr.print_quantity_range_id='".$rows[$i]['pk_id']."'
-						group by pmqrr.print_quantity_range_id";
+						group by pmqrr.print_quantity_range_id,pmqrr.is_fixed,pmqrr.white_base_price,pmqrr.white_base_percentage";
 						$rows2 = $this->executeGenericDQLQuery($sql);
 						foreach($rows2 as $k2=>$v2){
 							$whiteBaseArr['price']= $v2['white_base_price'];
@@ -2073,5 +2117,162 @@ class PrintProfile extends UTIL {
 			}
 		}else $msg['status'] = 'invaliedkey';
 		$this->response($this->json($msg), 200);
+	}
+	public function getFeaturesByPrintId($id){
+	    //fetch all features by print metod id
+	    $sql = "SELECT pmfr.feature_id,f.type, t.id as tab_id, t.name as tab_name,t.symbol as tab_symbol, t.status as tab_status FROM  ".TABLE_PREFIX."features f
+	        JOIN ".TABLE_PREFIX."print_method_feature_rel pmfr
+	        ON pmfr.feature_id=f.id
+	        JOIN ".TABLE_PREFIX."tabs t
+	        ON f.tab_id = t.id
+	        AND pmfr.print_method_id=".$id."
+	        ORDER BY t.name asc";
+	    $result = $this->executeGenericDQLQuery($sql);
+	    $moduleArray = array();
+        $tempArray = array();
+        $i=0;
+        if(!empty($result)) {
+            foreach ($result as $v) {
+                if (empty($moduleArray) || !in_array($v['tab_name'], $tempArray))
+                {
+                    if (!empty($tempArray)){
+                        $i++;
+                    }
+                    $j=0;
+                    $tempArray[] = $v['tab_name'];
+                    $moduleArray[$i]['id'] = $v['tab_id'];
+                    $moduleArray[$i]['name'] = $v['tab_name'];
+					$moduleArray[$i]['category'] = $v['tab_symbol'];
+                    if($v['type'] != "nameNumber")
+                    {
+                    	$moduleArray[$i]['status'] = $v['tab_status'];
+                        $moduleArray[$i]['subtabs_list'][$j]['id'] = $v['feature_id'];
+                        $moduleArray[$i]['subtabs_list'][$j]['name'] = $v['type'];
+                    }
+                    else 
+                    {
+                    	$moduleArray[$i]['status'] = 0;
+                        $moduleArray[$i]['subtabs_list'] = array();
+                    }
+                } else {
+                    $moduleArray[$i]['subtabs_list'][$j]['id'] = $v['feature_id'];
+                    $moduleArray[$i]['subtabs_list'][$j]['name'] = $v['type'];
+                }
+                $j++;
+            }
+        }
+
+        $features = $moduleArray;
+        return $features;
+	}
+	
+	public function getFeatureIdByTabId($tabId)
+	{
+		$sql = "select id from ".TABLE_PREFIX."features where tab_id = ".$tabId;
+		$result = $this->executeFetchAssocQuery($sql);
+		return $result[0]['id'];
+	}
+
+	/**
+	*
+	*date of created 29-3-2017(dd-mm-yy)
+	*date of Modified 
+	*update print_method_name_number_price, print_method_extra_side_price, 
+	*print_method_extra_side_range, print_setting tables
+	*
+	* @param (String)apikey
+	* @param (int)print_method_id
+	* @param (int)is_name_number_price
+	* @param (int)is_extra_side_price
+	* @param (array)name_number_price
+	* @param (array)extra_side_price 
+	* @return JSON  success/failed
+	* 
+	*/ 
+	public function addUpdateNameNumberExtraSidePrice(){
+ 		extract($this->_request);
+		$req_arr = $this->_request;
+		if(isset($apikey) && $this->isValidCall($apikey)){
+			try{
+				$status  = 0;
+				
+				// Name Number, Extra Side Price (Enable / Disable)
+				
+				$is_name_number_price = $nameSidePriceData['is_name_number_price'];
+				$is_extra_side_price = $nameSidePriceData['is_extra_side_price'];
+				
+				if(isset($is_name_number_price) && isset($is_extra_side_price)){
+					$sql = "UPDATE ".TABLE_PREFIX."print_setting SET is_name_number_price = '".$is_name_number_price."', is_extra_side_price = '".$is_extra_side_price."' WHERE pk_id = '".$print_method_id."'";
+					$status = $this->executeGenericDMLQuery($sql);
+				}
+				
+				// Name Number Price
+				
+				// delete existing related price info
+				$sql_delete ="DELETE FROM ".TABLE_PREFIX."print_method_name_number_price WHERE print_method_id='".$print_method_id."'";
+				$status = $this->executeGenericDMLQuery($sql_delete);
+				
+				// add new price info
+				if(!empty($nameSidePriceData['name_number_price'])){
+					foreach($nameSidePriceData['name_number_price'] as $nnp){
+						$sql_insert = "INSERT INTO ".TABLE_PREFIX."print_method_name_number_price (print_method_id, start_range, end_range, each_name_price, each_number_price) VALUES ('".$print_method_id."', '".$nnp['from']."', '".$nnp['to']."', '".$nnp['per_name']."', '".$nnp['per_number']."')";
+						$status = $this->executeGenericDMLQuery($sql_insert);
+					}
+				}
+
+				// Extra Side Price
+ 				
+ 				$sql_get_extra_side_ranges = "SELECT id from ".TABLE_PREFIX."print_method_extra_side_range WHERE print_method_id='".$print_method_id."'";
+				$extra_side_range_rows = $this->executeGenericDQLQuery($sql_get_extra_side_ranges);
+				
+				// delete existing related side price info
+				if(sizeof($extra_side_range_rows)){
+					$sql_delete_extra_side_prices = "DELETE FROM ".TABLE_PREFIX."print_method_extra_side_price WHERE";
+					for($k = 0; $k < sizeof($extra_side_range_rows); $k++) {
+						if ($k == 0)
+							$sql_delete_extra_side_prices .= " extra_side_range_id = '".$extra_side_range_rows[$k]['id']."'";
+						else
+							$sql_delete_extra_side_prices .= " OR extra_side_range_id = '".$extra_side_range_rows[$k]['id']."'";
+					}
+					$status = $this->executeGenericDMLQuery($sql_delete_extra_side_prices);
+				}
+				
+				// delete existing related range info
+				$sql_delete_extra_side_ranges = "DELETE FROM ".TABLE_PREFIX."print_method_extra_side_range WHERE print_method_id='".$print_method_id."'";
+				$status = $this->executeGenericDMLQuery($sql_delete_extra_side_ranges);
+				
+				if(!empty($nameSidePriceData['extra_side_price'])){
+					foreach($nameSidePriceData['extra_side_price'] as $esp){
+						
+						// add new range info
+						$sql_insert = "INSERT INTO ".TABLE_PREFIX."print_method_extra_side_range (print_method_id, start_range, end_range) VALUES ('".$print_method_id."', '".$esp['from']."', '".$esp['to']."')";
+						$extra_side_range_id = $this->executeGenericInsertQuery($sql_insert);
+
+						// add all extra sides info of a range
+						$sql_insert = "INSERT INTO ".TABLE_PREFIX."print_method_extra_side_price (extra_side_range_id, side_name, side_price) VALUES ";
+						$overridePriceSize = sizeof($esp['overridePrice']);
+						for($m = 0; $m < $overridePriceSize; $m++) {
+							if($m == $overridePriceSize-1)
+								$sql_insert .= "('".$extra_side_range_id."','".$esp['overridePrice'][$m]['sideName']."','".$esp['overridePrice'][$m]['price']."')";
+							else
+								$sql_insert .= "('".$extra_side_range_id."','".$esp['overridePrice'][$m]['sideName']."','".$esp['overridePrice'][$m]['price']."'),";
+						}
+						$status = $this->executeGenericDMLQuery($sql_insert);
+					}
+				}
+				unset($this->_request['print_method_id']);
+				if($status){
+					$settingsObj = Flight::setting();
+					$settingsObj->allSettingsDetails(1);
+					$this->getAllPrintSettings($print_method_id);
+				}				
+			}catch(Exception $e) {
+				$result = array('Caught exception name number extra side price:'=>$e->getMessage());
+				$this->response($this->json($result), 200);
+			}
+		}else {
+			$msg['status'] = 'invalidkey';
+			$this->response($this->json($msg), 200);
+		}
 	}
 }

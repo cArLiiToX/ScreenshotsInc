@@ -1,6 +1,6 @@
 <?php
 require_once dirname(__FILE__) . '/../../../../../../../config.php';
-class Datalayer
+class Datalayer 
 {
     public $con = '';
     public function __construct()
@@ -10,6 +10,9 @@ class Datalayer
             $this->con = '';
         }
         mysqli_set_charset($this->con, "utf8");
+		$this->util = new UTIL();
+		$this->color = $this->util->getStoreAttributes("xe_color");
+		$this->size = $this->util->getStoreAttributes("xe_size");
     }
     public function userAuthenticate($username = '', $key = '')
     {
@@ -26,7 +29,7 @@ class Datalayer
     public function getCategories()
     {
         $categories = array();
-        $sql = "SELECT c.category_id,cd.name FROM " . DB_PREFIX . "category c INNER JOIN " . DB_PREFIX . "category_description cd ON (cd.category_id = c.category_id) WHERE c.parent_id=0";
+        $sql = "SELECT c.category_id,cd.name FROM " . DB_PREFIX . "category c INNER JOIN " . DB_PREFIX . "category_description cd ON (cd.category_id = c.category_id) WHERE c.parent_id=0 ORDER BY cd.name ASC";
         $query = mysqli_query($this->con, $sql);
         $i = 0;
         while ($row = mysqli_fetch_array($query, MYSQL_ASSOC)) {
@@ -67,7 +70,7 @@ class Datalayer
     public function getSubCategory($categoryid)
     {
         $subcategory = array();
-        $sql = "SELECT c.category_id,cd.name FROM " . DB_PREFIX . "category c INNER JOIN " . DB_PREFIX . "category_description cd ON (cd.category_id = c.category_id) WHERE c.parent_id='" . (int) $categoryid . "'";
+        $sql = "SELECT c.category_id,cd.name FROM " . DB_PREFIX . "category c INNER JOIN " . DB_PREFIX . "category_description cd ON (cd.category_id = c.category_id) WHERE c.parent_id='" . (int) $categoryid . "' ORDER BY cd.name ASC";
         $query = mysqli_query($this->con, $sql);
         $i = 0;
         while ($row = mysqli_fetch_array($query, MYSQL_ASSOC)) {
@@ -106,7 +109,7 @@ class Datalayer
         $sql = "SELECT p.product_id,p.image as thumbnail,pd.name, pd.description, p.price FROM " . DB_PREFIX . "product p INNER JOIN " . DB_PREFIX . "product_description pd ON(p.product_id = pd.product_id) WHERE p.product_id != '' and p.is_variant='0'";
 
         $sql .= "  AND p.product_id IN(SELECT po.product_id FROM " . DB_PREFIX . "product_option po WHERE po.option_id = '" . (int) $option_id . "' and po.value=1)";
-        if (!isset($data->preDecorated) || !$data->preDecorated) {
+        if (!isset($data->preDecorated) || $data->preDecorated == 'false') {
             $refid_query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='refid'");
             $refid_query_row = mysqli_fetch_array($refid_query, MYSQL_ASSOC);
             $refid_option_id = $refid_query_row['option_id'];
@@ -197,7 +200,7 @@ $limit .= ', '.$range;
                 $color = $this->getProductOptionsModified($row['product_id'], 'color');
                 $variants[$i]['id'] = $row['product_id'];
                 $variants[$i]['name'] = $row['name'];
-                $variants[$i]['xeColor'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+                $variants[$i]['xeColor'] = isset($color[$this->color]) ? $color[$this->color] : '';
                 $variants[$i]['price'] = $row['price'];
                 $variants[$i]['colorUrl'] = isset($color['option_value_id']) ? $color['option_value_id'] . ".png" : '';
                 $thumb = $this->resize($row['image'], 140, 140);
@@ -214,7 +217,7 @@ $limit .= ', '.$range;
             $color = $this->getProductOptionsModified($row['product_id'], 'color');
             $variants[0]['id'] = $row['product_id'];
             $variants[0]['name'] = $row['name'];
-            $variants[0]['xeColor'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+            $variants[0]['xeColor'] = isset($color[$this->color]) ? $color[$this->color] : '';
             $variants[0]['price'] = $row['price'];
             $variants[0]['colorUrl'] = isset($color['option_value_id']) ? $color['option_value_id'] . ".png" : '';
             $thumb = $this->resize($row['image'], 140, 140);
@@ -244,10 +247,11 @@ $limit .= ', '.$range;
         if ($row = mysqli_fetch_array($query, MYSQL_ASSOC)) {
             $variants = $this->getProductVariants($row['product_id'], $variant_id);
             $product_info['pid'] = $row['product_id'];
-            $product_info['pidtype'] = 'configurable';
+			$product_info['pidtype'] = (isset($variants['type']))?$variants['type']:'configurable';
             $product_info['pname'] = $row['name'];
             $product_info['shortdescription'] = strip_tags(html_entity_decode($row['description']));
             $product_info['category'] = $this->getCategoriesByProduct($row['product_id']);
+			$product_info['minQuantity'] = $variants['minQuantity'];
             $product_info['pvid'] = $variants['id'];
             $product_info['pvname'] = $variants['name'];
             $product_info['xecolor'] = $variants['xe_color'];
@@ -277,7 +281,7 @@ $limit .= ', '.$range;
                 $sizes = $this->getProductOptionsModified($row['product_id'], 'size');
                 $color = $this->getProductOptionsModified($row['product_id'], 'color');
                 $attributes = $this->getProductOptionsModified($row['product_id'], 'all');
-                $attributes['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+                $attributes['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
                 $attributes['xe_color_id'] = isset($color['option_value_id']) ? $color['option_value_id'] : '';
                 if (!empty($sizes)) {
                     $j = 0;
@@ -289,7 +293,7 @@ $limit .= ', '.$range;
                         $quantities[$j]['xe_size_id'] = $value['option_value_id'];
                         $quantities[$j]['xe_color_id'] = isset($color['option_value_id']) ? $color['option_value_id'] : '';
                         $quantities[$j]['xe_size'] = $value['name'];
-                        $quantities[$j]['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+                        $quantities[$j]['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
                         $quantities[$j]['quantity'] = (int) $this->getProductQuantity($row['product_id'], $value['option_value_id']);
                         $quantities[$j]['price'] = $price;
                         $quantities[$j]['minQuantity'] = (int) $row['minimum'];
@@ -303,7 +307,7 @@ $limit .= ', '.$range;
                     $quantities['xe_size_id'] = '';
                     $quantities['xe_color_id'] = isset($color['option_value_id']) ? $color['option_value_id'] : '';
                     $quantities['xe_size'] = '';
-                    $quantities['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+                    $quantities['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
                     $quantities['quantity'] = (int) $this->getProductQuantity($row['product_id'], $value['option_value_id']);
                     $quantities['price'] = $row['price'];
                     $quantities['minQuantity'] = (int) $row['minimum'];
@@ -318,7 +322,7 @@ $limit .= ', '.$range;
             $sizes = $this->getProductOptionsModified($row['product_id'], 'size');
             $color = $this->getProductOptionsModified($row['product_id'], 'color');
             $attributes = $this->getProductOptionsModified($row['product_id'], 'all');
-            $attributes['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+            $attributes['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
             $attributes['xe_color_id'] = isset($color['option_value_id']) ? $color['option_value_id'] : '';
             if (!empty($sizes)) {
                 $j = 0;
@@ -329,7 +333,7 @@ $limit .= ', '.$range;
                     $quantities[$j]['simpleProductId'] = $row['product_id'];
                     $quantities[$j]['xe_size'] = $value['name'];
                     $quantities[$j]['xe_size_id'] = $value['option_value_id'];
-                    $quantities[$j]['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+                    $quantities[$j]['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
                     $quantities[$j]['xe_color_id'] = isset($color['option_value_id']) ? $color['option_value_id'] : '';
                     $quantities[$j]['quantity'] = $this->getProductQuantity($row['product_id'], $value['option_value_id']);
                     $quantities[$j]['price'] = $price;
@@ -342,7 +346,7 @@ $limit .= ', '.$range;
                 $quantities['simpleProductId'] = $row['product_id'];
                 $quantities['xe_size'] = '';
                 $quantities['xe_size_id'] = '';
-                $quantities['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+                $quantities['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
                 $quantities['xe_color_id'] = isset($color['option_value_id']) ? $color['option_value_id'] : '';
                 $quantities['quantity'] = $this->getProductQuantity($row['product_id'], $value['option_value_id']);
                 $quantities['price'] = $price;
@@ -376,7 +380,7 @@ $limit .= ', '.$range;
                             $quantities[$j]['xe_size_id'] = $value['option_value_id'];
                             $quantities[$j]['xe_color_id'] = isset($color['option_value_id']) ? $color['option_value_id'] : '';
                             $quantities[$j]['xe_size'] = $value['name'];
-                            $quantities[$j]['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+                            $quantities[$j]['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
                             $quantities[$j]['quantity'] = (int) $this->getProductQuantity($row['product_id'], $value['option_value_id']);
                             $quantities[$j]['price'] = $price;
                             $size_array[] = $value['name'];
@@ -388,7 +392,7 @@ $limit .= ', '.$range;
                     $quantities['xe_size_id'] = '';
                     $quantities['xe_color_id'] = '';
                     $quantities['xe_size'] = '';
-                    $quantities['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+                    $quantities['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
                     $quantities['quantity'] = (int) $this->getProductQuantity($row['product_id'], $value['option_value_id']);
                     $quantities['price'] = $row['price'];
 
@@ -406,14 +410,14 @@ $limit .= ', '.$range;
                     $price = ($value['price_prefix'] == '+') ? $row['price'] + $value['price'] : $row['price'] - $value['price'];
                     $quantities[$j]['simpleProductId'] = $row['product_id'];
                     $quantities[$j]['xe_size'] = $value['name'];
-                    $quantities[$j]['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+                    $quantities[$j]['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
                     $quantities[$j]['quantity'] = $this->getProductQuantity($row['product_id'], $value['option_value_id']);
                     $quantities[$j]['price'] = $price;
                 }
             } else {
                 $quantities['simpleProductId'] = $row['product_id'];
                 $quantities['xe_size'] = '';
-                $quantities['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+                $quantities['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
                 $quantities['quantity'] = $this->getProductQuantity($row['product_id'], $value['option_value_id']);
                 $quantities['price'] = $price;
 
@@ -445,10 +449,10 @@ $limit .= ', '.$range;
                 $temp_color = array();
                 $i = 0;
                 while ($row2 = mysqli_fetch_array($query2, MYSQL_ASSOC)) {
-                    if (strtolower($row['name']) == 'xe_color') {
+                    if ($row['name'] == $this->color) {
                         $color[$row['name']] = $row2['name'];
                         $color['option_value_id'] = $row2['option_value_id'];
-                    } elseif (strtolower($row['name']) == 'xe_size') {
+                    } elseif ($row['name'] == $this->size) {
                         $size[$i]['name'] = $row2['name'];
                         $size[$i]['price'] = $row2['price'];
                         $size[$i]['price_prefix'] = $row2['price_prefix'];
@@ -460,7 +464,7 @@ $limit .= ', '.$range;
                     }
                 }
             } elseif ($row['type'] == 'text') {
-                if (strtolower($row['name']) == 'xe_color') {
+                if (strtolower($row['name']) == $this->color) {
                     $color[$row['name']] = $row['value'];
                 } elseif (strtolower($row['name']) == 'refid') {
                     $refid[$row['name']] = $row['value'];
@@ -630,15 +634,17 @@ $limit .= ', '.$range;
                 }
                 $attributes = $this->getProductOptionsModified($row['product_id'], 'all');
                 $color = $this->getProductOptionsModified($row['product_id'], 'color');
-                $attributes['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+                $attributes['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
                 $attributes['xe_color_id'] = isset($color['option_value_id']) ? $color['option_value_id'] : '';
+				$variants['type'] = 'configurable';
                 $variants['id'] = $row['product_id'];
                 $variants['name'] = $row['name'];
-                $variants['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+                $variants['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
                 $variants['xe_color_id'] = isset($color['option_value_id']) ? $color['option_value_id'] : '';
                 $variants['quantity'] = $row['quantity'];
                 $variants['price'] = $row['price'];
                 $variants['tax'] = $tax_price;
+                $variants['minQuantity'] = $row['minimum'];
                 $refid = $this->getProductOptionsModified($row['product_id'], 'refid');
                 $variants['refid'] = isset($refid['refid']) ? $refid['refid'] : '';
                 $sizes = $this->getProductOptionsModified($row['product_id'], 'size');
@@ -657,6 +663,7 @@ $limit .= ', '.$range;
                     }
                 } else {
                     $variants['size'] = '';
+					$variants['xe_size_id'] = '';
 
                 }
                 $images = $this->getProductImages($row['product_id']);
@@ -685,11 +692,12 @@ $limit .= ', '.$range;
             }
             $attributes = $this->getProductOptionsModified($row['product_id'], 'all');
             $color = $this->getProductOptionsModified($row['product_id'], 'color');
-            $attributes['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+            $attributes['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
             $attributes['xe_color_id'] = isset($color['option_value_id']) ? $color['option_value_id'] : '';
+            $variants['type'] = 'simple';
             $variants['id'] = $row['product_id'];
             $variants['name'] = $row['name'];
-            $variants['xe_color'] = isset($color['xe_color']) ? $color['xe_color'] : '';
+            $variants['xe_color'] = isset($color[$this->color]) ? $color[$this->color] : '';
             $variants['xe_color_id'] = isset($color['option_value_id']) ? $color['option_value_id'] : '';
             $variants['quantity'] = $row['quantity'];
             $variants['price'] = $row['price'];
@@ -712,6 +720,7 @@ $limit .= ', '.$range;
                 }
             } else {
                 $variants['size'] = '';
+				$variants['xe_size_id'] = '';
 
             }
             $images = $this->getProductImages($row['product_id']);
@@ -815,7 +824,7 @@ $limit .= ', '.$range;
     {
         $options = array();
         $i = 0;
-        if ($data['filter_name'] == 'xe_color' && isset($data['oldConfId']) && $data['oldConfId'] != 0) {
+        if ($data['filter_name'] == $this->color && isset($data['oldConfId']) && $data['oldConfId'] != 0) {
             $productvariant = $this->getProductInfo($data['oldConfId']);
             $query = mysqli_query($this->con, "SELECT language_id FROM `" . DB_PREFIX . "language` WHERE status=1");
             $row = mysqli_fetch_array($query, MYSQL_ASSOC);
@@ -851,7 +860,7 @@ $limit .= ', '.$range;
             while ($result = mysqli_fetch_array($sql1)) {
                 $options[$i]['value'] = $result['option_value_id'];
                 $options[$i]['label'] = $result['name'];
-                if ($data['filter_name'] == 'xe_color') {
+                if ($data['filter_name'] == $this->color) {
                     $options[$i]['swatchImage'] = '';
                 }
                 $i++;
@@ -905,7 +914,7 @@ $limit .= ', '.$range;
 
                     // Insert Size Options
                     if (isset($simpleProduct)) {
-                        $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='xe_size'");
+                        $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='".$this->size."'");
                         $row = mysqli_fetch_array($query, MYSQL_ASSOC);
                         $option_id = $row['option_id'];
                         mysqli_query($this->con, "INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int) $product_id . "', option_id = '" . (int) $option_id . "', required = '1'");
@@ -944,7 +953,7 @@ $limit .= ', '.$range;
                     }
                     // Insert Color Option
                     if (isset($variants['color_id'])) {
-                        $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='xe_color'");
+                        $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='".$this->color."'");
                         $row = mysqli_fetch_array($query, MYSQL_ASSOC);
 
                         mysqli_query($this->con, "INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int) $product_id . "', option_id = '" . (int) $row['option_id'] . "', required = '1'");
@@ -1006,7 +1015,7 @@ $limit .= ', '.$range;
                     $product_id = $this->getProductId($config_id, $variants['color_id']);
                     // Insert Size Options
                     if (isset($simpleProduct)) {
-                        $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='xe_size'");
+                        $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='".$this->size."'");
                         $row = mysqli_fetch_array($query, MYSQL_ASSOC);
                         $query1 = mysqli_query($this->con, "SELECT product_option_id FROM `" . DB_PREFIX . "product_option` WHERE option_id = '" . (int) $row['option_id'] . "' AND product_id = '" . (int) $product_id . "'");
                         if (mysqli_num_rows($query1) > 0) {
@@ -1087,7 +1096,7 @@ $limit .= ', '.$range;
         // Insert Size Options
         $simpleProduct = (array) $variants['simpleProducts'];
         if (isset($simpleProduct)) {
-            $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='xe_size'");
+            $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='".$this->size."'");
             $row = mysqli_fetch_array($query, MYSQL_ASSOC);
             $option_id = $row['option_id'];
 
@@ -1124,7 +1133,7 @@ $limit .= ', '.$range;
 
         // Insert Color Option
         if (isset($variants['color_id'])) {
-            $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='xe_color'");
+            $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='".$this->color."'");
             $row = mysqli_fetch_array($query, MYSQL_ASSOC);
             mysqli_query($this->con, "INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int) $product_id . "', option_id = '" . (int) $row['option_id'] . "', required = '1'");
             $product_option_id = mysqli_insert_id($this->con);
@@ -1264,7 +1273,7 @@ $limit .= ', '.$range;
         $query = mysqli_query($this->con, "SELECT language_id FROM `" . DB_PREFIX . "language` WHERE status=1");
         $row2 = mysqli_fetch_array($query, MYSQL_ASSOC);
         $language_id = $row2['language_id'];
-        $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='xe_color'");
+        $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='".$this->color."'");
         $row = mysqli_fetch_array($query, MYSQL_ASSOC);
         $option_id = $row['option_id'];
         $sort_order = 0;
@@ -1284,7 +1293,7 @@ $limit .= ', '.$range;
     public function editColor($data)
     {
         $result = array();
-        $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='xe_color'");
+        $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='".$this->color."'");
         $row = mysqli_fetch_array($query, MYSQL_ASSOC);
         $option_id = $row['option_id'];
         $sort_order = 0;
@@ -1340,7 +1349,7 @@ $limit .= ', '.$range;
                 $price = (int) $config_price - (int) $product_data['price'];
             }
 
-            $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='xe_color'");
+            $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='".$this->color."'");
             $row = mysqli_fetch_array($query, MYSQL_ASSOC);
             $query1 = mysqli_query($this->con, "SELECT product_option_id FROM `" . DB_PREFIX . "product_option` WHERE product_id = '" . (int) $config_id . "' AND option_id = '" . (int) $row['option_id'] . "'");
             $row1 = mysqli_fetch_array($query1, MYSQL_ASSOC);
@@ -1349,7 +1358,7 @@ $limit .= ', '.$range;
             if ($config_product_color_option_id != '') {
                 mysqli_query($this->con, "INSERT INTO " . DB_PREFIX . "product_option_value SET product_option_id = '" . (int) $config_product_color_option_id . "', product_id = '" . (int) $config_id . "', option_id = '" . (int) $row['option_id'] . "', option_value_id = '" . (int) $data['varColor'] . "', quantity = '" . (int) $product_data['qty'] . "', subtract = '1', price = '" . (float) $price . "', price_prefix = '" . $price_prefix . "', points = '', points_prefix = '+', weight = '" . (float) $value . "', weight_prefix = '+'");
             }
-            $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='xe_size'");
+            $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='".$this->size."'");
             $row = mysqli_fetch_array($query, MYSQL_ASSOC);
             $query1 = mysqli_query($this->con, "SELECT product_option_id FROM `" . DB_PREFIX . "product_option` WHERE product_id = '" . (int) $config_id . "' AND option_id = '" . (int) $row['option_id'] . "'");
             $row1 = mysqli_fetch_array($query1, MYSQL_ASSOC);
@@ -1395,7 +1404,7 @@ $limit .= ', '.$range;
 
             mysqli_query($this->con, "UPDATE " . DB_PREFIX . "product SET image = '" . $row['image'] . "' WHERE product_id = '" . (int) $product_id . "'");
 
-            $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='xe_size'");
+            $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='".$this->size."'");
             $row = mysqli_fetch_array($query, MYSQL_ASSOC);
             $option_id = $row['option_id'];
 
@@ -1405,7 +1414,7 @@ $limit .= ', '.$range;
                 mysqli_query($this->con, "INSERT INTO " . DB_PREFIX . "product_option_value SET product_option_id = '" . (int) $product_size_option_id . "', product_id = '" . (int) $product_id . "', option_id = '" . (int) $option_id . "', option_value_id = '" . (int) $size . "', quantity = '" . (int) $product_data['qty'] . "', subtract = '1', price = '" . (float) 0 . "', price_prefix = '+', points = '', points_prefix = '+', weight = '" . (float) 0 . "', weight_prefix = '+'");
             }
             if (isset($data['varColor'])) {
-                $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='xe_color'");
+                $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='".$this->color."'");
                 $row = mysqli_fetch_array($query, MYSQL_ASSOC);
                 mysqli_query($this->con, "INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int) $product_id . "', option_id = '" . (int) $row['option_id'] . "', required = '1'");
                 $product_color_option_id = mysqli_insert_id($this->con);
@@ -1492,7 +1501,7 @@ $limit .= ', '.$range;
         //Insert Store Product
         mysqli_query($this->con, "INSERT INTO " . DB_PREFIX . "product_to_store SET product_id = '" . (int) $product_id . "', store_id = 0");
 
-        $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='xe_size'");
+        $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='".$this->size."'");
         $row = mysqli_fetch_array($query, MYSQL_ASSOC);
         $option_id = $row['option_id'];
 
@@ -1502,7 +1511,7 @@ $limit .= ', '.$range;
             mysqli_query($this->con, "INSERT INTO " . DB_PREFIX . "product_option_value SET product_option_id = '" . (int) $product_size_option_id . "', product_id = '" . (int) $product_id . "', option_id = '" . (int) $option_id . "', option_value_id = '" . (int) $size . "', quantity = '" . (int) $product_data['qty'] . "', subtract = '1', price = '" . (float) 0 . "', price_prefix = '+', points = '', points_prefix = '+', weight = '" . (float) 0 . "', weight_prefix = '+'");
         }
         if (isset($data['varColor'])) {
-            $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='xe_color'");
+            $query = mysqli_query($this->con, "SELECT option_id FROM `" . DB_PREFIX . "option_description` WHERE name='".$this->color."'");
             $row = mysqli_fetch_array($query, MYSQL_ASSOC);
             mysqli_query($this->con, "INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int) $product_id . "', option_id = '" . (int) $row['option_id'] . "', required = '1'");
             $product_color_option_id = mysqli_insert_id($this->con);
@@ -1599,5 +1608,26 @@ $limit .= ', '.$range;
             }
         }
         return $count;
+    }
+	
+	/*Modification 
+	*fetching product options from the store
+	*27-03-17
+	*/
+	public function getStoreOptions()
+    {
+
+        $product_option_data = array();
+
+        $sql = "SELECT * FROM `" . DB_PREFIX . "option` o LEFT JOIN `" . DB_PREFIX . "option_description` od ON (o.option_id = od.option_id) ORDER BY o.option_id";
+
+        $query = mysqli_query($this->con, $sql);
+		$i=0;
+        while ($row = mysqli_fetch_array($query, MYSQL_ASSOC)) {
+			$product_option_data[$i][option_id]=$row['option_id'];
+			$product_option_data[$i]['name']=$row['name'];
+			$i++;			
+        }
+        return $product_option_data;
     }
 }

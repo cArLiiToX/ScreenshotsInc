@@ -15,6 +15,9 @@
                             </xe-translate>
                         </span>
                     </button>
+                    <div class="clearfix text-right m-t-5">
+                    <span>Set default category :</span> <a ng-click="openDefaultCategorySubcategoryModal()"><u class="no-margin cursor-pointer">{{ selectedDefaultCat }} <span ng-if="showSubCatLabel"> > {{ selectedDefaultSubCat }}</span></u></a>
+                    </div>
                 </div>
             </div>
             <ng-include src="'modules/design/views/partials/designEditView.html'" ng-show="isEditViewActive">

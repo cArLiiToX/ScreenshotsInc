@@ -15,7 +15,7 @@ class CartsStore extends UTIL
         $original_mem = ini_get('memory_limit');
         $mem = substr($original_mem, 0, -1);
         if ($original_mem <= $mem) {
-            $mem = $mem + 256;
+            $mem = $mem + 1024;
             ini_set('memory_limit', $mem . 'M');
             set_time_limit(0);
         }
@@ -41,7 +41,8 @@ class CartsStore extends UTIL
                 $designData = $this->_request['designData'];
                 $productDataJSON = $this->_request['productData'];
             }
-			$designData = base64_decode($designData);
+            $designData = urldecode($designData);
+            $productDataJSON = urldecode($productDataJSON);
             $cartArr = json_decode($productDataJSON, true);
             if ($isTemplate == 0) {
                 $refid = $this->saveDesignStateCart($apikey, $refid, $designData); // private
@@ -232,13 +233,26 @@ class CartsStore extends UTIL
             //$cutom_design_refId = $cartArr['refid'];
             $cutom_design_refId = $refid;
             $quantity = $cartArr['qty'];
+            $totalQty = $cartArr['totalQty'];
             $simpleProductId = $cartArr['simple_product']['simpleProductId'];
-            //$color1 = $cartArr['simple_product']['color1'];
-            $xeColor = $cartArr['simple_product']['xe_color'];
-            $xeSize = $cartArr['simple_product']['xe_size'];
+            if(!empty($cartArr['simple_product']['xe_color'])){
+                $xeColor = $this->getStoreAttributes("xe_color");
+                if($xeColor != 'xe_color'){
+                    $cartArr['simple_product'][$xeColor] = $cartArr['simple_product']['xe_color'];
+                    unset($cartArr['simple_product']['xe_color']);
+                }
+            }
+            if(!empty($cartArr['simple_product']['xe_size'])){
+                $xeSize = $this->getStoreAttributes("xe_size");
+                if($xeSize != 'xe_size'){
+                    $cartArr['simple_product'][$xeSize] = $cartArr['simple_product']['xe_size'];
+                    unset($cartArr['simple_product']['xe_size']);
+                }
+            }
             $product = array(
                 "product_id" => $configProductId,
                 "qty" => $quantity,
+                "totalQty" => $totalQty,
                 "simpleproduct_id" => $simpleProductId,
                 "options" => array(),
                 "custom_price" => $custom_price,
@@ -286,6 +300,8 @@ class CartsStore extends UTIL
                     'colorId' => $xe_color,
                     'sizeId' => $xe_size,
                     'qty' => $qty,
+                    'color' => $this->getStoreAttributes("xe_color"),
+                    'size' => $this->getStoreAttributes("xe_size"),
                 );
                 $result = $this->proxy->call($key, 'cedapi_product.getProductInfo', $productInfo);
             } catch (Exception $e) {

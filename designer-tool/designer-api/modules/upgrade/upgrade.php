@@ -188,7 +188,9 @@ class Upgrade extends UTIL{
 								$this->fileGetContentsCurl($path);
 								
 								$currentToolVersion = $this->getCurrentToolVersion();
-								$url = $this->getCurrentUrl() . $newToolVersion . '/xetool/upgrade.php?currentVersion=' . $currentToolVersion . '&newVersion=' . $newToolVersion;
+								$baseUrl = $this->getCurrentUrl();
+								$baseUrl = (substr($baseUrl, -1) == '/') ? $baseUrl : $baseUrl . '/';
+								$url = $baseUrl . $newToolVersion . '/xetool/upgrade.php?currentVersion=' . $currentToolVersion . '&newVersion=' . $newToolVersion;
 								$response = $this->fileGetContentsCurl($url);
 								
 								$sql = "SELECT COUNT(*) AS nos FROM " . TABLE_PREFIX . "version_manage WHERE current_version = '" . $newToolVersion . "'";

@@ -1,0 +1,113 @@
+<div class="container-fluid" ng-controller="AuthenticationController">
+    <ng-include src="'modules/authentication/views/partials/create-new-user.html'"  ng-show="isUploadViewActive">
+    </ng-include>
+    <ng-include src="'modules/authentication/views/partials/edit-user.html'"  ng-show="isEditViewActive">
+    </ng-include>
+    <div class="row" ng-init="init()">
+        <div class="col-sm-12"ng-show="userList">
+            <div class="clearfix" ng-hide="userType == '0'">
+                <h4>
+                    <xe-translate text-value="Users">
+                    </xe-translate>
+                </h4>
+                <p class="small m-t-10">
+                    <xe-translate text-value="user account info">
+                    </xe-translate>
+                </p>
+                <button class="btn btn-success pull-right m-b-10" type="button" ng-click="addNewUser()">
+                    <i class="fa fa-user">
+                    </i>
+                    <span>
+                        <xe-translate text-value="Create new User">
+                        </xe-translate>
+                    </span>
+                </button>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body no-padding"ng-hide="noData">
+                    <div class="table-responsive">
+                        <table class="table table-striped no-margin">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <xe-translate text-value="Id">
+                                        </xe-translate>
+                                    </th>
+                                    <th>
+                                        <xe-translate text-value="Name">
+                                        </xe-translate>
+                                    </th>
+                                    <th>
+                                        <xe-translate text-value="Email">
+                                        </xe-translate>
+                                    </th>
+                                    <th>
+                                        <xe-translate text-value="Edit">
+                                        </xe-translate>
+                                    </th>
+                                    <th ng-hide="userType == '0'">
+                                        <xe-translate text-value="Delete">
+                                        </xe-translate>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="User in pUserList">
+                                    <td>
+                                        {{ User.id }}
+                                    </id>
+                                    <td>
+                                        {{ User.name }}
+                                    </td>
+                                    <td>
+                                        {{ User.email }}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-info btn-sm" type="button" ng-click="editUser(User)">
+                                            <i class="fa fa-edit">
+                                            </i>
+                                            <span>
+                                                <xe-translate text-value="Edit">
+                                                </xe-translate>
+                                            </span>
+                                        </button>
+                                    </td>
+                                    <td ng-hide="userType == '0'">
+                                        <button class="btn btn-danger btn-sm" type="button" ng-click="deleteUser($index)">
+                                            <i class="fa fa-trash-o">
+                                            </i>
+                                            <span>
+                                                <xe-translate text-value="Delete">
+                                                </xe-translate>
+                                            </span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <span ng-show="noData">
+                    <p class="font-normal text-lg text-center m-t-150 m-b-150">
+                        <xe-translate text-value="No User Account">
+                        </xe-translate>
+                    </p>
+                </span>
+            </div>
+            <div class="row preloader-box" ng-show="isPreloader">
+                <div class="col-lg-12 bg-white">
+                    <div class="preloader-height">
+                        <div class="panel-body text-center">
+                            <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/demo/progress.svg" alt="Progress"/>
+                            <span style="position: absolute;top:48%;right: 0;left: 50px;">
+                                <xe-translate text-value="Loading user list">
+                                </xe-translate>
+                                ...
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

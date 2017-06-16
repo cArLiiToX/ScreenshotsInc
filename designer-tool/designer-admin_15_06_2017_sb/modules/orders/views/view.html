@@ -1,0 +1,139 @@
+<div class="container-fluid"  ng-controller="OrderController">
+    <div class="row">
+        <div class="col-md-7">
+            <button type="button" class="btn btn-success pull-left" ng-click ="refreshOrderList()">
+                <i class="fa fa-refresh" aria-hidden="true">
+                </i>
+                <xe-translate text-value="Refresh Orderlist">
+                </xe-translate>
+            </button>
+            <div class="input-prepend input-group" ng-show="isOrderList">
+                <button type="button" id="DownloadOrder" class="btn btn-{{ downloadBtnClass }} pull-right m-l-30" ng-click ="downLoadOrderPakage()" ng-disabled="isDownloadBtnEnabled">
+                    <xe-translate text-value="Download Orders">
+                    </xe-translate>
+                </button>
+            </div>
+        </div>
+        <div class="input-prepend input-group" ng-show="true">
+            <div style="display:inline-block" class="m-r-10">
+                <h5>
+                    <xe-translate text-value="Download Order App">
+                    </xe-translate>
+                    -
+                </h5>
+            </div>
+            <div style="display:inline-block">
+                <h3>
+                    <a href="#" ng-click ="getUrlForDesktopApp('osx')">
+                        <i class="fa fa-apple">
+                        </i>
+                    </a>
+                    &nbsp;
+                    <a href="#" ng-click ="getUrlForDesktopApp('win')">
+                        <i class="fa fa-windows">
+                        </i>
+                    </a>
+                </h3>
+            </div>
+        </div>
+        <!--  <div class="input-prepend input-group" ng-show="true">
+                <button type="button" id="DownloadOrder" class="btn btn-success pull-left m-l-30" ng-click ="getUrlForDesktopApp()" ng-show="isOrderList">
+                  Download DesktopApp 
+                </button>
+              </div> -->
+        <!-- <img class="image-responsive-height demo-mw-30 " src="assets/img/progress/progress-circle-master.svg" alt="Progress" ng-show="isrefreshloader"> -->
+        <div  class="col-sm-12" ng-init="init()">
+            <div class="custom-table" ng-show="isOrderList">
+                <table class="table table-bordered table-fixedheader">
+                    <thead>
+                        <tr>
+                            <th width="5%">
+                                <input type="checkbox" value="allChecked" id="allChecked" ng-model="allChecked" ng-change="selectAllChecked(allChecked)" ng-click = "allCheckedClicked(allChecked)"/>
+                            </th>
+                            <th width="20%">
+                                <xe-translate text-value="Order id">
+                                </xe-translate>
+                            </th>
+                            <th width="20%">
+                                <xe-translate text-value="Customer name">
+                                </xe-translate>
+                            </th>
+                            <th width="20%">
+                                <xe-translate text-value="order date time">
+                                </xe-translate>
+                            </th>
+                            <th width="15%">
+                                <xe-translate text-value="Status">
+                                </xe-translate>
+                            </th>
+                            <th width="20%">
+                                <xe-translate text-value="Print Status">
+                                </xe-translate>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="order-admin-box-wrap">
+                        <tr ng-repeat="order in orderList">
+                            <td width="5%">
+                                <input type="checkbox" value="{{ order.order_id }}" id="{{ order.order_id }}"  ng-model="orderCheck[$index]" ng-change = "downLoadButtonDisabled(orderCheck[$index])"/>
+                                <label for="{{ order.id }}">
+                                </label>
+                            </td>
+                            <td width="20%">
+                                {{ order.order_incremental_id }}
+                            </td>
+                            <td width="20%">
+                                {{ order.customer_name }}
+                            </td>
+                            <td width="20%">
+                                {{ order.order_date.substr(0,order.order_date.indexOf(" ")) }}&nbsp;&nbsp;
+                                {{ order.order_date.substr(order.order_date.indexOf(" ")+1) }}
+                            </td>
+                            <td width="15%">
+                                {{ order.order_status }}
+                            </td>
+                            <td width="20%">
+                                <span class="pull-left m-r-sm">
+                                </span>
+                                <xe-switchbox ng-model="selectedStatus[$index]"checked="switchCbx[$index]" on-click="statusDetails(selectedStatus[$index],$index,order.order_incremental_id)">
+                                </xe-switchbox>
+                                &nbsp;&nbsp;   {{ orderList[$index].value }}
+                            </td>
+                        </tr>
+                        <tr ng-show="orderList.length == 0">
+                            <td colspan="6" align="center">
+                                <p class="font-normal text-lg">
+                                    <xe-translate text-value="No Order found">
+                                    </xe-translate>
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div ng-show="isLoadMore" class="text-center m-b-20">
+                    <button type="button" class="btn btn-success btn-sm btn-cons" ng-click="loadMore()" ng-disabled="isLoadMorePreloader">
+                        <span>
+                            <xe-translate text-value="Load More">
+                            </xe-translate>
+                        </span>
+                    </button ng-disabled="isLoadMorePreloader">
+                    <img class="image-responsive-height demo-mw-30 " src="assets/img/progress/progress-circle-master.svg" alt="Progress" ng-show="isLoadMorePreloader"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-show="isOrderloader">
+        <div class="col-lg-12 bg-white">
+            <div class="product-wrap-height">
+                <div class="panel-body text-center">
+                    <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/demo/progress.svg" alt="Progress"/>
+                    <span class="loader-label">
+                        <xe-translate text-value="Loading orders">
+                        </xe-translate>
+                        ...
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

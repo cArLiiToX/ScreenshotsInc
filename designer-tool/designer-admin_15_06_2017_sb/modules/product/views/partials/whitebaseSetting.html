@@ -1,0 +1,38 @@
+<div class="xe-card-block">
+    <div class="head-section m-b-30">
+        <h4>
+            Assign whitebase for color variants
+        </h4>
+        <p>
+            Here you can set extra price for whitebase for print method.
+        </p>
+    </div>
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                <th width="96">
+                    <xe-translate text-value="Variants">
+                    </xe-translate>
+                </th>
+                <th ng-repeat="item in prntMethodByProduct">
+                    {{ item.name }}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="price in additionalPrice track by $index">
+                <td width="100">
+                    <div  ng-style="variants[$index].colorUrl && variants[$index].colorUrl.indexOf('#') == -1 ? {'background-image': 'url('+variants[$index].colorUrl+')'} : {'background-color':variants[$index].colorUrl}" class="variant-thumb">
+                    </div>
+                </td>
+                <td ng-repeat="item in price.price track by $index">
+                    <div class="checkbox check-info pull-left no-margin">
+                        <input type="checkbox" value="variant_{{ item.prntmthdid }}_{{ variants[$parent.$index].id }}" id="variant_{{ item.prntmthdid }}_{{ variants[$parent.$index].id }}" ng-model="whitebaseStatus" ng-checked="item.is_whitebase == 1" ng-change="applyWhiteBasePrice($parent.$index,$index,whitebaseStatus)"/>
+                        <label for="variant_{{ item.prntmthdid }}_{{ variants[$parent.$index].id }}">
+                        </label>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

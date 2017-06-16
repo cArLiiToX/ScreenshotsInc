@@ -37,6 +37,13 @@
                     <i class="fa fa-info-circle" tooltip= "{{fileType}}" tooltip-placement="right">
                     </i>
                 </span>
+                <div class="form-group m-t-10">
+                    <label class="custom-label">
+                        Boundary Name
+                    </label>
+                    <input class="form-control" 
+                    ng-model="multiBoundData[selectedThumbIndex].name" placeholder="Boundary Name" type="text" ng-disabled="allBoundary.length == 0"/>
+                </div>
             </div>
         </div>
     </div>
@@ -71,19 +78,12 @@
             <div class="col-sm-6">
                 <div class="form-group m-b-10">
                     <label class="custom-label">
-                        Boundary Name
-                    </label>
-                    <input class="form-control" 
-                    ng-model="multiBoundData[selectedThumbIndex].name" placeholder="Boundary Name" type="text" ng-disabled="allBoundary.length == 0"/>
-                </div>
-                <div class="form-group m-b-10">
-                    <label class="custom-label">
                         Area Name
                     </label>
                     <input class="form-control" 
                     ng-model="multiBoundData[selectedThumbIndex].child_masks[bIndex].boundary_name" placeholder="Area Name" type="text" ng-disabled="allBoundary.length == 0"/>
                 </div>
-                <div class="row">
+                <div class="row m-b-10">
                     <div class="col-sm-12">
                         <div class="btn-group pull-left full-width">
                             <button type="button" class="btn btn-default text-ellipsis text-left"  data-toggle="dropdown" ng-disabled="allBoundary.length == 0">
@@ -107,7 +107,35 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+            <div class="row">
+            <div class="col-sm-12">
+                <label class="custom-label m-l-5">
+                    Actual dimension of this print area
+                </label>
+            </div>
+            <div class="col-sm-12">
+                <div class="clearfix m-b-10">
+                    <div class="col-xs-4 col-md-6 col-padd">
+                        <div class="form-group input-group">
+                            <input class="form-control" ng-model="multiBoundData[selectedThumbIndex].child_masks[bIndex].actual_width" placeholder="Width" type="text"  ng-disabled="allBoundary.length == 0" ng-change="changeDimension('w')"/>
+                            <span class="input-group-addon" ng-bind="productUnit">
+                                <!-- inch -->
+                            </span>
+                        </input>
+                    </div>
+                </div>
+                <div class="col-xs-4 col-md-6 col-padd">
+                    <div class="form-group input-group">
+                        <input class="form-control" ng-model="multiBoundData[selectedThumbIndex].child_masks[bIndex].actual_height" placeholder="Height" type="text"  
+                        ng-disabled="allBoundary.length == 0" ng-change="changeDimension('h')"/>
+                        <span class="input-group-addon" ng-bind="productUnit">
+                            <!-- inch -->
+                        </span>
+                    </input>
+                </div>
+            </div>
+        </div>
+                <!-- <div class="row">
                     <div class="col-sm-12">
                         <div class="checkbox check-info">
                             <input id="checkbox4" ng-model="restric[bIndex]" type="checkbox" value="1" ng-checked="multiBoundData[selectedThumbIndex].child_masks[bIndex].restrict_design == '1'" ng-change="changeOnMBrestrictDesign(restric[bIndex])" ng-disabled="allBoundary.length == 0"/>
@@ -116,8 +144,9 @@
                             </label>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
+
     </div>
 </div>

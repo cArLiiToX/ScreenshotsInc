@@ -1,0 +1,88 @@
+<div class="panel panel-default" ng-hide="addpreloader">
+    <div class="graphics-wrap-height">
+        <div class="panel-body text-center">
+            <img class="image-responsive-height demo-mw-50 page-loader" src="assets/img/progress/progress-circle-master.svg" alt="Progress"/>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default" ng-show="addpreloader">
+    <div class="panel-body m-t-20" style="display: block;">
+        <div class="row m-t-10" ng-hide="addNewColor.visible">
+            <div class="col-sm-3">
+                <label class="control-label">
+                    <xe-translate text-value="Color and Sizes">
+                    </xe-translate>
+                </label>
+                <span style='color:red;'>
+                    *
+                </span>
+                <div class="row clearfix b-t-light">
+                    <div class="col-sm-8 m-t-10">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default"  data-toggle="dropdown" style="width: 150px;">
+                                {{ selectedColor }}
+                            </button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"  aria-haspopup="true" aria-expanded="false">
+                                <span class="caret">
+                                </span>
+                                <span class="sr-only">
+                                    Toggle Dropdown
+                                </span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" style="width: 176px;"  ng-class="{'button-scroll':colorData.length> 4}">
+                                <li ng-repeat="color in colorData" ng-click="assignColor($index)">
+                                    <a href="">
+                                        {{ color.label }}
+                                    </a>
+                                </li>
+                            </ul>
+                            <!-- dropdown end  -->
+                        </div>
+                    </div>
+                    <!-- </div> -->
+                    <!-- dropdown start -->
+                    <div class="col-sm-12 m-t-10">
+                        <div class="checkbox check-info" ng-repeat="size in SizeData">
+                            <input type="checkbox" id="size_{{ size.value }}" ng-model="uploadSizeType[$index]"/>
+                            <label for="size_{{ size.value }}">
+                                {{ size.label }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row m-t-10" ng-show="addNewColor.visible">
+            <div class="col-sm-3 text-success">
+                <head>
+                    <xe-translate text-value="Product Added Successfully">
+                    </xe-translate>
+                </head>
+            </div>
+            <button class="btn btn-primary btn-sm" type="button"  ng-click="addNewColorVariant()" ng-show="colorData.length> 0">
+                <xe-translate text-value="Add Another Color variant">
+                </xe-translate>
+            </button>
+        </div>
+    </div>
+    <div class="clearfix m-r-20 m-b-20" ng-show="addNewColor.visible">
+        <div class="pull-right">
+            <button class="btn btn-primary btn-sm" type="button"  ng-click="cancelTemplate()" ng-disabled="demoStatus">
+                <xe-translate text-value="Finish">
+                </xe-translate>
+            </button>
+        </div>
+    </div>
+</div>
+<div class="clearfix m-r-20 m-b-20" ng-hide="addNewColor.visible || !addpreloader">
+    <div class="pull-right">
+        <button class="btn btn-primary btn-sm" type="button"  ng-click="saveTemplateAsProduct(myform,myform2)" ng-disabled="demoStatus">
+            <xe-translate text-value="Save">
+            </xe-translate>
+        </button>
+        <button class="btn btn-primary btn-sm" type="button" ng-click="cancelTemplate()">
+            <xe-translate text-value="Cancel">
+            </xe-translate>
+        </button>
+    </div>
+</div>

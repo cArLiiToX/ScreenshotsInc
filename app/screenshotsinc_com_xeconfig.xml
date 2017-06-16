@@ -2,7 +2,7 @@
 <config_detail>
    <url_detail>
 	   <appname></appname>
-	   <base_url>http://screenshotsinc.com/</base_url>
+	   <base_url>https://screenshotsinc.com/</base_url>
    </url_detail>
    <Integration_detail>
 		<accessToken>s3l4lxjcrla6cg35i1pqerk3d8lvdoms</accessToken>

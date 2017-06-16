@@ -82,7 +82,7 @@
                                     <div class="w-100">
                                         <div class="form-group price-check-off">
                                             <input type="text" class="form-control"  id="area_price_{{ $parent.$index }}_{{ $index }}_price" ng-model="range.area_prc[$parent.$index].price"  pg-form-group=""  price-only="price-only"  ng-show="printSettings.is_print_area_percentage == 0"/>
-                                            <input type="text" class="form-control"  id="area_price_{{ $parent.$index }}_{{ $index }}_perc" ng-model="range.area_prc[$parent.$index].percentage"  pg-form-group=""  ng-show="printSettings.is_print_area_percentage == 1"/>
+                                            <input type="text" class="form-control"  id="area_price_{{ $parent.$index }}_{{ $index }}_perc" ng-model="range.area_prc[$parent.$index].percentage"  pg-form-group=""  ng-show="printSettings.is_print_area_percentage == 1" price-only="price-only"/>
                                         </div>
                                     </div>
                                 </td>
@@ -115,7 +115,7 @@
                                     <div class="w-100">
                                         <div class="form-group price-check-off">
                                             <input type="text" class="form-control"  id="whitebase-price_{{ $index }}_price" ng-model="rangeWhiteBase.wht_base.price" pg-form-group=""  price-only="price-only"  ng-show="rangeWhiteBase.wht_base.is_fixed == 1"/>
-                                            <input type="text" class="form-control"  id="whitebase-price_{{ $index }}_perc" ng-model="rangeWhiteBase.wht_base.percentage" pg-form-group=""  ng-show="rangeWhiteBase.wht_base.is_fixed == 0"/>
+                                            <input type="text" class="form-control"  id="whitebase-price_{{ $index }}_perc" ng-model="rangeWhiteBase.wht_base.percentage" pg-form-group=""  ng-show="rangeWhiteBase.wht_base.is_fixed == 0" price-only="price-only"/>
                                         </div>
                                     </div>
                                 </td>

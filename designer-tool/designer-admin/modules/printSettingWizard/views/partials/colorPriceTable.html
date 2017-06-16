@@ -85,7 +85,7 @@
                                     <div class="price-check-wrap">
                                         <div class="form-group price-check-off">
                                             <input type="text" class="form-control"  id="color-price_{{ $parent.$index }}_{{ $index }}_price" ng-model="range.clr_price[$index].price" pg-form-group=""  price-only="price-only"  ng-focus="onColorPriceFocous($parent.$index,$index,range)" ng-class="{'active':range.clr_price[$index].is_fixed == 1}" ng-show="range.clr_price[$index].is_fixed == 1"/>
-                                            <input type="text" class="form-control"  id="color-price_{{ $parent.$index }}_{{ $index }}_perc" ng-model="range.clr_price[$index].perc" pg-form-group=""  ng-focus="onColorPriceFocous($parent.$index,$index,range)" ng-show="range.clr_price[$index].is_fixed == 0"/>
+                                            <input type="text" class="form-control"  id="color-price_{{ $parent.$index }}_{{ $index }}_perc" ng-model="range.clr_price[$index].perc" pg-form-group=""  ng-focus="onColorPriceFocous($parent.$index,$index,range)" ng-show="range.clr_price[$index].is_fixed == 0" price-only="price-only"/>
                                         </div>
                                         <div class="checkbox check-info price-check-on" ng-show="range.fixedPrice[$index].activeCheckBox">
                                             <input type="checkbox" value="pro_{{ $parent.$index }}_{{ $index }}" id="pro_{{ $parent.$index }}_{{ $index }}" ng-model="pricestatus"  ng-change="applyFixedCost($parent.$index,$index,pricestatus)" ng-checked="range.clr_price[$index].is_fixed == 1"/>
@@ -98,7 +98,7 @@
                                     <div class="price-check-wrap">
                                         <div class="form-group price-check-off">
                                             <input type="text" class="form-control w-110"  ng-model="range.wht_base.price" pg-form-group=""  id="color-wb-{{ $index }}_price" price-only="price-only" ng-focus="onWhiteBasePriceFocous($index)" ng-class="{'active':range.wht_base.is_fixed == 1}" ng-show="range.wht_base.is_fixed == 1"/>
-                                            <input type="text" class="form-control w-110"  ng-model="range.wht_base.perc" pg-form-group=""  id="color-wb-{{ $index }}_perc" ng-focus="onWhiteBasePriceFocous($index)" ng-show="range.wht_base.is_fixed == 0"/>
+                                            <input type="text" class="form-control w-110"  ng-model="range.wht_base.perc" pg-form-group=""  id="color-wb-{{ $index }}_perc" ng-focus="onWhiteBasePriceFocous($index)" ng-show="range.wht_base.is_fixed == 0" price-only="price-only"/>
                                         </div>
                                         <div class="checkbox check-info price-check-on" ng-show="range.fixedWBStatus.activeCheckBox">
                                             <input type="checkbox" value="wb_{{ $index }}" id="wb_{{ $index }}" ng-model="cwbstatus"  ng-change="applyColorWhiteBaseFixed($index,cwbstatus)" ng-checked="range.wht_base.is_fixed == 1"/>
@@ -166,14 +166,14 @@
                     </ul>
                 </div>
                 <div ng-show="printSettings.is_color_area_price == 1">
-                    <div class="col-sm-2"  ng-repeat="printsize in printSizeList">
+                    <div class="col-sm-3"  ng-repeat="printsize in printSizeList">
                         <div class="print-size-price-input">
                             <div class="form-group form-group-default input-group nested-form-group" pg-form-group>
                                 <label>
                                     {{ printsize.name }}
                                 </label>
                                 <input type="text" class="form-control usd" aria-invalid="false" placeholder="Enter price" ng-model="printsize.price" price-only="price-only" ng-show="printSettings.is_percentage == 0"/>
-                                <input type="text" class="form-control usd" aria-invalid="false" placeholder="Enter price" ng-model="printsize.percentage" ng-show="printSettings.is_percentage == 1"/>
+                                <input type="text" class="form-control usd" aria-invalid="false" placeholder="Enter price" ng-model="printsize.percentage" ng-show="printSettings.is_percentage == 1" price-only="price-only"/>
                                 <span class="input-group-addon" ng-show="printSettings.is_percentage == 1">
                                     %
                                 </span>

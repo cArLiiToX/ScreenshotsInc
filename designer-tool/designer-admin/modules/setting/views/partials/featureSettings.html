@@ -10,15 +10,27 @@
     <form class="form-horizontal" role="form" autocomplete="off">
         <div class="form-group">
             <div class="col-sm-10">
-                <div class="checkbox check-info pull-left w-250" ng-repeat="feature in featureList">
-                    <input type="checkbox" value="{{ feature.id }}" name="{{ feature.name }}" id="{{ feature.id }}" ng-model="status" ng-change="changedFeatures(status,feature)" ng-checked="feature.status == '1'"/>
-                    <label for="{{ feature.id }}">
+                <div class="checkbox check-info pull-left w-50per" ng-repeat="feature in featureTabList">
+                    <input type="checkbox" name="{{ feature.name }}" id="{{ feature.id }}_feature" ng-model="feature.status" ng-change="changedFeaturesTab(feature.status,feature,$index)" ng-checked="feature.status == '1'"/>
+                    <label for="{{ feature.id }}_feature">
                         {{ feature.name }}
-                        <a ng-href="#" name="socialImage" ng-show= "feature.type == 'socialImage' && feature.status == '1' && featureStatus[$index] == 1"  ng-click="editSocialImage()"  class="inline-icons">
+                        <!-- <a ng-href="#" name="socialImage" ng-show= "feature.type == 'socialImage' && feature.status == '1' && featureStatus[$index] == 1"  ng-click="editSocialImage()"  class="inline-icons">
                             <i class="fa fa-pencil text-info">
                             </i>
-                        </a>
+                        </a> -->
                     </label>
+                    <ul class="xe-feature-list">
+                        <li ng-repeat="subTab in feature.subtabs_list">
+                            <input type="checkbox" name="{{ subTab.name }}" id="{{ subTab.id }}_subtab" ng-model="subTab.status" ng-change="changedFeaturesSubTab(subTab.status,subTab,$parent.$index,feature.subtabs_list)" ng-checked="subTab.status == '1'"/>
+                            <label for="{{ subTab.id }}_subtab">
+                                {{ subTab.name }}
+                                <a ng-href="#" name="socialImage" ng-show= "subTab.type == 'socialImage' && subTab.status == '1'"  ng-click="editSocialImage()"  class="inline-icons">
+                                    <i class="fa fa-pencil text-info">
+                                    </i>
+                                </a>
+                            </label>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

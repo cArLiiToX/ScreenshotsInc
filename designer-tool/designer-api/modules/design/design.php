@@ -22,10 +22,10 @@ class Design extends UTIL
         try {
             if (isset($this->_request['printId']) && ($this->_request['printId']) != '') {
                 $catagoryArray = array();
-                $sql = "SELECT dc.id,dc.category_name FROM " . TABLE_PREFIX . "des_cat dc join " . TABLE_PREFIX . "design_category_printmethod_rel dcppr
-				 on dcppr.design_category_id =dc.id where dcppr.print_method_id='" . $this->_request['printId'] . "' order by category_name ";
+                $sql = "SELECT dc.id,dc.category_name,dc.sort_order FROM " . TABLE_PREFIX . "des_cat dc join " . TABLE_PREFIX . "design_category_printmethod_rel dcppr
+                 on dcppr.design_category_id =dc.id where dcppr.print_method_id='" . $this->_request['printId'] . "' ORDER BY dc.sort_order";
             } else {
-                $sql = "SELECT id,category_name FROM " . TABLE_PREFIX . "des_cat order by category_name";
+                $sql = "SELECT id,category_name FROM " . TABLE_PREFIX . "des_cat ORDER BY sort_order";
             }
             $categoryDetail = array();
             $rows = $this->executeGenericDQLQuery($sql);
@@ -33,7 +33,7 @@ class Design extends UTIL
                 $categoryDetail[$i]['id'] = $rows[$i]['id'];
                 $categoryDetail[$i]['category_name'] = $rows[$i]['category_name'];
             }
-            $this->response($this->json($categoryDetail), 200);
+            $this->response($this->json($categoryDetail, 1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -59,7 +59,7 @@ class Design extends UTIL
                 array_push($tagArray, $row['name']);
             }
             $this->closeConnection();
-            $this->response($this->json($tagArray), 200);
+            $this->response($this->json($tagArray, 1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -89,39 +89,59 @@ class Design extends UTIL
         $designLastLoaded = $this->_request['lastLoaded'];
         $designLimit = $this->_request['loadCount'];
         $print_method = $this->_request['print_method'];
+        $defaultCount = $this->_request['default_count'];
         $exesql = '';
+
         try {
             if (isset($print_method) && $print_method != '') {
-                if ($categoryValue == 0 && $searchval == '' && $subCategoryValue == 0) {
-                    $sql = "select distinct d.id,d.design_name ,d.file_name,d.price , d.isScalable,d.is_svgasfile,d.aheight,d.awidth from " . TABLE_PREFIX . "designs d
-					join " . TABLE_PREFIX . "design_category_sub_category_rel dcsr on d.id = dcsr.design_id
-					left join " . TABLE_PREFIX . "design_category_printmethod_rel dcppr on dcsr.category_id=dcppr.design_category_id
-					WHERE dcppr.print_method_id='" . $print_method . "'";
+                if ($categoryValue == 0 && $searchval == '' && $subCategoryValue == 0 && $defaultCount == 0) {
+                    $csql = 'SELECT ds.id FROM ' . TABLE_PREFIX . 'des_cat AS ds join ' . TABLE_PREFIX . 'design_category_printmethod_rel AS cp on ds.id = cp.design_category_id WHERE is_default = "1" AND print_method_id="' . $print_method . '"';
+                    $result = $this->executeGenericDQLQuery($csql);
+                    if ($result) {
+                        $categoryValue = $result[0]['id'];
+                    } else {
+                        $rsql = 'SELECT dcs.category_id,dcs.sub_category_id FROM ' . TABLE_PREFIX . 'des_cat_sub_cat_rel AS dcs join ' . TABLE_PREFIX . 'design_category_printmethod_rel AS cp on dcs.category_id = cp.design_category_id WHERE is_default = "1" AND print_method_id="' . $print_method . '"';
+                        $result1 = $this->executeGenericDQLQuery($rsql);
+                        if ($result1) {
+                            $categoryValue = $result1[0]['category_id'];
+                            $subCategoryValue = $result1[0]['sub_category_id'];
+                        } else {
+                            $categoryValue = 0;
+                            $subCategoryValue = 0;
+                        }
+                    }
+                    $defaultCount = 1;
                 }
-                if (isset($searchval) && $searchval != '' && $categoryValue == 0) {
+                if ($categoryValue == 0 && $searchval == '' && $subCategoryValue == 0 && $defaultCount == 1) {
+                    $sql = "select distinct d.id,d.design_name ,d.file_name,d.price , d.isScalable,d.is_svgasfile,d.aheight,d.awidth from " . TABLE_PREFIX . "designs d
+                    join " . TABLE_PREFIX . "design_category_sub_category_rel dcsr on d.id = dcsr.design_id
+                    left join " . TABLE_PREFIX . "design_category_printmethod_rel dcppr on dcsr.category_id=dcppr.design_category_id
+                    WHERE dcppr.print_method_id='" . $print_method . "'";
+                }
+                if (isset($searchval) && $searchval != '' && $categoryValue == 0 && $defaultCount == 1) {
                     $sql = "select distinct d.id,d.design_name ,d.file_name,d.price , d.isScalable,d.is_svgasfile,d.aheight,d.awidth from " . TABLE_PREFIX . "designs d join " . TABLE_PREFIX . "design_category_sub_category_rel dcsr on d.id = dcsr.design_id
-					left join " . TABLE_PREFIX . "design_category_printmethod_rel dcppr on dcsr.category_id=dcppr.design_category_id
-					left join " . TABLE_PREFIX . "des_tag_rel dtr on d.id = dtr.design_id  left join " . TABLE_PREFIX . "des_tags t on dtr.tag_id = t.id
-					WHERE dcppr.print_method_id='" . $print_method . "' and d.design_name like '%$searchval%' or t.name like '%$searchval%' ";
+                    left join " . TABLE_PREFIX . "design_category_printmethod_rel dcppr on dcsr.category_id=dcppr.design_category_id
+                    left join " . TABLE_PREFIX . "des_tag_rel dtr on d.id = dtr.design_id  left join " . TABLE_PREFIX . "des_tags t on dtr.tag_id = t.id
+                    WHERE dcppr.print_method_id='" . $print_method . "' and d.design_name like '%$searchval%' or t.name like '%$searchval%' ";
                 }
-                if ($categoryValue != 0 && $searchval != '') {
+                if ($categoryValue != 0 && $searchval != '' && $defaultCount == 1) {
                     $sql = "select distinct d.id,d.design_name ,d.file_name,d.price , d.isScalable,d.is_svgasfile,d.aheight,d.awidth from " . TABLE_PREFIX . "designs d
-					left join " . TABLE_PREFIX . "des_tag_rel dtr on d.id = dtr.design_id
-					left join " . TABLE_PREFIX . "des_tags t on dtr.tag_id = t.id
-					left join " . TABLE_PREFIX . "design_category_sub_category_rel dcsr on d.id = dcsr.design_id
-					left join " . TABLE_PREFIX . "design_category_printmethod_rel dcppr on dcsr.category_id=dcppr.design_category_id
-					WHERE  dcsr.category_id =$categoryValue and dcppr.print_method_id='" . $print_method . "' and ((d.design_name like '%$searchval%') or (t.name like '%$searchval%')) ";
+                    left join " . TABLE_PREFIX . "des_tag_rel dtr on d.id = dtr.design_id
+                    left join " . TABLE_PREFIX . "des_tags t on dtr.tag_id = t.id
+                    left join " . TABLE_PREFIX . "design_category_sub_category_rel dcsr on d.id = dcsr.design_id
+                    left join " . TABLE_PREFIX . "design_category_printmethod_rel dcppr on dcsr.category_id=dcppr.design_category_id
+                    WHERE  dcsr.category_id =$categoryValue and dcppr.print_method_id='" . $print_method . "' and ((d.design_name like '%$searchval%') or (t.name like '%$searchval%')) ";
                 }
-                if ($categoryValue != 0 && $searchval == '') {
+                if ($categoryValue != 0 && $searchval == '' && $defaultCount == 1) {
                     $sql = "select distinct d.id,d.design_name ,d.file_name,d.price , d.isScalable,d.is_svgasfile,d.aheight,d.awidth from " . TABLE_PREFIX . "designs d
-					left join " . TABLE_PREFIX . "design_category_sub_category_rel dcsr on d.id = dcsr.design_id
-					left join " . TABLE_PREFIX . "design_category_printmethod_rel dcppr on dcsr.category_id=dcppr.design_category_id
-					WHERE dcppr.print_method_id='" . $print_method . "' AND dcsr.category_id = '" . $categoryValue . "'";
-                    if ($categoryValue != 0 && $searchval == '' && $subCategoryValue != 0) {
+                    left join " . TABLE_PREFIX . "design_category_sub_category_rel dcsr on d.id = dcsr.design_id
+                    left join " . TABLE_PREFIX . "design_category_printmethod_rel dcppr on dcsr.category_id=dcppr.design_category_id
+                    WHERE dcppr.print_method_id='" . $print_method . "' AND dcsr.category_id = '" . $categoryValue . "'";
+                    if ($categoryValue != 0 && $searchval == '' && $subCategoryValue != 0 && $defaultCount == 1) {
                         $sql = "select distinct d.id,d.design_name ,d.file_name,d.price , d.isScalable,d.is_svgasfile,d.aheight,d.awidth from " . TABLE_PREFIX . "designs d
-						left join " . TABLE_PREFIX . "design_category_sub_category_rel dcsr on d.id = dcsr.design_id
-						left join " . TABLE_PREFIX . "design_category_printmethod_rel dcppr on dcsr.category_id=dcppr.design_category_id
-						WHERE dcppr.print_method_id='" . $print_method . "' AND dcsr.category_id = '" . $categoryValue . "' AND dcsr.sub_category_id = '" . $subCategoryValue . "'";
+                        left join " . TABLE_PREFIX . "design_category_sub_category_rel dcsr on d.id = dcsr.design_id
+                        left join " . TABLE_PREFIX . "design_category_printmethod_rel dcppr on dcsr.category_id=dcppr.design_category_id
+                        WHERE dcppr.print_method_id='" . $print_method . "' AND dcsr.category_id = '" . $categoryValue . "' AND dcsr.sub_category_id = '" . $subCategoryValue . "'";
                     }
 
                 }
@@ -158,7 +178,7 @@ class Design extends UTIL
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
         }
-        $this->response($this->json($designArray), 200);
+        $this->response($this->json($designArray, 1), 200);
     }
     /**
      *
@@ -233,7 +253,7 @@ class Design extends UTIL
             $x['total_count'] = $countDesign[0]['total'];
             $x['designs'] = $designArray;
             $this->closeConnection();
-            $this->response($this->json($x), 200);
+            $this->response($this->json($x, 1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -251,12 +271,11 @@ class Design extends UTIL
      */
     public function fetchSubCategory()
     {
-        $sql = "select sc.id as id, sc.name as sub_category from " . TABLE_PREFIX . "des_sub_cat sc JOIN " . TABLE_PREFIX . "des_cat_sub_cat_rel cscr ON sc.id = cscr.sub_category_id JOIN " . TABLE_PREFIX . "des_cat c ON c.id = cscr.category_id";
+        $sql = "select sc.id as id, sc.name as sub_category,sc.sort_order from " . TABLE_PREFIX . "des_sub_cat sc JOIN " . TABLE_PREFIX . "des_cat_sub_cat_rel cscr ON sc.id = cscr.sub_category_id JOIN " . TABLE_PREFIX . "des_cat c ON c.id = cscr.category_id";
         if (isset($this->_request['selectedCategory']) && $this->_request['selectedCategory']) {
-            $sql .= " where c.id = ".$this->_request['selectedCategory']." order by sc.name";
-        }else{
-			$sql .= "order by sc.name";
-		}
+            $sql .= ' where c.id =' . $this->_request['selectedCategory'];
+        }
+        $sql .= ' ORDER BY sc.sort_order';
         $rows = $this->executeGenericDQLQuery($sql);
         $sub_category_detail = array();
         for ($i = 0; $i < sizeof($rows); $i++) {
@@ -264,7 +283,7 @@ class Design extends UTIL
             $sub_category_detail[$i]['sub_category'] = $rows[$i]['sub_category'];
         }
         $this->closeConnection();
-        $this->response($this->json($sub_category_detail), 200);
+        $this->response($this->json($sub_category_detail, 1), 200);
     }
     /**
      *
@@ -308,6 +327,7 @@ class Design extends UTIL
                     $tag_arr = array();
                     if (!empty($this->_request['tags'])) {
                         foreach ($this->_request['tags'] as $k => $v) {
+                            $v = addslashes($v);
                             $tag_sql = "SELECT id,count( * ) AS nos FROM " . TABLE_PREFIX . "des_tags WHERE name = '" . $v . "'";
                             $res = $this->executeFetchAssocQuery($tag_sql);
                             if (!$res[0]['nos']) {
@@ -319,12 +339,12 @@ class Design extends UTIL
                         }
                     }
 
-		    $this->_request['no_of_colors'] = (isset($this->_request['no_of_colors']) && $this->_request['no_of_colors'])?$this->_request['no_of_colors']:0;
-		    $this->_request['actual_height'] = (isset($this->_request['actual_height']) && $this->_request['actual_height'])?$this->_request['actual_height']:0.00;
-		    $this->_request['actual_width'] = (isset($this->_request['actual_width']) && $this->_request['actual_width'])?$this->_request['actual_width']:0.00;
-		    $this->_request['price'] = (isset($this->_request['price']) && $this->_request['price'])?$this->_request['price']:0.00;
+                    $this->_request['no_of_colors'] = (isset($this->_request['no_of_colors']) && $this->_request['no_of_colors']) ? $this->_request['no_of_colors'] : 0;
+                    $this->_request['actual_height'] = (isset($this->_request['actual_height']) && $this->_request['actual_height']) ? $this->_request['actual_height'] : 0.00;
+                    $this->_request['actual_width'] = (isset($this->_request['actual_width']) && $this->_request['actual_width']) ? $this->_request['actual_width'] : 0.00;
+                    $this->_request['price'] = (isset($this->_request['price']) && $this->_request['price']) ? $this->_request['price'] : 0.00;
                     foreach ($this->_request['files'] as $k => $v) {
-                        $sql[$k] = "INSERT INTO " . TABLE_PREFIX . "designs (design_name, price,isScalable,no_of_colors,is_svgasfile,aheight,awidth) VALUES ('" . $this->_request['design_name'] . "','" . $this->_request['price'] . "','" . $this->_request['isScalable'] . "','" . $this->_request['no_of_colors'] . "','" . $this->_request['is_svgasfile'] . "','" . $this->_request['actual_height'] . "','" . $this->_request['actual_width'] . "')";
+                        $sql[$k] = "INSERT INTO " . TABLE_PREFIX . "designs (design_name, price,isScalable,no_of_colors,is_svgasfile,aheight,awidth) VALUES ('" . addslashes($this->_request['design_name']) . "','" . $this->_request['price'] . "','" . $this->_request['isScalable'] . "','" . $this->_request['no_of_colors'] . "','" . $this->_request['is_svgasfile'] . "','" . $this->_request['actual_height'] . "','" . $this->_request['actual_width'] . "')";
                         $design_id[$k] = $this->executeGenericInsertQuery($sql[$k]);
                         $fname[$k] = $design_id[$k] . '.' . $v['type'];
                         $thumbBase64Data[$k] = base64_decode($v['base64']);
@@ -400,9 +420,9 @@ class Design extends UTIL
             $designId = $this->_request['design_id'];
             $designData = array();
             $sql = "select d.id as design_id ,d.file_name,d.no_of_colors,d.design_name,d.isScalable,d.price,d.status,d.is_svgasfile,d.aheight,d.awidth,c.id as category_id, c.category_name as category_name, s.id as sub_category_id, s.name as sub_category_name
-			from " . TABLE_PREFIX . "designs d left join  " . TABLE_PREFIX . "design_category_sub_category_rel dcsr  on  d.id =dcsr.design_id
-			left join  " . TABLE_PREFIX . "des_cat c on dcsr.category_id = c.id
-			left join " . TABLE_PREFIX . "des_sub_cat s on dcsr.sub_category_id = s.id where d.id = $designId";
+            from " . TABLE_PREFIX . "designs d left join  " . TABLE_PREFIX . "design_category_sub_category_rel dcsr  on  d.id =dcsr.design_id
+            left join  " . TABLE_PREFIX . "des_cat c on dcsr.category_id = c.id
+            left join " . TABLE_PREFIX . "des_sub_cat s on dcsr.sub_category_id = s.id where d.id = $designId";
             $rows = $this->executeGenericDQLQuery($sql);
             //fetching design detailes
             $designData['design_detail'] = array();
@@ -427,7 +447,7 @@ class Design extends UTIL
             }
             // fetching tags
             $sql = "select distinct dt.id as tag_id , dt.name as tag_name from " . TABLE_PREFIX . "designs d , " . TABLE_PREFIX . "des_tags dt , " . TABLE_PREFIX . "des_tag_rel dtr where
-			d.id = dtr.design_id and dt.id = dtr.tag_id and d.id = $designId";
+            d.id = dtr.design_id and dt.id = dtr.tag_id and d.id = $designId";
             $rows = $this->clearArray($rows);
             $rows = $this->executeGenericDQLQuery($sql);
             $dbTagArr = array();
@@ -440,7 +460,7 @@ class Design extends UTIL
             }
             $designData['tag'] = $dbTagArr;
             $this->closeConnection();
-            $this->response($this->json($designData), 200);
+            $this->response($this->json($designData, 1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -470,12 +490,12 @@ class Design extends UTIL
                 if (!empty($this->_request['id'])) {
                     $id_str = implode(',', $this->_request['id']);
 
-		    $this->_request['no_of_colors'] = (isset($this->_request['no_of_colors']) && $this->_request['no_of_colors'])?$this->_request['no_of_colors']:0;
-		    $this->_request['actual_height'] = (isset($this->_request['actual_height']) && $this->_request['actual_height'])?$this->_request['actual_height']:0.00;
-		    $this->_request['actual_width'] = (isset($this->_request['actual_width']) && $this->_request['actual_width'])?$this->_request['actual_width']:0.00;
- 		    $this->_request['price'] = (isset($this->_request['price']) && $this->_request['price'])?$this->_request['price']:0.00;
+                    $this->_request['no_of_colors'] = (isset($this->_request['no_of_colors']) && $this->_request['no_of_colors']) ? $this->_request['no_of_colors'] : 0;
+                    $this->_request['actual_height'] = (isset($this->_request['actual_height']) && $this->_request['actual_height']) ? $this->_request['actual_height'] : 0.00;
+                    $this->_request['actual_width'] = (isset($this->_request['actual_width']) && $this->_request['actual_width']) ? $this->_request['actual_width'] : 0.00;
+                    $this->_request['price'] = (isset($this->_request['price']) && $this->_request['price']) ? $this->_request['price'] : 0.00;
 
-		    $sql = "UPDATE " . TABLE_PREFIX . "designs SET design_name = '" . $this->_request['design_name'] . "',isScalable = '" . $this->_request['isScalable'] . "',price = '" . $this->_request['price'] . "',no_of_colors = '" . $this->_request['no_of_colors'] . "',is_svgasfile = '" . $this->_request['isSvgAsFile'] . "',aheight = '" . $this->_request['actual_height'] . "',awidth = '" . $this->_request['actual_width'] . "' WHERE id IN(" . $id_str . ")";
+                    $sql = "UPDATE " . TABLE_PREFIX . "designs SET design_name = '" . $this->_request['design_name'] . "',isScalable = '" . $this->_request['isScalable'] . "',price = '" . $this->_request['price'] . "',no_of_colors = '" . $this->_request['no_of_colors'] . "',is_svgasfile = '" . $this->_request['isSvgAsFile'] . "',aheight = '" . $this->_request['actual_height'] . "',awidth = '" . $this->_request['actual_width'] . "' WHERE id IN(" . $id_str . ")";
                     $status = $this->executeGenericDMLQuery($sql);
                     $sql = "DELETE FROM " . TABLE_PREFIX . "design_category_sub_category_rel WHERE design_id IN(" . $id_str . ")";
                     $status = $this->executeGenericDMLQuery($sql);
@@ -488,6 +508,7 @@ class Design extends UTIL
                     $tag_arr = array();
                     if (!empty($this->_request['tags'])) {
                         foreach ($this->_request['tags'] as $k => $v) {
+                            $v = addslashes($v);
                             $tag_sql = "SELECT id,count( * ) AS nos FROM " . TABLE_PREFIX . "des_tags WHERE name = '" . $v . "'";
                             $res = $this->executeFetchAssocQuery($tag_sql);
                             if (!$res[0]['nos']) {
@@ -553,12 +574,19 @@ class Design extends UTIL
     public function addCategory()
     {
         try {
-            $pCategory = $this->_request['category'];
+            $pCategory = addslashes($this->_request['category']);
             $sql = "select count(*) count from " . TABLE_PREFIX . "des_cat where category_name = '$pCategory'";
             $row = $this->executeGenericDQLQuery($sql);
             $response = array();
             if ($row[0]['count'] == "0") {
-                $sql = "insert into " . TABLE_PREFIX . "des_cat(category_name) values('$pCategory')";
+                $sql = "select id from " . TABLE_PREFIX . "des_cat ORDER BY id DESC";
+                $result = $this->executeGenericDQLQuery($sql);
+                $order = $result[0][0];
+                if ($order == '') {
+                    $order = 0;
+                }
+
+                $sql = "insert into " . TABLE_PREFIX . "des_cat(category_name,sort_order) values('$pCategory','$order')";
                 $this->executeGenericDMLQuery($sql);
                 $response['status'] = "success";
                 $response['message'] = ' category inserted';
@@ -567,7 +595,7 @@ class Design extends UTIL
                 $response['message'] = ' category already present';
             }
             $this->closeConnection();
-            $this->response($this->json($response), 200);
+            $this->response($this->json($response, 1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -627,6 +655,7 @@ class Design extends UTIL
         $status = 0;
         if (!empty($this->_request) && $this->_request['id'] && isset($this->_request['name'])) {
             extract($this->_request);
+            $name = addslashes($name);
             try {
                 $chk_duplicate = "SELECT COUNT(*) AS duplicate FROM " . TABLE_PREFIX . "des_cat WHERE category_name='" . $name . "' AND id !='" . $id . "'";
                 $res = $this->executeFetchAssocQuery($chk_duplicate);
@@ -644,7 +673,7 @@ class Design extends UTIL
             $msg['status'] = 'nodata';
         }
 
-        $this->response($this->json($msg), 200);
+        $this->response($this->json($msg, 1), 200);
     }
     /**
      *
@@ -663,6 +692,7 @@ class Design extends UTIL
         $status = 0;
         if (!empty($this->_request) && $this->_request['cid'] && $this->_request['sid'] && isset($this->_request['name'])) {
             extract($this->_request);
+            $name = addslashes($name);
             try {
                 $chk_duplicate = "SELECT COUNT( * ) AS duplicate FROM " . TABLE_PREFIX . "des_sub_cat AS s JOIN " . TABLE_PREFIX . "des_cat_sub_cat_rel AS rel ON rel.sub_category_id = s.id WHERE rel.category_id ='" . $cid . "' AND rel.sub_category_id !='" . $sid . "' AND s.name = '" . $name . "'";
                 $res = $this->executeFetchAssocQuery($chk_duplicate);
@@ -1059,11 +1089,18 @@ class Design extends UTIL
     {
         try {
             $insertId;
-            $pSubCategory = $this->_request['pSubCategory'];
+            $pSubCategory = addslashes($this->_request['pSubCategory']);
             $sql = "select  id  from " . TABLE_PREFIX . "des_sub_cat where name = '$pSubCategory'";
             $row = $this->executeGenericDQLQuery($sql);
             if (sizeof($row) == 0) {
-                $sql = "insert into " . TABLE_PREFIX . "des_sub_cat(name) values('$pSubCategory')";
+                $sql = "select id from " . TABLE_PREFIX . "des_sub_cat ORDER BY id DESC";
+                $result = $this->executeGenericDQLQuery($sql);
+                $order = $result[0][0];
+                if ($order == '') {
+                    $order = 0;
+                }
+
+                $sql = "insert into " . TABLE_PREFIX . "des_sub_cat(name,sort_order) values('$pSubCategory','$order')";
                 $insertId = $this->executeGenericInsertQuery($sql);
             } else {
                 $insertId = $row[0]['id'];
@@ -1357,6 +1394,139 @@ class Design extends UTIL
         try {
             $sql = "delete from $relTableName where $relTableName.design_id = $pId";
             $this->executeGenericDMLQuery($sql);
+        } catch (Exception $e) {
+            $result = array('Caught exception:' => $e->getMessage());
+            $this->response($this->json($result), 200);
+        }
+    }
+    /**
+     *
+     *date created (dd-mm-yy)
+     *date modified 21-03-2017(dd-mm-yy)
+     *update Design category List
+     *
+     * @param (String)category list
+     * @return json data
+     *
+     */
+    public function updateDragCategoryList()
+    {
+        $status = 0;
+        $categoryList = $this->_request['categoryData'];
+        $prepareSql = '';
+        $querySql = '';
+        for ($i = 0; $i < sizeof($categoryList); $i++) {
+            $querySql .= ' WHEN ' . $categoryList[$i]['id'] . " THEN '" . $categoryList[$i]['sort_order'] . "'";
+            $prepareSql .= ',' . $categoryList[$i]['id'];
+        }
+        if (strlen($querySql) && strlen($prepareSql)) {
+            try {
+                $usql = 'UPDATE ' . TABLE_PREFIX . 'des_cat SET sort_order = CASE id' . $querySql . ' END WHERE id IN(' . substr($prepareSql, 1) . ')';
+                $status = $this->executeGenericDMLQuery($usql);
+            } catch (Exception $e) {
+                $result = array('Caught exception:' => $e->getMessage());
+                $this->response($this->json($result), 200);
+            }
+        }
+        $msg['status'] = ($status) ? 'success' : 'failed';
+        $this->response($this->json($msg), 200);
+    }
+    /**
+     *
+     *date created (dd-mm-yy)
+     *date modified 21-03-2017(dd-mm-yy)
+     *update Design sub category list
+     *
+     * @param (String)subcategory list
+     * @return json data
+     *
+     */
+    public function updateDragSubCategoryList()
+    {
+        $status = 0;
+        $subCategoryList = $this->_request['categoryData'];
+        $prepareSql = '';
+        $querySql = '';
+        for ($i = 0; $i < sizeof($subCategoryList); $i++) {
+            $querySql .= ' WHEN ' . $subCategoryList[$i]['id'] . " THEN '" . $subCategoryList[$i]['sort_order'] . "'";
+            $prepareSql .= ',' . $subCategoryList[$i]['id'];
+        }
+        if (strlen($querySql) && strlen($prepareSql)) {
+            try {
+                $usql = 'UPDATE ' . TABLE_PREFIX . 'des_sub_cat SET sort_order = CASE id' . $querySql . ' END WHERE id IN(' . substr($prepareSql, 1) . ')';
+                $status = $this->executeGenericDMLQuery($usql);
+            } catch (Exception $e) {
+                $result = array('Caught exception:' => $e->getMessage());
+                $this->response($this->json($result), 200);
+            }
+        }
+        $msg['status'] = ($status) ? 'success' : 'failed';
+        $this->response($this->json($msg), 200);
+    }
+    /**
+     *
+     *date created (dd-mm-yy)
+     *date modified 25-03-2017(dd-mm-yy)
+     *update Default Category and Subcategory
+     *
+     * @param (Int)category id
+     * @param (Int)subcategory id
+     * @return json data
+     *
+     */
+    public function setDefaultCatSubcat()
+    {
+        $status = 0;
+        $catId = $this->_request['catId'];
+        $subCatId = $this->_request['subCatId'];
+        try {
+            $sql1 = 'UPDATE ' . TABLE_PREFIX . 'des_cat_sub_cat_rel AS s, ' . TABLE_PREFIX . 'des_cat AS d SET s.is_default ="0",d.is_default ="0"';
+            $result = $this->executeGenericDMLQuery($sql1);
+            if (($catId > 0) && ($subCatId > 0)) {
+                $sql = 'UPDATE ' . TABLE_PREFIX . 'des_cat_sub_cat_rel SET is_default ="1" WHERE category_id = "' . $catId . '" AND sub_category_id = "' . $subCatId . '"';
+            } else if ($catId > 0) {
+                $sql = 'UPDATE ' . TABLE_PREFIX . 'des_cat SET is_default ="1" WHERE id= "' . $catId . '"';
+            }
+            $status = $this->executeGenericDMLQuery($sql);
+        } catch (Exception $e) {
+            $result = array('Caught exception:' => $e->getMessage());
+            $this->response($this->json($result), 200);
+        }
+        $msg['status'] = ($status) ? 'success' : 'failed';
+        $this->response($this->json($msg), 200);
+    }
+    /**
+     *
+     *date created (dd-mm-yy)
+     *date modified 25-03-2017(dd-mm-yy)
+     *get Design default category and sub category name
+     *
+     * @return json data
+     *
+     */
+    public function getDefaultCatSubcat()
+    {
+        try {
+            $status = 0;
+            $defaultList = array();
+            $sql = 'SELECT * FROM ' . TABLE_PREFIX . 'des_cat WHERE is_default="1"';
+            $result = $this->executeGenericDQLQuery($sql);
+            if ($result) {
+                $defaultList['catId'] = $result[0]['id'];
+                $defaultList['catName'] = $result[0]['category_name'];
+            } else {
+                $sql1 = 'SELECT r.category_id,r.sub_category_id,r.is_default,c.category_name,s.name FROM ' . TABLE_PREFIX . 'des_cat_sub_cat_rel as r INNER JOIN ' . TABLE_PREFIX . 'des_cat AS c ON r.category_id=c.id INNER JOIN ' . TABLE_PREFIX . 'des_sub_cat AS s ON r.sub_category_id=s.id WHERE r.is_default ="1" LIMIT 1';
+                $catList = $this->executeGenericDQLQuery($sql1);
+                if ($catList) {
+                    $defaultList['catId'] = $catList[0]['category_id'];
+                    $defaultList['catName'] = $catList[0]['category_name'];
+                    $defaultList['subCatId'] = $catList[0]['sub_category_id'];
+                    $defaultList['subCatName'] = $catList[0]['name'];
+                } else {
+                    $this->response($this->json($defaultList), 200);
+                }
+            }
+            $this->response($this->json($defaultList), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);

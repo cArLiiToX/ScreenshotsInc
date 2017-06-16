@@ -10,7 +10,7 @@
     <form class="form-horizontal" role="form" autocomplete="off">
         <div class="form-group">
             <label class="col-sm-2 control-label">
-                <xe-translate text-value="Change Language">
+                <xe-translate text-value="Designer Tool Language">
                 </xe-translate>
             </label>
 
@@ -33,6 +33,32 @@
                     </li>
                 </ul>
             </div> <br> <br>
+
+            <label class="col-sm-2 control-label">
+                <xe-translate text-value="Designer Admin Language">
+                </xe-translate>
+            </label>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-default"  data-toggle="dropdown" style="width: 180px;">
+                    {{ selectedAdminLanguage }}
+                </button>
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="caret">
+                    </span>
+                    <span class="sr-only">
+                        Toggle Dropdown
+                    </span>
+                </button>
+                <ul class="dropdown-menu" role="menu" style="width: 207px;" ng-class="{'button-scroll':languages.length> 4}">
+                    <li ng-repeat="adminlanguage in adminLanguages" ng-click="adminLanguageSelected(adminlanguage)">
+                        <a href="">
+                            {{ adminlanguage.name }}
+                        </a>
+                    </li>
+                </ul>
+            </div> <br> <br>
+
             <a ng-click="addNewLanguageModal()" style="cursor:pointer;" 
             class="m-r-10">
                 <u class="text-info m-l-5 font-montserrat ">

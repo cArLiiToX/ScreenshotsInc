@@ -1,4 +1,4 @@
-<?php
+<?php 
 if($this->isCustomizeButton()) {
 	$_product = $this->getProduct();
 	if($_product->getXe_is_designer() == 1 || $_product->getXe_is_template() == 1) {
@@ -10,14 +10,19 @@ if($this->isCustomizeButton()) {
 		$stockInterface = $objectManager->get('\Magento\CatalogInventory\Api\StockStateInterface');
 		$baseUrl = $storeManager->getStore()->getBaseUrl();
 		$cartUrl = $block->getUrl('checkout/cart', ['_secure' => true]);
-		$simpleCollection = $_product->getTypeInstance()->getUsedProducts($_product);
-		if(!empty($simpleCollection)){
-			foreach($simpleCollection as $simple){
-				$productStockObj = $objectManager->get('Magento\CatalogInventory\Api\StockRegistryInterface')->getStockItem($simple->getId());
-				$minimumQty = intval($productStockObj->getMinSaleQty());
+		if ($_product->getTypeId() == 'configurable') {
+			$simpleCollection = $_product->getTypeInstance()->getUsedProducts($_product);
+			if(!empty($simpleCollection)){
+				foreach($simpleCollection as $simple){
+					$productStockObj = $objectManager->get('Magento\CatalogInventory\Api\StockRegistryInterface')->getStockItem($simple->getId());
+					$minimumQty = intval($productStockObj->getMinSaleQty());
+				}
 			}
+			$AllowAttributes = $_product->getTypeInstance(true)->getConfigurableAttributes($_product);
+		}else{
+			$productStockObj = $objectManager->get('Magento\CatalogInventory\Api\StockRegistryInterface')->getStockItem($productId);
+			$minimumQty = intval($productStockObj->getMinSaleQty());
 		}
-		$AllowAttributes=$_product->getTypeInstance(true)->getConfigurableAttributes($_product);
 		$attr = $eavConfig->getAttribute('catalog_product', 'xe_is_template');
 	    if(null === $attr->getId()) {
 	        $preDecoratedProduct = 0;
@@ -94,20 +99,8 @@ if($this->isCustomizeButton()) {
 					strUrl = strUrl+'&rvn='+rvno;
 				});
 		 	});
-
+			
 			function customize_product() {
-				<?php
-					$attr1 = 0;
-					foreach($AllowAttributes as $attribute) {
-					    $productAttribute = $attribute->getProductAttribute();
-					    $attrId = $productAttribute->getId();
-					    if($attr1 == 0){
-					    	$attr1 = $attrId;
-					    }
-					}
-				?>
-				var size = document.getElementById("attribute<?php echo $attrId;?>").value;
-				var color = document.getElementById("attribute<?php echo $attr1;?>").value;
 				var qty = '&qty='+document.getElementById('qty').value;
 				var url = "";
 				var store = '&store='+storeId;
@@ -118,6 +111,19 @@ if($this->isCustomizeButton()) {
 				if(ischecklogin>0)	customer = '&customer='+customer;
 				else customer = '&customer=0';
 			    var screenWidth = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+				<?php
+					if ($_product->getTypeId() == 'configurable') {
+						$attr1 = 0;
+						foreach($AllowAttributes as $attribute) {
+						    $productAttribute = $attribute->getProductAttribute();
+						    $attrId = $productAttribute->getId();
+						    if($attr1 == 0){
+						    	$attr1 = $attrId;
+						    }
+						}
+				?>
+				var size = document.getElementById("attribute<?php echo $attrId;?>").value;
+				var color = document.getElementById("attribute<?php echo $attr1;?>").value;
 				if(color != '' && size != ''){
 					var data = {reqmethod:'getSimpleProductId',pid:<?php echo $_product->getId(); ?>,xe_size:size,xe_color:color};
 					jQuery.ajax({
@@ -125,8 +131,11 @@ if($this->isCustomizeButton()) {
 						type: "GET",
 						data: data,
 						success: function(result) {
-							 var simpleId = JSON.parse(result);
+							var simpleId = JSON.parse(result);
 							simplpid='';
+							if(simpleId.length >= 0){
+								simpleId['simpleProductId'] = '';
+							}
 							simplpid =  simplpid+"&simplePdctId="+simpleId['simpleProductId'];
 							if(screenWidth < 1024){
 								url = ul+"designer-tool/designer-app/index.html?id=<?php echo $productId;?>"+strUrl+simplpid+store+qty+sid+customer;
@@ -144,10 +153,20 @@ if($this->isCustomizeButton()) {
 					}
 					window.location.href=url;
 				}
+				<?php }else{ ?>
+					simplpid =  simplpid+"&simplePdctId="+<?php echo $productId;?>;
+					if(screenWidth < 1024){
+						url = ul+"designer-tool/designer-app/index.html?id=<?php echo $productId;?>"+strUrl+simplpid+store+qty+sid+customer;
+					}else{
+						url = ul+"product-designer?id=<?php echo $productId;?>"+strUrl+simplpid+store+qty+sid+customer;
+					}
+					window.location.href=url;
+				<?php } ?>
 			}
 			//call add To Cart api
 			function template_product(){
 				<?php
+				if ($_product->getTypeId() == 'configurable') {
 					$attr1 = 0;
 					foreach($AllowAttributes as $attribute) {
 					    $productAttribute = $attribute->getProductAttribute();
@@ -191,6 +210,7 @@ if($this->isCustomizeButton()) {
 					jQuery('#attribute<?php echo $attr1;?>').after('<div for="attribute<?php echo $attr1; ?>" generated="true" class="mage-error" id="attribute<?php echo $attr1; ?>-error">This is a required field.</div>');
 					jQuery("#attribute<?php echo $attr1; ?>-error").fadeOut(3000);
 				}
+				<?php } ?>
 			}
 		</script>
 	<?php } ?>

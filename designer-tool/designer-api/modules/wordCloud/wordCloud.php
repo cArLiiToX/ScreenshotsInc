@@ -38,7 +38,7 @@ class WordCloud extends UTIL
                     $dataArray['wordcloud'][$i]['filename'] = $row['file_name'];
                 }
                 $this->closeConnection();
-                $this->response($this->json($dataArray), 200);
+                $this->response($this->json($dataArray,1), 200);
             } catch (Exception $e) {
                 $result = array('Caught exception:' => $e->getMessage());
                 $this->response($this->json($result), 200);
@@ -71,7 +71,7 @@ class WordCloud extends UTIL
                 $id_str = implode(',', $id);
 				$price = (isset($price) & $price)?$price:0.00;
 
-				$sql = "UPDATE " . TABLE_PREFIX . "wordcloud SET name = '" . $name . "', price = '" . $price . "' WHERE id IN(" . $id_str . ")";
+				$sql = "UPDATE " . TABLE_PREFIX . "wordcloud SET name = '" . addslashes($name) . "', price = '" . $price . "' WHERE id IN(" . $id_str . ")";
                 $status = $this->executeGenericDMLQuery($sql);
             }
             $msg['status'] = ($status) ? 'Success' : 'Failure';
@@ -124,7 +124,7 @@ class WordCloud extends UTIL
 					
                     $this->_request['price'] = (isset($this->_request['price']) && $this->_request['price'] != '')?$this->_request['price']:0.00;
                     foreach ($this->_request['files'] as $k => $v) {
-                        $sql[$k] = $isql . "('" . $this->_request['name'] . "','" . $this->_request['price'] . "')";
+                        $sql[$k] = $isql . "('" . addslashes($this->_request['name']) . "','" . $this->_request['price'] . "')";
                         $shape_id[$k] = $this->executeGenericInsertQuery($sql[$k]);
                         $fname[$k] = 'w_' . $shape_id[$k] . '.' . $v['type'];
 
@@ -223,7 +223,7 @@ class WordCloud extends UTIL
             if (!file_exists($dir)) {
                 mkdir($dir, 0777, true);
             }
-
+            $svgData = urldecode($svgData);
             $fname = uniqid('ci_', true) . '.' . $type;
             $file = $dir . $fname;
             $status = file_put_contents($file, stripslashes($svgData));

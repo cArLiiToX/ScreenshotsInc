@@ -24,13 +24,14 @@ class BackgroundPattern extends UTIL
                 $sql .= " left join " . TABLE_PREFIX . "back_pattern_cate_printmethod_rel as bpcpr on bpc.category_id = bpcpr.pattern_category_id
 				where bpcpr.print_method_id =" . $print_method;
             }
+			$sql .=" ORDER BY bpc.name";
             $rows = $this->executeGenericDQLQuery($sql);
             $categoryDetail = array();
             for ($i = 0; $i < sizeof($rows); $i++) {
                 $categoryDetail[$i]['id'] = $rows[$i]['category_id'];
                 $categoryDetail[$i]['category_name'] = $rows[$i]['name'];
             }
-            $this->response($this->json($categoryDetail), 200);
+            $this->response($this->json($categoryDetail,1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -116,7 +117,7 @@ class BackgroundPattern extends UTIL
             $x['total_count'] = $countDesign[0]['total'];
             $x['background_pattern'] = $designArray;
             $this->closeConnection();
-            $this->response($this->json($x), 200);
+            $this->response($this->json($x,1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -133,7 +134,7 @@ class BackgroundPattern extends UTIL
      */
     public function saveBackGroundPatternCategory()
     {
-        $cate_name = $this->_request['cate_name'];
+        $cate_name = addslashes($this->_request['cate_name']);
         if (isset($cate_name)) {
             $select_sql = "SELECT name from " . TABLE_PREFIX . "background_pattern_category WHERE name='" . $cate_name . "'";
             $rows = $this->executeFetchAssocQuery($select_sql);
@@ -161,6 +162,7 @@ class BackgroundPattern extends UTIL
         $status = 0;
         if (!empty($this->_request) && $this->_request['id'] && isset($this->_request['cate_name'])) {
             extract($this->_request);
+            $cate_name = addslashes($cate_name);
             $chk_duplicate = "SELECT COUNT(*) AS duplicate FROM " . TABLE_PREFIX . "background_pattern_category WHERE name='" . $cate_name . "'";
             $res = $this->executeFetchAssocQuery($chk_duplicate);
             if ($res[0]['duplicate']) {
@@ -187,7 +189,7 @@ class BackgroundPattern extends UTIL
      */
     public function removeBackgroundPatternCategory()
     {
-        $pCategory = $this->_request['pCategory'];
+        $pCategory = addslashes($this->_request['pCategory']);
         $sql = "select category_id ,name from background_pattern_category where background_pattern_category.name = '" . $pCategory . "'";
 
         $row = $this->executeGenericDQLQuery($sql);
@@ -206,7 +208,7 @@ class BackgroundPattern extends UTIL
             $response['message'] = "'$pCategory' category is deleted successfully !!";
         }
         $this->closeConnection();
-        $this->response($this->json($response), 200);
+        $this->response($this->json($response,1), 200);
     }
 
     /*
@@ -239,6 +241,7 @@ class BackgroundPattern extends UTIL
         $tag_arr = array();
         if (!empty($this->_request['tags'])) {
             foreach ($this->_request['tags'] as $k2 => $v2) {
+                $v2 = addslashes($v2);
                 $tag_sql = "SELECT id,count( * ) AS nos FROM " . TABLE_PREFIX . "background_pattern_tags WHERE name = '" . $v2 . "'";
                 $res = $this->executeFetchAssocQuery($tag_sql);
                 if (!$res[0]['nos']) {
@@ -251,6 +254,7 @@ class BackgroundPattern extends UTIL
         }
         //echo '<pre>';print_r($this->_request);exit;
         foreach ($this->_request['file'] as $k => $v) {
+            $background_pattern_name = addslashes($background_pattern_name);
             $sql[$k] = "INSERT INTO " . TABLE_PREFIX . "background_pattern (background_pattern_name,price) values('" . $background_pattern_name . "','" . $price . "')";
             $background_pattern_id[$k] = $this->executeGenericInsertQuery($sql[$k]);
             $fname[$k] = $background_pattern_id[$k] . '.' . $v['type'];
@@ -345,7 +349,7 @@ class BackgroundPattern extends UTIL
             }
             $designData['tag'] = $dbTagArr;
             $this->closeConnection();
-            $this->response($this->json($designData), 200);
+            $this->response($this->json($designData,1), 200);
         } catch (Exception $e) {
             $result = array('Caught exception:' => $e->getMessage());
             $this->response($this->json($result), 200);
@@ -362,7 +366,7 @@ class BackgroundPattern extends UTIL
      */
     public function updateBackgroundPattern()
     {
-        $background_pattern_name = $this->_request['background_pattern_name'];
+        $background_pattern_name = addslashes($this->_request['background_pattern_name']);
         $id = $this->_request['id'];
         //$color_value = $this->_request['color_value'];
         $status = 0;
@@ -380,6 +384,7 @@ class BackgroundPattern extends UTIL
                 $tag_arr = array();
                 if (!empty($this->_request['tags'])) {
                     foreach ($this->_request['tags'] as $k => $v) {
+                        $v = addslashes($v);
                         $tag_sql = "SELECT id,count( * ) AS nos FROM " . TABLE_PREFIX . "background_pattern_tags WHERE name = '" . $v . "'";
                         $res = $this->executeFetchAssocQuery($tag_sql);
                         if (!$res[0]['nos']) {

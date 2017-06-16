@@ -1,0 +1,217 @@
+<!-- BEGIN SIDEBPANEL-->
+<nav class="page-sidebar" data-pages="sidebar" pg-sidebar="">
+    <!-- BEGIN SIDEBAR MENU HEADER-->
+    <div class="sidebar-header">
+        <img alt="logo" class="brand" data-src="assets/img/inkxe-logo.png" data-src-retina="assets/img/inkxe-logo.png" src="assets/img/inkxe-logo.png" ui-jq="unveil" width="70"/>
+        <div class="sidebar-header-controls">
+            <!-- <button type="button" class="btn btn-xs sidebar-slide-toggle btn-link m-l-50" data-pages-toggle="#appMenu">
+          <i class="fa fa-angle-down fs-16"></i>
+        </button> -->
+            <!-- <button type="button" class="btn btn-link visible-lg-inline m-l-50" data-toggle-pin="sidebar"><i class="fa fs-12"></i>
+        </button> -->
+        </div>
+    </div>
+    <!-- END SIDEBAR MENU HEADER-->
+    <!-- START SIDEBAR MENU -->
+    <div class="sidebar-menu">
+        <!-- BEGIN SIDEBAR MENU ITEMS-->
+        <ul class="menu-items">
+            <li ng-click="openModule(item)" ng-if="item.category == 'D'" ng-repeat="item in moduleList">
+                <a href="">
+                    <xe-translate text-value="{{item.label}}">
+                    </xe-translate>
+                </a>
+                <span class="icon-thumbnail">
+                    <i class="fa fa-tachometer">
+                    </i>
+                </span>
+            </li>
+            <li ng-if="item.category == 'PM' && item.status == true" ng-repeat="item in moduleList">
+                <a href="">
+                    <span class="title">
+                        <xe-translate text-value="{{item.label}}">
+                        </xe-translate>
+                    </span>
+                    <span class=" arrow">
+                    </span>
+                </a>
+                <span class="icon-thumbnail">
+                    {{item.icon}}
+                </span>
+                <ul class="sub-menu">
+                    <li ng-click="seletModule('product')" ng-if="item.category == 'P'" ng-repeat="item in moduleList">
+                        <a href="">
+                            <xe-translate text-value="{{item.label}}">
+                            </xe-translate>
+                        </a>
+                        <span class="icon-thumbnail">
+                            {{item.icon}}
+                        </span>
+                    </li>
+                    <li ng-click="openModule(item)" ng-if="item.category == 'C' && storeType" ng-repeat="item in moduleList">
+                        <a href="">
+                            <xe-translate text-value="{{item.label}}">
+                            </xe-translate>
+                        </a>
+                        <span class="icon-thumbnail">
+                            {{item.icon}}
+                        </span>
+                    </li>
+                    <li ng-click="openModule(item)" ng-if="item.category == 'PT'" ng-repeat="item in moduleList">
+                        <a href="">
+                            <xe-translate text-value="{{item.label}}">
+                            </xe-translate>
+                        </a>
+                        <span class="icon-thumbnail">
+                            {{item.icon}}
+                        </span>
+                    </li>
+                    <li ng-click="openModule(item)" ng-if="item.category == 'PD'" ng-repeat="item in moduleList">
+                        <a href="">
+                            <xe-translate text-value="{{item.label}}">
+                            </xe-translate>
+                        </a>
+                        <span class="icon-thumbnail">
+                            {{item.icon}}
+                        </span>
+                    </li>
+                </ul>
+            </li>
+            <li ng-if="item.category == 'GM' && item.status == true" ng-repeat="item in moduleList">
+                <a href="">
+                    <span class="title">
+                        <xe-translate text-value="{{item.label}}">
+                        </xe-translate>
+                    </span>
+                    <span class=" arrow">
+                    </span>
+                </a>
+                <span class="icon-thumbnail">
+                    {{item.icon}}
+                </span>
+                <ul class="sub-menu">
+                    <li ng-click="openModule(item)" ng-if="item.category == 'G'" ng-repeat="item in moduleList">
+                        <a href="">
+                            <xe-translate text-value="{{item.label}}">
+                            </xe-translate>
+                        </a>
+                        <span class="icon-thumbnail">
+                            {{item.icon}}
+                        </span>
+                    </li>
+                </ul>
+            </li>
+            <li ng-click="openModule(item)" ng-if="item.category == 'N' && item.status == true" ng-repeat="item in moduleList">
+                <a href="">
+                    <xe-translate text-value="{{item.label}}">
+                    </xe-translate>
+                </a>
+                <span class="icon-thumbnail">
+                    <i class="fa {{item.icon}}">
+                    </i>
+                </span>
+            </li>
+            <li ng-if="item.category == 'TM' && item.status == true" ng-repeat="item in moduleList">
+                <a href="">
+                    <span class="title">
+                        <xe-translate text-value="{{item.label}}">
+                        </xe-translate>
+                    </span>
+                    <span class="arrow">
+                    </span>
+                </a>
+                <span class="icon-thumbnail">
+                    <i class="pg-form">
+                    </i>
+                </span>
+                <ul class="sub-menu">
+                    <li ng-click="openModule(item)" ng-if="item.category == 'T'" ng-repeat="item in moduleList">
+                        <a href="">
+                            <xe-translate text-value="{{item.label}}">
+                            </xe-translate>
+                        </a>
+                        <span class="icon-thumbnail">
+                            {{item.icon}}
+                        </span>
+                    </li>
+                </ul>
+            </li>
+            <li ng-click="openModule(item)" ng-if="item.category == 'W' && item.status == true" ng-repeat="item in moduleList">
+                <a href="">
+                    <xe-translate text-value="{{item.label}}">
+                    </xe-translate>
+                </a>
+                <span class="icon-thumbnail">
+                    {{item.icon}}
+                </span>
+            </li>
+            <li ng-click="openModule(item)" ng-if="item.category == 'SM' && item.status == true" ng-repeat="item in moduleList">
+                <a href="">
+                    <xe-translate text-value="{{item.label}}">
+                    </xe-translate>
+                </a>
+                <span class="icon-thumbnail">
+                    <i class="fa {{item.icon}}">
+                    </i>
+                </span>
+            </li>
+            <div class="m-l-20 m-b-5 m-r-30" style="background-color:rgba(255,255,255,0.10); height: 1px;">
+            </div>
+            <li ng-click="openModule(item)" ng-if="item.category == 'O' && item.status == true" ng-repeat="item in moduleList">
+                <a href="">
+                    <xe-translate text-value="{{item.label}}">
+                    </xe-translate>
+                </a>
+                <span class="icon-thumbnail">
+                    {{item.icon}}
+                </span>
+            </li>
+            <div class="m-l-20 m-b-5 m-r-30" style="background-color:rgba(255,255,255,0.10); height: 1px;">
+            </div>
+            <li ng-click="openModule(item)" ng-if="item.category == 'A'" ng-repeat="item in moduleList">
+                <a href="">
+                    <xe-translate text-value="{{item.label}}">
+                    </xe-translate>
+                </a>
+                <span class="icon-thumbnail">
+                    <i class="fa fa-user">
+                    </i>
+                </span>
+            </li>
+            <div class="m-l-20 m-b-5 m-r-30" style="background-color:rgba(255,255,255,0.10); height: 1px;">
+            </div>
+            <li ng-click="getInkxeInfo()">
+                <a href="">
+                    <xe-translate text-value="About">
+                    </xe-translate>
+                </a>
+                <span class="icon-thumbnail" ng-show="availableVersion == ''">
+                    <i class="fa fa-info-circle">
+                    </i>
+                </span>
+                <span class="icon-thumbnail" ng-show="availableVersion != ''">
+                    <i class="fa fa-arrow-circle-up text-success">
+                    </i>
+                </span>
+            </li>
+            <li>
+                <div style="margin:20px 20px; color:#788195; text-align:center;">
+                    <div style="background-color:rgba(255,255,255,0.10); height: 1px;">
+                    </div>
+                    <!-- <label class="m-t-10"><xe-translate text-value="Clear tool"></xe-translate></label> -->
+                    <div>
+                        <button class="btn btn-danger m-t-5 btn-sm" ng-click="clearJunk()" style="color:#fff;">
+                            <xe-translate text-value="CLEAR">
+                            </xe-translate>
+                        </button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <div class="clearfix">
+        </div>
+    </div>
+    <!-- END SIDEBAR MENU -->
+</nav>
+<!-- END SIDEBAR -->
+<!-- END SIDEBPANEL-->

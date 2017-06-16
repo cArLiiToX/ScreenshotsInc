@@ -1,0 +1,38 @@
+<div class="xe-card-block">
+    <div class="head-section m-b-30">
+        <h4>
+            Additional price for size variants
+        </h4>
+        <p>
+            Here you can set extra price to a particular size variant for print method.
+        </p>
+    </div>
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                <th width="96">
+                    <xe-translate text-value="Size">
+                    </xe-translate>
+                </th>
+                <th ng-repeat="item in prntMethodByProduct">
+                    {{ item.name }}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="sizeprice in sizeAdditionalPrice track by $index">
+                <td width="100" class="text-center">
+                    {{ sizeprice.sizeName }}
+                </td>
+                <td ng-repeat="p in sizeprice.sizePrice track by $index">
+                    <div class="form-group input-group m-b-0">
+                        <input class="form-control" ng-model="p.percentage" percent-only="percent-only" placeholder="0" type="text"/>
+                        <span class="input-group-addon">
+                            %
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

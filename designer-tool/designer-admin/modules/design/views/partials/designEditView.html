@@ -64,18 +64,6 @@
                         </div>
                     </div>
                     <div class="row clearfix">
-                        <div class="col-sm-4">
-                            <div pg-form-group class="form-group form-group-default input-group nested-form-group">
-                                <label>
-                                    <xe-translate text-value="Actual Height">
-                                    </xe-translate>
-                                </label>
-                                <input type="text" class="form-control" name="price" ng-model="editDesign.height" price-Only="price-Only" style="width: 120px;" ng-keyup="onChangeClipArtHeightWidth(editDesign.height , 'h' , 'edit')"/>
-                                <span class="input-group-addon">
-                                    {{ printUnit }}
-                                </span>
-                            </div>
-                        </div>
                         <div class="col-sm-4 m-l-30">
                             <div pg-form-group class="form-group form-group-default input-group nested-form-group">
                                 <label>
@@ -83,6 +71,18 @@
                                     </xe-translate>
                                 </label>
                                 <input type="text" class="form-control" name="Name" ng-model="editDesign.width" price-Only="price-Only" style="width: 120px;" ng-keyup="onChangeClipArtHeightWidth(editDesign.width , 'w' , 'edit')"/>
+                                <span class="input-group-addon">
+                                    {{ printUnit }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div pg-form-group class="form-group form-group-default input-group nested-form-group">
+                                <label>
+                                    <xe-translate text-value="Actual Height">
+                                    </xe-translate>
+                                </label>
+                                <input type="text" class="form-control" name="price" ng-model="editDesign.height" price-Only="price-Only" style="width: 120px;" ng-keyup="onChangeClipArtHeightWidth(editDesign.height , 'h' , 'edit')"/>
                                 <span class="input-group-addon">
                                     {{ printUnit }}
                                 </span>

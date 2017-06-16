@@ -29,12 +29,12 @@ class ProductImage extends UTIL
             }
 
             $type = 'png';
-            $insertSql = "INSERT INTO " . TABLE_PREFIX . "product_template (name,date_created,date_modified,is_default) VALUES('" . $product_templist['name'] . "',NOW(),NULL,'" . $product_templist['is_default'] . "');";
+            $insertSql = "INSERT INTO " . TABLE_PREFIX . "product_template (name,date_created,date_modified,is_default) VALUES('" . addslashes($product_templist['name']) . "',NOW(),NULL,'" . $product_templist['is_default'] . "');";
             $temp_id = $this->executeGenericInsertQuery($insertSql);
 
             foreach ($product_templist['temp_side_list'] as $k => $v) {
                 $sql_side = "INSERT INTO " . TABLE_PREFIX . "product_temp_side (product_temp_id,side_name,sort_order,image,date_created,date_modified)
-                VALUES('" . $temp_id . "','" . $v['side_name'] . "','" . $v['sort_order'] . "','" . $type . "',NOW(),NULL);";
+                VALUES('" . $temp_id . "','" . addslashes($v['side_name']) . "','" . $v['sort_order'] . "','" . $type . "',NOW(),NULL);";
                 $side_id[$k] = $this->executeGenericInsertQuery($sql_side);
 
                 if (strpos($v['url'], ';base64') != false) {
@@ -69,6 +69,7 @@ class ProductImage extends UTIL
         $status = 0;
         if (!empty($this->_request) && !empty($this->_request['product_templist'])) {
             extract($this->_request['product_templist']);
+            $name = addslashes($name);
             $checkExistSql = "SELECT count(*) AS nos FROM " . TABLE_PREFIX . "product_template WHERE name = '" . $name . "' AND pk_id != '" . $product_temp_id . "'";
             $exist = $this->executeFetchAssocQuery($checkExistSql);
             if (!empty($exist) && $exist['nos']) {
@@ -89,7 +90,7 @@ class ProductImage extends UTIL
 
                     foreach ($temp_side_list as $k => $v) {
                         $sql_side = "INSERT INTO " . TABLE_PREFIX . "product_temp_side (product_temp_id,side_name,sort_order,image,date_modified)
-                        VALUES('" . $product_temp_id . "','" . $v['side_name'] . "','" . $v['sort_order'] . "','" . $type . "',NOW());";
+                        VALUES('" . $product_temp_id . "','" . addslashes($v['side_name']) . "','" . $v['sort_order'] . "','" . $type . "',NOW());";
                         $side_id[$k] = $this->executeGenericInsertQuery($sql_side);
                         if ($v['side_id']) {
                             if (!file_exists($dir . $product_temp_id)) {
@@ -150,7 +151,7 @@ class ProductImage extends UTIL
         } else {
             $msg['status'] = 'no templateid';
         }
-        $this->response($this->json($msg), 200);
+        $this->response($this->json($msg,1), 200);
     }
 
     /**
@@ -202,7 +203,7 @@ class ProductImage extends UTIL
         }
         $resultArr['product_templist'] = $result;
         $response = (empty($result)) ? array() : $resultArr['product_templist'];
-        $this->response($this->json($resultArr), 200);
+        $this->response($this->json($resultArr,1), 200);
     }
 
     /**

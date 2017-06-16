@@ -120,11 +120,12 @@ class OrdersStore extends UTIL
     public function getOrderDetails($return = 0)
     {
         $error = false;
-
+		$color = $this->getStoreAttributes("xe_color");
+		$size = $this->getStoreAttributes("xe_size");
         $result = $this->storeApiLogin();
         if ($this->storeApiLogin == true) {
             $order_id = isset($this->_request['order_id']) ? trim($this->_request['order_id']) : trim($this->_request['orderIncrementId']);
-            $url = $this->getCurrentUrl() . '/?route=' . $this->extensionPath() . 'feed/web_api/getOrderDetails&order_id=' . $order_id;
+            $url = $this->getCurrentUrl() . '/?route=' . $this->extensionPath() . 'feed/web_api/getOrderDetails&order_id=' . $order_id.'&size='.$size.'&color='.$color;
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -170,6 +171,8 @@ class OrdersStore extends UTIL
             $contents = explode("localSettings=", $contents);
             $contents = json_decode($contents['1'], true);
             $lang = $contents['language'];
+			$colorAttr = $this->getStoreAttributes("xe_color");
+			$sizeAttr = $this->getStoreAttributes("xe_size");
             if ($lang) {
                 $langFile = 'locale-' . $lang . '.json';
             } else {
@@ -200,6 +203,8 @@ class OrdersStore extends UTIL
             $langBRAgent = (!empty($languageJson1['BROWSER_AGENT'])) ? $languageJson1['BROWSER_AGENT'] : 'Browser Agent';
             $langBRHt = (!empty($languageJson1['BROWSER_HEIGHT'])) ? $languageJson1['BROWSER_HEIGHT'] : 'Browser Height';
             $langBRWd = (!empty($languageJson1['BROWSER_WIDTH'])) ? $languageJson1['BROWSER_WIDTH'] : 'Browser Width';
+            $langHeight = (!empty($languageJson1['HEIGHT'])) ? $languageJson1['HEIGHT'] : 'Height';
+            $langWidth = (!empty($languageJson1['WIDTH'])) ? $languageJson1['WIDTH'] : 'Width';
 
             $colorincrment = 1;
             $html = '<html><title>Order APP</title><body style="font-family:arial;"><div style="width: 1200px; margin:auto;">';
@@ -212,30 +217,20 @@ class OrdersStore extends UTIL
                         </div>
                         <div style="float:right; padding:30px 20px 0px 0px;"><img src="data:image/png;base64,' . base64_encode($generatorPNG->getBarcode($order_id, $generatorPNG::TYPE_CODE_128)) . '"/></div></div>';
             $ref_status = 0;
+            $nameCount = 0;
+            $temp = array();
             foreach ($value->order_items as $line_key => $line_items) {
                 if ($line_items->ref_id != '' && $line_items->ref_id != 0) {
                     if ($ref_status == 0) {
                         $ref_status = 1;
-                    }
-                    foreach ($line_items->attributes as $key => $value) {
-                        if ($key == 'xe_color') {
-                            $attrKey .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> Color </th>';
-                            $attrvalue .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $value . '</td>';
-                        } else if ($key == 'xe_size') {
-                            $attrKey .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> Size </th>';
-                            $attrvalue .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $value . '</td>';
-                        } else {
-                            $attrKey .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $key . '</th>';
-                            $attrvalue .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $value . '</td>';
-                        }
-                    }
+                    }                    
                     $refid = $line_items->ref_id;
                     $item_id = $line_items->order_product_id;
                     $quantity = $line_items->quantity;
                     $productname = $line_items->product_name;
                     $product_sku = $line_items->product_sku;
-                    $size = $line_items->xe_size;
-                    $color = $line_items->xe_color;
+                    $size = $line_items->$sizeAttr;
+                    $color = $line_items->$colorAttr;
                     $pid = $line_items->product_id;
                     $product_id = $this->datalayer->getProductParent($pid);
                     $base64 = ($product_sku != '') ? $product_sku : $productname;
@@ -263,52 +258,48 @@ class OrdersStore extends UTIL
                     $designState_json = file_get_contents($final . "designer-tool" . ASSET_PATH . "/previewimg/" . $refid . "/svg/designState.json");
                     $json_content = json_decode($designState_json, true);
                     $noOfsides = count($json_content['sides']);
-                    $printColorNames = "";
-                    $printColors = "";
-                    $cmykValue = "";
-                    $printColorCategories = "";
-                    $k = 1;
-                    $color = ($colorincrment % 2 == 0) ? 'red' : 'blue';
-                    $odd = 1;
-                    $clear = ($colorincrment > 1) ? 'clear:both' : 'clear:none';
-                    $printType = (isset($json_content['printType']) && $json_content['printType'] != '') ? $json_content['printType'] : "No Printtype";
-                    $notes = (isset($json_content['notes']) && $json_content['notes'] != '') ? $json_content['notes'] : "";
-                    $browserIp = (isset($json_content['envInfo']) && $json_content['envInfo']['browserIp'] != '') ? $json_content['envInfo']['browserIp'] : "-";
-                    $browserHeight = (isset($json_content['envInfo']) && $json_content['envInfo']['browserHeight'] != '') ? $json_content['envInfo']['browserHeight'] : "-";
-                    $browserWidth = (isset($json_content['envInfo']) && $json_content['envInfo']['browserWidth'] != '') ? $json_content['envInfo']['browserWidth'] : "-";
-                    $browserLang = (isset($json_content['envInfo']) && $json_content['envInfo']['browserLang'] != '') ? $json_content['envInfo']['browserLang'] : "-";
-                    $userAgent = (isset($json_content['envInfo']) && $json_content['envInfo']['userAgent'] != '') ? $json_content['envInfo']['userAgent'] : "-";
-                    $browserName = (isset($json_content['envInfo']) && $json_content['envInfo']['browserName'] != '') ? $json_content['envInfo']['browserName'] : "-";
-
-                    $html .= '<div style="border: 2px solid #4CAF50; margin-bottom:20px; border-radius:5px; float:left; width:1200px;"><div style="background-color:#4CAF50; padding:15px;border-radius:2px 2px 0px 0px; font-size:20px; color:#fff;">' . $productname . '</div><div style="padding:20px;"><table style="width:100%;border: 1px solid #ccc; border-collapse: collapse;"><tbody><tr>    <th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $langQuantity . '</th>' . $attrKey . '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $langPrintMethod . '</th></tr><tr><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $quantity . '</td>' . $attrvalue . '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $printType . '</td></tr></tbody></table></div>';
-
-                    if (!empty($notes)) {
-                        $html .= '<div style="padding: 0px 20px 0px 20px;"><b>Notes:</b><br/><textarea rows="4" style="border: 0px;width: 100%;resize: vertical;padding-left: 15px;font-family: inherit;" readonly>' . $notes . '</textarea></div>';
-                    }
-                    foreach ($json_content['sides'] as $key => $sides) {
-                        /**** Creation Of order files Started ****/
-
-                        $sideValue = $key + 1;
-                        $previewPath = $refPath . "/preview_0" . $sideValue . ".svg";
-                        $sidePath = $itemPath . "/side_" . $sideValue . "";
-                        if (!is_dir($sidePath)) {
-                            $mkDir = "";
-                            $tags = explode('/', $sidePath);
-                            foreach ($tags as $folder) {
-                                $mkDir .= $folder . "/";
-                                if (!file_exists($mkDir)) {
-                                    mkdir($mkDir, 0755, true);
-                                }
-
-                            }
+					// Creating attribute lists
+					$attrKey = "";
+                    $attrvalue = "";
+					foreach ($line_items->attributes as $key => $value) {
+                        if ($key == $colorAttr) {
+                            $attrKey .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> Color </th>';
+                            $attrvalue .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $value . '</td>';
+                        } else if ($key == $sizeAttr) {
+							if (empty($json_content['nameNumberData'])) {
+								$attrKey .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> Size </th>';
+								$attrvalue .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $value . '</td>';
+							}
+                        } else {
+                            $attrKey .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $key . '</th>';
+                            $attrvalue .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $value . '</td>';
                         }
+                    }
+					foreach ($json_content['sides'] as $key => $sides) {
+                        /**** Creation Of order files Started ****/
+						if(isset($sides['svg']) && !empty($sides['svg'])){
+							$sideValue = $key + 1;
+							$previewPath = $refPath . "/preview_0" . $sideValue . ".svg";
+							$sidePath = $itemPath . "/side_" . $sideValue . "";
+							if (!is_dir($sidePath)) {
+								$mkDir = "";
+								$tags = explode('/', $sidePath);
+								foreach ($tags as $folder) {
+									$mkDir .= $folder . "/";
+									if (!file_exists($mkDir)) {
+										mkdir($mkDir, 0755, true);
+									}
+
+								}
+							}
+						}
                         if (file_exists($previewPath)) {
                             copy($previewPath, $sidePath . "/preview_0" . $sideValue . ".svg");
                         }
                         //For assets folder image file
                         $assetPath = $final . "designer-tool" . ASSET_PATH . "/previewimg/" . $refid . "/assets/" . $sideValue;
                         $asesetItemPath = $itemPath . "/side_" . $sideValue . "/assets/";
-                        if (!is_dir($asesetItemPath)) {
+                        if (!is_dir($asesetItemPath) && file_exists($assetPath)) {
                             $mkDirs = "";
                             $tag = explode('/', $asesetItemPath);
                             foreach ($tag as $folders) {
@@ -349,53 +340,169 @@ class OrdersStore extends UTIL
                                 $svgFileStatus = file_put_contents($pngFile, $customizeImage);
                             }
                         }
+						
                         /**** Creation Of order files End ****/
+					}
+                    //Check for repeated name and number
+                    if (in_array($refid, $temp)) {
+                        if (!empty($json_content['nameNumberData']) && $nameCount != 0) {
+                            continue;
+                        }
+                    }
+                    $temp[] = $refid;
+                    $printColorNames = "";
+                    $printColors = "";
+                    $cmykValue = "";
+                    $printColorCategories = "";
+                    $k = 1;
+                    $color = ($colorincrment % 2 == 0) ? 'red' : 'blue';
+                    $odd = 1;
+                    $clear = ($colorincrment > 1) ? 'clear:both' : 'clear:none';
+                    $printType = (isset($json_content['printType']) && $json_content['printType'] != '') ? $json_content['printType'] : "No Printtype";
+                    $notes = (isset($json_content['notes']) && $json_content['notes'] != '') ? $json_content['notes'] : "";
+                    $browserIp = (isset($json_content['envInfo']) && $json_content['envInfo']['browserIp'] != '') ? $json_content['envInfo']['browserIp'] : "-";
+                    $browserHeight = (isset($json_content['envInfo']) && $json_content['envInfo']['browserHeight'] != '') ? $json_content['envInfo']['browserHeight'] : "-";
+                    $browserWidth = (isset($json_content['envInfo']) && $json_content['envInfo']['browserWidth'] != '') ? $json_content['envInfo']['browserWidth'] : "-";
+                    $browserLang = (isset($json_content['envInfo']) && $json_content['envInfo']['browserLang'] != '') ? $json_content['envInfo']['browserLang'] : "-";
+                    $userAgent = (isset($json_content['envInfo']) && $json_content['envInfo']['userAgent'] != '') ? $json_content['envInfo']['userAgent'] : "-";
+                    $browserName = (isset($json_content['envInfo']) && $json_content['envInfo']['browserName'] != '') ? $json_content['envInfo']['browserName'] : "-";
+                    // Multiple Boundary
+                    $multipleBoundary = (isset($json_content['multipleBoundary']) && $json_content['multipleBoundary'] != '') ? $json_content['multipleBoundary'] : "false";
 
-                        $pUrl = $sides['customizeImage'];
-                        $onesidewidth = ($noOfsides <= 1) ? 'width:93%;' : '';
-                        $barcodewidth = ($noOfsides <= 1) ? 'width: inherit;' : '';
-                        /* $clear = ($odd%2 == 0)? 'clear:none': 'clear:both'; */
-                        $printUnit = (isset($sides['printUnit']) && $sides['printUnit'] != '') ? $sides['printUnit'] : "No Unit";
-                        $dimension = $sides['PrintDimension']['boundheight'] . 'x' . $sides['PrintDimension']['boundwidth'];
-
-                        $html .= '<div style="padding:0px 20px 20px 20px; text-align: center; float:left; background-color:#efefef; margin:20px 0px 20px 20px;min-height:810px;' . $onesidewidth . '"><div style="margin-bottom:7px; margin-right:50px; margin-top:20px;"><img src="data:image/png;base64,' . $product_barcode . '" height="50px" alt="" style="' . $barcodewidth . '" /></div><div style="margin-bottom:10px;"><h3 style="margin:0px; padding:0px; font-weight:normal;"><h3>' . $base64 . '</h3></div><div style="margin-bottom:20px; min-height:500px; min-width:500px;"><img class="product-img" src="' . $pUrl . '" alt=""></div>';
-                        if (isset($sides['printSize']) && $sides['printSize'] != '') {
-                            $printValue = $sides['printSize'];
-                            if ($printValue[0] != 'A') {
-                                $printSize = $dimension . ' (' . $printUnit . ')';
+                    $html .= '<div style="border: 2px solid #4CAF50; margin-bottom:20px; border-radius:5px; float:left; width:1200px;"><div style="background-color:#4CAF50; padding:15px;border-radius:2px 2px 0px 0px; font-size:20px; color:#fff;">' . $productname . '</div><div style="padding:20px;"><table style="width:100%;border: 1px solid #ccc; border-collapse: collapse;"><tbody><tr>';
+                    //Hide heading of size attribute and quantity for name and number case
+                    if (empty($json_content['nameNumberData'])) {
+                        $html .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $langQuantity . '</th>';
+                    }
+                    $html .= $attrKey;
+                    // Hide product wise print method for Multiple Boundary
+                    if ($multipleBoundary != 'true') {
+                        $html .= '<th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $langPrintMethod . '</th>';
+                    }
+                     $html .= '</tr><tr>';
+                    //Hide value of size attribute and quantity for name and number case
+                    if (empty($json_content['nameNumberData'])) {
+                        $html .= '<td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $quantity . '</td>';
+                    }
+                    $html .= $attrvalue;
+                    // Hide product wise print method for Multiple Boundary
+                    if ($multipleBoundary != 'true') {
+                        $html .= '<td style = "border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; color: #333;">' . $printType . '</td>';
+                    }
+                    $html .= '</tr></tbody></table></div>';
+                    //Name and number table start
+                    if (!empty($json_content['nameNumberData'])) {
+                        $nameCount++;
+                        $langNameFrontText = "-";
+                        $langNameBackText = "-";
+                        if ($json_content['nameNumberData']['front']) {
+                            if ($json_content['nameNumberData']['frontView'] == "name_num") {
+                                $frontView = "Name & Number";
+                            } elseif ($json_content['nameNumberData']['frontView'] == "name") {
+                                $frontView = "Name Only";
                             } else {
-                                $printSize = $sides['printSize'];
-                                $printSize .= ': ' . $dimension . ' (' . $printUnit . ')';
+                                $frontView = "Number Only";
                             }
-                            $html .= '<div><h2 style="margin:0px; padding:0px; font-weight:normal;margin-bottom:10px;">' . $langPrintSize . ':  ' . $printSize . '</h2></div>';
-                        } else {
-                            $html .= '<div style="margin-bottom:10px"> &nbsp; </div>';
+                            $langNameFrontText = $frontView;
                         }
+                        if ($json_content['nameNumberData']['back']) {
+                            if ($json_content['nameNumberData']['backView'] == "name_num") {
+                                $backView = "Name & Number";
+                            } elseif ($json_content['nameNumberData']['backView'] == "name") {
+                                $backView = "Name Only";
+                            } else {
+                                $backView = "Number Only";
+                            }
+                            $langNameBackText = $backView;
+                        }
+                        $html .= '<div style="padding: 0px 20px 15px 20px;"><b>Name & Number Details:</b><br/><div style="height: 140px;overflow: auto;"><table style="border: 1px solid #ccc; border-collapse: collapse; width: 100%;"><tbody><tr><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> Name' . $langName . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">Number' . $langNumber . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $langSize . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">Front' . $langNameFront . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">Back' . $langNameBack . '</th></tr>';
+                        foreach ($json_content['nameNumberData']['list'] as $singleName) {
+                            $html .= '<tr><td style = "border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; color: #333;">' . $singleName['name'] . '</td><td style = "border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; color: #333;">' . $singleName['number'] . '</td><td style = "border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; color: #333;">' . $singleName['size'] . '</td><td style = "border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; color: #333;">' . $langNameFrontText . '</td><td style = "border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; color: #333;">' . $langNameBackText . '</td>';
+                        }
+                        $html .= '</tr></tbody></table></div></div>';
+                    }
+                    if (!empty($notes)) {
+                        $html .= '<div style="padding: 0px 20px 0px 20px;"><b>Notes:</b><br/><textarea rows="4" style="border: 0px;width: 100%;resize: vertical;padding-left: 15px;font-family: inherit;" readonly>' . $notes . '</textarea></div>';
+                    }
+                    foreach ($json_content['sides'] as $key => $sides) {                    
+						/* if(isset($sides['svg']) && !empty($sides['svg'])){ */
+							$pUrl = $sides['customizeImage'];
+							$onesidewidth = ($noOfsides <= 1) ? 'width:93%;' : 'width:45%;';
+                            $onesidepadding = ($noOfsides <= 1) ? 'padding:22px;' : 'padding:15px;';
+							$barcodewidth = ($noOfsides <= 1) ? 'width: inherit;' : 'width: 100%;';
+							/* $clear = ($odd%2 == 0)? 'clear:none': 'clear:both'; */
+							$printUnit = (isset($sides['printUnit']) && $sides['printUnit'] != '') ? $sides['printUnit'] : "No Unit";
+							$dimension = $sides['PrintDimension']['boundheight'] . 'x' . $sides['PrintDimension']['boundwidth'];
 
-                        $printColorNames = (isset($sides['printColorNames'])) ? count($sides['printColorNames']) : 0;
-                        $height = $printColorNames * 30;
+							$html .= '<div style="' .$onesidepadding. ' text-align: center; float:left; background-color:#efefef; margin:20px 0px 20px 20px;min-height:830px;' . $onesidewidth . '"><div style="margin-bottom:7px; margin-right:50px; margin-top:20px;"><img src="data:image/png;base64,' . $product_barcode . '" height="50px" alt="" style="' . $barcodewidth . '" /></div><div style="margin-bottom:10px;"><h3 style="margin:0px; padding:0px; font-weight:normal;"><h3>' . $base64 . '</h3></div><div style="margin-bottom:20px; min-height:500px; min-width:500px;"><img class="product-img" src="' . $pUrl . '" alt=""></div>';
+							if (isset($sides['printSize']) && $sides['printSize'] != ''  && $multipleBoundary != 'true') {
+								$printValue = $sides['printSize'];
+								if ($printValue[0] != 'A') {
+									$printSize = $dimension . ' (' . $printUnit . ')';
+								} else {
+									$printSize = $sides['printSize'];
+									$printSize .= ': ' . $dimension . ' (' . $printUnit . ')';
+								}
+								$html .= '<div><h2 style="margin:0px; padding:0px; font-weight:normal;margin-bottom:10px;">' . $langPrintSize . ':  ' . $printSize . '</h2></div>';
+							} else {
+								$html .= '<div style="margin-bottom:10px"> &nbsp; </div>';
+							}
 
-                        if ($printColorNames > 0) {
-                            $html .= '<div style="height: 141px;overflow: auto;"><table style="width:100%;border: 1px solid #ccc; border-collapse: collapse;"><tbody><tr><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langColorName . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langCategory . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langCmyk . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langHex . '</th></tr>';
-                            foreach ($sides['printColorNames'] as $y => $printcolornames) {
-                                $printcolornames = (!empty($printcolornames)) ? $printcolornames : '-';
-                                $printColors[$y] = (!empty($sides['printColors'])) ? $sides['printColors'][$y] : '-';
-                                $printColors[$y] = ($printColors[$y][0] == "#") ? $printColors[$y] : '<img src="' . $printColors[$y] . '" width="20" height="20" />';
-                                if (!empty($sides['cmykValue'][$y])) {
-                                    $content_svg = json_encode(array_change_key_case($sides['cmykValue'][$y], CASE_UPPER));
-                                    $cmykValue[$y] = substr($content_svg, 1, -1);
-                                    $cmykValue[$y] = str_replace('"', '', $cmykValue[$y]);
-                                } else {
-                                    $cmykValue[$y] = '-';
+							$printColorNames = (isset($sides['printColorNames'])) ? count($sides['printColorNames']) : 0;
+							$height = $printColorNames * 30;
+                            $html .= '<div style="height: 141px;overflow: auto;">';
+							if ($printColorNames > 0 && $multipleBoundary != 'true') {
+								$html .= '<table style="width:100%;border: 1px solid #ccc; border-collapse: collapse;"><tbody><tr><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langColorName . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langCategory . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langCmyk . '</th><th style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; background-color: #666;color: white;">' . $langHex . '</th></tr>';
+								foreach ($sides['printColorNames'] as $y => $printcolornames) {
+									$printcolornames = (!empty($printcolornames)) ? $printcolornames : '-';
+									$printColors[$y] = (!empty($sides['printColors'])) ? $sides['printColors'][$y] : '-';
+									$printColors[$y] = ($printColors[$y][0] == "#") ? $printColors[$y] : '<img src="' . $printColors[$y] . '" width="20" height="20" />';
+									if (!empty($sides['cmykValue'][$y])) {
+										$content_svg = json_encode(array_change_key_case($sides['cmykValue'][$y], CASE_UPPER));
+										$cmykValue[$y] = substr($content_svg, 1, -1);
+										$cmykValue[$y] = str_replace('"', '', $cmykValue[$y]);
+									} else {
+										$cmykValue[$y] = '-';
+									}
+									$printColorCategories[$y] = (!empty($sides['printColorCategories'])) ? $sides['printColorCategories'][$y] : '-';
+									$html .= '<tr><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $printcolornames . '</td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $printColorCategories[$y] . '</td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $cmykValue[$y] . '</td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $printColors[$y] . '</td></tr>';
+								}
+								$html .= '</tbody></table></div>';
+							}elseif ($multipleBoundary == 'true') {
+                            foreach ($sides['multiBound'] as $section => $sectionDetails) {
+                                $html .= '<table style="width: 100%; margin-bottom: 25px; height:' . $height . 'px" class="repeattd t01"><tbody> <tr><th colspan="4" style="border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: center; background-color: #2f2f2f; color: white;"><span style="float:left;">' . $sectionDetails['name'];
+                                if ($sectionDetails['printProfile'] != "") {
+                                    $html .= ' : ' . $sectionDetails['printProfile'] . '</span>';
+                                    $html .= ' <span style="float:right;">' . $langWidth . ': ' . $sectionDetails['actulWidth'] . '&nbsp;' . $sides['printUnit'] . '&nbsp;&nbsp;' . $langHeight . ':' . $sectionDetails['actulHeight'] . '&nbsp;' . $sides['printUnit'] . '</span>';
                                 }
-                                $printColorCategories[$y] = (!empty($sides['printColorCategories'])) ? $sides['printColorCategories'][$y] : '-';
-                                $html .= '<tr><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $printcolornames . '</td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $printColorCategories[$y] . '</td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $cmykValue[$y] . '</td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $printColors[$y] . '</td></tr>';
+                                $html .= '</th></tr>';
+                                if (!empty($sectionDetails['printColors'])) {
+                                    $html .= '<tr><th style="border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; background-color: #666; color: white;">' . $langColorName . '</th> <th style="border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; background-color: #666; color: white;">' . $langCategory . '</th><th style="border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; background-color: #666; color: white;">' . $langCmyk . '</th> <th style="border: 1px solid #ccc; border-collapse: collapse; padding: 8px; text-align: left; background-color: #666; color: white;">' . $langHex . '</th> </tr>';
+                                } else {
+                                    $html .= '<tr> <td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> -- </td> <td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> -- </td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> -- </td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;"> -- </td> </tr>';
+                                }
+                                foreach ($sectionDetails['printColorNames'] as $section => $sectionColorDetail) {
+                                    $sectionColorDetail = (!empty($sectionColorDetail)) ? $sectionColorDetail : '-';
+                                    $printColors[$section] = (!empty($sectionDetails['printColors'])) ? $sectionDetails['printColors'][$section] : '-';
+                                    $printColors[$section] = ($printColors[$section][0] == "#") ? $printColors[$section] : '<img src="' . $printColors[$section] . '" width="20" height="20" />';
+                                    if (!empty($sectionDetails['cmykValue'][$section])) {
+                                        $content_svg = json_encode(array_change_key_case($sectionDetails['cmykValue'][$section], CASE_UPPER));
+                                        $cmykValue[$section] = substr($content_svg, 1, -1);
+                                        $cmykValue[$section] = str_replace('"', '', $cmykValue[$section]);
+                                    } else {
+                                        $cmykValue[$section] = '-';
+                                    }
+                                    $printColorCategories[$section] = (!empty($sectionDetails['printColorCategories'])) ? $sectionDetails['printColorCategories'][$section] : '-';
+                                    $html .= '<tr> <td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . str_replace('No Name', '-', $sectionColorDetail) . '</td> <td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . str_replace('No Category', '-', $printColorCategories[$section]) . '</td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $cmykValue[$section] . '</td><td style="border: 1px solid #ccc; border-collapse: collapse;padding: 8px;text-align: left; color:#333;">' . $printColors[$section] . '</td> </tr>';
+                                }
+                                $html .= '</tbody></table>'; //end tablecell div
                             }
-                            $html .= '</tbody></table></div>';
-                        }
-                        $html .= '</div>';
-                        $k++;
-                        $odd++;
+                            $html .= '</div>';
+                        }else  $html .= '</div>';
+							$html .= '</div>';
+							$k++;
+							$odd++;
+						//}
                     }
                     $colorincrment++;
                     $html .= '</div>';
@@ -698,7 +805,6 @@ class OrdersStore extends UTIL
 					}
 					
                     if (file_exists($orderFolderPath . "/" . $orderNo)) {
-                        array_push($order_list_arr, array("order_id" => $order_id_arry2['order_id'], "order_incremental_id" => $order_incremental_id, "order_type" => $orderTypeFlag));
                         if (file_exists($orderFolderPath . '/' . $orderNo . '/order.json')) {
                             $order_json = file_get_contents($orderFolderPath . '/' . $orderNo . '/order.json');
                             $json_content = json_decode($order_json, true);
@@ -809,6 +915,7 @@ class OrdersStore extends UTIL
                                 }
                             }
                         }
+						array_push($order_list_arr, array("order_id" => $order_id_arry2['order_id'], "order_incremental_id" => $order_incremental_id, "order_type" => $orderTypeFlag));
                     }
                 }
                 $order_ary = array();

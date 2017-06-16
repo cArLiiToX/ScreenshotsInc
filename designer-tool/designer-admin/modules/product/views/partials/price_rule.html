@@ -3,14 +3,14 @@
         <div class="panel panel-transparent">
             <!-- Nav tabs -->
             <ul class="nav nav-tabs nav-tabs-linetriangle nav-tab-v nav-tabs-left">
-                <li ng-class="{'active':priceRule == 'color'}">
+                <li ng-class="{'active':priceRule == 'color'}" ng-hide = "isSimple">
                     <a data-toggle="tab" ng-click="priceRule = 'color'">
                         <span>
                             Color Variants
                         </span>
                     </a>
                 </li>
-                <li ng-class="{'active':priceRule == 'size'}">
+                <li ng-class="{'active':priceRule == 'size'}" ng-hide = "!isSizeExits || isSimple">
                     <a data-toggle="tab" ng-click="priceRule = 'size'">
                         <span>
                             Size Variants

@@ -11,10 +11,18 @@ class Customize extends AbstractProduct
     public function isCustomizeButton()
     {
         $product = $this->getProduct();
+        if ($product->getTypeId() == 'simple') {
+            $productId = $product->getId();
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $productModel = $objectManager->get('Magento\Catalog\Model\Product')->load($productId);
+            $xeIsDesigner = $productModel->getResource()->getAttribute("xe_is_designer")->getFrontend()->getValue($productModel);
+            if ($xeIsDesigner = 'yes') {
+                return true;
+            }
+        }
 
         if ($product->getTypeId() == 'configurable') {
             $productId = $product->getId();
-            //$productModel = Mage::getModel('catalog/product')->load($productId);
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             $productModel = $objectManager->get('Magento\Catalog\Model\Product')->load($productId);
             $xeIsDesigner = $productModel->getResource()->getAttribute("xe_is_designer")->getFrontend()->getValue($productModel);
@@ -25,7 +33,7 @@ class Customize extends AbstractProduct
                 $attributeOptions[] = $productAttribute['attribute_code'];
             }
 
-            if (in_array("xe_size", $attributeOptions) && in_array("xe_color", $attributeOptions) && $xeIsDesigner = 'yes') {
+            if ($xeIsDesigner = 'yes') {
                 return true;
             }
         }

@@ -29,11 +29,9 @@
                                         </button>
                                     </div>
                                     <div class="clearfix category-list modal-scroll-height m-t-10">
-                                        <ul>
-                                            <li ng-repeat="category in paletteCategoryList"  ng-mouseenter="showCategoryClosebtn[$index]=true" ng-mouseleave="showCategoryClosebtn[$index]=false; showCategoryBadge[$index]=false">
-                                                <a href="">
+                                        <ul dnd-list="paletteCategoryList">
+                                            <li ng-repeat="category in paletteCategoryList" dnd-draggable="category" dnd-moved="paletteCategoryList.splice($index, 1)"  dnd-effect-allowed="move" dnd-selected="models.selected = category" dnd-dragstart="getCurrentIndex(category)" dnd-dragend ="getUpdateIndex(category)" ng-mouseenter="showCategoryClosebtn[$index]=true" ng-mouseleave="showCategoryClosebtn[$index]=false; showCategoryBadge[$index]=false">
                                                     {{ category.category_name }}
-                                                </a>
                                                 <div class="pull-right">
                                                     <a href="" ng-show="showCategoryClosebtn[$index]"  ng-click="editCategory($index)">
                                                         <i class="fa fa-pencil text-info m-r-5 m-l-5">

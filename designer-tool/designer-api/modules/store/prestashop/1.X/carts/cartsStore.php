@@ -24,7 +24,7 @@ class CartsStore extends UTIL
         $original_mem = ini_get('memory_limit');
         $mem = substr($original_mem, 0, -1);
         if ($original_mem <= $mem) {
-            $mem = $mem + 256;
+            $mem = $mem + 1024;
             ini_set('memory_limit', $mem . 'M');
             set_time_limit(0);
         }
@@ -49,6 +49,8 @@ class CartsStore extends UTIL
                 $designData = $this->_request['designData'];
                 $productDataJSON = $this->_request['productData'];
             }
+            $designData = urldecode($designData);
+            $productDataJSON = urldecode($productDataJSON);
             $cartArr = json_decode($productDataJSON, true);
             if ($isTemplate == 0) {
                 $refid = $this->saveDesignStateCart($apikey, $refid, $designData);
@@ -132,6 +134,8 @@ class CartsStore extends UTIL
                     'smplProdID' => $this->_request['pid'],
                     'refid' => $this->_request['refid'],
                     'qty' => $this->_request['orderQty'],
+                    'color' => $this->getStoreAttributes("xe_color"),
+                    'size' => $this->getStoreAttributes("xe_size"),
                 );
                 $result = $this->datalayer->getProductInfo($productInfo);
             } catch (Exception $e) {

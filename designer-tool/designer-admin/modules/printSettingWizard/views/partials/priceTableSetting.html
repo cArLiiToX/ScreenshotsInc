@@ -1,57 +1,82 @@
-<div class="panel-heading separator p-t-0">
-    <div class="panel-title">
-        <h4>
-            <xe-translate text-value="Price Table">
-            </xe-translate>
-        </h4>
-    </div>
-</div>
-<div class="panel-body">
-    <div class="form-group m-t-10">
-        <div class="btn-group dropdown-default" pg-dropdown>
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="width: 180px;"  aria-expanded="0">
-                {{ selectedColorTableType.type }}
-                <span class="caret">
-                </span>
-            </button>
-            <ul class="dropdown-menu" role="menu" style="width: 180px!important;">
-                <li ng-click="changePriceTable('0');selectedColorTableType.type = 'Area Price'; pricetableView.priceStatus = 0">
-                    <a href="">
-                        <xe-translate text-value="Area Price">
+
+
+<div class="panel">
+        <ul class="nav nav-tabs nav-tabs-simple hidden-xs" role="tablist" data-init-reponsive-tabs="collapse">
+            <li class="active"><a href="#priceTableTab" data-toggle="tab" role="tab" aria-expanded="true">Price Table</a>
+            </li>
+            <li class=""><a href="#sideTeamPriceTab" data-toggle="tab" role="tab" aria-expanded="false">Side Price</a>
+            </li>
+           
+        </ul>
+        <div class="tab-content mh-400">
+            <div class="tab-pane active" id="priceTableTab">
+                <div class="panel-heading separator p-t-0">
+                    <div class="panel-title">
+                        <h4>
+                            <xe-translate text-value="Price Table">
+                            </xe-translate>
+                        </h4>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group m-t-10">
+                        <div class="btn-group dropdown-default" pg-dropdown>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="width: 180px;"  aria-expanded="0">
+                                {{ selectedColorTableType.type }}
+                                <span class="caret">
+                                </span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" style="width: 180px!important;">
+                                <li ng-click="changePriceTable('0');selectedColorTableType.type = 'Area Price'; pricetableView.priceStatus = 0">
+                                    <a href="">
+                                        <xe-translate text-value="Area Price">
+                                        </xe-translate>
+                                    </a>
+                                </li>
+                                <li ng-click="changePriceTable('1');selectedColorTableType.type = 'Color Price'; pricetableView.priceStatus = 1">
+                                    <a href="">
+                                        <xe-translate text-value="Color Price">
+                                        </xe-translate>
+                                    </a>
+                                </li>
+                                <li ng-click="changePriceTable('2');selectedColorTableType.type = 'Disabled'; pricetableView.priceStatus = 2">
+                                    <a href="">
+                                        <xe-translate text-value="Disabled">
+                                        </xe-translate>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                </div>
+
+                    <ng-include src="'modules/printSettingWizard/views/partials/printSize.html'" ng-if="printSettings.is_print_size =='1'">
+                    </ng-include>
+                    <ng-include src="'modules/printSettingWizard/views/partials/colorPriceTable.html'" ng-if="printSettings.is_color_price_range =='1'">
+                    </ng-include>
+                <!-- Save and Back button -->
+                <div class="panel-footer wizard-ftr bg-white" ng-if="pricetableView.priceStatus == '2'">
+                    <button class="btn btn-sm btn-success pull-left m-r-10" ng-click="backPrintSettings(selectedIndex)" ng-disabled="demoStatus">
+                        <xe-translate text-value="Back">
                         </xe-translate>
-                    </a>
-                </li>
-                <li ng-click="changePriceTable('1');selectedColorTableType.type = 'Color Price'; pricetableView.priceStatus = 1">
-                    <a href="">
-                        <xe-translate text-value="Color Price">
+                    </button>
+                    <button ng-show="!statusMode" class="btn btn-sm btn-success pull-left m-r-10" ng-click="disableAllPriceTable('')" ng-disabled="demoStatus">
+                        <xe-translate text-value="Save">
                         </xe-translate>
-                    </a>
-                </li>
-                <li ng-click="changePriceTable('2');selectedColorTableType.type = 'Disabled'; pricetableView.priceStatus = 2">
-                    <a href="">
-                        <xe-translate text-value="Disabled">
+                    </button>
+                    <button class="btn btn-sm btn-success pull-left m-r-10" ng-click="disableAllPriceTable('templateSettnig')" ng-disabled="demoStatus">
+                        <xe-translate text-value="Save And Continiue">
                         </xe-translate>
-                    </a>
-                </li>
-            </ul>
+                    </button>
+                </div>
+            </div>
+            <!-- Tab2 -->
+            <div class="tab-pane" id="sideTeamPriceTab">
+                <ng-include src="'modules/printSettingWizard/views/partials/sideAndTeamPriceTable.html'" >
+                </ng-include>
+            </div>
+
         </div>
+        
     </div>
-    <ng-include src="'modules/printSettingWizard/views/partials/printSize.html'" ng-if="printSettings.is_print_size =='1'">
-    </ng-include>
-    <ng-include src="'modules/printSettingWizard/views/partials/colorPriceTable.html'" ng-if="printSettings.is_color_price_range =='1'">
-    </ng-include>
-</div>
-<div class="panel-footer wizard-ftr bg-white" ng-if="pricetableView.priceStatus == '2'">
-    <button class="btn btn-sm btn-success pull-left m-r-10" ng-click="backPrintSettings(selectedIndex)" ng-disabled="demoStatus">
-        <xe-translate text-value="Back">
-        </xe-translate>
-    </button>
-    <button ng-show="!statusMode" class="btn btn-sm btn-success pull-left m-r-10" ng-click="disableAllPriceTable('')" ng-disabled="demoStatus">
-        <xe-translate text-value="Save">
-        </xe-translate>
-    </button>
-    <button class="btn btn-sm btn-success pull-left m-r-10" ng-click="disableAllPriceTable('templateSettnig')" ng-disabled="demoStatus">
-        <xe-translate text-value="Save And Continiue">
-        </xe-translate>
-    </button>
-</div>

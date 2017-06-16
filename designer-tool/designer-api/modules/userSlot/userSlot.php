@@ -239,7 +239,7 @@ class UserSlot extends UTIL
         }
 
         $apiKey = $this->_request['apikey'];
-        $jsonData = $this->_request['data'];
+        $jsonData = urldecode($this->_request['data']);
         $slotStatus = $this->_request['slotStatus'];
         $dataArray1 = '';
         $dataArray = (is_array($jsonData)) ? $jsonData : $this->formatJSONToArray($jsonData, false);
@@ -247,6 +247,7 @@ class UserSlot extends UTIL
         $jsonData = mysqli_real_escape_string($this->db, $jsonData);
         $productUrl = $dataArray->sides[$index]->url;
         $svgcontents = $dataArray->sides[$index]->svg;
+        $captureSlot = $dataArray->captureSlot;
         $imgContent = file_get_contents($productUrl);
         $base64ImgData = base64_encode($imgContent);
         $previewImage = "<svg xmlns='http://www.w3.org/2000/svg' id='svgroot' xlinkns='http://www.w3.org/1999/xlink' width='500' height='500' x='0' y='0' overflow='visible'><image x='0' y='0' width='500' height='500' id='svg_1' xmlns:xlink='http://www.w3.org/1999/xlink' xlink:href='data:image/png;
@@ -279,7 +280,7 @@ class UserSlot extends UTIL
                         $sql = "INSERT INTO " . TABLE_PREFIX . "user_slot (slot_id,user_id,json_data,status,date_created,slot_image,uid) VALUES ($newSlotId,'$userid','$jsonData',$slotStatus,now(),'$fileName','$slotUId')";
                         $id = $this->executeGenericInsertQuery($sql);
                         if ($id) {
-                            $msg = array("status" => "success", "user_id" => $userid, "slot_id" => $newSlotId, "id" => $id, "filePath" => $slotPreviewImageUrl, "islucked" => $slotStatus, "uid" => $slotUId);
+                            $msg = array("status" => "success", "user_id" => $userid, "slot_id" => $newSlotId, "id" => $id, "filePath" => $slotPreviewImageUrl, "islucked" => $slotStatus, "uid" => $slotUId, "captureSlot" => $captureSlot);
                         } else {
                             $msg = array("status" => "Can't save the data. ::failed");
                         }

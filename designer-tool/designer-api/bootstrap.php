@@ -1,11 +1,10 @@
-<?php 
-	header('Access-Control-Allow-Origin: *'); 
+<?php
 if (!defined('accessUser')) {
     die("Error");
 }
 
 /* Debug ON / OFF */
-error_reporting(-1);
+error_reporting(1);
 define("DEBUG", false); // set false for live mode //
 
 /* Load vendor files */

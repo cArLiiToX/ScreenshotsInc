@@ -203,9 +203,15 @@ class Cart extends \Magento\Framework\Model\AbstractModel implements CartInterfa
         $tierPrices = $quoteProduct->getPriceInfo()->getPrice('tier_price')->getTierPriceList();
         if (is_array($tierPrices)) {
             foreach ($tierPrices as $price) {
-                if ($productsData['qty'] >= (int) $price['price_qty']) {
-                    $tierPrice = number_format($price['website_price'], 2);
-                }
+                if ($productsData['totalQty'] > 0) {
+                        if ($productsData['totalQty'] >= (int) $price['price_qty']) {
+                            $tierPrice = number_format($price['website_price'], 2);
+                        }
+                    } else {
+                        if ($productsData['qty'] >= (int) $price['price_qty']) {
+                            $tierPrice = number_format($price['website_price'], 2);
+                        }
+                    }
             }
         }
         if (!empty($quoteProduct)) {
@@ -379,9 +385,11 @@ class Cart extends \Magento\Framework\Model\AbstractModel implements CartInterfa
      * @api
      * @param int $orderId.
      * @param int $store.
+     * @param string $color.
+     * @param string $size.
      * @return string The all products in a json format.
      */
-    public function getOrderDetails($orderId, $store)
+    public function getOrderDetails($orderId, $store, $color, $size)
     {
         $order = $this->_orderModel->load($orderId);
         $orderItems = $order->getItemsCollection();
@@ -447,12 +455,11 @@ class Cart extends \Magento\Framework\Model\AbstractModel implements CartInterfa
                 $orderDetail = array();
                 foreach ($attributes as $attribute) {
                     $attributeCode = $attribute->getAttributeCode();
-                    $xesize = 'xe_size';
-                    $xecolor = 'xe_color';
-                    if ($attributeCode == $xesize) {
+                    
+                    if ($attributeCode == $size) {
                         $value = $attribute->getFrontend()->getValue($product);
                         $orderDetails['order_items'][$simpindex]['xe_size'] = $value;
-                    } else if ($attributeCode == $xecolor) {
+                    } else if ($attributeCode == $color) {
                         $value = $attribute->getFrontend()->getValue($product);
                         $orderDetails['order_items'][$simpindex]['xe_color'] = $value;
                     }
@@ -468,10 +475,34 @@ class Cart extends \Magento\Framework\Model\AbstractModel implements CartInterfa
             } else {
                 $orderDetails['order_items'][$index]['itemStatus'] = $item->getStatus();
                 $orderDetails['order_items'][$index]['ref_id'] = $item->getCustom_design();
-                $orderDetails['order_items'][$simpindex]['item_id'] = $item->getId();
+                $orderDetails['order_items'][$index]['item_id'] = $item->getId();
                 $orderDetails['order_items'][$index]['print_status'] = $item->getItem_printed();
                 $orderDetails['order_items'][$index]['product_price'] = $item->getPrice();
-                $orderDetails['order_items'][$simpindex]['config_product_id'] = $item->getProductId();
+                $orderDetails['order_items'][$index]['config_product_id'] = $item->getProductId();
+                $orderDetails['order_items'][$index]['product_id'] = $item->getProductId();
+                $orderDetails['order_items'][$index]['product_sku'] = $item->getSku();
+                $orderDetails['order_items'][$index]['product_name'] = $item->getName();
+                $orderDetails['order_items'][$index]['quantity'] = $item->getQtyOrdered();
+                $attindex = 0;
+                $orderDetail = array();
+                foreach ($attributes as $attribute) {
+                    $attributeCode = $attribute->getAttributeCode();
+                    
+                    if ($attributeCode == $size) {
+                        $value = $attribute->getFrontend()->getValue($product);
+                        $orderDetails['order_items'][$index]['xe_size'] = $value;
+                    } else if ($attributeCode == $color) {
+                        $value = $attribute->getFrontend()->getValue($product);
+                        $orderDetails['order_items'][$index]['xe_color'] = $value;
+                    }
+                    if ($attribute->getIsVisibleOnFront()) {
+                        $orderDetail[$attindex]['attributeCode'] = $attributeCode;
+                        $orderDetail[$attindex]['label'] = $attribute->getFrontend()->getLabel();
+                        $orderDetail[$attindex]['value'] = $attribute->getFrontend()->getValue($product);
+                        $attindex++;
+                    }
+                }
+                $orderDetails['order_items'][$index]['attribute'] = $orderDetail;
                 $index++;
             }
         }
@@ -505,7 +536,7 @@ class Cart extends \Magento\Framework\Model\AbstractModel implements CartInterfa
 		$url= ($quoteId > 0)? $url.'?quoteId='.$quoteId : $url;
         return json_encode(array('is_Fault' => 0, 'totalCartItem' => $itemQty, 'checkoutURL' => $url), JSON_UNESCAPED_SLASHES);
     }
-    
+
     /**
      * @api
      * @param int $lastOrderId
@@ -513,6 +544,7 @@ class Cart extends \Magento\Framework\Model\AbstractModel implements CartInterfa
      * @param int $store
      * @return string No of cart qty.
      */
+
     public function orderIdFromStore($lastOrderId, $range, $store)
     {
         $orders = $this->_orderModel->getCollection();
@@ -524,12 +556,13 @@ class Cart extends \Magento\Framework\Model\AbstractModel implements CartInterfa
         $orders->getSelect()->limit($range);
         $order_array = array();
         $i = 0;
+
         if ($range) {
             foreach ($orders as $order) {
                 $i = ($i < 0) ? 0 : $i;
                 $order_array[$i] = array(
                     'order_id' => $order->getId(),
-                    'order_incremental_id' => $order->getIncrementId(),
+                    'order_incremental_id' => $order->getIncrementId()
                 );
                 $i++;
                 $range--;
@@ -539,7 +572,7 @@ class Cart extends \Magento\Framework\Model\AbstractModel implements CartInterfa
                 $i = ($i < 0) ? 0 : $i;
                 $order_array[$i] = array(
                     'order_id' => $order->getId(),
-                    'order_incremental_id' => $order->getIncrementId(),
+                    'order_incremental_id' => $order->getIncrementId()
                 );
                 $i++;
             }

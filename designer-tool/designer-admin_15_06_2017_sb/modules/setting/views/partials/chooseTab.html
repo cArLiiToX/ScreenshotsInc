@@ -1,0 +1,74 @@
+<div class="panel-heading separator p-t-0">
+    <div class="panel-title">
+        <h4 class ="xe-panel-title">
+            <xe-translate text-value="Choose Tab">
+            </xe-translate>
+        </h4>
+    </div>
+</div>
+<div class="panel-body m-t-20">
+    <form class="form-horizontal" role="form" autocomplete="off">
+        <div class="form-group">
+            <div class="form-group no-border no-margin">
+                <label class="col-sm-2 control-label">
+                    <xe-translate text-value="Tab">
+                    </xe-translate>
+                </label>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default"  data-toggle="dropdown" style="width: 180px;">
+                        {{ defaultTab }}
+                    </button>
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="caret">
+                        </span>
+                        <span class="sr-only">
+                            Toggle Dropdown
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" style="width: 207px;" ng-class="{'button-scroll':languages.length> 4}">
+                        <li ng-repeat="tab in tabList" ng-click="tabChanged($index)">
+                            <a href="">
+                                {{ tab.name }}
+                            </a>
+                        </li>
+                    </ul>
+                </div> 
+            </div>
+            <div class="form-group no-border no-margin" ng-show="isSubTabVisible">
+                <label class="col-sm-2 control-label">
+                    <xe-translate text-value="Subtab">
+                    </xe-translate>
+                </label>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default"  data-toggle="dropdown" style="width: 180px;">
+                        {{ selectedSubTab }}
+                    </button>
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="caret">
+                        </span>
+                        <span class="sr-only">
+                            Toggle Dropdown
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" style="width: 207px;" ng-class="{'button-scroll':subTabList[curentTabIndex].length> 4}">
+                        <li ng-repeat="subTab in subTabList[curentTabIndex]" ng-click="subTabSelected(subTab)">
+                            <a href="">
+                                {{ subTab.name }}
+                            </a>
+                        </li>
+                    </ul>
+                </div> 
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<div class="panel-footer wizard-ftr bg-white">
+    <button class="btn btn-sm btn-info pull-left m-r-10" ng-click="updateDefaultTabs()" ng-disabled="demoStatus">
+        <xe-translate text-value="Save">
+        </xe-translate>
+    </button>
+</div>
