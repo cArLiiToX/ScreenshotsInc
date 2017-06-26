@@ -2,13 +2,12 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
     <preference for="Html5design\Cedapi\Api\ProductInterface" type="Html5design\Cedapi\Model\Product" />
     <preference for="Html5design\Cedapi\Api\CartInterface" type="Html5design\Cedapi\Model\Cart" />
-	
-	<type name="Magento\Quote\Model\Quote\Item\ToOrderItem">
-        <plugin name="cedapi_quote_to_order_item" type="Html5design\Cedapi\Model\Plugin\Quote\QuoteToOrderItem"/>
-    </type>
- 
-   <type name="Magento\Checkout\Block\Cart\AbstractCart">
-		<plugin name="cedapi_abstract_cart" type="Html5design\Cedapi\Model\Plugin\AbstractCart" sortOrder="1"/>
-   </type>
-   
+
+    <type name="Magento\Quote\Model\Quote\Item\ToOrderItem">
+      <plugin name="cedapi_quote_to_order_item" type="Html5design\Cedapi\Model\Plugin\Quote\QuoteToOrderItem" />
+    </type>
+
+    <type name="Magento\Checkout\Block\Cart\AbstractCart">
+      <plugin name="cedapi_abstract_cart" type="Html5design\Cedapi\Model\Plugin\AbstractCart" sortOrder="1" />
+    </type>
 </config>

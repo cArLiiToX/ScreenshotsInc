@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Model\Sample\Reader;
 
 /**
@@ -24,7 +29,7 @@ class Xml extends \Magento\Framework\Config\Reader\Filesystem
         \Magento\Framework\Config\ValidationStateInterface $validationState,
         $fileName = 'aw_rbslider_sample_data.xml',
         $idAttributes = [],
-        $domDocumentClass = 'Magento\Framework\Config\Dom',
+        $domDocumentClass = \Magento\Framework\Config\Dom::class,
         $defaultScope = 'global'
     ) {
         parent::__construct(

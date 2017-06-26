@@ -1,5 +1,5 @@
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 define([
@@ -49,13 +49,13 @@ define([
     return _.mapObject({
         "min_text_length": [
             function (value, params) {
-                return value.length == 0 || value.length >= +params;
+                return _.isUndefined(value) || value.length === 0 || value.length >= +params;
             },
             $.mage.__('Please enter more or equal than {0} symbols.')
         ],
         "max_text_length": [
             function (value, params) {
-                return value.length <= +params;
+                return !_.isUndefined(value) && value.length <= +params;
             },
             $.mage.__('Please enter less or equal than {0} symbols.')
         ],

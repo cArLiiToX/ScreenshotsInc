@@ -1,100 +1,53 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 
 // @codingStandardsIgnoreFile
 
 ?>
-
-<div class="ss-section ss-contact-details clearfix">
-    <div class="ss-block ss-block-half">
-        <strong>ScreenShots Inc</strong><br />
-        1616 Freedom Drive<br />
-        West Plains, Missouri 65775<br />
-    </div>
-    <div class="ss-block ss-block-half">
-        Phone: 417-255-1888<br />
-        Fax: 417-255-1888<br />
-        Email: <a href="mailto:sales@screenshotsinc.com">sales@screenshotsinc.com</a><br />
-    </div>
-</div>
-
-<div class="ss-section ss-contact-details clearfix">
-    <div class="ss-block ss-block-half">
-        <form class="form contact"
-              action="<?php /* @escapeNotVerified */ echo $block->getFormAction(); ?>"
-              id="contact-form"
-              method="post"
-              data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>"
-              data-mage-init='{"validation":{}}'>
-            <fieldset class="fieldset">
-                <div class="field note no-label"><?php /* @escapeNotVerified */ echo __('Jot us a note and we’ll get back to you as quickly as possible.') ?></div>
-                <div class="field name required">
-                    <label class="label" for="name"><span><?php /* @escapeNotVerified */ echo __('Name') ?></span></label>
-                    <div class="control">
-                        <input name="name" id="name" title="<?php /* @escapeNotVerified */ echo __('Name') ?>" value="<?php echo $block->escapeHtml($this->helper('Magento\Contact\Helper\Data')->getPostValue('name') ?: $this->helper('Magento\Contact\Helper\Data')->getUserName()) ?>" class="input-text" type="text" data-validate="{required:true}"/>
-                    </div>
-                </div>
-                <div class="field email required">
-                    <label class="label" for="email"><span><?php /* @escapeNotVerified */ echo __('Email') ?></span></label>
-                    <div class="control">
-                        <input name="email" id="email" title="<?php /* @escapeNotVerified */ echo __('Email') ?>" value="<?php echo $block->escapeHtml($this->helper('Magento\Contact\Helper\Data')->getPostValue('email') ?: $this->helper('Magento\Contact\Helper\Data')->getUserEmail()) ?>" class="input-text" type="email" data-validate="{required:true, 'validate-email':true}"/>
-                    </div>
-                </div>
-                <div class="field telephone">
-                    <label class="label" for="telephone"><span><?php /* @escapeNotVerified */ echo __('Phone Number') ?></span></label>
-                    <div class="control">
-                        <input name="telephone" id="telephone" title="<?php /* @escapeNotVerified */ echo __('Phone Number') ?>" value="<?php echo $block->escapeHtml($this->helper('Magento\Contact\Helper\Data')->getPostValue('telephone')) ?>" class="input-text" type="text" />
-                    </div>
-                </div>
-                <div class="field comment required">
-                    <label class="label" for="comment"><span><?php /* @escapeNotVerified */ echo __('What’s on your mind?') ?></span></label>
-                    <div class="control">
-                        <textarea name="comment" id="comment" title="<?php /* @escapeNotVerified */ echo __('What’s on your mind?') ?>" class="input-text" cols="5" rows="3" data-validate="{required:true}"><?php echo $block->escapeHtml($this->helper('Magento\Contact\Helper\Data')->getPostValue('comment')) ?></textarea>
-                    </div>
-                </div>
-                <?php echo $block->getChildHtml('form.additional.info'); ?>
-            </fieldset>
-            <div class="actions-toolbar">
-                <div class="primary">
-                    <input type="hidden" name="hideit" id="hideit" value="" />
-                    <button type="submit" title="<?php /* @escapeNotVerified */ echo __('Submit') ?>" class="action submit primary">
-                        <span><?php /* @escapeNotVerified */ echo __('Submit') ?></span>
-                    </button>
-                </div>
+<form class="form contact"
+      action="<?php /* @escapeNotVerified */ echo $block->getFormAction(); ?>"
+      id="contact-form"
+      method="post"
+      data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>"
+      data-mage-init='{"validation":{}}'>
+    <fieldset class="fieldset">
+        <legend class="legend"><span><?php /* @escapeNotVerified */ echo __('Write Us') ?></span></legend><br />
+        <div class="field note no-label"><?php /* @escapeNotVerified */ echo __('Jot us a note and we’ll get back to you as quickly as possible.') ?></div>
+        <div class="field name required">
+            <label class="label" for="name"><span><?php /* @escapeNotVerified */ echo __('Name') ?></span></label>
+            <div class="control">
+                <input name="name" id="name" title="<?php /* @escapeNotVerified */ echo __('Name') ?>" value="<?php echo $block->escapeHtml($this->helper('Magento\Contact\Helper\Data')->getPostValue('name') ?: $this->helper('Magento\Contact\Helper\Data')->getUserName()) ?>" class="input-text" type="text" data-validate="{required:true}"/>
             </div>
-        </form>
+        </div>
+        <div class="field email required">
+            <label class="label" for="email"><span><?php /* @escapeNotVerified */ echo __('Email') ?></span></label>
+            <div class="control">
+                <input name="email" id="email" title="<?php /* @escapeNotVerified */ echo __('Email') ?>" value="<?php echo $block->escapeHtml($this->helper('Magento\Contact\Helper\Data')->getPostValue('email') ?: $this->helper('Magento\Contact\Helper\Data')->getUserEmail()) ?>" class="input-text" type="email" data-validate="{required:true, 'validate-email':true}"/>
+            </div>
+        </div>
+        <div class="field telephone">
+            <label class="label" for="telephone"><span><?php /* @escapeNotVerified */ echo __('Phone Number') ?></span></label>
+            <div class="control">
+                <input name="telephone" id="telephone" title="<?php /* @escapeNotVerified */ echo __('Phone Number') ?>" value="<?php echo $block->escapeHtml($this->helper('Magento\Contact\Helper\Data')->getPostValue('telephone')) ?>" class="input-text" type="text" />
+            </div>
+        </div>
+        <div class="field comment required">
+            <label class="label" for="comment"><span><?php /* @escapeNotVerified */ echo __('What’s on your mind?') ?></span></label>
+            <div class="control">
+                <textarea name="comment" id="comment" title="<?php /* @escapeNotVerified */ echo __('What’s on your mind?') ?>" class="input-text" cols="5" rows="3" data-validate="{required:true}"><?php echo $block->escapeHtml($this->helper('Magento\Contact\Helper\Data')->getPostValue('comment')) ?></textarea>
+            </div>
+        </div>
+        <?php echo $block->getChildHtml('form.additional.info'); ?>
+    </fieldset>
+    <div class="actions-toolbar">
+        <div class="primary">
+            <input type="hidden" name="hideit" id="hideit" value="" />
+            <button type="submit" title="<?php /* @escapeNotVerified */ echo __('Submit') ?>" class="action submit primary">
+                <span><?php /* @escapeNotVerified */ echo __('Submit') ?></span>
+            </button>
+        </div>
     </div>
-    <div class="ss-block ss-block-half">
-        <iframe class="spcr-20" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3198.7474027418084!2d-91.8787792!3d36.7046074!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87d056f2e5126409%3A0xc56082e3e05ad14c!2sHi-Tech+Printing!5e0!3m2!1sen!2sus!4v1439388714319" width="600" height="450" frameborder="0" style="border:0" allowfullscreen=""></iframe>
-    </div>
-</div>
-
-<div class="ss-section ss-contact-details clearfix">
-    <div class="ss-block">
-        <h3>Joe Elliot</h3>
-        <i>Graphic Design & Production Management</i><br />
-
-        Email: <a href="mailto:joe@screenshotsinc.com">joe@screenshotsinc.com</a>
-    </div>
-    <div class="ss-block">
-        <h3>Lisa Elliot</h3>
-        <i>Accounting and Sales</i><br />
-
-        Email: <a href="mailto:lisa@screenshotsinc.com">lisa@screenshotsinc.com</a>
-    </div>
-    <div class="ss-block">
-        <h3>Calvin Terry</h3>
-        <i>Graphic Design</i><br />
-
-        Email: <a href="mailto:calvin@screenshotsinc.com">calvin@screenshotsinc.com</a>
-    </div>
-    <div class="ss-block">
-        <h3>Cody Barks</h3>
-        <i>Web Engineer & Support</i><br />
-
-        Email: <a href="mailto:cody@screenshotsinc.com">cody@screenshotsinc.com</a>
-    </div>
-</div>
+</form>

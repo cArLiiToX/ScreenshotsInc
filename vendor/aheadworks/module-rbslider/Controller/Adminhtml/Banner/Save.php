@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Controller\Adminhtml\Banner;
 
 use Magento\Backend\App\Action\Context;
@@ -132,7 +137,9 @@ class Save extends \Magento\Backend\App\Action
      */
     private function prepareData(array $data)
     {
-        $data['slide_ids'] = array_keys(json_decode($data['slide_position'], true));
+        if (isset($data['slide_position'])) {
+            $data['slide_ids'] = array_keys(json_decode($data['slide_position'], true));
+        }
         if ($data['page_type'] == PageType::PRODUCT_PAGE) {
             if (isset($data['rule']['rbslider'])) {
                 $conditionArray = $this->convertFlatToRecursive($data['rule'], ['rbslider']);

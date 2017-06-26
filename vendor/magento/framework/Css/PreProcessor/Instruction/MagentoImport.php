@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Magento\Framework\Css\PreProcessor\Instruction;
@@ -16,6 +16,7 @@ use Magento\Framework\View\File\CollectorInterface;
 
 /**
  * @magento_import instruction preprocessor
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects) Must be deleted after moving themeProvider to construct
  */
 class MagentoImport implements PreProcessorInterface
 {

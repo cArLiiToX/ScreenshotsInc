@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright © 2016 Magento. All rights reserved.
+# Copyright © 2013-2017 Magento, Inc. All rights reserved.
 # See COPYING.txt for license details.
 
 set -e
@@ -64,7 +64,7 @@ case $TEST_SUITE in
             --output-file="$changed_files_ce" \
             --base-path="$TRAVIS_BUILD_DIR" \
             --repo='https://github.com/magento/magento2.git' \
-            --branch='develop'
+            --branch='2.1'
         cat "$changed_files_ce" | sed 's/^/  + including /'
 
         cd ../../..

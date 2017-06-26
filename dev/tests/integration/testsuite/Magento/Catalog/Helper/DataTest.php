@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Magento\Catalog\Helper;
@@ -397,7 +397,7 @@ class DataTest extends \PHPUnit_Framework_TestCase
             ],
             'price include tax, display excluding tax, high rate product tax class, round' => [
                 (new \Magento\Framework\DataObject())->setPrice(3.256)->setRoundPrice(true),
-                '2.67',
+                '2.97',
                 [
                     [
                         'path' => Config::CONFIG_XML_PATH_PRICE_INCLUDES_TAX,

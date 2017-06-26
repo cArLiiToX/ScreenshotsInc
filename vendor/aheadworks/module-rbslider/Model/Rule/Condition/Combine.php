@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Model\Rule\Condition;
 
 use Magento\Rule\Model\Condition\Context;

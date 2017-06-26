@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Test\Unit\Block;
 
 use Aheadworks\Rbslider\Block\Ajax;
@@ -71,20 +76,12 @@ class AjaxTest extends \PHPUnit_Framework_TestCase
     {
         $isSecure = false;
         $url = 'https://ecommerce.aheadworks.com/aw_rbslider/block/render/id/1369/';
-        $handles = ['handle_1', 'handle_2'];
-        $expected = '{"url":"https:\/\/ecommerce.aheadworks.com\/aw_rbslider\/block\/render\/id\/1369\/",'
-            . '"handles":["handle_1","handle_2"]}';
+        $expected = '{"url":"https:\/\/ecommerce.aheadworks.com\/aw_rbslider\/block\/render\/id\/1369\/"}';
 
         $this->requestMock->expects($this->once())
             ->method('isSecure')
             ->willReturn($isSecure);
-        $layoutUpdateMock = $this->getMockForAbstractClass(ProcessorInterface::class);
-        $layoutUpdateMock->expects($this->once())
-            ->method('getHandles')
-            ->willReturn($handles);
-        $this->layoutMock->expects($this->once())
-            ->method('getUpdate')
-            ->willReturn($layoutUpdateMock);
+
         $this->urlBuilderMock->expects($this->once())
             ->method('getUrl')
             ->with(

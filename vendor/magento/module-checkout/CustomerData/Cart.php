@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 
@@ -96,6 +96,7 @@ class Cart extends \Magento\Framework\DataObject implements SectionSourceInterfa
             'items' => $this->getRecentItems(),
             'extra_actions' => $this->layout->createBlock('Magento\Catalog\Block\ShortcutButtons')->toHtml(),
             'isGuestCheckoutAllowed' => $this->isGuestCheckoutAllowed(),
+            'website_id' => $this->getQuote()->getStore()->getWebsiteId()
         ];
     }
 

@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Model\Sample;
 
 use Magento\Framework\Module\Dir\Reader;

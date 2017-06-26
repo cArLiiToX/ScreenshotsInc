@@ -1,4 +1,9 @@
 /**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
+/**
  * Assign slide to banner
  *
  * @method registerSlides(grid, element, checked)

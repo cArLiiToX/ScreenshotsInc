@@ -1,4 +1,9 @@
 /**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
+/**
  * Initialization widget to upload html content by Ajax
  *
  * @method ajax(placeholders)
@@ -12,8 +17,7 @@ define([
     $.widget('mage.awRbsliderAjax', {
         options: {
             url: '/',
-            dataPattern: 'aw-rbslider-block-name',
-            handles: []
+            dataPattern: 'aw-rbslider-block-name'
         },
 
         /**
@@ -34,15 +38,13 @@ define([
         ajax: function (placeholders) {
             var self = this,
                 data = {
-                    blocks: [],
-                    handles: this.options.handles
+                    blocks: []
                 };
 
             placeholders.each(function() {
                 data.blocks.push($(this).data(self.options.dataPattern));
             });
             data.blocks = JSON.stringify(data.blocks.sort());
-            data.handles = JSON.stringify(data.handles);
             $.ajax({
                 url: this.options.url,
                 data: data,

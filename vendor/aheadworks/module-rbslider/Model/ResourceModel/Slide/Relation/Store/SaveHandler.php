@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Model\ResourceModel\Slide\Relation\Store;
 
 use Aheadworks\Rbslider\Api\Data\SlideInterface;
@@ -41,6 +46,10 @@ class SaveHandler implements ExtensionInterface
         $entityId = (int)$entity->getId();
         $storeIds = $entity->getStoreIds();
         $storeIdsOrig = $this->getStoreIds($entityId);
+
+        if (!is_array($storeIds)) {
+            $storeIds = [$storeIds];
+        }
 
         $toInsert = array_diff($storeIds, $storeIdsOrig);
         $toDelete = array_diff($storeIdsOrig, $storeIds);

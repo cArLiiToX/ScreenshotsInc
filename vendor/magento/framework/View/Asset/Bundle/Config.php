@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 
@@ -100,7 +100,7 @@ class Config implements Bundle\ConfigInterface
             case 'MB':
                 return (int)$size * 1024;
             default:
-                return (int)$size / 1024;
+                return (int)($size / 1024);
         }
     }
 

@@ -1,6 +1,12 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Controller\Block;
 
+use Aheadworks\Rbslider\Block\Banner;
 use Magento\Framework\Translate\InlineInterface;
 use Magento\Framework\App\Action\Context;
 use Aheadworks\Rbslider\Block\Widget\Banner as WidgetBanner;
@@ -42,35 +48,33 @@ class Render extends \Magento\Framework\App\Action\Action
         }
 
         $blocks = $this->getRequest()->getParam('blocks');
-        $handles = $this->getRequest()->getParam('handles');
-        $data = $this->getBlocks($blocks, $handles);
+        $data = $this->getBlocks($blocks);
 
         $this->translateInline->processResponseBody($data);
         $this->getResponse()->appendBody(json_encode($data));
     }
 
     /**
-     * Get blocks from layout by handles
+     * Get blocks from layout
      *
      * @param string $blocks
-     * @param string $handles
      * @return string[]
      */
-    private function getBlocks($blocks, $handles)
+    private function getBlocks($blocks)
     {
-        if (!$handles || !$blocks) {
+        if (!$blocks) {
             return [];
         }
         $blocks = json_decode($blocks);
-        $handles = json_decode($handles);
 
         $data = [];
-        $this->_view->loadLayout($handles, true, true, false);
         $layout = $this->_view->getLayout();
         foreach ($blocks as $blockName) {
             if (strpos($blockName, WidgetBanner::WIDGET_NAME_PREFIX, 0) === false) {
-                $blockInstance = $layout->getBlock($blockName);
+                /** @var Banner $blockInstance */
+                $blockInstance = $layout->createBlock(Banner::class);
                 if (is_object($blockInstance)) {
+                    $blockInstance->setNameInLayout($blockName);
                     $data[$blockName] = $blockInstance->toHtml();
                 }
             } else {

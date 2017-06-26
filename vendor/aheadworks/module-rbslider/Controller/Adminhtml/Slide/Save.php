@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Controller\Adminhtml\Slide;
 
 use Magento\Backend\App\Action\Context;
@@ -8,8 +13,10 @@ use Aheadworks\Rbslider\Api\SlideRepositoryInterface;
 use Magento\Framework\Api\DataObjectHelper;
 use Magento\Framework\App\Request\DataPersistorInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\Stdlib\DateTime;
 use Aheadworks\Rbslider\Model\Source\ImageType;
+use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Framework\Stdlib\DateTime as StdlibDateTime;
+use Magento\Framework\Exception\LocalizedException;
 
 /**
  * Class Save
@@ -51,12 +58,18 @@ class Save extends \Magento\Backend\App\Action
     private $storeManager;
 
     /**
+     * @var DateTime
+     */
+    private $dateTime;
+
+    /**
      * @param Context $context
      * @param SlideRepositoryInterface $slideRepository
      * @param SlideInterfaceFactory $slideDataFactory
      * @param DataObjectHelper $dataObjectHelper
      * @param DataPersistorInterface $dataPersistor
      * @param StoreManagerInterface $storeManager
+     * @param DateTime $dateTime
      */
     public function __construct(
         Context $context,
@@ -64,7 +77,8 @@ class Save extends \Magento\Backend\App\Action
         SlideInterfaceFactory $slideDataFactory,
         DataObjectHelper $dataObjectHelper,
         DataPersistorInterface $dataPersistor,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        DateTime $dateTime
     ) {
         parent::__construct($context);
         $this->slideRepository = $slideRepository;
@@ -72,6 +86,7 @@ class Save extends \Magento\Backend\App\Action
         $this->dataObjectHelper = $dataObjectHelper;
         $this->dataPersistor = $dataPersistor;
         $this->storeManager = $storeManager;
+        $this->dateTime = $dateTime;
     }
 
     /**
@@ -90,6 +105,7 @@ class Save extends \Magento\Backend\App\Action
             $data = $this->prepareData($data);
             $id = isset($data['id']) ? $data['id'] : false;
             try {
+                $this->validate($data);
                 $slideDataObject = $id
                     ? $this->slideRepository->get($id)
                     : $this->slideDataFactory->create();
@@ -108,12 +124,15 @@ class Save extends \Magento\Backend\App\Action
                     return $resultRedirect->setPath('*/*/edit', ['id' => $slide->getId()]);
                 }
                 return $resultRedirect->setPath('*/*/');
-            } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            } catch (LocalizedException $e) {
                 $this->messageManager->addErrorMessage($e->getMessage());
             } catch (\RuntimeException $e) {
                 $this->messageManager->addErrorMessage($e->getMessage());
             } catch (\Exception $e) {
                 $this->messageManager->addExceptionMessage($e, __('Something went wrong while saving the slide'));
+            }
+            if ($data['img_type'] == ImageType::TYPE_FILE) {
+                $data['img_file'] = $data['img_file_tmp'];
             }
             $this->dataPersistor->set('aw_rbslider_slide', $data);
             if ($id) {
@@ -149,12 +168,30 @@ class Save extends \Magento\Backend\App\Action
             $data['display_to'] = $this->convertDate($data['display_to']);
         }
         if ($data['img_type'] == ImageType::TYPE_FILE) {
+            $data['img_file_tmp'] = $data['img_file'];
             $data['img_file'] = $data['img_file'][0]['file'];
             $data['img_url'] = '';
         } else {
             $data['img_file'] = '';
         }
         return $data;
+    }
+
+    /**
+     * Prepare data after save
+     *
+     * @param array $data
+     * @return $this
+     * @throws LocalizedException
+     */
+    private function validate(array $data)
+    {
+        if (null != $data['display_from'] && null != $data['display_to']
+            && strtotime($data['display_from']) >= strtotime($data['display_to'])
+        ) {
+            throw new LocalizedException(__('Display To cannot be equal or earlier than Display From.'));
+        }
+        return $this;
     }
 
     /**
@@ -165,10 +202,9 @@ class Save extends \Magento\Backend\App\Action
      */
     private function convertDate($dateFromForm)
     {
-        $locale = new \Zend_Locale($this->_localeResolver->getLocale());
-        $date = new \Zend_Date(null, null, $locale);
-        $date->setDate($dateFromForm, $locale->getTranslation(null, 'date', $locale));
-
-        return $date->toString(DateTime::DATE_INTERNAL_FORMAT);
+        return $this->dateTime->gmtDate(
+            StdlibDateTime::DATETIME_PHP_FORMAT,
+            strtotime($dateFromForm)
+        );
     }
 }

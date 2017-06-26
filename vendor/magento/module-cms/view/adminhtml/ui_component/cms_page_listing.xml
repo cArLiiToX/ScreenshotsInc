@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 -->
@@ -20,6 +20,7 @@
                 <item name="url" xsi:type="string">*/*/new</item>
             </item>
         </item>
+        <item name="acl" xsi:type="string">Magento_Cms::page</item>
     </argument>
     <dataSource name="cms_page_listing_data_source">
         <argument name="dataProvider" xsi:type="configurableObject">

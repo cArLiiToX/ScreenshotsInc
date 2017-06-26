@@ -1,14 +1,18 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Magento\Vault\Model\ResourceModel\PaymentToken;
 
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Magento\Vault\Model\PaymentToken;
+use Magento\Vault\Model\ResourceModel\PaymentToken as ResourcePaymentToken;
+
 /**
  * Vault Payment Tokens collection
  */
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+class Collection extends AbstractCollection
 {
     /**
      * Resource initialization
@@ -17,6 +21,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     public function _construct()
     {
-        $this->_init('Magento\Vault\Model\PaymentToken', 'Magento\Vault\Model\ResourceModel\PaymentToken');
+        $this->_init(PaymentToken::class, ResourcePaymentToken::class);
     }
 }
