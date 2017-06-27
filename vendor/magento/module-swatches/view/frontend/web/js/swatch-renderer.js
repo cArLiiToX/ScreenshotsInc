@@ -711,10 +711,23 @@ define([
                 }
             );
 
+            /*
             if (result.oldPrice.amount !== result.finalPrice.amount) {
                 $(this.options.slyOldPriceSelector).show();
             } else {
                 $(this.options.slyOldPriceSelector).hide();
+            }
+            */
+
+            /**
+             * Modified the above check to skip updating price if result is not present
+             */
+            if (result && typeof result.oldPrice !== 'undefined') {
+                if (result.oldPrice.amount !== result.finalPrice.amount) {
+                    $(this.options.slyOldPriceSelector).show();
+                } else {
+                    $(this.options.slyOldPriceSelector).hide();
+                }
             }
         },
 
