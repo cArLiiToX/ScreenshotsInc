@@ -92,7 +92,7 @@
             </ng-include>
         </div>
         <script type="text/javascript">
-            var vnr = '?vnr='+ Math.random(), vn = '?vn=' + 520;        
+            var vnr = '?vnr='+ Math.random(), vn = '?vn=' + 520;
             var xeloadjscssfile = function (filename, filetype){
             if (filetype=="js"){ /*if filename is a external JavaScript file*/
                 var fileref=document.createElement('script');
@@ -108,7 +108,7 @@
             if (typeof fileref!="undefined")
                 document.getElementsByTagName("head")[0].appendChild(fileref);
         };
-         
+
         if (window.location.href.indexOf("xedev") > -1){
              var cssfilename = "dev_inkxe_com/allless.css" + vn;
              var customcssname="dev_inkxe_com/style.css" + vn;
@@ -121,7 +121,7 @@
             var customcssname=hostNameCssPath + "/style.css" + vn;
             var adminSettingsfilename = hostNameCssPath + "/adminsettings.js" + vnr;
         }
-        
+
         head.load('../localsettings.js' + vnr);
         head.load('all.css' + vn, cssfilename, customcssname);
         head.load(adminSettingsfilename);

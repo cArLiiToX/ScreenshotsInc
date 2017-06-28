@@ -1,4 +1,4 @@
-<?php 
+<?php
 if($this->isCustomizeButton()) {
 	$_product = $this->getProduct();
 	if($_product->getXe_is_designer() == 1 || $_product->getXe_is_template() == 1) {
@@ -99,7 +99,7 @@ if($this->isCustomizeButton()) {
 					strUrl = strUrl+'&rvn='+rvno;
 				});
 		 	});
-			
+
 			function customize_product() {
 				var qty = '&qty='+document.getElementById('qty').value;
 				var url = "";
@@ -122,8 +122,10 @@ if($this->isCustomizeButton()) {
 						    }
 						}
 				?>
-				var size = document.getElementById("attribute<?php echo $attrId;?>").value;
-				var color = document.getElementById("attribute<?php echo $attr1;?>").value;
+				//var size = document.getElementById("attribute<?php echo $attrId;?>").value;
+				//var color = document.getElementById("attribute<?php echo $attr1;?>").value;
+        var size = document.querySelector('[attribute-id="<?php echo $attrId;?>"]').value;
+        var color = document.querySelector('[attribute-id="<?php echo $attr1;?>"]').value;
 				if(color != '' && size != ''){
 					var data = {reqmethod:'getSimpleProductId',pid:<?php echo $_product->getId(); ?>,xe_size:size,xe_color:color};
 					jQuery.ajax({
@@ -176,8 +178,12 @@ if($this->isCustomizeButton()) {
 					    }
 					}
 				?>
-				var size = document.getElementById("attribute<?php echo $attrId;?>").value;
-				var color = document.getElementById("attribute<?php echo $attr1;?>").value;
+
+				//var size = document.getElementById("attribute<?php echo $attrId;?>").value;
+				//var color = document.getElementById("attribute<?php echo $attr1;?>").value;
+        var size = document.querySelector('[attribute-id="<?php echo $attrId;?>"]').value;
+        var color = document.querySelector('[attribute-id="<?php echo $attr1;?>"]').value;
+
 				var qty = document.getElementById("qty").value;
 				var preloaderImg = document.createElement("img");
 				preloaderImg.setAttribute("src", preloaderUrl);
