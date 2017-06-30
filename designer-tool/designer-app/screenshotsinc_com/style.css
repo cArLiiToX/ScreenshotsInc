@@ -1,0 +1,7 @@
+.color-picker-popup > .scroll-picker .item-list {
+    height: 200px;
+  }
+
+  .color-picker-popup > .scroll-picker .item-list > ul > li {
+    box-shadow: 0px 0px 2px #111;
+  }
