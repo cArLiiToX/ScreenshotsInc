@@ -1,6 +1,14 @@
-.page-product-configurable, 
+.page-product-configurable,
 .catalog-product-view {
 	.messages {
 		display: none !important;
 	}
+
+  .product-add-form {
+  	//display: none;
+  }
+
+  .product-options-bottom {
+    display: none;
+  }
 }
