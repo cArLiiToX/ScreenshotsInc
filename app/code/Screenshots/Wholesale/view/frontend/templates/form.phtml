@@ -1,0 +1,36 @@
+<form action="<?php echo $block->getFormAction() ?>" method="post">
+  <h4 class="spcr-bot-20">Contact Details</h4>
+  <label for="firstName">First Name</label>
+  <input type="text" name="firstName" placeholder="First Name" />
+  <label for="lastName">Last Name</label>
+  <input type="text" name="lastName" placeholder="Last Name" />
+  <label for="userEmail">Email Address</label>
+  <input type="email" name="userEmail" placeholder="you@domain.com" />
+  <label for="userPhone">Phone #</label>
+  <input type="number" name="userPhone" placeholder="" />
+  <label for="userTitle">Company Position/Title</label>
+  <input type="text" name="userTitle" placeholder="Owner" />
+
+  <h4 class="spcr-top-20 spcr-bot-20">Business Details</h4>
+  <label for="companyName">Company Name</label>
+  <input type="text" name="companyName" placeholder="Company Name" />
+  <label for="companyDesc">Company Description</label>
+  <textarea type="text" name="companyDesc" placeholder="Company Description">
+  </textarea>
+  <label for="billingAddr">Address</label>
+  <input type="text" name="billingAddr" placeholder="Address" />
+  <label for="billingCity">City</label>
+  <input type="text" name="billingCity" placeholder="City" />
+  <label for="billingState">State</label>
+  <select>
+    <option>
+      Select A State
+    </option>
+  </select>
+
+  <h4 class="spcr-top-20 spcr-bot-20">Industry Referal</h4>
+  <label for="companyReference">Referal Name</label>
+  <input type="text" name="companyReference" placeholder="Company/Business Name" />
+
+  <input type="submit" class="action submit primary" value="Submit Application" />
+</form>
