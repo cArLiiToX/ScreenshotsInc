@@ -18,59 +18,50 @@ class Index extends \Magento\Framework\App\Action\Action
         $resultPage = $this->_resultPageFactory->create();
         return $resultPage;
     }
-}
 
-class ProcessApplication extends \Magento\Framework\App\Action\Action
-{
-    /**
-     * Submit application action
-     *
-     * @return void
-     */
-    public function execute()
+    public function submitForm()
     {
         $post = $this->getRequest()->getPost();
 
-        if ($post) {
-            // Retrieve your form data
-            $firstname   = $post['firstName'];
-            $lastname    = $post['lastName'];
-            $useremail   = $post['userEmail'];
-            $userphone   = $post['userPhone'];
-            $userTitle   = $post['userTitle'];
-            $companyname = $post['companyName'];
-            $companydesc = $post['companyDesc'];
-            $billingaddr = $post['billingAddr'];
-            $billingcity = $post['billingCity'];
-            $companyref =  $post['companyReference'];
+        if(!$post) exit;
 
-            $recipient = "cody@screenshotsinc.com";
-            $subject = "Wholesaler Application";
-            $body = "This is Test Email!"; // body text
+        $application     = new Zend_Mail();
+        $firstname       = $post['firstName'];
+        $lastname        = $post['lastName'];
+        $useremail       = $post['userEmail'];
+        $userphone       = $post['userPhone'];
+        $userTitle       = $post['userTitle'];
+        $companyName     = $post['companyName'];
+        $companyDesc     = $post['companyDesc'];
+        $companyProducts = $post['companyProducts'];
+        $companyAddr     = $post['companyAddr'];
+        $companyCity     = $post['companyCity'];
+        $companyCountry  = $post['companyCountry'];
+        $companyTaxId    = $post['companyTaxId'];
+        $companyReferal  = $post['companyReferal'];
+        $recipient       = "cody@screenshotsinc.com";
+        $subject         = "Wholesaler Application";
+        $body            = "This is Test Email!";
 
-            $mail = new Zend_Mail();
+        $application->setBodyText($body);
 
-            $mail->setBodyText($body);
+        $application->setFrom($useremail);
 
-            $mail->setFrom($fromEmail, $fromName);
+        $application->addTo($recipient);
 
-            $mail->addTo($recipient, $toName);
+        $application->setSubject($subject);
 
-            $mail->setSubject($subject);
+        try {
+            $application->send();
 
-            try {
-                $mail->send();
-            }
-            catch(Exception $ex) {
-                // I assume you have your custom module.
-                // If not, you may keep 'customer' instead of 'yourmodule'.
-                Mage::getSingleton('core/session')
-                    ->addError(Mage::helper('Wholesale')
-                    ->__('Unable to process application.'));
-            }
-
-            // Display the succes form validation message
-            $this->messageManager->addSuccessMessage('Application submitted succesfully.');
+            $successMessage = $this->__('Application submitted succesfully.');
+            Mage::getSingleton('core/session')->addSuccess($successMessage);
         }
+        catch(Exception $ex) {
+            $errorMessage = $this->__('Application was not submitted.');
+            Mage::getSingleton('core/session')->addError($errorMessage);
+        }
+
+        $this->renderLayout();
     }
 }

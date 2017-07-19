@@ -1,4 +1,9 @@
-.color-picker-popup > .scroll-picker .item-list {
+.btn:hover,
+.btn-primary:hover {
+    background-color: #33755e !important;
+  }
+
+  .color-picker-popup > .scroll-picker .item-list {
     height: 200px;
   }
 
@@ -22,36 +27,3 @@
   .xe-cart-section > li > .xe-price-cart > h3 {
     color: #024930 !important;
   }
-  .text-primary, .theme-color, .my-image-foldersize, .font-list .font:hover, .font-list .font.active, .print_size_lbl, .xe-cart-section > li > .xe-price-cart > h3, .xe-leftbar-sidenav > ul > li > a:active, .xe-leftbar-sidenav > ul > li > a:focus, .xe-leftbar-sidenav > ul > li > a:hover, .xe-leftbar-sidenav > ul > li > .active, .xe-leftbar-sidenav > ul > li > .active:hover, .xe-leftbar-contentbox .xe-design-block h4, .xe-measure-section > li > h3, .xe-product-thumb > ul > li > i , .xe-img-footer-wrap > p > a, .xe-checkout-modal > .xe-checkout-wrap h3, .xe-checkout-modal > .xe-checkout-wrap > .xe-notes-wrap > h3, .xe-checkout-modal > .xe-checkout-wrap > .xe-info-wrap > h3, .browse-content-wrap .browse-content-overite ul > li > a:focus, .browse-content-wrap .browse-content-overite ul > li > a.active, .xe-checkout-price h2, .xe-checkout-price a, .facebook-album > .album-box-wrap h3, .xe-success-msg, .browse-content-wrap .browse-content-overite ul > li > a:hover, .browse-content-wrap .browse-content-overite ul > li > a:focus, .xe-img-setting-wrap .xe-setting-nav > li.active > a, .xe-img-setting-wrap .xe-setting-nav > li.active > a:hover, .xe-img-setting-wrap .xe-setting-nav > li.active > a:focus, .btn-primary .badge, .side-nav > ul > li > a:active, .side-nav > ul > li > a:focus, .side-nav > ul > li > a:hover, .panel-primary > .panel-heading .badge, .xe-img-setting-wrap .xe-setting-nav > li > a:hover, .xe-img-setting-wrap .xe-setting-nav > li > a:focus, .xe-nav-tabs > li.active > a, .xe-nav-tabs > li.active > a:hover,
-.xe-nav-tabs > li.active > a:focus, .xe-filter-img-nav > li > a:focus, .xe-filter-img-nav > li.active > a, .xe-filter-img-nav > li.active > a:hover, .xe-filter-img-nav > li.active > a:focus, .input-group-addon {
-  color: #024930 !important;
-}
-.btn-primary, .bg-primary, .label-primary, .progress-bar, #ngProgress, .login-modal-close-btn, .dropdown-menu > .active > a, .dropdown-menu > .active > a:hover,
-.dropdown-menu > .active > a:focus, .nav-pills > li.active > a:focus, .progress-bar-primary, .left-bar > .nav-tabs > li.active > a, .left-bar > .nav-tabs > li.active > a:hover,
-.left-bar > .nav-tabs > li.active > a:focus, .icon-vertical > ul > li > a:hover, .side-nav > ul > li > .active:hover, .side-nav > ul > li > .active, .icon-vertical-sm > ul > li > a:hover, .icon-vertical-sm > ul > li > .grid-btn:hover, .icon-horizontal > ul > li > a:hover, .iconFont:hover, .xe-img-setting .img-setting-icons > ul > li > .grid-btn:hover, .xe-icon-vertical-left .product-setting > ul > li > .grid-btn:hover, .xe-icon-vertical-right .product-setting > ul > li > .grid-btn:hover, .iconFont:active, .input_icon_checkbox:checked + div, .iconFont-fontawsome:hover, .iconFont-fontawsome:active, .pagination > .active > span:focus, .list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus, .panel-primary > .panel-heading, .slider-selection, fieldset[disabled] .btn-primary.active , .btn-default:hover, .btn-default:focus, .btn-default:active, .icon-horizontal > ul > li > a:hover, .btn-default:hover, .btn-default:focus, .btn-default:active,
-.btn-default.active, .open > .dropdown-toggle.btn-default   {
-  background-color: #024930 !important;
-}
-.nav-tabs, .b-primary, .b-l-primary, .left-bar > .nav-tabs, .xe-img-thumb-wrap > ul > li > a:hover, .xe-img-thumb-wrap > ul > li > a.active, .pagination > .active > span:focus, .list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus, .panel-primary > .panel-heading, .panel-primary, .btn-primary, .slider-selection, .xe-img-setting-wrap .xe-setting-nav > li.active > a, .xe-img-setting-wrap .xe-setting-nav > li.active > a:hover, .xe-img-setting-wrap .xe-setting-nav > li.active > a:focus, .panel-primary > .panel-heading + .panel-collapse > .panel-body, .panel-primary > .panel-footer + .panel-collapse > .panel-body, .btn-default:hover,
-.btn-default:focus, .btn-default:active , fieldset[disabled] .btn-primary.active ,.xe-filter-img-nav > li.active > a, .xe-filter-img-nav > li.active > a:hover, .xe-filter-img-nav > li.active > a:focus  {
-  border-color: #024930 !important;
-}
-
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
-  background-color: #018313 !important;
-  border-color: #018313 !important;
-}
-
-.switch:checked + i {
-  box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.5), inset 0 0 40px #024930 !important;
-  -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.5), inset 0 0 40px #024930 !important;
-}
-.switch.red:checked + i {
-  box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.5), inset 0 0 40px #024930 !important;
-  -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.5), inset 0 0 40px #024930 !important;
-}
-
-
-
-
-
