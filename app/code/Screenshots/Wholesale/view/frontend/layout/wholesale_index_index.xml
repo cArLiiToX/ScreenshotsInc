@@ -13,7 +13,7 @@
     </head>
     <body>
         <referenceContainer name="content">
-            <block class="Screenshots\Wholesale\Block\Form" name="form" template="form.phtml">
+            <block class="Screenshots\Wholesale\Block\Form" name="Form" template="Form.phtml">
             </block>
         </referenceContainer>
     </body>

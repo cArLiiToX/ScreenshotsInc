@@ -1,7 +1,12 @@
 <?php
 namespace Screenshots\Wholesale\Block;
 
-class Form extends \Magento\Framework\View\Element\Template
+use Magento\Framework\View\Element\Template;
+
+class Form extends Template
 {
-    
+    public function getFormAction()
+    {
+        return $this->getUrl('Wholesale/Index/Post', ['_secure' => true]);
+    }
 }
