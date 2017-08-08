@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Allow: /customer/account/login/
+Allow: /customer/account/forgotpassword/
+
+Disallow: /app/
+Disallow: /customer/
+Disallow: /var/
