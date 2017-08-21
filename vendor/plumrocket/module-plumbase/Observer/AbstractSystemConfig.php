@@ -12,7 +12,7 @@ If you are unable to obtain it through the world-wide-web, please
 send an email to support@plumrocket.com so we can send you a copy immediately.
 
 @package    Plumrocket_Base-v2.x.x
-@copyright  Copyright (c) 2015 Plumrocket Inc. (http://www.plumrocket.com)
+@copyright  Copyright (c) 2015-2017 Plumrocket Inc. (http://www.plumrocket.com)
 @license    http://wiki.plumrocket.net/wiki/EULA  End-user License Agreement
 
 */
@@ -26,27 +26,77 @@ use Magento\Framework\Event\ObserverInterface;
  */
 abstract class AbstractSystemConfig implements ObserverInterface
 {
-    protected $_objectManager;
+   
+    /**
+     * @var \Magento\Framework\Message\Manager
+     */
+    protected $messageManager;
 
-    protected $_messageManager;
-    protected $_cacheTypeList;
-    protected $_eventManager;
+    /**
+     * @var \Magento\Framework\App\Cache\TypeListInterface
+     */
+    protected $cacheTypeList;
 
-    protected $_customer;
+    /**
+     * @var \Magento\Framework\Event\ManagerInterface
+     */
+    protected $eventManager;
 
+    /**
+     * @var \Magento\Config\Model\Config\Structure
+     */
+    protected $configStructure;
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfigInterface;
+
+    /**
+     * @var \Magento\Config\Model\ResourceModel\Config
+     */
+    protected $resourceModelConfig;
+
+    /**
+     * @var \Plumrocket\Base\Model\ProductFactory
+     */
+    protected $baseProductFactory;
+
+    /**
+     * Initialize model
+     *
+     * @param \Magento\Framework\Message\Manager                 $messageManager
+     * @param \Magento\Framework\App\Cache\TypeListInterface     $cacheTypeList
+     * @param \Magento\Framework\Event\ManagerInterface          $eventManager
+     * @param \Magento\Config\Model\Config\Structure             $configStructure
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
+     * @param \Magento\Config\Model\ResourceModel\Config         $resourceModelConfig
+     * @param \Plumrocket\Base\Model\ProductFactory              $baseProductFactory
+     */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Message\Manager $messageManager,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
-        \Magento\Framework\Event\ManagerInterface $eventManager
+        \Magento\Framework\Event\ManagerInterface $eventManager,
+        \Magento\Config\Model\Config\Structure $configStructure,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface,
+        \Magento\Config\Model\ResourceModel\Config $resourceModelConfig,
+        \Plumrocket\Base\Model\ProductFactory $baseProductFactory
     ) {
-        $this->_messageManager  = $messageManager;
-        $this->_objectManager   = $objectManager;
-        $this->_cacheTypeList = $cacheTypeList;
-        $this->_eventManager = $eventManager;
+        $this->messageManager       = $messageManager;
+        $this->cacheTypeList        = $cacheTypeList;
+        $this->eventManager         = $eventManager;
+        $this->configStructure      = $configStructure;
+        $this->scopeConfigInterface = $scopeConfigInterface;
+        $this->resourceModelConfig  = $resourceModelConfig;
+        $this->baseProductFactory   = $baseProductFactory;
     }
 
-
+    /**
+     * Receive secttion
+     *
+     * @param  \Magento\Framework\Event\Observer $observer
+     * @return mixed
+     */
     protected function _getSection($observer)
     {
         $controller = $observer->getEvent()->getControllerAction();
@@ -55,11 +105,10 @@ abstract class AbstractSystemConfig implements ObserverInterface
         $website = $req->getParam('website');
         $store   = $req->getParam('store');
 
-        $_configStructure = $this->_objectManager->get('\Magento\Config\Model\Config\Structure');
         if (!$current) {
-            $section = $_configStructure->getFirstSection();
+            $section = $this->configStructure->getFirstSection();
         } else {
-            $section = $_configStructure->getElement($current);
+            $section = $this->configStructure->getElement($current);
         }
 
         if ($section) {
@@ -71,7 +120,12 @@ abstract class AbstractSystemConfig implements ObserverInterface
         return false;
     }
 
-
+    /**
+     * Receive true if section is related to plumrocket extension
+     *
+     * @param  string $section
+     * @return boolean
+     */
     protected function _isPlumSection($section)
     {
         $data = $section->getData();
@@ -81,15 +135,22 @@ abstract class AbstractSystemConfig implements ObserverInterface
         return false;
     }
 
-
+    /**
+     * Retrieve if section has s
+     *
+     * @param  mixed $section 
+     * @return boolean
+     */
     protected function _hasS($section)
     {
         if (!$this->_isPlumSection($section)) {
             return false;
         }
 
-        $scopeConfig = $this->_objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
-        $v = $scopeConfig->getValue($section->getId() . '/' . 'gen'.'eral', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 0);
+        $v = $this->scopeConfigInterface->getValue(
+            $section->getId() . '/' . 'gen'.'eral', \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            0
+        );
         if (is_array($v)) {
             return (array_key_exists('ser' . strrev('lai'), $v));
         }
@@ -97,7 +158,12 @@ abstract class AbstractSystemConfig implements ObserverInterface
         return false;
     }
 
-
+    /**
+     * Retrieve product
+     *
+     * @param  mixed $section
+     * @return mixed
+     */
     protected function _getProductBySection($section)
     {
         $i = 'ser' . strrev('lai'); $j = 'gen'.'eral';
@@ -109,7 +175,7 @@ abstract class AbstractSystemConfig implements ObserverInterface
                         $d = $field->getData();
                         $r = explode('\\', $d['frontend_model']);
 
-                        return $this->_objectManager->create('\Plumrocket\Base\Model\Product')->load($r[1]);
+                        return $this->baseProductFactory->create()->load($r[1]);
                     }
                 }
             }

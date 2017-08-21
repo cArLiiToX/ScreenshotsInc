@@ -12,7 +12,7 @@ If you are unable to obtain it through the world-wide-web, please
 send an email to support@plumrocket.com so we can send you a copy immediately.
 
 @package    Plumrocket_Base-v2.x.x
-@copyright  Copyright (c) 2015 Plumrocket Inc. (http://www.plumrocket.com)
+@copyright  Copyright (c) 2015-2017 Plumrocket Inc. (http://www.plumrocket.com)
 @license    http://wiki.plumrocket.net/wiki/EULA  End-user License Agreement
 
 */
@@ -21,21 +21,56 @@ namespace Plumrocket\Base\Controller\Adminhtml;
 
 abstract class Actions extends \Magento\Backend\App\Action
 {
+    /**
+     * @var string
+     */
     protected $_formSessionKey;
+
+    /**
+     * @var string
+     */
     protected $_modelClass;
+
+    /**
+     * @var string
+     */
     protected $_activeMenu;
 
+    /**
+     * @var string
+     */
     protected $_objectTitle;
+
+    /**
+     * @var string
+     */
     protected $_objectTitles;
 
+    /**
+     * @var string
+     */
     protected $_idKey = 'id';
 
+    /**
+     * @var string
+     */
     protected $_statusField;
 
+    /**
+     * @var \Magento\Rule\Model\AbstractModel
+     */
     protected $_model;
 
+    /**
+     * @var \Magento\Framework\Registry
+     */
     protected $_coreRegistry = null;
 
+    /**
+     * Execute action
+     *
+     * @return void
+     */
     public function execute()
     {
         $_preparedActions = ['index', 'grid', 'new', 'edit', 'save', 'delete', 'massStatus'];
@@ -49,6 +84,11 @@ abstract class Actions extends \Magento\Backend\App\Action
         }
     }
 
+    /**
+     * Index action
+     *
+     * @return void
+     */
     protected function _indexAction()
     {
 
@@ -65,20 +105,32 @@ abstract class Actions extends \Magento\Backend\App\Action
         $this->_view->renderLayout();
     }
 
-
+    /**
+     * Grid action
+     *
+     * @return void
+     */
     protected function _gridAction()
     {
         $this->_view->loadLayout(false);
         $this->_view->renderLayout();
     }
 
-
+    /**
+     * New action
+     *
+     * @return void
+     */
     protected function _newAction()
     {
         $this->_forward('edit');
     }
 
-
+    /**
+     * Edit action
+     *
+     * @return void
+     */
     public function _editAction()
     {
         $model = $this->_getModel();
@@ -111,7 +163,11 @@ abstract class Actions extends \Magento\Backend\App\Action
         $this->_view->renderLayout();
     }
 
-
+    /**
+     * Save action
+     *
+     * @return void
+     */
     public function _saveAction()
     {
         $request = $this->getRequest();
@@ -157,13 +213,51 @@ abstract class Actions extends \Magento\Backend\App\Action
         $this->_forward('new');
     }
 
+    /**
+     * Before save logic
+     *
+     * @return void
+     */
+    protected function _beforeSave($model, $request)
+    {
 
-    protected function _beforeSave($model, $request) {}
-    protected function _afterSave($model, $request) {}
-    protected function _beforeAction() {}
-    protected function _afterAction() {}
+    }
 
+    /**
+     * After save logic
+     *
+     * @return void
+     */
+    protected function _afterSave($model, $request)
+    {
 
+    }
+
+    /**
+     * Before action execute
+     *
+     * @return void
+     */
+    protected function _beforeAction() 
+    {
+
+    }
+
+    /**
+     * After action execute
+     *
+     * @return void
+     */
+    protected function _afterAction() 
+    {
+
+    }
+
+    /**
+     * Delete action execute
+     *
+     * @return void
+     */
     protected function _deleteAction()
     {
         $ids = $this->getRequest()->getParam($this->_idKey);
@@ -194,7 +288,11 @@ abstract class Actions extends \Magento\Backend\App\Action
         $this->_redirect('*/*');
     }
 
-
+    /**
+     * Mass status change action
+     *
+     * @return void
+     */
     protected function _massStatusAction()
     {
         $ids = $this->getRequest()->getParam($this->_idKey);
@@ -237,17 +335,26 @@ abstract class Actions extends \Magento\Backend\App\Action
 
     }
 
-
-
+    /**
+     * Set for mada
+     *
+     * @param array|null $data
+     */
     protected function _setFormData($data = null)
     {
-        $this->_getSession()->setData($this->_formSessionKey,
-            ($data === null) ? $this->getRequest()->getParams() : $data);
+        $this->_getSession()->setData(
+            $this->_formSessionKey,
+            ($data === null) ? $this->getRequest()->getParams() : $data
+        );
 
         return $this;
     }
 
-
+    /**
+     * Receive registry object
+     *
+     * @return \Magento\Framework\Registry
+     */
     protected function _getRegistry()
     {
         if ($this->_coreRegistry === null) {
@@ -256,7 +363,11 @@ abstract class Actions extends \Magento\Backend\App\Action
         return $this->_coreRegistry;
     }
 
-
+    /**
+     * Receive model object
+     *
+     * @return \Magento\Rule\Model\AbstractModel
+     */
     protected function _getModel($load = true)
     {
         if ($this->_model === null) {

@@ -70,7 +70,6 @@ return array(
     '814a46999bb03138827ea41c6c97733f' => $vendorDir . '/magento/module-product-alert/registration.php',
     '349afecbd3cb361d96461e67f4585179' => $vendorDir . '/magento/module-backup/registration.php',
     '157e241791c95df2d41c00e4314f115e' => $vendorDir . '/magento/module-search/registration.php',
-    '95435becb051bfba5f78913ac1bf122f' => $vendorDir . '/plumrocket/module-plumbase/registration.php',
     '2c05a36d82e2b7ee5f7251e6c0fe6974' => $vendorDir . '/magento/language-zh_hans_cn/registration.php',
     '1333e9398ed91c6506c6cfdd4bd91013' => $vendorDir . '/magento/language-pt_br/registration.php',
     '10715a404306a4a0101bb75402cc0c4f' => $vendorDir . '/magento/language-nl_nl/registration.php',
@@ -124,7 +123,10 @@ return array(
     '4137e072aca869574ccb2dd0da693e02' => $vendorDir . '/magento/module-advanced-pricing-import-export/registration.php',
     '1158fd4355efa1508f87cf82bdcd70ac' => $vendorDir . '/magento/module-admin-notification/registration.php',
     'ecb8e9b41f51c277a87468608b694cd4' => $vendorDir . '/magento/module-marketplace/registration.php',
+    '95435becb051bfba5f78913ac1bf122f' => $vendorDir . '/plumrocket/module-plumbase/registration.php',
+    '6b5b87bda6fedcf6ef8605219c8b67f2' => $vendorDir . '/mageplaza/module-core/registration.php',
     '7ef27f112ee0701d0e616c4b0b76c840' => $vendorDir . '/plumrocket/module-psloginfree/registration.php',
     '5dabdfafb2b9f8fbb44c546b5c0fb38b' => $vendorDir . '/aheadworks/module-rbslider/registration.php',
+    '581f45ff6bb127be51c88ab337760d97' => $vendorDir . '/mageplaza/magento-2-blog-extension/registration.php',
     'b4cf39431a4b949eea8aa69ebb3d39da' => $baseDir . '/app/etc/NonComposerComponentRegistration.php',
 );

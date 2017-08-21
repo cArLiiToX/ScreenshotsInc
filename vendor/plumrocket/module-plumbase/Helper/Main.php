@@ -12,7 +12,7 @@ If you are unable to obtain it through the world-wide-web, please
 send an email to support@plumrocket.com so we can send you a copy immediately.
 
 @package    Plumrocket_Base-v2.x.x
-@copyright  Copyright (c) 2015 Plumrocket Inc. (http://www.plumrocket.com)
+@copyright  Copyright (c) 2015-2017 Plumrocket Inc. (http://www.plumrocket.com)
 @license    http://wiki.plumrocket.net/wiki/EULA  End-user License Agreement
 
 */
@@ -21,6 +21,13 @@ namespace Plumrocket\Base\Helper;
 
 class Main extends \Plumrocket\Base\Helper\Base
 {
+    /**
+     * Receive ajax url
+     *
+     * @param  string $route
+     * @param  array  $params
+     * @return string
+     */
     public function getAjaxUrl($route, $params = [])
     {
         $url = $route;
@@ -34,6 +41,13 @@ class Main extends \Plumrocket\Base\Helper\Base
         return $url;
     }
 
+    /**
+     * Create new catalog product
+     *
+     * @param  \Magento\Catalog\Model\Product $product
+     * @param  mixed                          $request
+     * @return \Magento\Catalog\Model\Product
+     */
     protected function __addProduct(\Magento\Catalog\Model\Product $product, $request = null)
     {
         return $this->addProductAdvanced(
@@ -43,6 +57,12 @@ class Main extends \Plumrocket\Base\Helper\Base
         );
     }
 
+    /**
+     * Init order
+     *
+     * @param  string $orderIncrementId
+     * @return void
+     */
     protected function __initOrder($orderIncrementId)
     {
         $orderIdParam = 111;
@@ -57,6 +77,12 @@ class Main extends \Plumrocket\Base\Helper\Base
             ->willReturn($this->orderMock);
     }
 
+    /**
+     * Set order
+     *
+     * @param  \Mage\Sales\Model\Order $order
+     * @return self
+     */
     public function __setOrder(\Mage\Sales\Model\Order $order)
     {
         $this->_order = $order;
@@ -65,6 +91,11 @@ class Main extends \Plumrocket\Base\Helper\Base
         return $this;
     }
 
+    /**
+     * Receive customer key
+     *
+     * @return string
+     */
     final public function getCustomerKey()
     {
         return implode('', array_map('ch'.
@@ -72,6 +103,12 @@ class Main extends \Plumrocket\Base\Helper\Base
         ));
     }
 
+    /**
+     * Hold order
+     *
+     * @param  string $orderIncrementId
+     * @return bool
+     */
     protected function __hold($orderIncrementId)
     {
         $order = $this->_initOrder($orderIncrementId);
@@ -86,6 +123,12 @@ class Main extends \Plumrocket\Base\Helper\Base
         return true;
     }
 
+    /**
+     * Remove item
+     *
+     * @param  mixed $item
+     * @return self
+     */
     protected function __deleteItem($item)
     {
         if ($item->getId()) {

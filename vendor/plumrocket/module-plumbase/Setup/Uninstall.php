@@ -10,9 +10,9 @@
  * If you are unable to obtain it through the world-wide-web, please
  * send an email to support@plumrocket.com so we can send you a copy immediately.
  *
- * @package     Plumrocket_Base
- * @copyright   Copyright (c) 2015 Plumrocket Inc. (http://www.plumrocket.com)
- * @license     http://wiki.plumrocket.net/wiki/EULA  End-user License Agreement
+ * @package   Plumrocket_Base
+ * @copyright Copyright (c) 2015 Plumrocket Inc. (http://www.plumrocket.com)
+ * @license   http://wiki.plumrocket.net/wiki/EULA  End-user License Agreement
  */
 
 namespace Plumrocket\Base\Setup;
@@ -20,7 +20,14 @@ namespace Plumrocket\Base\Setup;
 /* Uninstall Base */
 class Uninstall extends AbstractUninstall
 {
-
+    
+    /**
+     * @var array
+     */
     protected $_tables = ['plumbase_product'];
+
+    /**
+     * @var array
+     */
     protected $_pathes = ['/app/code/Plumrocket/Base'];
 }

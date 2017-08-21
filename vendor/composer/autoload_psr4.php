@@ -52,6 +52,8 @@ return array(
     'Plumrocket\\Base\\' => array($vendorDir . '/plumrocket/module-plumbase'),
     'Pelago\\' => array($vendorDir . '/pelago/emogrifier/Classes'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
+    'Mageplaza\\Core\\' => array($vendorDir . '/mageplaza/module-core'),
+    'Mageplaza\\Blog\\' => array($vendorDir . '/mageplaza/magento-2-blog-extension'),
     'Magento\\Wishlist\\' => array($vendorDir . '/magento/module-wishlist'),
     'Magento\\Widget\\' => array($vendorDir . '/magento/module-widget'),
     'Magento\\Weee\\' => array($vendorDir . '/magento/module-weee'),
