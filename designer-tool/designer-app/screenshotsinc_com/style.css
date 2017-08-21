@@ -27,3 +27,7 @@
   .xe-cart-section > li > .xe-price-cart > h3 {
     color: #024930 !important;
   }
+
+.multi-bound-print-type {
+    display: none !important;
+  }

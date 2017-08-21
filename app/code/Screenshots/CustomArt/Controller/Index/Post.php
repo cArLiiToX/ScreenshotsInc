@@ -26,7 +26,7 @@ class Post extends \Magento\Framework\App\Action\Action
         $userPhone       = $post['userPhone'];
         $artDesc         = $post['artDesc'];
         $userFiles       = $post['userFiles'];
-        $recipient       = "cody@screenshotsinc.com";
+        $recipient       = "sales@screenshotsinc.com";
         $subject         = "Custom Artwork Form Submission";
 
         $emailTemplate = "<HTML>

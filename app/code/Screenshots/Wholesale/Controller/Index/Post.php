@@ -34,7 +34,7 @@ class Post extends \Magento\Framework\App\Action\Action
         $companyCountry  = $post['companyCountry'];
         $companyTaxId    = $post['companyTaxId'];
         $companyReferal  = $post['companyReferal'];
-        $recipient       = "cody@screenshotsinc.com";
+        $recipient       = "info@screenshotsinc.com";
         $subject         = "Wholesaler Application";
 
         $emailTemplate = "<HTML>
