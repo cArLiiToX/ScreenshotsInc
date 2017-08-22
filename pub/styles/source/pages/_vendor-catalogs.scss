@@ -13,7 +13,19 @@
 }
 
 /** Tablets -----------------------------------------------------------------*/
-@media screen and (max-width: $screen-md) {}
+@media screen and (max-width: $screen-md) {
+	.cms-vendor-catalogs {
+		.ss-block {
+			width: 50%;
+		}
+	}
+}
 
 /** Mobile ------------------------------------------------------------------*/
-@media screen and (max-width: $screen-sm) {}
+@media screen and (max-width: $screen-sm) {
+	.cms-vendor-catalogs {
+		.ss-block {
+			width: 100%;
+		}
+	}
+}
