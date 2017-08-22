@@ -30,3 +30,30 @@
 		}
 	}
 }
+
+/** Tablets -----------------------------------------------------------------*/
+@media screen and (max-width: $screen-md) {
+	.cms-contact,
+	.contact-index-index {
+		.columns {
+      .column.main {
+        width: 100%;
+
+				.ss-contact-details {
+					.ss-block,
+					.ss-block-half {
+						width: 100%;
+					}
+
+					iframe {
+						width: 100%;
+						height: 300px;
+					}
+				}
+			}
+		}
+	}
+}
+
+/** Mobile ------------------------------------------------------------------*/
+@media screen and (max-width: $screen-sm) {}

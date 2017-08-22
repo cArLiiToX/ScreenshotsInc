@@ -108,3 +108,30 @@
     }
   }
 }
+
+/** Tablets -----------------------------------------------------------------*/
+@media screen and (max-width: $screen-md) {
+  .page-footer {
+    margin-top: 0;
+  }
+
+  .footer.content {
+    border: 0;
+  }
+
+  .footer.content .links {
+    li {
+      border: 0;
+      text-align: center;
+    }
+  }
+
+  .footer.content .social-icons {
+    float: none;
+    text-align: center;
+  }
+}
+
+/** Mobile ------------------------------------------------------------------*/
+@media screen and (max-width: $screen-sm) {
+}

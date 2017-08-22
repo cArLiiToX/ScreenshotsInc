@@ -70,13 +70,13 @@
   position: absolute;
   top: 0;
   box-sizing: border-box;
-  width: 80%;
+  width: 800px;
   left: 50%;
-  margin-left: -250px;
+  margin-left: -400px;
   padding: 20px;
   background: #fff;
   border-radius: 3px;
-  max-width: 500px;
+  max-width: 800px;
   box-shadow: 0 0 2px 2px #ccc;
 
   i {
@@ -93,5 +93,16 @@
     height: auto;
     margin: 0 auto;
     display: block;
+  }
+}
+
+/** Tablets -----------------------------------------------------------------*/
+@media screen and (max-width: $screen-md) {}
+
+/** Mobile ------------------------------------------------------------------*/
+@media screen and (max-width: $screen-sm) {
+  .ss-folio-modal {
+    width: 300px;
+    margin-left: -150px;
   }
 }

@@ -78,13 +78,13 @@ abstract class AbstractSource implements
     }
 
     /**
-     * @param string $value
+     * @param string|array $value
      * @return null|string
      */
     public function getOptionId($value)
     {
         foreach ($this->getAllOptions() as $option) {
-            if (strcasecmp($option['label'], $value) == 0 || $option['value'] == $value) {
+            if ($option['value'] == $value) {
                 return $option['value'];
             }
         }

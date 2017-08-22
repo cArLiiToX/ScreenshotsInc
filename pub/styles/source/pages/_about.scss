@@ -1,0 +1,39 @@
+.cms-about {
+  .customColumns {
+    padding: 40px 0;
+    .column--left {
+      width: 70%;
+    }
+
+    .column--right {
+      width: 30%;
+    }
+  }
+}
+
+/** Tablets -----------------------------------------------------------------*/
+@media screen and (max-width: $screen-md) {
+  .cms-about {
+    .customColumns {
+      .column--left {
+        width: 100%;
+        .page-title {
+          text-align: center;
+        }
+      }
+
+      .column--right {
+        width: 100%;
+        text-align: center;
+
+        img {
+          max-width: 300px;
+        }
+      }
+    }
+  }
+}
+
+/** Mobile ------------------------------------------------------------------*/
+@media screen and (max-width: $screen-sm) {
+}

@@ -7,6 +7,14 @@
       display: flex;
       justify-content: center;
       align-items: stretch;
+      &:after {
+        visibility: hidden;
+        display: block;
+        font-size: 0;
+        content: " ";
+        clear: both;
+        height: 0;
+      }
 
       li {
         display: inline-block;
@@ -45,14 +53,22 @@
 /** Tablets ------------------------------------------------------------------*/
 @media screen and (max-width: $screen-md) {
   .cms-screen-printing-services {
-    ul.screenprinting-process {
-      li {
-        display: block;
+    .columns {
+      .column.main {
         width: 100%;
+
+        ul.screenprinting-process {
+          display: block;
+          li {
+            display: block;
+            width: 100%;
+          }
+        }
       }
     }
   }
 }
 
 /** Mobile -------------------------------------------------------------------*/
-@media screen and (max-width: $screen-sm) {}
+@media screen and (max-width: $screen-sm) {
+}

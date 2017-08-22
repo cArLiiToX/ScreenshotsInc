@@ -67,8 +67,14 @@
   }
 }
 
-/** Tablets ------------------------------------------------------------------*/
-@media screen and (max-width: $screen-md) {}
+/** Tablets -----------------------------------------------------------------*/
+@media screen and (max-width: $screen-md) {
+  .cms-printing-services {
+  }
+}
 
-/** Mobile -------------------------------------------------------------------*/
-@media screen and (max-width: $screen-sm) {}
+/** Mobile ------------------------------------------------------------------*/
+@media screen and (max-width: $screen-sm) {
+  .cms-printing-services {
+  }
+}

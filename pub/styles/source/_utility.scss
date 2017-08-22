@@ -1,0 +1,51 @@
+/******************************************************************************
+* Utility Classes
+******************************************************************************/
+.rimg {
+  width: 100%;
+  height: auto;
+}
+
+.rounded {
+  border-radius: 2px;
+}
+
+.shadowed {
+  box-shadow: 0px 2px 2px #888;
+}
+
+.clearfix {
+  &:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+}
+
+/******************************************************************************
+* Spacers
+******************************************************************************/
+.spcr-top-20 {
+  margin-top: 20px;
+}
+
+.spcr-bot-20 {
+  margin-bottom: 20px;
+}
+
+/******************************************************************************
+* Animations
+******************************************************************************/
+@-ms-keyframes wiggle{0%{-ms-transform:rotate(5deg);}50%{-ms-transform:rotate(-5deg);}100%{-ms-transform:rotate(5deg);}}
+@-moz-keyframes wiggle{0%{-moz-transform:rotate(5deg);}50%{-moz-transform:rotate(-5deg);}100%{-moz-transform:rotate(5deg);}}
+@-webkit-keyframes wiggle{0%{-webkit-transform:rotate(5deg);}50%{-webkit-transform:rotate(-5deg);}100%{-webkit-transform:rotate(5deg);}}
+@keyframes wiggle{0%{transform:rotate(5deg);}50%{transform:rotate(-5deg);}100%{transform:rotate(5deg);}}
+
+/** Tablets -----------------------------------------------------------------*/
+@media screen and (max-width: $screen-md) {}
+
+/** Mobile ------------------------------------------------------------------*/
+@media screen and (max-width: $screen-sm) {}

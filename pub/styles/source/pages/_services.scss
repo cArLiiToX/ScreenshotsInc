@@ -24,3 +24,16 @@
     }
   }
 }
+
+/** Tablets -----------------------------------------------------------------*/
+@media screen and (max-width: $screen-md) {
+  .cms-services {
+    .service-block {
+      width: 100%;
+    }
+  }
+}
+
+/** Mobile ------------------------------------------------------------------*/
+@media screen and (max-width: $screen-sm) {
+}

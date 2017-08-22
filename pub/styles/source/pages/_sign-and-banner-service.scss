@@ -9,6 +9,14 @@
       align-items: stretch;
       color: #f8f8f8;
       background: #d32527;
+      &:after {
+        visibility: hidden;
+        display: block;
+        font-size: 0;
+        content: " ";
+        clear: both;
+        height: 0;
+      }
 
       li {
         display: inline-block;
@@ -41,7 +49,24 @@
 }
 
 /** Tablets ------------------------------------------------------------------*/
-@media screen and (max-width: $screen-md) {}
+@media screen and (max-width: $screen-md) {
+  .cms-sign-and-banner-services {
+    .columns {
+      .column.main {
+        width: 100%;
+
+        ul.custom-banner-features {
+          display: block;
+
+          li {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
 
 /** Mobile -------------------------------------------------------------------*/
-@media screen and (max-width: $screen-sm) {}
+@media screen and (max-width: $screen-sm) {
+}
