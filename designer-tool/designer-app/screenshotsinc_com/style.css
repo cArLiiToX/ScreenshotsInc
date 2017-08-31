@@ -1,14 +1,8 @@
+@import url('https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css');
+
 .btn:hover,
 .btn-primary:hover {
     background-color: #33755e !important;
-  }
-
-  .color-picker-popup > .scroll-picker .item-list {
-    height: 200px;
-  }
-
-  .color-picker-popup > .scroll-picker .item-list > ul > li {
-    box-shadow: 0px 0px 2px #111;
   }
 
   .btn, .btn-primary {
@@ -30,4 +24,48 @@
 
 .multi-bound-print-type {
     display: none !important;
+  }
+
+.used-color > ul > li {
+    box-shadow: 0px 0px 2px #000;
+  }
+
+  .color-thumb-wrap > .color-pick-wrap > .color-thumb {
+    box-shadow: 0px 0px 2px #000;
+    border: 2px solid #fff;
+  }
+
+.xe-remove-background {
+    width: 25px;
+    height: 25px;
+    font-size: 25px;
+    cursor: pointer;
+  }
+
+.color-picker-popup {
+    z-index: 9999 !important;
+  }
+
+.color-picker-sm-right {
+    padding: 0;
+  }
+
+.btn.btn-default.btn-xs.m-r-xs.m-t-xs {
+    margin-top: 0 !important;
+  }
+
+.color-picker-popup > .scroll-picker .item-list {
+    height: 100px;
+ }
+
+.color-picker-popup > .scroll-picker .item-list > ul > li {
+    box-shadow: 0px 0px 0px 1px #000;
+    border-radius: 0;
+    border: 1px solid #fff;
+  }
+
+.xe-remove-background:before {
+    font-family: FontAwesome !important;
+    content: "\f2d4" !important;
+    color: red;
   }
