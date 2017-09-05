@@ -14,8 +14,15 @@
   }
 
   .block-title--main {
+    margin-bottom: 20px;
     h3 {
       margin-bottom: 0;
+    }
+  }
+
+  .block-new-products {
+    .block-title {
+      display: none !important;
     }
   }
 }
