@@ -55,7 +55,8 @@
   }
 
 .color-picker-popup > .scroll-picker .item-list {
-    height: 100px;
+    height: auto;
+    padding-top: 6px;
  }
 
 .color-picker-popup > .scroll-picker .item-list > ul > li {

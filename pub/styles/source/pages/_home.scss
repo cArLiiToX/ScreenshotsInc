@@ -12,6 +12,12 @@
   .block-search {
     margin-bottom: 0;
   }
+
+  .block-title--main {
+    h3 {
+      margin-bottom: 0;
+    }
+  }
 }
 
 .home-additional-products {
@@ -80,7 +86,7 @@
 /** Tablets -----------------------------------------------------------------*/
 @media screen and (max-width: $screen-md) {
   .cms-home, .cms-index-index {
-    .home-additional-products {    
+    .home-additional-products {
       .ss-block {
         width: 100%;
       }
