@@ -46,7 +46,11 @@ ul.bulleted {
 
 
 /** Tablets -----------------------------------------------------------------*/
-@media screen and (max-width: $screen-md) {}
+@media screen and (max-width: $screen-md) {
+  div.column.main {
+    overflow: hidden;
+  }
+}
 
 /** Mobile ------------------------------------------------------------------*/
 @media screen and (max-width: $screen-sm) {}
