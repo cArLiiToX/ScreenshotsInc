@@ -508,7 +508,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                         $tier[$k]['tierPrice'] = number_format($price['website_price'], 2);
                     }
                 }
-                if (!in_array($size_id, $checkSizeId)) {
+                if (!in_array($sizeText, $checkSizeId)) {
                     $attributes = $productColl->getAttributes();
                     $extraAttr = array();
                     foreach ($attributes as $attribute) {
@@ -539,7 +539,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                         'tierPrices' => $tier,
                         'attributes' => $extraAttr,
                     );
-                    $checkSizeId[] = $size_id;
+                    $checkSizeId[] = $sizeText;
                 }
             }
         }
@@ -574,7 +574,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                 $color_id = $attr->getSource()->getOptionId($colorText);
                 $size_id = $attr1->getSource()->getOptionId($sizeText);
             }
-            if (!in_array($size_id, $checkSizeId)) {
+            if (!in_array($sizeText, $checkSizeId)) {
                 $productFinalPrice = $productColl->getFinalPrice();
                 $tierPrices = $productColl->getPriceInfo()->getPrice('tier_price')->getTierPriceList();
                 $tier = array();
@@ -615,7 +615,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                     'tierPrices' => $tier,
                     'attributes' => $extraAttr,
                 );
-                $checkSizeId[] = $size_id;
+                $checkSizeId[] = $sizeText;
             }
         }
         $result = $variant;
@@ -666,7 +666,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                     $productPrice = $child->getPriceInfo()->getPrice('final_price')->getAmount()->getBaseAmount();
                     $tax = $productPrice - $productFinalPrice;
                     // $colorId = $child->getXe_color();
-                    $colorId = $attr->getSource()->getOptionId($child->getAttributeText($color));
+                    $colorId = $child->getAttributeText($color);
                     if (!in_array($colorId, $temp)) {
                         $curVariant[] = array(
                             'id' => $child->getId(),
@@ -676,7 +676,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                             'price' => $productFinalPrice,
                             'tax' => $tax,
                             'xeColor' => $child->getAttributeText($color),
-                            'xe_color_id' => $colorId,
+                            'xe_color_id' => $attr->getSource()->getOptionId($child->getAttributeText($color)),
                             'xe_size_id' => $attr1->getSource()->getOptionId($child->getAttributeText($size)),
                             'colorUrl' => $colorId . ".png",
                             'ConfcatIds' => $categoryIds,

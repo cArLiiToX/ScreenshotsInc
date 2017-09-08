@@ -55,7 +55,7 @@
   position: relative;
   left: -20px;
   right: 0;
-  border-radius: 3px 3px 0 0;
+  border-radius: 2px 2px 0 0;
 
   ul {
     width: 100%;
@@ -134,4 +134,30 @@
 
 /** Mobile ------------------------------------------------------------------*/
 @media screen and (max-width: $screen-sm) {
+  .ss-subfooter {
+    ul {
+      li {
+        text-align: center;
+        width: 100%;
+        display: block;
+
+        img {
+          display: block;
+          margin-bottom: 4px;
+          float: none;
+          margin: 0 auto;
+        }
+
+        p {
+          float: none;
+          width: 100%;
+
+          span {
+            border-top: 0;
+            border-bottom: 1px solid #333;
+          }
+        }
+      }
+    }
+  }
 }
