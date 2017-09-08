@@ -70,3 +70,7 @@
     content: "\f2d4" !important;
     color: red;
   }
+
+.xe-wrapper {
+ border: 1px solid #d8dde0;
+}
