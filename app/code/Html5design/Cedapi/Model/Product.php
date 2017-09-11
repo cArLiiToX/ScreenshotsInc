@@ -665,8 +665,14 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                     $productFinalPrice = $child->getFinalPrice();
                     $productPrice = $child->getPriceInfo()->getPrice('final_price')->getAmount()->getBaseAmount();
                     $tax = $productPrice - $productFinalPrice;
-                    // $colorId = $child->getXe_color();
-                    $colorId = $child->getAttributeText($color);
+                    $colorValue = $child->getAttributeText($color);
+                    $attribute = $this->_eavConfig->getAttribute('catalog_product', $color);
+                    $options = $attribute->getSource()->getAllOptions();
+                    foreach($options as $option) {
+                        if($colorValue == $option['label']){
+                            $colorId = $option['value'];
+                        }
+                    }
                     if (!in_array($colorId, $temp)) {
                         $curVariant[] = array(
                             'id' => $child->getId(),
@@ -676,7 +682,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                             'price' => $productFinalPrice,
                             'tax' => $tax,
                             'xeColor' => $child->getAttributeText($color),
-                            'xe_color_id' => $attr->getSource()->getOptionId($child->getAttributeText($color)),
+                            'xe_color_id' => $colorId,
                             'xe_size_id' => $attr1->getSource()->getOptionId($child->getAttributeText($size)),
                             'colorUrl' => $colorId . ".png",
                             'ConfcatIds' => $categoryIds,
