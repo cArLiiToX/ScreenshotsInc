@@ -20,6 +20,14 @@
         margin: 0;
         padding: 3px 0;
         text-shadow: none;
+
+        a {
+          color: #f23f3f;
+          &:hover {
+            text-decoration: none;
+            color: #f23f3f;
+          }
+        }
       }
     }
   }

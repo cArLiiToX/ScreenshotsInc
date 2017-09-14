@@ -53,4 +53,8 @@ ul.bulleted {
 }
 
 /** Mobile ------------------------------------------------------------------*/
-@media screen and (max-width: $screen-sm) {}
+@media screen and (max-width: $screen-sm) {
+  .logo {
+    width: 100px;
+  }
+}

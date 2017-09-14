@@ -85,7 +85,12 @@
       max-width: 120px;
       width: 100%;
       height: auto;
-      &:hover{-ms-animation:wiggle .3s 2;-moz-animation:wiggle .3s 2;-webkit-animation:wiggle .3s 2;animation:wiggle .3s 2;}
+      &:hover{
+        -ms-animation: wiggle .3s 2;
+        -moz-animation:wiggle .3s 2;
+        -webkit-animation:wiggle .3s 2;
+        animation:wiggle .3s 2;
+      }
     }
   }
 }
