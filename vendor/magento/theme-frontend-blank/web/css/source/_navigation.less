@@ -1,5 +1,5 @@
 // /**
-//  * Copyright © 2016 Magento. All rights reserved.
+//  * Copyright © 2013-2017 Magento, Inc. All rights reserved.
 //  * See COPYING.txt for license details.
 //  */
 
@@ -51,11 +51,6 @@
 .media-width(@extremum, @break) when (@extremum = 'max') and (@break = @screen__m) {
     .navigation {
         padding: 0;
-        background: #f8f8f8;
-        box-shadow: 0 0 2px #999;
-        font-size: 15px;
-        font-weight: 400;
-        height: 40px;
 
         .parent {
             .level-top {
@@ -66,10 +61,6 @@
                 @_icon-font-position: after,
                 @_icon-font-display: block
                 );
-
-                a {
-                  line-height: 14px;
-                }
 
                 &:after {
                     position: absolute;
@@ -171,7 +162,7 @@
                 .lib-css(text-decoration, @navigation-level0-item__text-decoration);
                 display: block;
                 font-weight: 700;
-                padding: 8px;
+                padding: .8rem @indent__base;
             }
 
             .header.links {
@@ -209,7 +200,7 @@
 
         .nav-sections {
             @_shadow: 0 0 5px 0 rgba(50, 50, 50, .75);
-
+            
             .lib-css(box-shadow, @_shadow, 1);
             left: 0;
             z-index: 99;

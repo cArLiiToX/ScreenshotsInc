@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 
@@ -567,12 +567,19 @@ class View extends AbstractConfigureBlock
      */
     public function closeFullImage()
     {
-        $element = $this->browser->find($this->fullImageClose, Locator::SELECTOR_CSS);
-        if (!$element->isVisible()) {
-            $element->hover();
-            $this->waitForElementVisible($this->fullImageClose);
-        }
-        $element->click();
+        $this->_rootElement->waitUntil(
+            function () {
+                $this->browser->find($this->fullImage)->hover();
+
+                if ($this->browser->find($this->fullImageClose)->isVisible()) {
+                    $this->browser->find($this->fullImageClose)->click();
+
+                    return true;
+                }
+
+                return null;
+            }
+        );
     }
 
     /**

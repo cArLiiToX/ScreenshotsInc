@@ -33,7 +33,7 @@ class Utils
         $actual       = (string) $actual;
 
         if (function_exists('hash_equals')) {
-            return true;
+            return hash_equals($expected, $actual);
         }
 
         $lenExpected  = strlen($expected);

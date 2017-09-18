@@ -1,0 +1,102 @@
+.aw-rbslider-admin-banner-edit #rule_conditions_fieldset .legend,
+.aw-rbslider-admin-banner-edit #rule_category_fieldset .legend {
+  border-bottom: none;
+  margin: 0;
+}
+.aw-rbslider-admin-banner-edit #rule_conditions_fieldset,
+.aw-rbslider-admin-banner-edit #rule_category_fieldset {
+  padding: 0;
+}
+.aw-rbslider-admin-banner-edit #rule_conditions_fieldset .legend + br {
+  display: none;
+}
+.aw-rbslider-admin-banner-edit #banner_slides .admin__data-grid-wrap {
+  overflow-x: visible;
+}
+.aw-rbslider-admin-statistic-index .page-actions-buttons {
+  height: 45px;
+}
+/* Menu */
+.page-main-actions._hidden .aw-menu {
+  display: none;
+}
+.aw-menu {
+  color: #41362f;
+  float: left;
+  font-size: 1.6rem;
+  margin-top: .7rem;
+}
+.aw-menu .dropdown {
+  display: inline-block;
+  position: relative;
+}
+.aw-menu .dropdown:before,
+.aw-menu .dropdown:after {
+  content: "";
+  display: table;
+}
+.aw-menu .dropdown .dropdown-menu {
+  margin: -1px 0 0;
+  padding: 6px 0 3px 0;
+  list-style: none none;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px #adadad solid;
+  position: absolute;
+  z-index: 500;
+  top: 100%;
+  line-height: 1.36;
+  min-width: 25.5rem;
+  display: none;
+  transition: all 0.15s ease;
+  visibility: hidden;
+  opacity: 0;
+}
+.aw-menu .dropdown.active .admin__action-dropdown-text:after {
+  background-color: #ffffff;
+  content: '';
+  height: 6px;
+  position: absolute;
+  top: 100%;
+  right: -6px;
+  left: 0;
+}
+.aw-menu .dropdown.active .admin__action-dropdown,
+.aw-menu .dropdown.active .dropdown-menu {
+  border-color: #adadad;
+  background-color: #fff;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+.aw-menu .dropdown.active .dropdown-menu {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+.aw-menu .dropdown.active .dropdown-menu li {
+  margin: 0;
+  border: 0;
+  cursor: default;
+  font-size: 1.4rem;
+}
+.aw-menu .dropdown.active .dropdown-menu li a {
+  text-decoration: none;
+  color: #41362f;
+  display: block;
+  padding: .6rem 1.8rem;
+}
+.aw-menu .dropdown.active .dropdown-menu li a.separator {
+  border-top: 1px #adadad solid;
+  padding-top: .7rem;
+}
+.aw-menu .dropdown.active .dropdown-menu li a:hover,
+.aw-menu .dropdown.active .dropdown-menu li a.current {
+  background: #e9e9e9;
+  cursor: pointer;
+}
+.aw-menu .admin__action-dropdown {
+  font-size: 1.6rem;
+  letter-spacing: .025em;
+  background-color: #f8f8f8;
+  z-index: 520;
+  transition: border-color 0.15s ease;
+}

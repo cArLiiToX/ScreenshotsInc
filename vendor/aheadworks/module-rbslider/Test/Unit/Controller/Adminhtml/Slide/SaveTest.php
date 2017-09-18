@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Test\Unit\Controller\Adminhtml\Slide;
 
 use Aheadworks\Rbslider\Model\Source\ImageType;
@@ -15,7 +20,7 @@ use Aheadworks\Rbslider\Api\Data\SlideInterfaceFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Request\DataPersistorInterface;
 use Magento\Framework\Api\DataObjectHelper;
-use Magento\Framework\Locale\ResolverInterface;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 
 /**
  * Test for \Aheadworks\Rbslider\Controller\Adminhtml\Slide\Save
@@ -69,9 +74,9 @@ class SaveTest extends \PHPUnit_Framework_TestCase
     private $messageManagerMock;
 
     /**
-     * @var ResolverInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DateTime|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $localeResolverMock;
+    private $dateTimeMock;
 
     /**
      * @var array
@@ -107,20 +112,19 @@ class SaveTest extends \PHPUnit_Framework_TestCase
             true,
             ['getPostValue']
         );
-        $this->localeResolverMock = $this->getMockForAbstractClass(ResolverInterface::class);
         $this->messageManagerMock = $this->getMockForAbstractClass(ManagerInterface::class);
         $this->slideRepositoryMock = $this->getMockForAbstractClass(SlideRepositoryInterface::class);
         $this->slideDataFactoryMock = $this->getMock(SlideInterfaceFactory::class, ['create'], [], '', false);
         $this->dataObjectHelperMock = $this->getMock(DataObjectHelper::class, ['populateWithArray'], [], '', false);
         $this->storeManagerMock = $this->getMockForAbstractClass(StoreManagerInterface::class);
         $this->dataPersistorMock = $this->getMockForAbstractClass(DataPersistorInterface::class);
+        $this->dateTimeMock = $this->getMock(DateTime::class, ['gmtDate'], [], '', false);
         $contextMock = $objectManager->getObject(
             Context::class,
             [
                 'request' => $this->requestMock,
                 'messageManager' => $this->messageManagerMock,
-                'resultRedirectFactory' => $this->resultRedirectFactoryMock,
-                'localeResolver' => $this->localeResolverMock
+                'resultRedirectFactory' => $this->resultRedirectFactoryMock
             ]
         );
 
@@ -132,7 +136,8 @@ class SaveTest extends \PHPUnit_Framework_TestCase
                 'slideDataFactory' => $this->slideDataFactoryMock,
                 'dataObjectHelper' => $this->dataObjectHelperMock,
                 'dataPersistor' => $this->dataPersistorMock,
-                'storeManager' => $this->storeManagerMock
+                'storeManager' => $this->storeManagerMock,
+                'dateTime' => $this->dateTimeMock
             ]
         );
     }
@@ -198,14 +203,15 @@ class SaveTest extends \PHPUnit_Framework_TestCase
      */
     public function testConvertDate()
     {
-        $this->localeResolverMock->expects($this->once())
-            ->method('getLocale')
-            ->willReturn('en_US');
+        $expected = '2017-03-16 00:00:00';
+        $this->dateTimeMock->expects($this->once())
+            ->method('gmtDate')
+            ->willReturn($expected);
 
         $class = new \ReflectionClass($this->controller);
         $method = $class->getMethod('convertDate');
         $method->setAccessible(true);
 
-        $this->assertEquals('2016-10-03', $method->invoke($this->controller, '10/03/2016'));
+        $this->assertEquals($expected, $method->invoke($this->controller, '2017-03-16 00:00:00'));
     }
 }

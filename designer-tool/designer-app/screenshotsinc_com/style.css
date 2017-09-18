@@ -1,0 +1,76 @@
+@import url('https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css');
+
+.btn:hover,
+.btn-primary:hover {
+    background-color: #33755e !important;
+  }
+
+  .btn, .btn-primary {
+    background-color: #024930 !important;
+    color: #fff;
+    border-color: #024930 !important;
+  }
+
+  .theme-color,
+  .multi-bound-print-type > span,
+  .xe-leftbar-contentbox .xe-design-block h4,
+  .xe-leftbar-sidenav > ul > li > .active,
+  .xe-nav-tabs > li.active > a,
+  .xe-nav-tabs > li.active > a:hover,
+  .xe-nav-tabs > li.active > a:focus,
+  .xe-cart-section > li > .xe-price-cart > h3 {
+    color: #024930 !important;
+  }
+
+.multi-bound-print-type {
+    display: none !important;
+  }
+
+.used-color > ul > li {
+    box-shadow: 0px 0px 2px #000;
+  }
+
+  .color-thumb-wrap > .color-pick-wrap > .color-thumb {
+    box-shadow: 0px 0px 2px #000;
+    border: 2px solid #fff;
+  }
+
+.xe-remove-background {
+    width: 25px;
+    height: 25px;
+    font-size: 25px;
+    cursor: pointer;
+  }
+
+.color-picker-popup {
+    z-index: 9999 !important;
+  }
+
+.color-picker-sm-right {
+    padding: 0;
+  }
+
+.btn.btn-default.btn-xs.m-r-xs.m-t-xs {
+    margin-top: 0 !important;
+  }
+
+.color-picker-popup > .scroll-picker .item-list {
+    height: auto;
+    padding-top: 6px;
+ }
+
+.color-picker-popup > .scroll-picker .item-list > ul > li {
+    box-shadow: 0px 0px 0px 1px #000;
+    border-radius: 0;
+    border: 1px solid #fff;
+  }
+
+.xe-remove-background:before {
+    font-family: FontAwesome !important;
+    content: "\f2d4" !important;
+    color: red;
+  }
+
+.xe-wrapper {
+ border: 1px solid #d8dde0;
+}

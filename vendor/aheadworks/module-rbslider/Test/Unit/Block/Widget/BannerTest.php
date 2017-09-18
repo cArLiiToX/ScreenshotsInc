@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Test\Unit\Block\Widget;
 
 use Aheadworks\Rbslider\Api\Data\BannerInterface;

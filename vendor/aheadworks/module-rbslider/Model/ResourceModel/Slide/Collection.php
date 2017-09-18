@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Model\ResourceModel\Slide;
 
 use Aheadworks\Rbslider\Model\ResourceModel\AbstractCollection;
@@ -133,8 +138,8 @@ class Collection extends AbstractCollection
         $this
             ->getSelect()
             ->where(
-                "(main_table.display_from IS NULL OR main_table.display_from <= '{$currentDate}')
-                AND (main_table.display_to IS NULL OR main_table.display_to >= '{$currentDate}')"
+                '(main_table.display_from IS NULL OR main_table.display_from <= "' . $currentDate . '")
+                AND (main_table.display_to IS NULL OR main_table.display_to >= "' . $currentDate . '")'
             );
         return $this;
     }

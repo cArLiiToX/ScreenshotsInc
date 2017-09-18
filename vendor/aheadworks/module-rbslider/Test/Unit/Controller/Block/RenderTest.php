@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Test\Unit\Controller\Block;
 
 use Aheadworks\Rbslider\Block\Banner as BlockBanner;
@@ -124,7 +129,6 @@ class RenderTest extends \PHPUnit_Framework_TestCase
     public function testExecuteBlockIsAjax()
     {
         $blocks = ['block_1'];
-        $handles = ['handle_1', 'handle_2'];
         $expected = ['block_1' => 'html content'];
 
         $this->requestMock->expects($this->once())
@@ -134,24 +138,22 @@ class RenderTest extends \PHPUnit_Framework_TestCase
             ->method('getParam')
             ->willReturnMap(
                 [
-                    ['blocks', null, json_encode($blocks)],
-                    ['handles', null, json_encode($handles)]
+                    ['blocks', null, json_encode($blocks)]
                 ]
             );
 
-        $blockInstanceMock = $this->getMock(BlockBanner::class, ['toHtml'], [], '', false);
+        $blockInstanceMock = $this->getMock(BlockBanner::class, ['toHtml', 'setNameInLayout'], [], '', false);
+        $blockInstanceMock->expects($this->once())
+            ->method('setNameInLayout')
+            ->with($blocks[0]);
         $blockInstanceMock->expects($this->once())
             ->method('toHtml')
             ->willReturn($expected['block_1']);
-        $layoutMock = $this->getMock(Layout::class, ['getBlock'], [], '', false);
+        $layoutMock = $this->getMock(Layout::class, ['createBlock'], [], '', false);
         $layoutMock->expects($this->once())
-            ->method('getBlock')
-            ->with($blocks[0])
+            ->method('createBlock')
+            ->with(BlockBanner::class)
             ->willReturn($blockInstanceMock);
-        $this->viewMock->expects($this->once())
-            ->method('loadLayout')
-            ->with($handles, true, true, false)
-            ->willReturnSelf();
         $this->viewMock->expects($this->once())
             ->method('getLayout')
             ->willReturn($layoutMock);
@@ -175,7 +177,6 @@ class RenderTest extends \PHPUnit_Framework_TestCase
         $bannerId = 1;
         $blockName = WidgetBanner::WIDGET_NAME_PREFIX . $bannerId;
         $blocks = [$blockName];
-        $handles = ['handle_1', 'handle_2'];
         $expected = [$blockName => 'html content'];
 
         $this->requestMock->expects($this->once())
@@ -185,8 +186,7 @@ class RenderTest extends \PHPUnit_Framework_TestCase
             ->method('getParam')
             ->willReturnMap(
                 [
-                    ['blocks', null, json_encode($blocks)],
-                    ['handles', null, json_encode($handles)]
+                    ['blocks', null, json_encode($blocks)]
                 ]
             );
 
@@ -202,10 +202,6 @@ class RenderTest extends \PHPUnit_Framework_TestCase
                 '',
                 ['data' => ['banner_id' => $bannerId]]
             )->willReturn($blockInstanceMock);
-        $this->viewMock->expects($this->once())
-            ->method('loadLayout')
-            ->with($handles, true, true, false)
-            ->willReturnSelf();
         $this->viewMock->expects($this->once())
             ->method('getLayout')
             ->willReturn($layoutMock);

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 
@@ -77,7 +77,7 @@ class AssertAddedProductAttributeOnProductForm extends AbstractConstraint
                 $productAttributeOriginal = $attribute;
             }
             $product = $this->objectManager->create(
-                'Magento\Catalog\Test\TestStep\CreateProductWithAttributeSetStep',
+                \Magento\Catalog\Test\TestStep\CreateProductWithAttributeSetStep::class,
                 [
                     'attribute' => $productAttributeOriginal,
                     'attributeSet' => $attributeSet
@@ -92,9 +92,8 @@ class AssertAddedProductAttributeOnProductForm extends AbstractConstraint
         $catalogProductAttribute = ($productAttributeOriginal !== null)
             ? array_merge($productAttributeOriginal->getData(), $attribute->getData())
             : $attribute->getData();
-        if ($catalogProductEdit->getProductForm()->isSectionVisible(self::ATTRIBUTES)) {
-            $catalogProductEdit->getProductForm()->openSection(self::ATTRIBUTES);
-        }
+        $catalogProductEdit->getProductForm()->openSection(self::ATTRIBUTES);
+
         \PHPUnit_Framework_Assert::assertTrue(
             $catalogProductEdit->getProductForm()->checkAttributeLabel($catalogProductAttribute),
             "Product Attribute is absent on Product form."

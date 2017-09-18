@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 -->
@@ -29,6 +29,11 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\ProductVideo\Controller\Adminhtml\Product\Gallery\RetrieveImage">
+        <arguments>
+            <argument name="fileDriver" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
     <type name="Magento\Framework\View\Xsd\Media\TypeDataExtractorPool">
         <arguments>
             <argument name="extractors" xsi:type="array">
@@ -44,5 +49,12 @@
     </type>
     <type name="Magento\Catalog\Model\ResourceModel\Product\Gallery">
         <plugin name="external_video_media_resource_backend" type="Magento\ProductVideo\Model\Plugin\ExternalVideoResourceBackend" />
+    </type>
+    <type name="Magento\Config\Model\Config\Export\ExcludeList">
+        <arguments>
+            <argument name="configs" xsi:type="array">
+                <item name="catalog/product_video/youtube_api_key" xsi:type="string">1</item>
+            </argument>
+        </arguments>
     </type>
 </config>

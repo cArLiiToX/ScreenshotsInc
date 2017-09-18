@@ -12,6 +12,14 @@
     border: 2px solid #aaa;
     border-radius: 3px;
     box-sizing: border-box;
+
+    .heading {
+      font-size: 2rem;
+    }
+
+    .price {
+      color: $ss-red;
+    }
   }
 }
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Magento\Checkout\Test\Block\Cart;
@@ -112,8 +112,11 @@ class Sidebar extends Block
      */
     public function clickBraintreePaypalButton()
     {
-        $this->_rootElement->find($this->braintreePaypalCheckoutButton, Locator::SELECTOR_XPATH)
-            ->click();
+        $button = $this->_rootElement->find($this->braintreePaypalCheckoutButton, Locator::SELECTOR_XPATH);
+        $this->browser->waitUntil(function () use ($button) {
+            return !$button->isDisabled() ?: null;
+        });
+        $button->click();
     }
 
     /**

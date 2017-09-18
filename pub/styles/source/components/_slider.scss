@@ -1,7 +1,105 @@
+/** Ruby Slider -------------------------------------------------------------*/
 .aw-rbslider-container {
-  max-width: 1236px !important;
+  max-width: 1200px;
+}
 
-  .uk-slideshow {
-    margin-bottom: 40px;
+/** Owl Carousel - Main Banner ----------------------------------------------*/
+.owl-carousel.owl-carousel-custom-1 {
+  padding: 0;
+  overflow: hidden;
+
+  .owl-stage-outer {
+    padding: 0;
   }
+
+  .banner-item {
+    margin: 0 !important;
+
+    .content_slider {
+      &:after {
+        visibility: hidden;
+        display: block;
+        font-size: 0;
+        content: " ";
+        clear: both;
+        height: 0;
+      }
+
+      .buttons {
+        a.action.primary {
+          border: 3px solid #fff;
+          border-radius: 3px;
+          background: none;
+          padding: 12px 20px;
+          transition: all 1.4s ease-in-out;
+          &:hover {
+            background: rgba(255,255,255,.2);
+          }
+
+          &:first-of-type {
+            margin-left: 0;
+          }
+        }
+      }
+    }
+
+    /** ScreenShots Inc Banner **/
+    &.banner-1 {
+      .content_slider {
+        top: auto;
+        bottom: 0;
+        .banner-description {
+          font-size: 2.5vw;
+          text-shadow: 0px 1px 1px #555;
+          padding: 0;
+        }
+      }
+    }
+
+    &.banner-2 {}
+
+    /** Baseball Season Banner **/
+    &.banner-3 {
+      .banner-title,
+      .banner-description,
+      .buttons {
+        width: 50%;
+        float: right;
+        text-align: left;
+      }
+    }
+
+    &.banner-4 {}
+
+    /** Customizable Tshirts Banner **/
+    &.banner-5 {
+      .content_slider {
+        position: absolute;
+        left: 0;
+        top: 85%;
+        bottom: 0;
+        right: 0;
+        background: rgba(0,0,0,.5);
+        width: 100% !important;
+        font-size: 2vw;
+        font-family: Lobster;
+      }
+    }
+
+    /** Football Banner **/
+    &.banner-6 {
+      .content_slider {
+        bottom: 0;
+        top: auto;
+      }
+    }
+  }
+}
+
+/** Tablets -----------------------------------------------------------------*/
+@media screen and (max-width: $screen-md) {
+}
+
+/** Mobile ------------------------------------------------------------------*/
+@media screen and (max-width: $screen-sm) {
 }

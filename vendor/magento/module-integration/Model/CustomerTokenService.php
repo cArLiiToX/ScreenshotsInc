@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 
@@ -88,17 +88,20 @@ class CustomerTokenService implements \Magento\Integration\Api\CustomerTokenServ
     }
 
     /**
-     * {@inheritdoc}
+     * Revoke token by customer id.
+     *
+     * The function will delete the token from the oauth_token table.
+     *
+     * @param int $customerId
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function revokeCustomerAccessToken($customerId)
     {
         $tokenCollection = $this->tokenModelCollectionFactory->create()->addFilterByCustomerId($customerId);
-        if ($tokenCollection->getSize() == 0) {
-            throw new LocalizedException(__('This customer has no tokens.'));
-        }
         try {
             foreach ($tokenCollection as $token) {
-                $token->setRevoked(1)->save();
+                $token->delete();
             }
         } catch (\Exception $e) {
             throw new LocalizedException(__('The tokens could not be revoked.'));

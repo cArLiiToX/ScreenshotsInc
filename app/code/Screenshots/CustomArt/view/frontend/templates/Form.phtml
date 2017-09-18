@@ -1,0 +1,27 @@
+<form action="<?php echo $block->getFormAction(); ?>" method="post">
+  <p>
+    Use the form below to begin the process of ordering custom artwork or graphic design services.
+    After recieving this form, one of our designers will get in touch with you via email to further discuss
+    your project requirements, deadline and pricing.
+  </p>
+  <label for="firstName">First Name</label>
+  <input type="text" name="firstName" placeholder="First Name" />
+  <label for="lastName">Last Name</label>
+  <input type="text" name="lastName" placeholder="Last Name" />
+  <label for="userEmail">Email Address</label>
+  <input type="email" name="userEmail" placeholder="you@domain.com" />
+  <label for="userPhone">Phone #</label>
+  <input type="number" name="userPhone" placeholder="" />
+
+  <label for="artDesc">Project Description</label>
+  <textarea name="artDesc">
+    Please describe in detail any requirements, direction and additional information needed for your project
+  </textarea>
+
+  <!--
+  <label for="userFiles">Upload File(s)</label>
+  <input type="file" name="userFiles" multiple />
+  -->
+
+  <input type="submit" class="action submit primary" value="Submit Application" />
+</form>

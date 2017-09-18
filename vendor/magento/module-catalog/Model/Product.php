@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Magento\Catalog\Model;
@@ -1613,6 +1613,17 @@ class Product extends \Magento\Catalog\Model\AbstractModel implements
      */
     public function isSalable()
     {
+        if ($this->_catalogProduct->getSkipSaleableCheck()) {
+            return true;
+        }
+        if (($this->getOrigData('status') != $this->getData('status'))
+            || $this->isStockStatusChanged()) {
+            $this->unsetData('salable');
+        }
+
+        if ($this->hasData('salable')) {
+            return $this->getData('salable');
+        }
         $this->_eventManager->dispatch('catalog_product_is_salable_before', ['product' => $this]);
 
         $salable = $this->isAvailable();
@@ -1622,7 +1633,8 @@ class Product extends \Magento\Catalog\Model\AbstractModel implements
             'catalog_product_is_salable_after',
             ['product' => $this, 'salable' => $object]
         );
-        return $object->getIsSalable();
+        $this->setData('salable', $object->getIsSalable());
+        return $this->getData('salable');
     }
 
     /**
@@ -1632,7 +1644,7 @@ class Product extends \Magento\Catalog\Model\AbstractModel implements
      */
     public function isAvailable()
     {
-        return $this->getTypeInstance()->isSalable($this) || $this->_catalogProduct->getSkipSaleableCheck();
+        return $this->_catalogProduct->getSkipSaleableCheck() || $this->getTypeInstance()->isSalable($this);
     }
 
     /**
@@ -1905,14 +1917,18 @@ class Product extends \Magento\Catalog\Model\AbstractModel implements
      */
     public function getOptionById($optionId)
     {
-        /** @var \Magento\Catalog\Model\Product\Option $option */
-        foreach ($this->getOptions() as $option) {
-            if ($option->getId() == $optionId) {
-                return $option;
+        $result = null;
+        if (is_array($this->getOptions())) {
+            /** @var \Magento\Catalog\Model\Product\Option $option */
+            foreach ($this->getOptions() as $option) {
+                if ($option->getId() == $optionId) {
+                    $result = $option;
+                    break;
+                }
             }
         }
 
-        return null;
+        return $result;
     }
 
     /**
@@ -2612,6 +2628,7 @@ class Product extends \Magento\Catalog\Model\AbstractModel implements
     /**
      * Set the associated products
      * @param array $productIds
+     * @return void
      */
     public function setAssociatedProductIds(array $productIds)
     {

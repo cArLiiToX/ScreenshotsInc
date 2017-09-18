@@ -1,3 +1,5 @@
+# Magento Specific #
+####################
 /.buildpath
 /.cache
 /.metadata
@@ -23,7 +25,6 @@ atlassian*
 /lib/internal/flex/varien/.settings
 /node_modules
 /.grunt
-
 /pub/media/*.*
 !/pub/media/.htaccess
 /pub/media/catalog/*
@@ -44,6 +45,51 @@ atlassian*
 /pub/media/captcha/*
 /pub/static/*
 !/pub/static/.htaccess
-
 /var/*
 !/var/.htaccess
+/dev/*
+
+# Inkxe Specific #
+##################
+/designer-tool/custom-assets/*
+/designer-tool/designer-assets/screenshotsinc_com/images/capturedImage/cart/*
+/designer-tool/designer-assets/screenshotsinc_com/userimg/*
+/designer-tool/designer-assets/screenshotsinc_com/previewimg/*
+
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

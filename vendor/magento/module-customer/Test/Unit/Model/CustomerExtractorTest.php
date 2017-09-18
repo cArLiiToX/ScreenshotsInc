@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Magento\Customer\Test\Unit\Model;
@@ -119,6 +119,10 @@ class CustomerExtractorTest extends \PHPUnit_Framework_TestCase
         $this->customerForm->expects($this->once())
             ->method('extractData')
             ->with($this->request)
+            ->willReturn($customerData);
+        $this->customerForm->expects($this->once())
+            ->method('compactData')
+            ->with($customerData)
             ->willReturn($customerData);
         $this->customerForm->expects($this->once())
             ->method('getAllowedAttributes')

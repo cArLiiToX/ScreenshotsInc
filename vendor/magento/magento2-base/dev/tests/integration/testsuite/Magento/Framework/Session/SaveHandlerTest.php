@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Magento\Framework\Session;
@@ -29,6 +29,7 @@ class SaveHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetSaveHandler($deploymentConfigHandler, $iniHandler)
     {
+        $this->markTestSkipped('MAGETWO-56529');
         // Set expected session.save_handler config
         if ($deploymentConfigHandler) {
             if ($deploymentConfigHandler !== 'files') {

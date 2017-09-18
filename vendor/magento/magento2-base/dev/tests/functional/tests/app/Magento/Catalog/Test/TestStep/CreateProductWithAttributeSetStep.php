@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 
@@ -61,6 +61,13 @@ class CreateProductWithAttributeSetStep implements TestStepInterface
     protected $attributeValue;
 
     /**
+     * If we need to save product.
+     *
+     * @var
+     */
+    protected $ifAssertOnNewProduct;
+
+    /**
      * @constructor
      * @param FixtureFactory $fixtureFactory
      * @param CatalogProductIndex $catalogProductIndex
@@ -68,6 +75,7 @@ class CreateProductWithAttributeSetStep implements TestStepInterface
      * @param CatalogProductAttribute $attribute
      * @param CatalogAttributeSet $attributeSet
      * @param mixed $attributeValue [optional]
+     * @param bool $ifAssertOnNewProduct
      */
     public function __construct(
         FixtureFactory $fixtureFactory,
@@ -75,7 +83,8 @@ class CreateProductWithAttributeSetStep implements TestStepInterface
         CatalogProductEdit $catalogProductEdit,
         CatalogProductAttribute $attribute,
         CatalogAttributeSet $attributeSet,
-        $attributeValue = null
+        $attributeValue = null,
+        $ifAssertOnNewProduct = null
     ) {
         $this->fixtureFactory = $fixtureFactory;
         $this->catalogProductIndex = $catalogProductIndex;
@@ -83,6 +92,7 @@ class CreateProductWithAttributeSetStep implements TestStepInterface
         $this->attribute = $attribute;
         $this->attributeSet = $attributeSet;
         $this->attributeValue = $attributeValue;
+        $this->ifAssertOnNewProduct = $ifAssertOnNewProduct;
     }
 
     /**
@@ -110,8 +120,12 @@ class CreateProductWithAttributeSetStep implements TestStepInterface
         $this->catalogProductIndex->open()->getGridPageActionBlock()->addProduct('simple');
         $productForm = $this->catalogProductEdit->getProductForm();
         $productForm->fill($product);
-        $this->catalogProductEdit->getFormPageActions()->save();
+
+        if ($this->ifAssertOnNewProduct != 'Yes') {
+            $this->catalogProductEdit->getFormPageActions()->save();
+        }
 
         return ['product' => $product];
+
     }
 }

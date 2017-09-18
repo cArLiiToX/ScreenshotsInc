@@ -1,5 +1,5 @@
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 /*jshint browser:true jquery:true*/
@@ -267,7 +267,7 @@ define([
             this.submitBtn.disabled = isEmpty(value);
 
             if (value.length >= parseInt(this.options.minSearchLength, 10)) {
-                $.get(this.options.url, {q: value}, $.proxy(function (data) {
+                $.getJSON(this.options.url, {q: value}, $.proxy(function (data) {
                     $.each(data, function(index, element) {
                         element.index = index;
                         var html = template({

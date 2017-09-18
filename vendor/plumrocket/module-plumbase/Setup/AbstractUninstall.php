@@ -10,9 +10,9 @@
  * If you are unable to obtain it through the world-wide-web, please
  * send an email to support@plumrocket.com so we can send you a copy immediately.
  *
- * @package     Plumrocket_Base
- * @copyright   Copyright (c) 2015 Plumrocket Inc. (http://www.plumrocket.com)
- * @license     http://wiki.plumrocket.net/wiki/EULA  End-user License Agreement
+ * @package   Plumrocket_Base
+ * @copyright Copyright (c) 2015-2017 Plumrocket Inc. (http://www.plumrocket.com)
+ * @license   http://wiki.plumrocket.net/wiki/EULA  End-user License Agreement
  */
 
 namespace Plumrocket\Base\Setup;
@@ -25,42 +25,82 @@ use Magento\Eav\Setup\EavSetupFactory;
 /* Uninstall  */
 abstract class AbstractUninstall implements UninstallInterface
 {
-
+    /**
+     * @var string
+     */
     protected $_configSectionId;
+
+    /**
+     * @var array
+     */
     protected $_attributes = [];
+
+    /**
+     * @var array
+     */
     protected $_tables = [];
+
+    /**
+     * @var array
+     */
     protected $_tablesFields = [];
+
+    /**
+     * @var array
+     */
     protected $_pathes = [];
+
+    /**
+     * @var array
+     */
     protected $_cmsBlocks = [];
 
     /**
-     * @var \Magento\Framework\App\ObjectManager
+     * @var \Magento\Framework\Module\Setup\Context
      */
-    protected $_objectManager;
+    protected $context;
+
+    /**
+     * @var \Magento\Eav\Setup\EavSetup
+     */
+    protected $eavSetupFactory;
 
     /**
      * @var \Magento\Cms\Model\BlockFactory
      */
     protected $_cmsBlockFactory;
 
-
+    /**
+     * Initialize uninstall model
+     *
+     * @param \Magento\Framework\Module\Setup\Context $context
+     * @param \Magento\Eav\Setup\EavSetupFactory      $eavSetupFactory
+     * @param \Magento\Cms\Model\BlockFactory         $cmsBlockFactory
+     */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Cms\Model\BlockFactory $cmsBlockFactory
+        \Magento\Framework\Module\Setup\Context $context,
+        \Magento\Eav\Setup\EavSetupFactory      $eavSetupFactory,
+        \Magento\Cms\Model\BlockFactory         $cmsBlockFactory
     ) {
-        $this->_objectManager = $objectManager;
+        $this->context          = $context;
+        $this->eavSetupFactory  = $eavSetupFactory;
         $this->_cmsBlockFactory = $cmsBlockFactory;
     }
 
-
+    /**
+     * Uninstall
+     *
+     * @param  SchemaSetupInterface   $setup
+     * @param  ModuleContextInterface $context
+     * @return void
+     */
     public function uninstall(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();
 
         $moduleName = $this->getModuleName();
-        $_context = $this->_objectManager->create('Magento\Framework\Module\Setup\Context');
-        $_setup = new \Magento\Setup\Module\DataSetup($_context);
-        $eavSetup = $this->_objectManager->create('Magento\Eav\Setup\EavSetup', ['setup' => $_setup]);
+        $dataSetup = new \Magento\Setup\Module\DataSetup($this->context);
+        $eavSetup = $this->eavSetupFactory->create(['setup' => $dataSetup]);
 
         //remove attribute
         foreach($this->_attributes as $entityTypeName => $attributeNames){
@@ -81,7 +121,7 @@ abstract class AbstractUninstall implements UninstallInterface
             $_tableName = $setup->getTable($_tableName);
             foreach($_fields as $_field){
                 try{
-                    $setup->getConnection()->dropColumn( $_tableName, $_field );
+                    $setup->getConnection()->dropColumn($_tableName, $_field);
                 } catch (\Exception $e) {
 
                 }
@@ -111,7 +151,7 @@ abstract class AbstractUninstall implements UninstallInterface
         }
 
         $confFile = BP . '/app/etc/config.php';
-        $config = require($confFile);
+        $config = include $confFile;
         if (isset($config['modules'][$moduleName])) {
             unset($config['modules'][$moduleName]);
             $f = fopen($confFile, 'w');

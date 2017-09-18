@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Model\ResourceModel;
 
 use Magento\Customer\Model\Session;
@@ -198,8 +203,7 @@ class BlockRepository implements BlockRepositoryInterface
      */
     private function getSlideList($banner)
     {
-        $gmtTimestamp = strtotime($this->dateTime->gmtDate()) + $this->dateTime->getGmtOffset();
-        $currentDate = date(StdlibDateTime::DATETIME_PHP_FORMAT, $gmtTimestamp);
+        $currentDate = $this->dateTime->gmtDate(StdlibDateTime::DATETIME_PHP_FORMAT);
 
         $directionSort = $banner->getIsRandomOrderImage()
             ? SortOrder::SORT_DESC // For RAND sorting

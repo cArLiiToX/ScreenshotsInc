@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Magento\CatalogImportExport\Model\Import\Product\Type;
@@ -490,23 +490,25 @@ abstract class AbstractType
         $resultAttrs = [];
 
         foreach ($this->_getProductAttributes($rowData) as $attrCode => $attrParams) {
-            if (!$attrParams['is_static']) {
-                if (isset($rowData[$attrCode]) && strlen($rowData[$attrCode])) {
-                    $resultAttrs[$attrCode] = in_array($attrParams['type'], ['select', 'boolean'])
-                        ? $attrParams['options'][strtolower($rowData[$attrCode])]
-                        : $rowData[$attrCode];
-                    if ('multiselect' == $attrParams['type']) {
-                        $resultAttrs[$attrCode] = [];
-                        foreach (explode(Product::PSEUDO_MULTI_LINE_SEPARATOR, $rowData[$attrCode]) as $value) {
-                            $resultAttrs[$attrCode][] = $attrParams['options'][strtolower($value)];
-                        }
-                        $resultAttrs[$attrCode] = implode(',', $resultAttrs[$attrCode]);
+            if ($attrParams['is_static']) {
+                continue;
+            }
+            if (isset($rowData[$attrCode]) && strlen($rowData[$attrCode])) {
+                if (in_array($attrParams['type'], ['select', 'boolean'])) {
+                    $resultAttrs[$attrCode] = $attrParams['options'][strtolower($rowData[$attrCode])];
+                } elseif ('multiselect' == $attrParams['type']) {
+                    $resultAttrs[$attrCode] = [];
+                    foreach ($this->_entityModel->parseMultiselectValues($rowData[$attrCode]) as $value) {
+                        $resultAttrs[$attrCode][] = $attrParams['options'][strtolower($value)];
                     }
-                } elseif (array_key_exists($attrCode, $rowData)) {
+                    $resultAttrs[$attrCode] = implode(',', $resultAttrs[$attrCode]);
+                } else {
                     $resultAttrs[$attrCode] = $rowData[$attrCode];
-                } elseif ($withDefaultValue && null !== $attrParams['default_value']) {
-                    $resultAttrs[$attrCode] = $attrParams['default_value'];
                 }
+            } elseif (array_key_exists($attrCode, $rowData)) {
+                $resultAttrs[$attrCode] = $rowData[$attrCode];
+            } elseif ($withDefaultValue && null !== $attrParams['default_value']) {
+                $resultAttrs[$attrCode] = $attrParams['default_value'];
             }
         }
 

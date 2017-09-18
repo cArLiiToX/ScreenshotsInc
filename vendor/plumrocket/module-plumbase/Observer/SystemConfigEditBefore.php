@@ -12,7 +12,7 @@ If you are unable to obtain it through the world-wide-web, please
 send an email to support@plumrocket.com so we can send you a copy immediately.
 
 @package    Plumrocket_Base-v2.x.x
-@copyright  Copyright (c) 2015 Plumrocket Inc. (http://www.plumrocket.com)
+@copyright  Copyright (c) 2015-2017 Plumrocket Inc. (http://www.plumrocket.com)
 @license    http://wiki.plumrocket.net/wiki/EULA  End-user License Agreement
 
 */
@@ -27,8 +27,8 @@ class SystemConfigEditBefore extends AbstractSystemConfig
     /**
      * Predispath admin action controller
      *
-     * @param \Magento\Framework\Event\Observer $observer
-     * @return void
+     * @param                                         \Magento\Framework\Event\Observer $observer
+     * @return                                        void
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
@@ -41,15 +41,14 @@ class SystemConfigEditBefore extends AbstractSystemConfig
         $product = $this->_getProductBySection($section);
         if (!$product->getSession()) {
             if ($s = $product->loadSession()) {
-                $this->_objectManager->get('\Magento\Config\Model\ResourceModel\Config')
-                    ->saveConfig($product->getSessionKey(), $s, 'default', 0);
+                $this->resourceModelConfig->saveConfig($product->getSessionKey(), $s, 'default', 0);
 
                 // clear the config cache
-                $this->_cacheTypeList->cleanType('config');
-                $this->_eventManager->dispatch('adminhtml_cache_refresh_type', ['type' => 'config']);
+                $this->cacheTypeList->cleanType('config');
+                $this->eventManager->dispatch('adminhtml_cache_refresh_type', ['type' => 'config']);
             }
         } else {
-            $product = $this->_objectManager->create('\Plumrocket\Base\Model\Product')->load($product->getName());
+            $product = $this->baseProductFactory->create()->load($product->getName());
             if (!$product->isInStock() || !$product->isCached()) {
                 $product->checkStatus();
             }
@@ -58,9 +57,7 @@ class SystemConfigEditBefore extends AbstractSystemConfig
             $product->disable();
         }
         if (!$product->isInStock()) {
-            $this->_messageManager->addError($product->getDescription());
+            $this->messageManager->addError($product->getDescription());
         }
-
-
     }
 }

@@ -1,0 +1,32 @@
+.media-width(@extremum, @break) when (@extremum = 'max') and (@break = @screen__m) {
+	.columns {
+		display: block;
+		.column.main {
+			width: 100%;
+		}
+	}
+	.owl-carousel {
+		.owl-item {
+			.product-item {
+				.product-item-info {
+					background: none transparent !important;
+					box-shadow: none;
+					-o-box-shadow: none;
+					-ms-box-shadow: none;
+					-moz-box-shadow: none;
+					-webkit-box-shadow: none;
+				}
+			}
+		}
+	}
+}
+
+.clearfix {
+	*zoom: 1;
+	&:after {
+		content: '';
+		display: block;
+		clear: both;
+		height: 0;
+	}
+}

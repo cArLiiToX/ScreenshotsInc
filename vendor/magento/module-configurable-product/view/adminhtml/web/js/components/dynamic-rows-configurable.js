@@ -1,5 +1,5 @@
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 
@@ -391,11 +391,11 @@ define([
                     'small_image': row['small_image'],
                     image: row.image,
                     'thumbnail': row.thumbnail,
-                    'attributes': attributesText
+                    'attributes': attributesText,
+                    'was_changed': true
                 };
                 product[this.canEditField] = row.editable;
                 product[this.newProductField] = row.newProduct;
-
                 tmpArray.push(product);
             }, this);
 

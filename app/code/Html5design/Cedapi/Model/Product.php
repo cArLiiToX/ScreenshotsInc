@@ -508,7 +508,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                         $tier[$k]['tierPrice'] = number_format($price['website_price'], 2);
                     }
                 }
-                if (!in_array($size_id, $checkSizeId)) {
+                if (!in_array($sizeText, $checkSizeId)) {
                     $attributes = $productColl->getAttributes();
                     $extraAttr = array();
                     foreach ($attributes as $attribute) {
@@ -539,7 +539,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                         'tierPrices' => $tier,
                         'attributes' => $extraAttr,
                     );
-                    $checkSizeId[] = $size_id;
+                    $checkSizeId[] = $sizeText;
                 }
             }
         }
@@ -574,7 +574,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                 $color_id = $attr->getSource()->getOptionId($colorText);
                 $size_id = $attr1->getSource()->getOptionId($sizeText);
             }
-            if (!in_array($size_id, $checkSizeId)) {
+            if (!in_array($sizeText, $checkSizeId)) {
                 $productFinalPrice = $productColl->getFinalPrice();
                 $tierPrices = $productColl->getPriceInfo()->getPrice('tier_price')->getTierPriceList();
                 $tier = array();
@@ -615,7 +615,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                     'tierPrices' => $tier,
                     'attributes' => $extraAttr,
                 );
-                $checkSizeId[] = $size_id;
+                $checkSizeId[] = $sizeText;
             }
         }
         $result = $variant;
@@ -665,8 +665,14 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
                     $productFinalPrice = $child->getFinalPrice();
                     $productPrice = $child->getPriceInfo()->getPrice('final_price')->getAmount()->getBaseAmount();
                     $tax = $productPrice - $productFinalPrice;
-                    // $colorId = $child->getXe_color();
-                    $colorId = $attr->getSource()->getOptionId($child->getAttributeText($color));
+                    $colorValue = $child->getAttributeText($color);
+                    $attribute = $this->_eavConfig->getAttribute('catalog_product', $color);
+                    $options = $attribute->getSource()->getAllOptions();
+                    foreach($options as $option) {
+                        if($colorValue == $option['label']){
+                            $colorId = $option['value'];
+                        }
+                    }
                     if (!in_array($colorId, $temp)) {
                         $curVariant[] = array(
                             'id' => $child->getId(),
@@ -1272,14 +1278,26 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
     {
         $product = $this->_productModel->load($configId);
         $simpleCollection = $product->getTypeInstance()->getUsedProducts($product);
+        $attribute = $this->_eavConfig->getAttribute('catalog_product', $size);
+        $options = $attribute->getSource()->getAllOptions();
+        foreach($options as $option) {
+            if($sizeId == $option['value']){
+                $sizeLabel = $option['label'];
+            }
+        }
+        $attribute = $this->_eavConfig->getAttribute('catalog_product', $color);
+        $options = $attribute->getSource()->getAllOptions();
+        foreach($options as $option) {
+            if($colorId == $option['value']){
+                $colorLabel = $option['label'];
+            }
+        }
         if (!empty($simpleCollection)) {
             $data = array();
             foreach ($simpleCollection as $simple) {
-                $attr = $simple->getResource()->getAttribute($color);
-                $attr1 = $simple->getResource()->getAttribute($size);
-                $simpleColorId = $attr->getSource()->getOptionId($simple->getAttributeText($color));
-                $simpleSizeId = $attr1->getSource()->getOptionId($simple->getAttributeText($size));
-                if ($simpleSizeId == $sizeId && $simpleColorId == $colorId) {
+                $simpleColorLabel = $simple->getAttributeText($color);
+                $simpleSizeLabel = $simple->getAttributeText($size);
+                if ($simpleSizeLabel == $sizeLabel && $simpleColorLabel == $colorLabel) {
                     $data['simpleProductId'] = $simple->getId();
                 }
             }

@@ -12,12 +12,13 @@ If you are unable to obtain it through the world-wide-web, please
 send an email to support@plumrocket.com so we can send you a copy immediately.
 
 @package    Plumrocket_Base-v2.x.x
-@copyright  Copyright (c) 2015 Plumrocket Inc. (http://www.plumrocket.com)
+@copyright  Copyright (c) 2015-2017 Plumrocket Inc. (http://www.plumrocket.com)
 @license    http://wiki.plumrocket.net/wiki/EULA  End-user License Agreement
 
 */
 
 namespace Plumrocket\Base\Model;
+
 use Magento\Framework\Config\ConfigOptionsListConstants;
 
 /**
@@ -28,41 +29,40 @@ class AdminNotificationFeed extends \Magento\AdminNotification\Model\Feed
     /**
      * @var \Magento\Backend\Model\Auth\Session
      */
-
     protected $_backendAuthSession;
-    /**
-     * @var \Magento\Framework\Module\ModuleListInterface
-     */
 
-    protected $_moduleList;
     /**
-     * @var \Magento\Framework\Module\Manager
+     * @var Magento\Framework\Module\ModuleListInterface
      */
+    protected $_moduleList;
 
     /**
      * @var \Magento\Framework\App\ProductMetadataInterface
      */
     protected $_productMetadata;
 
-    protected $_moduleManager;
     /**
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Backend\App\ConfigInterface $backendConfig
-     * @param InboxFactory $inboxFactory
-     * @param \Magento\Backend\Model\Auth\Session $backendAuthSession
-     * @param \Magento\Framework\Module\ModuleListInterface $moduleList
-     * @param \Magento\Framework\Module\Manager $moduleManager,
-     * @param \Magento\Framework\HTTP\Adapter\CurlFactory $curlFactory
-     * @param \Magento\Framework\App\DeploymentConfig $deploymentConfig
-     * @param \Magento\Framework\App\ProductMetadataInterface $productMetadata
-     * @param \Magento\Framework\UrlInterface $urlBuilder
+     * @var Magento\Framework\Module\Manager
+     */
+    protected $_moduleManager;
+
+    /**
+     * @param \Magento\Framework\Model\Context                        $context
+     * @param \Magento\Framework\Registry                             $registry
+     * @param \Magento\Backend\App\ConfigInterface                    $backendConfig
+     * @param InboxFactory                                            $inboxFactory
+     * @param \Magento\Backend\Model\Auth\Session                     $backendAuthSession
+     * @param \Magento\Framework\Module\ModuleListInterface           $moduleList
+     * @param \Magento\Framework\Module\Manager                       $moduleManager,
+     * @param \Magento\Framework\HTTP\Adapter\CurlFactory             $curlFactory
+     * @param \Magento\Framework\App\DeploymentConfig                 $deploymentConfig
+     * @param \Magento\Framework\App\ProductMetadataInterface         $productMetadata
+     * @param \Magento\Framework\UrlInterface                         $urlBuilder
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
-     * @param array $data
+     * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
+     * @param array                                                   $data
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
-
     public function __construct(
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
@@ -91,12 +91,11 @@ class AdminNotificationFeed extends \Magento\AdminNotification\Model\Feed
      *
      * @return string
      */
-
     public function getFeedUrl()
     {
         if ($this->_feedUrl === null) {
-            $this->_feedUrl = 'https://st'.'ore.plumrocket'
-            .'.c'.'om/notifica'.'tionma'.'nager/feed'.'/'.'index/';
+            $this->_feedUrl = 'https://st' . 'ore.plumrocket'
+             . '.c' . 'om/notifica' . 'tionma' . 'nager/feed' . '/' . 'index/';
         }
 
         $urlInfo = parse_url($this->urlBuilder->getBaseUrl());
@@ -111,7 +110,7 @@ class AdminNotificationFeed extends \Magento\AdminNotification\Model\Feed
         }
 
         if (count($modulesParams)) {
-            $url .= '/modules/'.base64_encode(implode(';', $modulesParams));
+            $url .= '/modules/' . base64_encode(implode(';', $modulesParams));
         }
 
         $ed = $this->_productMetadata->getEdition();
@@ -122,7 +121,7 @@ class AdminNotificationFeed extends \Magento\AdminNotification\Model\Feed
     }
 
     /**
-     * Get Plumrocket Modules Info
+     * Get Plumrocket extewnsion info
      *
      * @return $this
      */
@@ -130,7 +129,7 @@ class AdminNotificationFeed extends \Magento\AdminNotification\Model\Feed
     {
         $modules = [];
         foreach($this->_moduleList->getAll() as $moduleName => $module) {
-            if ( strpos($moduleName, 'Plumrocket_') !== false && $this->_moduleManager->isEnabled($moduleName) ) {
+            if (strpos($moduleName, 'Plumrocket_') !== false && $this->_moduleManager->isEnabled($moduleName) ) {
                 $modules[$moduleName] = $module;
             }
         }
@@ -142,7 +141,6 @@ class AdminNotificationFeed extends \Magento\AdminNotification\Model\Feed
      *
      * @return $this
      */
-
     public function checkUpdate()
     {
         $session = $this->_backendAuthSession;
@@ -159,7 +157,7 @@ class AdminNotificationFeed extends \Magento\AdminNotification\Model\Feed
     }
 
     /**
-     * Retrieve Update Frequency
+     * Retrieve update frequency
      *
      * @return int
      */
@@ -169,11 +167,10 @@ class AdminNotificationFeed extends \Magento\AdminNotification\Model\Feed
     }
 
     /**
-     * Retrieve Last update time
+     * Retrieve last update time
      *
      * @return int
      */
-
     public function getLastUpdate()
     {
         return $this->_cacheManager->load('plumrocket_admin_notifications_lastcheck');
@@ -184,7 +181,6 @@ class AdminNotificationFeed extends \Magento\AdminNotification\Model\Feed
      *
      * @return $this
      */
-
     public function setLastUpdate()
     {
         $this->_cacheManager->save(time(), 'plumrocket_admin_notifications_lastcheck');

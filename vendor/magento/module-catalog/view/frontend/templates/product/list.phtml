@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 use Magento\Framework\App\Action\Action;
@@ -87,9 +87,6 @@ $_helper = $this->helper('Magento\Catalog\Helper\Output');
                                                     class="action tocart primary">
                                                 <span><?php /* @escapeNotVerified */ echo __('View Product') ?></span>
                                             </button>
-                                            <!-- Customize Button Should Go Here -->
-                                            
-                                            <!-- End Customize BUtton -->
                                         </form>
                                     <?php else: ?>
                                         <?php if ($_product->getIsSalable()): ?>

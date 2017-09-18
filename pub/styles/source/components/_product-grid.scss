@@ -1,0 +1,20 @@
+.products-grid.grid {
+  &.grid {
+    .product-item {
+      .product-item-info {
+        &:hover {
+          border: 0;
+          box-shadow: 0;
+        }
+      }
+      
+      .product-item-link {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+        width: 100%;
+      }
+    }
+  }
+}

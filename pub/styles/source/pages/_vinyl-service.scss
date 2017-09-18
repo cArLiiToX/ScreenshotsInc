@@ -1,0 +1,26 @@
+.cms-vinyl-services {
+  ul.bulleted {
+    li {
+      margin-bottom: 20px;
+      display: block;
+      width: 100%;
+
+      h4 {
+        display: inline-block;
+        font-size: 20px;
+        margin-bottom: 6px;
+      }
+
+      p {
+        padding: 0;
+        width: 100%;
+      }
+    }
+  }
+}
+
+/** Tablets -----------------------------------------------------------------*/
+@media screen and (max-width: $screen-md) {}
+
+/** Mobile ------------------------------------------------------------------*/
+@media screen and (max-width: $screen-sm) {}

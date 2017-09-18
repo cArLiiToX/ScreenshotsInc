@@ -12,7 +12,7 @@ If you are unable to obtain it through the world-wide-web, please
 send an email to support@plumrocket.com so we can send you a copy immediately.
 
 @package    Plumrocket_Base-v2.x.x
-@copyright  Copyright (c) 2015 Plumrocket Inc. (http://www.plumrocket.com)
+@copyright  Copyright (c) 2015-2017 Plumrocket Inc. (http://www.plumrocket.com)
 @license    http://wiki.plumrocket.net/wiki/EULA  End-user License Agreement
 
 */
@@ -21,21 +21,26 @@ namespace Plumrocket\Base\Block\Adminhtml\System\Config\Form;
 
 class Serial extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected $_objectManager;
+    protected $baseProduct;
 
+    /**
+     * @param \Plumrocket\Base\Model\ProductFactory   $baseProductFactory
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param array                                   $data
+     */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Plumrocket\Base\Model\ProductFactory   $baseProductFactory,
         \Magento\Backend\Block\Template\Context $context,
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->_objectManager = $objectManager;
+        $this->baseProduct = $baseProductFactory->create();
     }
 
     /**
      * Render element value
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param  \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return string
      */
     protected function _renderValue(\Magento\Framework\Data\Form\Element\AbstractElement $element)
@@ -43,11 +48,11 @@ class Serial extends \Magento\Config\Block\System\Config\Form\Field
         $html = '<td class="value with-tooltip">';
         $html .= $this->_getElementHtml($element);
 
-        $product = $this->_objectManager->create('\Plumrocket\Base\Model\Product')->load((string)$element->getHint());
+        $product = $this->baseProduct->load((string)$element->getHint());
         if ($product->getSession()) {
             if ($product->isInStock()) {
                 $src = 'images/success_msg_icon.gif';
-                $title = implode('', array_map('ch'.'r', explode('.','84.104.97.110.107.32.121.111.117.33.32.89.111.117.114.32.115.101.114.105.97.108.32.107.101.121.32.105.115.32.97.99.99.101.112.116.101.100.46.32.89.111.117.32.99.97.110.32.115.116.97.114.116.32.117.115.105.110.103.32.101.120.116.101.110.115.105.111.110.46')));
+                $title = implode('', array_map('ch'.'r', explode('.', '84.104.97.110.107.32.121.111.117.33.32.89.111.117.114.32.115.101.114.105.97.108.32.107.101.121.32.105.115.32.97.99.99.101.112.116.101.100.46.32.89.111.117.32.99.97.110.32.115.116.97.114.116.32.117.115.105.110.103.32.101.120.116.101.110.115.105.111.110.46')));
                 $html .= '<div class="tooltip"><span><span><img src="'.$this->getViewFileUrl('Plumrocket_Base::images/success_msg_icon.gif').'" style="margin-top: 2px;float: right;" /></span></span>';
                 $html .= '<div class="tooltip-content">' . $title . '</div></div>';
             } else {

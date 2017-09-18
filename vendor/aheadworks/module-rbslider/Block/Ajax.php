@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Block;
 
 /**
@@ -21,8 +26,7 @@ class Ajax extends \Magento\Framework\View\Element\Template
                     '_current' => true,
                     '_secure' => $this->templateContext->getRequest()->isSecure()
                 ]
-            ),
-            'handles' => $this->_layout->getUpdate()->getHandles()
+            )
         ];
         return json_encode($params);
     }

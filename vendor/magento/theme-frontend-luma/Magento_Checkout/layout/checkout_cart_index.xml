@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 -->
@@ -14,5 +14,6 @@
         <move element="checkout.cart.crosssell" destination="checkout.cart.container" after="-" />
         <move element="checkout.cart.coupon" destination="cart.discount" />
         <move element="checkout.cart.shortcut.buttons" destination="checkout.cart.methods" after="checkout.cart.methods.onepage.bottom"/>
+        <move element="logo" destination="checkout.header.wrapper"/>
     </body>
 </page>

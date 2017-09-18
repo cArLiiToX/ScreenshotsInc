@@ -1,12 +1,17 @@
-/*******************************************************************************
-* Variables
-*******************************************************************************/
-$breakpoint-med: 768px; // Swap with new screen-md var
-$breakboint-sm: 400px; // Swap with new screen-sm var
+/** Breakpoints -------------------------------------------------------------*/
 $screen-xl: 1600px;
 $screen-lg: 1200px;
 $screen-md: 768px;
 $screen-sm: 480px;
 $screen-xs: 320px;
 
+/** Colors ------------------------------------------------------------------*/
+$ss-red: #ee3030;
+$ss-red-dark: darken($ss-red, 10%);
+$ss-red-light: lighten($ss-red, 10%);
+$ss-green: #014a31;
+$ss-green-dark: darken($ss-green, 10%);
+$ss-green-light: lighten($ss-green, 10%);
+
+/** Element Dimensions ------------------------------------------------------*/
 $banner-height: 481px;

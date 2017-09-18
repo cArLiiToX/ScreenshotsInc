@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Test\Unit\Controller\Adminhtml\Banner;
 
 use Aheadworks\Rbslider\Model\Source\PageType;
@@ -78,13 +83,13 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         'rule' => [
             'rbslider' => [
                 '1' => [
-                    'type' => 'Aheadworks\Rbslider\Model\Rule\Condition\Combine',
+                    'type' => \Aheadworks\Rbslider\Model\Rule\Condition\Combine::class,
                     'aggregator' => 'all',
                     'value' => '1',
                     'new_child' => ''
                 ],
                 '1--1' =>[
-                    'type' => 'Aheadworks\Rbslider\Model\Rule\Condition\Product\Attributes',
+                    'type' => \Aheadworks\Rbslider\Model\Rule\Condition\Product\Attributes::class,
                     'attribute' => 'category_ids',
                     'operator' => '==',
                     'value' => '23'

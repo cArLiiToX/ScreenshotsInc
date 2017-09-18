@@ -1,4 +1,9 @@
 <?php
+/**
+* Copyright 2016 aheadWorks. All rights reserved.
+* See LICENSE.txt for license details.
+*/
+
 namespace Aheadworks\Rbslider\Test\Unit\Model\Converter;
 
 use Aheadworks\Rbslider\Model\Converter\Condition as ConditionConverter;

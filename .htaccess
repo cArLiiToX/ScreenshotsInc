@@ -1,331 +1,202 @@
-############################################
-## overrides deployment configuration mode value
-## use command bin/magento deploy:mode:set to switch modes
-
-# SetEnv MAGE_MODE default # or production or developer
-  SetEnv MAGE_MODE production
-
-
-############################################
-## uncomment these lines for CGI mode
-## make sure to specify the correct cgi php binary file name
-## it might be /cgi-bin/php-cgi
-
-#    Action php5-cgi /cgi-bin/php5-cgi
-#    AddHandler php5-cgi .php
-
-############################################
-## GoDaddy specific options
-
-#   Options -MultiViews
-
-## you might also need to add this line to php.ini
-##     cgi.fix_pathinfo = 1
-## if it still doesn't work, rename php.ini to php5.ini
-
-############################################
-## this line is specific for 1and1 hosting
-
-    #AddType x-mapp-php5 .php
-    #AddHandler x-mapp-php5 .php
-
-############################################
-## default index file
-
-    DirectoryIndex index.php
-
-<IfModule mod_php5.c>
-
-############################################
-## adjust memory limit
-
-    php_value memory_limit 768M
-    php_value max_execution_time 18000
-	php_flag always_populate_raw_post_data -1
-############################################
-## disable automatic session start
-## before autoload was initialized
-
-    php_flag session.auto_start off
-
-############################################
-## enable resulting html compression
-
-    #php_flag zlib.output_compression on
-
-###########################################
-## disable user agent verification to not break multiple image upload
-
-    php_flag suhosin.session.cryptua off
-
-</IfModule>
-
-<IfModule mod_php7.c>
-
-############################################
-## adjust memory limit
-
-    php_value memory_limit 768M
-    php_value max_execution_time 18000
-	php_flag always_populate_raw_post_data -1
-############################################
-## disable automatic session start
-## before autoload was initialized
-
-    php_flag session.auto_start off
-
-############################################
-## enable resulting html compression
-
-    #php_flag zlib.output_compression on
-
-###########################################
-## disable user agent verification to not break multiple image upload
-
-    php_flag suhosin.session.cryptua off
-
-</IfModule>
-
-<IfModule mod_security.c>
-###########################################
-## disable POST processing to not break multiple image upload
-
-    SecFilterEngine Off
-    SecFilterScanPOST Off
-</IfModule>
-
-<IfModule mod_deflate.c>
-
-############################################
-## enable apache served files compression
-## http://developer.yahoo.com/performance/rules.html#gzip
-
-    # Insert filter on all content
-    ###SetOutputFilter DEFLATE
-    # Insert filter on selected content types only
-    #AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript application/json image/svg+xml
-
-    # Netscape 4.x has some problems...
-    #BrowserMatch ^Mozilla/4 gzip-only-text/html
-
-    # Netscape 4.06-4.08 have some more problems
-    #BrowserMatch ^Mozilla/4\.0[678] no-gzip
-
-    # MSIE masquerades as Netscape, but it is fine
-    #BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
-
-    # Don't compress images
-    #SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary
-
-    # Make sure proxies don't deliver the wrong content
-    #Header append Vary User-Agent env=!dont-vary
-
-</IfModule>
-
-<IfModule mod_ssl.c>
-
-############################################
-## make HTTPS env vars available for CGI mode
-
-    SSLOptions StdEnvVars
-
-</IfModule>
-
-############################################
-## workaround for Apache 2.4.6 CentOS build when working via ProxyPassMatch with HHVM (or any other)
-## Please, set it on virtual host configuration level
-
-##    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
-############################################
-
-<IfModule mod_rewrite.c>
-
-############################################
-## enable rewrites
-
-    Options +FollowSymLinks
-    RewriteEngine on
-    RewriteCond %{HTTPS} off
-    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
-
-############################################
-## you can put here your magento root folder
-## path relative to web root
-
-    #RewriteBase /magento/
-
-############################################
-## workaround for HTTP authorization
-## in CGI environment
-
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
-############################################
-## TRACE and TRACK HTTP methods disabled to prevent XSS attacks
-
-    RewriteCond %{REQUEST_METHOD} ^TRAC[EK]
-    RewriteRule .* - [L,R=405]
-
-############################################
-## redirect for mobile user agents
-
-    #RewriteCond %{REQUEST_URI} !^/mobiledirectoryhere/.*$
-    #RewriteCond %{HTTP_USER_AGENT} "android|blackberry|ipad|iphone|ipod|iemobile|opera mobile|palmos|webos|googlebot-mobile" [NC]
-    #RewriteRule ^(.*)$ /mobiledirectoryhere/ [L,R=302]
-
-############################################
-## never rewrite for existing files, directories and links
-
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-l
-
-############################################
-## rewrite everything else to index.php
-
-    RewriteRule .* index.php [L]
-
-</IfModule>
-
-
-############################################
-## Prevent character encoding issues from server overrides
-## If you still have problems, use the second line instead
-
-    AddDefaultCharset Off
-    #AddDefaultCharset UTF-8
-    AddType 'text/html; charset=UTF-8' html
-
-<IfModule mod_expires.c>
-
-############################################
-## Add default Expires header
-## http://developer.yahoo.com/performance/rules.html#expires
-
-    ExpiresDefault "access plus 1 year"
-    ExpiresByType text/html A0
-    ExpiresByType text/plain A0
-
-</IfModule>
-
-###########################################
-## Deny access to root files to hide sensitive application information
-    RedirectMatch 403 /\.git
-
-    <Files composer.json>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files composer.lock>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files .gitignore>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files .htaccess>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files .htaccess.sample>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files .php_cs>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files .travis.yml>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files CHANGELOG.md>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files CONTRIBUTING.md>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files COPYING.txt>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files Gruntfile.js>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files LICENSE.txt>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files LICENSE_AFL.txt>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files nginx.conf.sample>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files package.json>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files php.ini.sample>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files README.md>
-        order allow,deny
-        deny from all
-    </Files>
-    <Files magento_umask>
-        order allow,deny
-        deny from all
-    </Files>
-
-# For 404s and 403s that aren't handled by the application, show plain 404 response
+###############################################################################
+# Custom .htaccess
+###############################################################################
+DirectoryIndex index.php
+Order allow,deny
+Allow from all
 ErrorDocument 404 /pub/errors/404.php
 ErrorDocument 403 /pub/errors/404.php
 
-################################
-## If running in cluster environment, uncomment this
-## http://developer.yahoo.com/performance/rules.html#etags
+##### Prevent encoding issues from server overrides ###########################
+AddDefaultCharset Off
+#AddDefaultCharset UTF-8
+AddType 'text/html; charset=UTF-8' html
 
-    #FileETag none
+##### Add support for SVG Images and CSS3 Pie #################################
+AddType image/svg+xml svg svgz
+AddEncoding gzip svgz
+AddType text/x-component .htc
 
-# ######################################################################
-# # INTERNET EXPLORER                                                  #
-# ######################################################################
+##### Block unwanted Crawler Bots #############################################
+RewriteCond %{HTTP_USER_AGENT} MJ12bot
+RewriteRule .* - [F]
+RewriteCond %{HTTP_USER_AGENT} 80legs [NC]
+RewriteRule ^ - [F]
 
-# ----------------------------------------------------------------------
-# | Document modes                                                     |
-# ----------------------------------------------------------------------
+##### Disable ETags ###########################################################
+#FileETag None
 
-# Force Internet Explorer 8/9/10 to render pages in the highest mode
-# available in the various cases when it may not.
-#
-# https://hsivonen.fi/doctype/#ie8
-#
-# (!) Starting with Internet Explorer 11, document modes are deprecated.
-# If your business still relies on older web apps and services that were
-# designed for older versions of Internet Explorer, you might want to
-# consider enabling `Enterprise Mode` throughout your company.
-#
-# https://msdn.microsoft.com/en-us/library/ie/bg182625.aspx#docmode
-# http://blogs.msdn.com/b/ie/archive/2014/04/02/stay-up-to-date-with-enterprise-mode-for-internet-explorer-11.aspx
+##### PHP Settings ############################################################
+<IfModule mod_php5.c>
+  php_value memory_limit 768M
+  php_value max_execution_time 18000
+  php_flag session.auto_start off
+  php_flag suhosin.session.cryptua off
+  php_flag zend.ze1_compatibility_mode Off
+</IfModule>
 
+<IfModule mod_php7.c>
+  php_value memory_limit 768M
+  php_value max_execution_time 18000
+  php_flag session.auto_start off
+  php_flag suhosin.session.cryptua off
+  php_flag zend.ze1_compatibility_mode Off
+</IfModule>
+
+##### disable POST processing to prevent breaking image upload ################
+<IfModule mod_security.c>
+  SecFilterEngine Off
+  SecFilterScanPOST Off
+</IfModule>
+
+#### Rewrite Directives #######################################################
+<IfModule mod_rewrite.c>
+  Options +FollowSymLinks
+  RewriteEngine on
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+  RewriteCond %{REQUEST_METHOD} ^TRAC[EK]
+  RewriteRule .* - [L,R=405]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-l
+  RewriteRule .* index.php [L]
+</IfModule>
+
+<Files *.php>
+  SetOutputFilter DEFLATE
+</Files>
+
+#### SSL Directives ###########################################################
+<IfModule mod_ssl.c>
+  SSLOptions StdEnvVars
+</IfModule>
+
+#### Header Directives ########################################################
 <IfModule mod_headers.c>
+  #Header unset ETag
+  #Header unset Last-Modified
+  Header set X-UA-Compatible "IE=edge"
+  <FilesMatch "\.(appcache|atom|bbaw|bmp|crx|css|cur|eot|f4[abpv]|flv|geojson|gif|htc|ico|jpe?g|js|json(ld)?|m4[av]|manifest|map|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|topojson|tt[cf]|txt|vcard|vcf|vtt|webapp|web[mp]|webmanifest|woff2?|xloc|xml|xpi)$">
+      Header unset X-UA-Compatible
+  </FilesMatch>
+  <filesmatch "\.(ico|flv|jpg|jpeg|png|gif|css|swf)$">
+  Header set Cache-Control "max-age=2678400, public"
+  </filesmatch>
+  <filesmatch "\.(html|htm)$">
+  Header set Cache-Control "max-age=7200, private, must-revalidate"
+  </filesmatch>
+  <filesmatch "\.(pdf)$">
+  Header set Cache-Control "max-age=86400, public"
+  </filesmatch>
+  <filesmatch "\.(js)$">
+  Header set Cache-Control "max-age=2678400, private"
+  </filesmatch>
+</IfModule>
 
-    Header set X-UA-Compatible "IE=edge"
-	Header set Access-Control-Allow-Origin *
-    # `mod_headers` cannot match based on the content-type, however,
-    # the `X-UA-Compatible` response header should be send only for
-    # HTML documents and not for the other resources.
+#### SERVER SIDE CACHING ######################################################
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access 1 month"
+  ExpiresByType image/jpg "access 1 month"
+  ExpiresByType image/jpeg "access 1 month"
+  ExpiresByType image/gif "access 1 month"
+  ExpiresByType image/png "access 1 month"
+  ExpiresByType text/css "access 1 month"
+  ExpiresByType application/pdf "access 1 month"
+  ExpiresByType application/javascript "access 1 month"
+  ExpiresByType application/x-javascript "access 1 month"
+  ExpiresByType application/x-shockwave-flash "access 1 month"
+  ExpiresByType image/x-icon "access 1 year"
+  ExpiresDefault "access plus 1 month"
+</IfModule>
 
-    <FilesMatch "\.(appcache|atom|bbaw|bmp|crx|css|cur|eot|f4[abpv]|flv|geojson|gif|htc|ico|jpe?g|js|json(ld)?|m4[av]|manifest|map|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|topojson|tt[cf]|txt|vcard|vcf|vtt|webapp|web[mp]|webmanifest|woff2?|xloc|xml|xpi)$">
-        Header unset X-UA-Compatible
-    </FilesMatch>
+##### mod_deflate compresses your output ######################################
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/rss+xml
+  AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
+  AddOutputFilterByType DEFLATE application/x-font
+  AddOutputFilterByType DEFLATE application/x-font-opentype
+  AddOutputFilterByType DEFLATE application/x-font-otf
+  AddOutputFilterByType DEFLATE application/x-font-truetype
+  AddOutputFilterByType DEFLATE application/x-font-ttf
+  AddOutputFilterByType DEFLATE application/x-javascript
+  AddOutputFilterByType DEFLATE application/xhtml+xml
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE font/opentype
+  AddOutputFilterByType DEFLATE font/otf
+  AddOutputFilterByType DEFLATE font/ttf
+  AddOutputFilterByType DEFLATE image/svg+xml
+  AddOutputFilterByType DEFLATE image/x-icon
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript
+  BrowserMatch ^Mozilla/4 gzip-only-text/html
+  BrowserMatch ^Mozilla/4\.0[678] no-gzip
+  BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+  SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary
+  Header append Vary User-Agent env=!dont-vary
+  php_flag zlib.output_compression on
+</IfModule>
 
+##### Mod gzip and caching ####################################################
+<ifModule mod_gzip.c>
+  mod_gzip_on Yes
+  mod_gzip_dechunk Yes
+  mod_gzip_item_include file \.(html?|txt|css|js|php|pl)$
+  mod_gzip_item_include handler ^cgi-script$
+  mod_gzip_item_include mime ^text/.*
+  mod_gzip_item_include mime ^application/x-javascript.*
+  mod_gzip_item_exclude mime ^image/.*
+  mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
+</ifModule>
+
+##### Mime Type Caching for Magento ###########################################
+<IfModule mod_mime.c>
+  AddCharset utf-8 .atom .css .js .json .rss .vtt .webapp .xml
+
+  ##### AUDIO #####
+  AddType audio/mp4 m4a f4a f4b
+  AddType audio/ogg oga ogg
+
+  ##### JAVASCRIPT #####
+  # Normalize to standard type (it's sniffed in IE anyways):
+  # http://tools.ietf.org/html/rfc4329#section-7.2
+  AddType application/javascript js jsonp
+  AddType application/json json
+
+  ##### VIDEO #####
+  AddType video/mp4                                   mp4 m4v f4v f4p
+  AddType video/ogg                                   ogv
+  AddType video/webm                                  webm
+  AddType video/x-flv                                 flv
+
+  ##### WEB FONTS #####
+  AddType application/font-woff                       woff
+  AddType application/vnd.ms-fontobject               eot
+
+  ##### Browsers usually ignore the font MIME types	and sniff the content #####
+  ##### however, Chrome shows a warning if other MIME types are used for #####
+  ##### the following fonts. #####
+  AddType application/x-font-ttf                      ttc ttf
+  AddType font/opentype                               otf
+
+  ##### OTHER #####
+  AddType application/octet-stream                    safariextz
+  AddType application/x-chrome-extension              crx
+  AddType application/x-opera-extension               oex
+  AddType application/x-shockwave-flash               swf
+  AddType application/x-web-app-manifest+json         webapp
+  AddType application/x-xpinstall                     xpi
+  AddType application/xml                             atom rdf rss xml
+  AddType image/webp                                  webp
+  AddType image/x-icon                                ico
+  AddType text/cache-manifest                         appcache manifest
+  AddType text/vtt                                    vtt
+  AddType text/x-component                            htc
+  AddType text/x-vcard                                vcf
+</IfModule>
+
+##### disable POST processing to prevent breaking image upload ################
+<IfModule mod_security.c>
+  SecFilterEngine Off
+  SecFilterScanPOST Off
 </IfModule>

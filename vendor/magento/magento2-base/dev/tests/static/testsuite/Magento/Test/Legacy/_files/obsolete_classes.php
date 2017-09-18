@@ -4,7 +4,7 @@
  *
  * Format: array(<class_name>[, <replacement>])
  *
- * Copyright © 2016 Magento. All rights reserved.
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 return [
@@ -4225,4 +4225,5 @@ return [
     ['Magento\Catalog\Test\Unit\Webapi\Product\Option\Type\File\ValidatorTest'],
     ['Magento\Framework\Search\Document', 'Magento\Framework\Api\Search\Document'],
     ['Magento\Framework\Search\DocumentField'],
+    ['Magento\Quote\Setup\Recurring'],
 ];
