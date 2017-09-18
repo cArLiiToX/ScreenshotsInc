@@ -47,10 +47,14 @@ atlassian*
 !/pub/static/.htaccess
 /var/*
 !/var/.htaccess
+/dev/*
 
 # Inkxe Specific #
 ##################
-/designer-tool/custom-assets/
+/designer-tool/custom-assets/*
+/designer-tool/designer-assets/screenshotsinc_com/images/capturedImage/cart/*
+/designer-tool/designer-assets/screenshotsinc_com/userimg/*
+/designer-tool/designer-assets/screenshotsinc_com/previewimg/*
 
 # Compiled source #
 ###################
