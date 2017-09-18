@@ -124,8 +124,10 @@ if($this->isCustomizeButton()) {
 				?>
 				//var size = document.getElementById("attribute<?php echo $attrId;?>").value;
 				//var color = document.getElementById("attribute<?php echo $attr1;?>").value;
-        var size = document.querySelector('[attribute-id="<?php echo $attrId;?>"]').value;
-        var color = document.querySelector('[attribute-id="<?php echo $attr1;?>"]').value;
+				var color = jQuery('.xe_color').attr('option-selected');
+				var size = jQuery('.xe_size').attr('option-selected');
+		        //var color = document.querySelector('[attribute-id="<?php echo $attr1;?>"]').selected;
+		        //var size = document.querySelector('[attribute-id="<?php echo $attrId;?>"]').value;
 				if(color != '' && size != ''){
 					var data = {reqmethod:'getSimpleProductId',pid:<?php echo $_product->getId(); ?>,xe_size:size,xe_color:color};
 					jQuery.ajax({

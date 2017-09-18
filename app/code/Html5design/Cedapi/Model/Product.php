@@ -1278,14 +1278,26 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
     {
         $product = $this->_productModel->load($configId);
         $simpleCollection = $product->getTypeInstance()->getUsedProducts($product);
+        $attribute = $this->_eavConfig->getAttribute('catalog_product', $size);
+        $options = $attribute->getSource()->getAllOptions();
+        foreach($options as $option) {
+            if($sizeId == $option['value']){
+                $sizeLabel = $option['label'];
+            }
+        }
+        $attribute = $this->_eavConfig->getAttribute('catalog_product', $color);
+        $options = $attribute->getSource()->getAllOptions();
+        foreach($options as $option) {
+            if($colorId == $option['value']){
+                $colorLabel = $option['label'];
+            }
+        }
         if (!empty($simpleCollection)) {
             $data = array();
             foreach ($simpleCollection as $simple) {
-                $attr = $simple->getResource()->getAttribute($color);
-                $attr1 = $simple->getResource()->getAttribute($size);
-                $simpleColorId = $attr->getSource()->getOptionId($simple->getAttributeText($color));
-                $simpleSizeId = $attr1->getSource()->getOptionId($simple->getAttributeText($size));
-                if ($simpleSizeId == $sizeId && $simpleColorId == $colorId) {
+                $simpleColorLabel = $simple->getAttributeText($color);
+                $simpleSizeLabel = $simple->getAttributeText($size);
+                if ($simpleSizeLabel == $sizeLabel && $simpleColorLabel == $colorLabel) {
                     $data['simpleProductId'] = $simple->getId();
                 }
             }
