@@ -1297,7 +1297,7 @@ class Product extends \Magento\Framework\Model\AbstractModel implements ProductI
             foreach ($simpleCollection as $simple) {
                 $simpleColorLabel = $simple->getAttributeText($color);
                 $simpleSizeLabel = $simple->getAttributeText($size);
-                if ($simpleSizeLabel == $sizeLabel && $simpleColorLabel == $colorLabel) {
+                if ($simpleColorLabel == $colorLabel) {
                     $data['simpleProductId'] = $simple->getId();
                 }
             }
