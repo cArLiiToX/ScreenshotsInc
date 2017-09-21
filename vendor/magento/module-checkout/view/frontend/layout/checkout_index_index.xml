@@ -442,8 +442,6 @@
                 </arguments>
             </block>
         </referenceContainer>
-        <referenceContainer name="page.messages" remove="true"/>
-
-        <move element="logo" destination="header-wrapper"/>
+        <referenceContainer name="page.messages" remove="true" />
     </body>
 </page>

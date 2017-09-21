@@ -1,9 +1,0 @@
-<svg width="39.5px" height="48.5px" viewBox="0 0 39.5 48.5" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs/>
-  <g>
-    <path stroke="none" fill="#01a491" d="M32.5 0 L39.5 0 39.5 19 32.5 19 32.5 0"/>
-    <path stroke="none" fill="#008779" d="M32.5 0 L32.5 19 26 19 26 34 0 34 0 0 32.5 0"/>
-    <path stroke="none" fill="#178d7f" d="M32.5 19 L32.5 34 26 34 26 19 32.5 19"/>
-    <path stroke="none" fill="#00a191" d="M26 34 L26 48.5 0 48.5 0 34 26 34"/>
-  </g>
-</svg>
