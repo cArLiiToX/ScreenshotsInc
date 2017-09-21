@@ -14,6 +14,12 @@
         <move element="checkout.cart.crosssell" destination="checkout.cart.container" after="-" />
         <move element="checkout.cart.coupon" destination="cart.discount" />
         <move element="checkout.cart.shortcut.buttons" destination="checkout.cart.methods" after="checkout.cart.methods.onepage.bottom"/>
-        <move element="logo" destination="checkout.header.wrapper"/>
+
+        <referenceBlock name="minicart" remove="true" />
+        <referenceContainer name="header.panel" remove="false" />
+        <referenceBlock name="top.search" remove="false" />
+        <referenceBlock name="catalog.compare.link" remove="true" />
+        <referenceBlock name="catalog.topnav" remove="false"/>
+        <move element="logo" destination="header-wrapper"/>
     </body>
 </page>

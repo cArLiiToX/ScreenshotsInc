@@ -52,9 +52,7 @@ atlassian*
 # Inkxe Specific #
 ##################
 /designer-tool/custom-assets/*
-/designer-tool/designer-assets/screenshotsinc_com/images/capturedImage/cart/*
-/designer-tool/designer-assets/screenshotsinc_com/userimg/*
-/designer-tool/designer-assets/screenshotsinc_com/previewimg/*
+/designer-tool/designer-assets/*
 
 # Compiled source #
 ###################

@@ -442,11 +442,6 @@
                 </arguments>
             </block>
         </referenceContainer>
-        <referenceContainer name="page.messages" remove="true"/>>
-
-        /**
-         * Add header back to checkout layout
-         */
-        <move element="logo" destination="header-wrapper"/>
+        <referenceContainer name="page.messages" remove="true" />
     </body>
 </page>
