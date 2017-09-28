@@ -73,6 +73,7 @@ RewriteRule ^ - [F]
 
 #### Header Directives ########################################################
 <IfModule mod_headers.c>
+  Header set Access-Control-Allow-Origin "*"
   #Header unset ETag
   #Header unset Last-Modified
   Header set X-UA-Compatible "IE=edge"
