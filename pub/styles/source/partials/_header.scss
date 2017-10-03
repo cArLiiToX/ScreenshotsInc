@@ -1,10 +1,55 @@
 .page-header {
+  background: #f0f0f0;
   .panel.wrapper {
-    background: #efefef;
-    color: #959595;
+    color: #aaa;
+    border-bottom: 1px solid #fff;
+    box-shadow: 0px 1px 0px 0px #ccc;
+    font-family: Roboto;
+    background: #f0f0f0;
+
 
     .greet.welcome {
       float: left;
+    }
+
+    .panel.header {
+      padding: 3px 20px;
+
+      .links {
+        width: 100%;
+        text-align: right;
+
+        li {
+          margin: 0;
+          line-height: 22px !important;
+        }
+
+        a:visited {
+          color: #024930;
+        }
+
+        .authorization-link:after {
+          margin: 0 5px;
+        }
+      }
+    }
+  }
+
+  .header.content {
+    padding: 12px 20px;
+
+    .logo {
+      margin: 0;
+    }
+
+    .minicart-wrapper,
+    .block-search {
+      margin-top: 15px;
+    }
+
+    .minicart-wrapper .action.showcart:before {
+      font-family: FontAwesome;
+      content: '\f07a';
     }
   }
 
@@ -13,20 +58,6 @@
       &:visited { color: #33755e !important; }
       &:hover { color: #024930 !important; }
       &:active { color: #024930 !important; }
-  }
-
-  .minicart-wrapper .action.showcart:before {
-    font-family: FontAwesome;
-    content: '\f07a';
-  }
-
-  .header.links {
-    width: 100%;
-    text-align: right;
-
-    a:visited {
-      color: #024930;
-    }
   }
 }
 

@@ -1,0 +1,45 @@
+<?php
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<div class="footer-container">
+    <div class="footer">
+        <!-- Custom Footer Content -->
+        <div class="footer-links">
+          <ul class="footer links">
+            <li class="nav item"><a href="/art-guide">Art/Design Guide</a></li>
+            <li class="nav item"><a href="/CustomArt">Order Custom Artwork</a></li>
+            <li class="nav item"><a href="/faq">F.A.Q's</a></li>
+            <li class="nav item"><a href="/tos">Terms of Service</a></li>
+            <li class="nav item"><a href="/shipping">Shipping Policy</a></li>
+            <li class="nav item"><a href="/sitemap">Sitemap</a></li>
+          </ul>
+          <ul class="footer links">
+            <li>ScreenShots Inc</li>
+            <li>1616 Freedom Drive</li>
+            <li>West Plains, Missouri 65775</li>
+            <li>Phone: 417-255-1888</li>
+            <li>Fax: 417-255-1887</li>
+            <li>Email: sales@screenshotsinc.com</li>
+          </ul>
+        </div>
+
+        <?php echo $block->getChildHtml() ?>
+        <p class="bugs"><?php /* @escapeNotVerified */ echo __('Help Us Keep Magento Healthy') ?> - <a
+            href="http://www.magentocommerce.com/bug-tracking"
+            target="_blank"><strong><?php /* @escapeNotVerified */ echo __('Report All Bugs') ?></strong></a>
+        </p>
+        <address><?php /* @escapeNotVerified */ echo $block->getCopyright() ?></address>
+    </div>
+</div>
+
+<!-- BEGIN JIVOSITE CODE {literal} -->
+<script type='text/javascript'>
+(function(){ var widget_id = 'KJvZgw69s4';var d=document;var w=window;function l(){
+var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = '//code.jivosite.com/script/widget/'+widget_id; var ss = document.getElementsByTagName('script')[0]; ss.parentNode.insertBefore(s, ss);}if(d.readyState=='complete'){l();}else{if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();</script>
+<!-- {/literal} END JIVOSITE CODE -->
