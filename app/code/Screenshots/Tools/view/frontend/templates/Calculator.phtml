@@ -1,0 +1,356 @@
+<div class="app-container">
+  <div class="input-section">
+    <h3>Print Quantity</h3>
+    <div class="input-block input-block--third">
+      <label>S-XL</label>
+      <input type="number" name="quantity" id="quantity" min="0" max="3000" value="1" required/>
+    </div>
+    <div class="input-block input-block--third">
+      <label>XXL</label>
+      <input type="number" name="xlQuantity" id="xlQuantity" min="0" max="3000" value="0" required />
+    </div>
+    <div class="input-block input-block--third">
+      <label>3XL+</label>
+      <input type="number" name="xxlQuantity" id="xxlQuantity" min="0" max="3000" value="0" required />
+    </div>
+  </div>
+
+  <!-- If !prePurchased -->
+  <div class="input-section">
+    <h3>Product Options</h3>
+    <div class="input-block">
+      <label>Client Supplied Items</label>
+      <select name="prePurchasedOption" id="prePurchasedOption">
+        <option selected="selected" value="0">No</option>
+        <option value="1">Yes</option>
+      </select>
+    </div>
+    <div class="input-block baseLevelBlock">
+      <label>
+        Base Level
+        <span class="label-help">?</span>
+        <div class="label-help-panel">
+          Base level is based on the given products base price.
+          <ul>
+            <li>Level 01 <span class="right">COG $01.00 - $03.00</span></li>
+            <li>Level 02 <span class="right">COG $03.01 - $04.00</span></li>
+            <li>Level 03 <span class="right">COG $04.01 - $05.00</span></li>
+            <li>Level 04 <span class="right">COG $05.01 - $06.00</span></li>
+            <li>Level 05 <span class="right">COG $06.01 - $07.00</span></span></li>
+            <li>Level 06 <span class="right">COG $07.01 - $08.00</span></li>
+            <li>Level 07 <span class="right">COG $08.01 - $09.00</span></li>
+            <li>Level 08 <span class="right">COG $09.01 - $11.00</span></li>
+            <li>Level 09 <span class="right">COG $11.01 - $13.00</span></li>
+            <li>Level 10 <span class="right">COG $13.01 - $15.00</span></li>
+          </ul>
+        </div>
+      </label>
+      <select name="baseLevelOption" id="baseLevelOption">
+        <option selected="selected" value="1">Level 1</option>
+        <option value="2">Level 2</option>
+        <option value="3">Level 3</option>
+        <option value="4">Level 4</option>
+        <option value="5">Level 5</option>
+        <option value="6">Level 6</option>
+        <option value="7">Level 7</option>
+        <option value="8">Level 8</option>
+        <option value="9">Level 9</option>
+        <option value="10">Level 10</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="input-section">
+    <h3>Print Areas and Colors</h3>
+    <div class="input-block input-block--fourth">
+      <label>Area 1</label>
+      <select name="printArea1" id="printArea1">
+        <option selected="selected" value="1">1 Color</option>
+        <option value="2">2 Color</option>
+        <option value="3">3 Color</option>
+        <option value="4">4 Color</option>
+        <option value="5">5 Color</option>
+        <option value="6">6 Color</option>
+      </select>
+    </div>
+
+    <div class="input-block input-block--fourth">
+      <label>Area 2</label>
+      <select name="printArea2" id="printArea2">
+        <option selected="selected" value="0">No Print</option>
+        <option value="1">1 Color</option>
+        <option value="2">2 Color</option>
+        <option value="3">3 Color</option>
+        <option value="4">4 Color</option>
+        <option value="5">5 Color</option>
+        <option value="6">6 Color</option>
+      </select>
+    </div>
+
+    <div class="input-block input-block--fourth">
+      <label>Area 3</label>
+      <select name="printArea3" id="printArea3">
+        <option selected="selected" value="0">No Print</option>
+        <option value="1">1 Color</option>
+        <option value="2">2 Color</option>
+        <option value="3">3 Color</option>
+        <option value="4">4 Color</option>
+        <option value="5">5 Color</option>
+        <option value="6">6 Color</option>
+      </select>
+    </div>
+
+    <div class="input-block input-block--fourth">
+      <label>Area 4</label>
+      <select name="printArea4" id="printArea4">
+        <option selected="selected" value="0">No Print</option>
+        <option value="1">1 Color</option>
+        <option value="2">2 Color</option>
+        <option value="3">3 Color</option>
+        <option value="4">4 Color</option>
+        <option value="5">5 Color</option>
+        <option value="6">6 Color</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="input-section">
+    <h3>Personalizations</h3>
+    <div class="input-block input-block--third">
+      <label>Personalized Qty</label>
+      <input type="number" value="0" name="personalizedQuantity" id="personalizations" min="0" max="3000" />
+    </div>
+
+    <div class="input-block input-block--third">
+      <label>1 Color #'s'</label>
+      <input type="number" value="0" name="1colorNumbers" id="oneColorNumbers" min="0" max="3000" />
+    </div>
+    <div class="input-block input-block--third">
+      <label>2 Color #'s'</label>
+      <input type="number" value="0" name="2colorNumbers" id="twoColorNumbers" min="0" max="3000" />
+    </div>
+  </div>
+  <div class="input-section">
+    <h3>Color Changes &amp; Transfers</h3>
+    <div class="input-block input-block">
+      <label>Color Change Quantity</label>
+      <input type="number" placeholder="0" name="colorChange" id="colorChanges" min="0" max="3000" />
+    </div>
+    <div class="input-block input-block">
+      <label>Transfer Quantity</label>
+      <input type="number" placeholder="0" name="transferQuantity" id="transfers" min="0" max="3000" />
+    </div>
+  </div>
+
+  <!-- Form Controls -->
+  <div class="buttons">
+    <a class="btn btn-submit" id="calculateCosts">Calculate</a>
+  </div>
+
+  <!-- Results -->
+  <div class="results">
+    <div class="result-block wholesaleCostPerItem">
+      Cost Per Item: <span class="result-price">$<span class="wholesaleCostPerItemDisplay"></span></span>
+    </div>
+    <div class="result-block wholesaleResult">
+      Wholesale Total: <span class="result-price">$<span class="wholesalePriceDisplay"></span></span>
+    </div>
+    <div class="result-block resaleCostPerItem">
+      Suggested Item Retail: <span class="result-price">$<span class="retailCostPerItemDisplay"></span></span>
+    </div>
+    <div class="result-block retailResult">
+      Suggested Order Retail: <span class="result-price">$<span class="retailPriceDisplay"></span></span>
+    </div>
+  </div>
+</div>
+
+<script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous">
+</script>
+<script type="text/javascript">
+  /**
+   * Calculate order cost
+   * @return {[type]} [description]
+   */
+  $('#calculateCosts').click(function() {
+    var quantity             = Number($('#quantity').val()),
+        xlQuantity           = Number($('#xlQuantity').val()),
+        xxlQuantity          = Number($('#xxlQuantity').val()),
+        quantityTotal        = 0,
+        xlTotal              = 0,
+        xxlTotal             = 0,
+        prePurchaseStatus    = $('#prePurchasedOption').val(),
+        baseLevelOption      = $('#baseLevelOption').val (),
+        baseLevelPrice       = 0,
+        printQuantity        = (quantity + xlQuantity + xxlQuantity),
+        printZones           = 1,
+        zone1price           = 0,
+        zone2price           = 0,
+        zone3price           = 0,
+        zone4price           = 0,
+        printZone1Colors     = Number($('#printArea1').val()),
+        printZone2Colors     = Number($('#printArea2').val()),
+        printZone3Colors     = Number($('#printArea3').val()),
+        printZone4Colors     = Number($('#printArea4').val()),
+        personalizations     = Number($('#personalizations').val()),
+        personalizationTotal = personalizations * 4,
+        oneColorNumbers      = Number($('#oneColorNumbers').val()),
+        oneColorNumberTotal  = oneColorNumbers * 2,
+        twoColorNumbers      = Number($('#twoColorNumbers').val()),
+        twoColorNumberTotal  = twoColorNumbers * 4,
+        colorChanges         = Number($('#colorChanges').val()),
+        colorChangeTotal     = colorChanges * 5,
+        transfers            = Number($('#transfers').val()),
+        transferTotal        = transfers * .25,
+        screenQuantity       = 0,
+        screenCost           = 5,
+        screenTotal          = 0,
+        retailCharge         = 0,
+        retailTotal          = 0,
+        bulkDiscount         = 0,
+        costPerItem          = 0,
+        retailCostPerItem    = 0,
+        wholesalePrice       = 0,
+        retailPrice          = 0;
+
+    /** Assign baseLevelPrice according to selected base level range */
+    if (baseLevelOption == 1) {
+      baseLevelPrice = 5.00;
+    } else if (baseLevelOption == 2) {
+      baseLevelPrice = 6.50;
+    } else if (baseLevelOption == 3) {
+      baseLevelPrice = 8.00;
+    } else if (baseLevelOption == 4) {
+      baseLevelPrice = 9.50;
+    } else if (baseLevelOption == 5) {
+      baseLevelPrice = 11.00;
+    } else if (baseLevelOption == 6) {
+      baseLevelPrice = 12.50;
+    } else if (baseLevelOption == 7) {
+      baseLevelPrice = 14.00;
+    } else if (baseLevelOption == 8) {
+      baseLevelPrice = 16.00;
+    } else if (baseLevelOption == 9) {
+      baseLevelPrice = 19.50;
+    } else if (baseLevelOption == 10) {
+      baseLevelPrice = 22.00;
+    }
+
+    /** Assign color costs based on print quantity */
+    /** Assign retail charge based on retail charge table */
+    if (printQuantity <= 23) {
+      baseColorCost = 2.90;
+      additionalColorCost = 1;
+      retailCharge = 4.10;
+    } else if (printQuantity >= 24 && printQuantity <= 35) {
+      baseColorCost = 2.30;
+      additionalColorCost = 0.75;
+      retailCharge = 3.70;
+    } else if (printQuantity >= 36 && printQuantity <= 47) {
+      baseColorCost = 5;
+      additionalColorCost = 0.50;
+      retailCharge = 3.30;
+    } else if (printQuantity >= 48 && printQuantity <= 71) {
+      baseColorCost = 4;
+      additionalColorCost = 0.25;
+      retailCharge = 2.50;
+    } else if (printQuantity >= 72 && printQuantity <= 143) {
+      baseColorCost = 3;
+      additionalColorCost = 0.15;
+      retailCharge = 1.80;
+    } else if (printQuantity >= 144 && printQuantity <= 199) {
+      baseColorCost = 2;
+      additionalColorCost = 0.10;
+      retailCharge = 0.95;
+    } else if (printQuantity >= 200 && printQuantity <= 299) {
+      baseColorCost = 1.8;
+      retailCharge = .85;
+    } else if (printQuantity >= 300 && printQuantity <= 499) {
+      baseColorCost = 1.5;
+      additionalColorCost = 0.05;
+      retailCharge = 0.75;
+    } else if (printQuantity >= 500 && printQuantity <= 749) {
+      baseColorCost = 1.35;
+      retailCharge = 0.65;
+    } else if (printQuantity >= 750 && printQuantity <= 999) {
+      baseColorCost = 1.2;
+      retailCharge = 0.55;
+    } else if (printQuantity >= 1000 && printQuantity <= 1999) {
+      baseColorCost = 1.07;
+      retailCharge = 0.45;
+    } else if (printQuantity >= 2000 && printQuantity <= 2999) {
+      baseColorCost = 0.98;
+      retailCharge = 0.40;
+    } else if (printQuantity >= 3000) {
+      baseColorCost = 0.95;
+      retailCharge = 0.40;
+    }
+
+    /** Zone Prices */
+    zone1price        = printZone1Colors >= 2 ?
+                        baseColorCost + ((printZone1Colors - 1) * additionalColorCost) :
+                        baseColorCost;
+    zone2price        = printZone2Colors >= 1 ?printZone2Colors >= 2 ?
+                        baseColorCost + ((printZone2Colors - 1) * additionalColorCost) :
+                        baseColorCost : 0;
+    zone3price        = printZone3Colors >= 1 ? printZone3Colors >= 2 ?
+                        baseColorCost + ((printZone3Colors - 1) * additionalColorCost) :
+                        baseColorCost : 0;
+    zone4price        = printZone4Colors >= 1 ? printZone4Colors >= 2 ?
+                        baseColorCost + ((printZone4Colors - 1) * additionalColorCost) :
+                        baseColorCost : 0;
+
+    /** Totals */
+    quantityTotal     = (quantity * baseLevelPrice);
+    xlTotal           = (xlQuantity * 1.5) + (xlQuantity * baseLevelPrice);
+    xxlTotal          = (xxlQuantity * 2.5) + (xlQuantity * baseLevelPrice);
+    retailTotal       = printQuantity * retailCharge;
+    printColors       = Number(printZone1Colors) +
+                        Number(printZone2Colors) +
+                        Number(printZone3Colors) +
+                        Number(printZone4Colors);
+    printPrice        = zone1price + zone2price + zone3price + zone4price;
+    productTotal      = (quantityTotal + xlTotal + xxlTotal);
+    screenTotal       = printColors * screenCost;
+
+    /** Final Costs */
+    costPerItem       = prePurchaseStatus == 0 ?
+                        baseLevelPrice + printPrice + (screenTotal / quantity):
+                        printPrice + (screenTotal / quantity);
+
+    retailCostPerItem = costPerItem + retailCharge;
+
+    wholesalePrice    = prePurchaseStatus == 0 ?
+                        productTotal +
+                        oneColorNumberTotal + twoColorNumberTotal +
+                        colorChangeTotal + transferTotal +
+                        (printPrice * quantity) + screenTotal :
+                        oneColorNumberTotal + twoColorNumberTotal +
+                        colorChangeTotal + transferTotal +
+                        (printPrice * quantity) + screenTotal;
+
+    retailPrice       = prePurchaseStatus == 0 ?
+                        wholesalePrice + retailTotal  :
+                        wholesalePrice + retailTotal + productTotal;
+
+    displayResults(wholesalePrice, retailPrice, costPerItem, retailCostPerItem);
+  });
+
+  /**
+   * Update view with the calculated totals
+   * @var [type]
+   */
+  displayResults = function(wholesalePrice, retailPrice, costPerItem, retailCostPerItem) {
+    var wholesalePrice    = wholesalePrice.toFixed(2),
+        retailPrice       = retailPrice.toFixed(2),
+        costPerItem       = costPerItem.toFixed(2),
+        retailCostPerItem = retailCostPerItem.toFixed(2);
+
+    $('.wholesalePriceDisplay').html(wholesalePrice);
+    $('.retailPriceDisplay').html(retailPrice);
+    $('.wholesaleCostPerItemDisplay').html(costPerItem);
+    $('.retailCostPerItemDisplay').html(retailCostPerItem);
+  };
+</script>

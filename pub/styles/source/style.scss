@@ -23,10 +23,6 @@
 @import 'components/jivo';
 @import 'components/product-grid';
 
-/* Modules */
-@import 'modules/wholesale';
-@import 'modules/customart';
-
 /* Pages */
 @import 'pages/home';
 @import 'pages/about';
@@ -42,3 +38,9 @@
 @import 'pages/printing-service';
 @import 'pages/vinyl-service';
 @import 'pages/art-guide';
+
+/* Modules */
+@import 'modules/wholesale';
+@import 'modules/customart';
+@import 'modules/tools/tools';
+@import 'modules/tools/calculator';

@@ -80,10 +80,25 @@
 
     .header.content {
       height: 80px;
+
+      .logo {
+        margin: 0 0 10px 40px;
+      }
     }
   }
 }
 
 /** Mobile ------------------------------------------------------------------*/
 @media screen and (max-width: $screen-sm) {
+  .page-header {
+    .header.content {
+      height: auto;
+      padding: 10px 20px;
+
+      .block-search,
+      .minicart-wrapper {
+        margin-top: 5px;
+      }
+    }
+  }
 }
