@@ -195,13 +195,17 @@
         printZone3Colors     = Number($('#printArea3').val()),
         printZone4Colors     = Number($('#printArea4').val()),
         personalizations     = Number($('#personalizations').val()),
-        personalizationTotal = personalizations * 4,
+        personalizationCost  = 4,
+        personalizationTotal = personalizations * personalizationCost,
         oneColorNumbers      = Number($('#oneColorNumbers').val()),
-        oneColorNumberTotal  = oneColorNumbers * 2,
+        oneColorNumberCost   = 2,
+        oneColorNumberTotal  = oneColorNumbers * oneColorNumberCost,
         twoColorNumbers      = Number($('#twoColorNumbers').val()),
-        twoColorNumberTotal  = twoColorNumbers * 4,
+        twoColorNumberCost   = 4,
+        twoColorNumberTotal  = twoColorNumbers * twoColorNumberCost,
         colorChanges         = Number($('#colorChanges').val()),
-        colorChangeTotal     = colorChanges * 5,
+        colorChangeCost      = 5,
+        colorChangeTotal     = colorChanges * colorChangeCost,
         transfers            = Number($('#transfers').val()),
         transferTotal        = transfers * .25,
         screenQuantity       = 0,
@@ -317,18 +321,35 @@
 
     /** Final Costs */
     costPerItem       = prePurchaseStatus == 0 ?
-                        baseLevelPrice + printPrice + (screenTotal / quantity):
-                        printPrice + (screenTotal / quantity);
+                        baseLevelPrice +
+                        printPrice + (screenTotal / quantity) +
+                        (personalizations >= 1 ? personalizationCost : 0) +
+                        (oneColorNumbers >= 1 ? oneColorNumberCost : 0) +
+                        (twoColorNumbers >= 1 ? twoColorNumberCost : 0) +
+                        (colorChanges >= 1 ? colorChangeTotal / colorChanges : 0) :
+                        printPrice + (screenTotal / quantity) +
+                        (personalizations >= 1 ? personalizationCost : 0) +
+                        (oneColorNumbers >= 1 ? oneColorNumberCost : 0) +
+                        (twoColorNumbers >= 1 ? twoColorNumberCost : 0) +
+                        (colorChanges >= 1 ? colorChangeTotal / colorChanges : 0);
 
-    retailCostPerItem = costPerItem + retailCharge;
+    retailCostPerItem = baseLevelPrice +
+                        printPrice + (screenTotal / quantity) +
+                        (personalizations >= 1 ? personalizationCost : 0) +
+                        (oneColorNumbers >= 1 ? oneColorNumberCost : 0) +
+                        (twoColorNumbers >= 1 ? twoColorNumberCost : 0) +
+                        (colorChanges >= 1 ? colorChangeTotal / colorChanges : 0) +
+                        retailCharge;
 
     wholesalePrice    = prePurchaseStatus == 0 ?
                         productTotal +
                         oneColorNumberTotal + twoColorNumberTotal +
                         colorChangeTotal + transferTotal +
+                        personalizationTotal +
                         (printPrice * quantity) + screenTotal :
                         oneColorNumberTotal + twoColorNumberTotal +
                         colorChangeTotal + transferTotal +
+                        personalizationTotal +
                         (printPrice * quantity) + screenTotal;
 
     retailPrice       = prePurchaseStatus == 0 ?

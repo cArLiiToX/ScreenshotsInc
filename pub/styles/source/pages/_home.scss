@@ -156,6 +156,10 @@
 /** Mobile ------------------------------------------------------------------*/
 @media screen and (max-width: $screen-sm) {
   .cms-home, .cms-index-index {
-
+    .block-hype {  
+      .content-column {
+        width: 100%;
+      }
+    }
   }
 }

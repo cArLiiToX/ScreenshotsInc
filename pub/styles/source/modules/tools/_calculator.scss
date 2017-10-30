@@ -65,6 +65,7 @@
       margin: 0 3px 0 0;
       padding: 0;
       position: relative;
+      font-family: Roboto;
     }
 
     .label-help {
@@ -128,6 +129,8 @@
       box-sizing: border-box;
       font-size: 10pt;
       margin: 2px 0;
+      width: 50%;
+      float: left;
     }
 
     .wholesaleResult {
@@ -153,8 +156,8 @@
       display: inline-block;
       box-sizing: border-box;
       border-radius: 3px;
+      font-family: Roboto;
       cursor: pointer;
-      font-family: Lobster;
       font-size: 22px;
       position: relative;
       overflow: hidden;
@@ -216,4 +219,9 @@
 @media screen and (max-width: $screen-md) {}
 
 /** Mobile ------------------------------------------------------------------*/
-@media screen and (max-width: $screen-sm) {}
+@media screen and (max-width: $screen-sm) {
+  .result-block {
+    width: 100%;
+    float: none;
+  }
+}
