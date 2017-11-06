@@ -220,8 +220,12 @@
 
 /** Mobile ------------------------------------------------------------------*/
 @media screen and (max-width: $screen-sm) {
-  .result-block {
-    width: 100%;
-    float: none;
+  .tools-calculator-index {
+    .app-container {
+      .result-block {
+        width: 100%;
+        float: none;
+      }
+    }
   }
 }
