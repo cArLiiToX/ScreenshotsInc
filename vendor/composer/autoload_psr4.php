@@ -36,6 +36,7 @@ return array(
     'Zend\\Code\\' => array($vendorDir . '/zendframework/zend-code/src'),
     'WeltPixel\\OwlCarouselSlider\\' => array($vendorDir . '/weltpixel/m2-weltpixel-owl-carousel-slider'),
     'WeltPixel\\Backend\\' => array($vendorDir . '/weltpixel/m2-weltpixel-backend'),
+    'Vnecoms\\DeleteOrders\\' => array($vendorDir . '/vnecoms/module-delete-orders'),
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'Symfony\\Component\\Stopwatch\\' => array($vendorDir . '/symfony/stopwatch'),
     'Symfony\\Component\\Process\\' => array($vendorDir . '/symfony/process'),

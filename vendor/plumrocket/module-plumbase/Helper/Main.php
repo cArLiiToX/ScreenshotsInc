@@ -80,10 +80,10 @@ class Main extends \Plumrocket\Base\Helper\Base
     /**
      * Set order
      *
-     * @param  \Mage\Sales\Model\Order $order
+     * @param  \Magento\Sales\Model\Order $order
      * @return self
      */
-    public function __setOrder(\Mage\Sales\Model\Order $order)
+    public function __setOrder(\Magento\Sales\Model\Order $order)
     {
         $this->_order = $order;
         $this->setOrderId($order->getId())
