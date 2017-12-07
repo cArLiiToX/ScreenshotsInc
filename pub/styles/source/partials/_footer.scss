@@ -1,78 +1,189 @@
+.page-bottom,
+.page-wrapper>.page-bottom {
+  width: 100%;
+  padding: 0;
+
+  .block-static-block.widget,
+  .block-cms-link.widget {
+    margin-bottom: 0;
+  }
+}
+
 .page-footer {
   background: url('/pub/images/screenshots-printing.jpg');
   color: #cccccc;
-  padding: 30px 0;
-  border-top: 2px solid #ef2b2d;
-}
+  padding:0;
+  box-sizing: border-box;
+  width: 100%;
+  font-size: 12px;
 
-.footer.content {
-  .widget {
-    margin: 0;
+  .column.main {
+    min-height: auto;
+    max-width: 1280px;
+    width: 100%;
+    padding: 0 20px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
   }
 
-  .links {
-    li {
-      background: #111;
-    }
-
-    a {
-      color: #fff;
-      &:visited,
-      &:hover,
-      &:active {
-        color: #fff;
-      }
-    }
+  .footer-content {
+    padding: 30px 0;
   }
 
-  .social-icons {
-    float: right;
-    display: block;
-    list-style: none;
-    margin-bottom: 10px;
-    padding: 0;
+  .footer-block,
+  .contact-block,
+  .social-block {
+    color: #666;
 
-    li {
-      display: inline-block;
-      margin-right: 10px;
-      font-size: 18pt;
-      &:last-of-type {
-        margin-right: 0;
-      }
-    }
-  }
-
-  .block.newsletter {
-    margin-bottom: 20px;
-  }
-
-  #siteseal {
-    width: 120px;
-    overflow: hidden;
-    display: inline-block;
-
-    img {
-      width: 131px;
-      height: auto;
-      max-width: none !important;
+    h5 {
       display: block;
+      clear: both;
+      margin-bottom: 6px;
+      color: #333;
+      font-size: 2rem;
     }
   }
-}
 
-.copyright {
-  background: #111;
-  color: #aaa;
+  .footer-block {
+    width: 15%;
+    display: inline-block;
+    float: left;
+
+    .link-list {
+      width: 100%;
+      display: inline-block;
+      float: left;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        a {
+          color: #fff;
+          &:visited,
+          &:hover,
+          &:active {
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+
+  .contact-block {
+    width: 30%;
+    display: inline-block;
+    float: left;
+
+    .link-list {
+      width: 100%;
+      display: inline-block;
+      float: left;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        a {
+          color: #fff;
+          &:visited,
+          &:hover,
+          &:active {
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+
+  .social-block {
+    width: 40%;
+    display: inline-block;
+    float: right;
+
+    .social-list {
+      width: auto;
+      max-width: 100%;
+      display: inline-block;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        display: inline-block;
+        margin-right: 10px;
+        font-size: 18pt;
+        &:last-of-type {
+          margin-right: 0;
+        }
+      }
+
+      #facebookIcon,
+      #twitterIcon,
+      #linkedInIcon,
+      #yelpIcon {
+        width: 32px;
+        height: 32px;
+      }
+
+      #facebookIcon {
+        background: url('/pub/images/social/icons/spritesheet.png') 0 0;
+      }
+
+      #twitterIcon {
+        background: url('/pub/images/social/icons/spritesheet.png') 66px 0;
+      }
+
+      #linkedInIcon {
+        background: url('/pub/images/social/icons/spritesheet.png') 99px 0;
+      }
+
+      #yelpIcon {
+        background: url('/pub/images/social/icons/spritesheet.png') 33px 0;
+      }
+    }
+
+    .newsletter-signup {
+      display: block;
+      clear: both;
+
+      input {
+        margin-bottom: 12px;
+      }
+
+      button {
+        float: right;
+      }
+    }
+
+    #siteseal {
+      width: 120px;
+      overflow: hidden;
+      display: inline-block;
+
+      img {
+        width: 131px;
+        height: auto;
+        max-width: none !important;
+        display: block;
+      }
+    }
+  }
+
+  .copyright {
+    background: #181818;
+    color: #aaa;
+    padding: 12px 0;
+  }
 }
 
 .ss-subfooter {
   background: url(/pub/images/screenshots-printing.jpg);
   padding: 6px 20px;
   width: 100%;
-  position: relative;
-  left: -20px;
-  right: 0;
   border-radius: 2px 2px 0 0;
+  box-sizing: border-box;
 
   ul {
     width: 100%;
@@ -130,22 +241,23 @@
 @media screen and (max-width: $screen-md) {
   .page-footer {
     margin-top: 0;
-  }
+    padding: 20px;
 
-  .footer.content {
-    border: 0;
-  }
-
-  .footer.content .links {
-    li {
-      border: 0;
+    .footer-block,
+    .contact-block,
+    .social-block {
+      width: 100%;
       text-align: center;
-    }
-  }
 
-  .footer.content .social-icons {
-    float: none;
-    text-align: center;
+      .social-list {
+        width: 100%;
+        float: none;
+        text-align: center;
+        li {
+          float: none;
+        }
+      }
+    }
   }
 }
 

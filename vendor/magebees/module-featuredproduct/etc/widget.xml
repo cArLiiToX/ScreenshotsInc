@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+    <widget id="featured_products" class="Magebees\Featuredproduct\Block\Widget\Featuredwidget" is_email_compatible="true"
+            placeholder_image="Magebees_Featuredproduct::images/Featuredwidget.png" ttl="86400">
+        <label translate="true">Magebees::Featured Products Widget</label>
+        <description translate="true">List of Products that are set as Featured</description>
+		<parameters>
+         <parameter name="template" xsi:type="select" required="true" visible="true">
+            <label translate="true">Template</label>
+            <options>
+                <option name="default" value="featured_grid.phtml" selected="true">
+                    <label translate="true">Featured Products Grid Template</label>
+                </option>
+                <option name="list_default"
+                        value="featured_default_list.phtml">
+                    <label translate="true">Featured Products Images and Names Template</label>
+                </option>             
+            </options>
+        </parameter>
+		<parameter name="wd_show_heading" xsi:type="select" visible="true"
+                       source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Display heading</label>
+				<description translate="true">Select Yes for display page heading.</description>
+        </parameter>
+		<parameter name="wd_heading" xsi:type="text" visible="true" required="true">
+                <label translate="true">Heading</label>
+				<description translate="true">Here we can set heading.</description>
+				<depends>
+                    <parameter name="wd_show_heading" value="1" />
+                </depends>
+				<value>Featured Products</value>
+        </parameter>
+		
+		<parameter name="wd_slider" xsi:type="select" visible="true"
+                       source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Add Slider For Product</label>
+				<description translate="true">Select Yes for display Slider</description>
+                <depends>
+                    <parameter name="template" value="featured_grid.phtml" />
+                </depends>
+        </parameter>
+		<parameter name="wd_no_of_product" xsi:type="text" visible="true" required="true">
+                <label translate="true">Number of Product to Display</label>
+				<description translate="true">Show number of products in main block</description>
+				<value>10</value>
+        </parameter>
+		<parameter name="wd_products_per_row" xsi:type="select" visible="true"
+                   source_model="Magebees\Featuredproduct\Model\Rowselect">
+                <label translate="true">Number of items per row in Main Block</label>
+				<description translate="true">Show number of products per row in main block</description>					
+                 <depends>
+                    <parameter name="template" value="featured_grid.phtml" />
+                     <parameter name="wd_slider" value="0" />   
+                </depends>            
+        </parameter>
+		<parameter name="wd_products_per_page" xsi:type="text" visible="true">
+                <label translate="true">Products per Page</label>
+				<description translate="true">Comma-separated.(Default:9,15,30)</description>
+				<depends>
+                    <parameter name="wd_slider" value="0" />                    
+				</depends>	
+			<value>9,15,30</value>
+        </parameter>
+		<parameter name="wd_featuredproduct" xsi:type="select" visible="true"
+                       source_model="Magebees\Featuredproduct\Model\Showproduct">
+                <label translate="true">Select Featured Products Type</label>
+				<description translate="true">You can display all products or display by categories.</description>
+        </parameter>
+		
+		<parameter name="wd_categories" xsi:type="multiselect" visible="true"
+                       source_model="Magebees\Featuredproduct\Model\Categories" required="true">   
+                <label translate="true">Categories</label>				
+				<depends>
+                    <parameter name="wd_featuredproduct" value="2" />
+                </depends>				
+        </parameter>		
+		<parameter name="wd_sort_by" xsi:type="select" visible="true"
+                       source_model="Magebees\Featuredproduct\Model\Sortby">
+                <label translate="true">Sort By</label>
+				<description translate="true">Set attribute that is initially used to sort the featured products list.</description>
+        </parameter>
+		<parameter name="wd_sort_order" xsi:type="select" visible="true"
+                       source_model="Magebees\Featuredproduct\Model\Sortorder">
+                <label translate="true">Sort Order</label>			
+        </parameter>
+		<parameter name="wd_price" xsi:type="select" visible="true"
+                       source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Display Product Price</label>
+				<description translate="true">Select Yes for display Product Price on frontend</description>
+            <depends>
+                    <parameter name="template" value="featured_grid.phtml" />
+                </depends>
+        </parameter>
+		<parameter name="wd_description" xsi:type="select" visible="true"
+                       source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Display Short Description</label>
+				
+				<description translate="true">Select Yes for display Short Description on frontend</description>
+				<depends>
+                    <parameter name="wd_slider" value="0" />  
+                    <parameter name="template" value="featured_grid.phtml" />
+				</depends>
+          
+        </parameter>
+		<parameter name="wd_compare" xsi:type="select" visible="true"
+                       source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Display Add to Compare</label>
+				<description translate="true">Select Yes for display the Add to Compare Link on frontend.</description>
+            <depends>
+                    <parameter name="template" value="featured_grid.phtml" />
+                </depends>
+        </parameter>
+		<parameter name="wd_wishlist" xsi:type="select" visible="true"
+                       source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Display Add to Wishlist</label>
+				<description translate="true">Select Yes for display the Add to Wishlist Link on frontend.</description>
+            <depends>
+                    <parameter name="template" value="featured_grid.phtml" />
+                </depends>
+        </parameter>
+		<parameter name="wd_cart" xsi:type="select" visible="true"
+                       source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Display Add to Cart</label>
+				<description translate="true">Select Yes for display the Add to cart button on frontend.</description>
+            <depends>
+                    <parameter name="template" value="featured_grid.phtml" />
+                </depends>
+        </parameter>
+		<parameter name="wd_out_stock" xsi:type="select" visible="true"
+                       source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Display Out of Stock Product</label>
+				<description translate="true">Select Yes for display the out of stock items on frontend.</description>
+        </parameter>
+		
+			<parameter name="wd_ajaxscroll_page" xsi:type="select" visible="true"
+                       source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Auto Load Next Page</label>
+				
+				<description translate="true">Select Yes for auto load next page content.
+					 Note: This option depends on Ajax Infinite Scroll Pro Extension.</description>
+				<depends>
+                    <parameter name="wd_slider" value="0" />    
+                    <parameter name="template" value="featured_grid.phtml" />
+                </depends>                
+        </parameter>
+			
+		<parameter name="wd_autoscroll" xsi:type="select" visible="true"
+                       source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Auto scroll products</label>
+				<description translate="true">Select Yes for auto scroll featured products</description>
+				<depends>
+                    <parameter name="wd_slider" value="1" /> 
+                    <parameter name="template" value="featured_grid.phtml" />
+                </depends>
+        </parameter>
+		
+		<parameter name="wd_navarrow" xsi:type="select" visible="true"
+                       source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Show navigation arrow</label>
+				<description translate="true">Select Yes for show navigation arrow for slider</description>
+				<depends>
+                    <parameter name="wd_slider" value="1" />       
+                    <parameter name="template" value="featured_grid.phtml" />
+                </depends>
+        </parameter>
+		
+		 </parameters>
+        <containers>
+            <container name="sidebar.main">
+                <template name="default" value="list_default" />
+            </container>
+            <container name="content">
+                <template name="grid" value="default" />            
+            </container>
+            <container name="sidebar.additional">
+                <template name="default" value="list_default" />
+            </container>
+        </containers>
+    </widget>
+</widgets>

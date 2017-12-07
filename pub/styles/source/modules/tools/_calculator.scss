@@ -1,0 +1,231 @@
+.tools-calculator-index {
+  .app-container {
+    box-sizing: border-box;
+    padding: 10px;
+    width: 100%;
+    margin: 0 auto;
+
+    h3 {
+      margin: 0 1%;
+      font-family: Roboto;
+      font-size: 12pt;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 6px;
+      margin-bottom: 6px;
+    }
+
+    .input-section,
+    .buttons,
+    .results {
+      float: none;
+      clear: both;
+      display: block;
+      width: 100%;
+      margin: 0 0 12px 0;
+      &:after {
+        visibility: hidden;
+        display: block;
+        font-size: 0;
+        content: " ";
+        clear: both;
+        height: 0;
+      }
+    }
+
+    .buttons {
+      margin: 20px 0;
+    }
+
+    .input-block {
+      width: 48%;
+      margin: 0 1%;
+      float: left;
+      padding: 6px 0;
+      box-sizing: border-box;
+    }
+
+    .input-block--full {
+      width: 48%;
+      display: block;
+      float: none;
+    }
+
+    .input-block--third {
+      width: 31%;
+    }
+
+    .input-block--fourth {
+      width: 23%;
+    }
+
+    label {
+      display: block;
+      text-transform: uppercase;
+      font-size: 10pt;
+      margin: 0 3px 0 0;
+      padding: 0;
+      position: relative;
+      font-family: Roboto;
+    }
+
+    .label-help {
+      float: right;
+      text-transform: none;
+      border-radius: 50%;
+      background: #024930;
+      color: #f8f8f8;
+      width: 15px;
+      height: 15px;
+      text-align: center;
+    }
+
+    .label-help:hover + .label-help-panel {
+      display: block;
+    }
+
+    .label-help-panel {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 20px;
+      padding: 20px;
+      background: #f8f8f8;
+      box-shadow: 0 1px 2px #ccc;
+      border-radius: 3px;
+      width: 100%;
+      box-sizing: border-box;
+      z-index: 999;
+      font-size: 10pt;
+      text-transform: none;
+      border: 1px inset #aaa;
+    }
+
+    .label-help-panel ul {
+      margin: 10px 0;
+      padding: 0;
+      list-style: none;
+      font-size: 9pt;
+    }
+
+    input,select,textarea {
+      display: inline-block;
+      margin: 6px 0;
+      padding: 4px;
+      width: 100%;
+      border-radius: 3px;
+      border: 0;
+      box-shadow: 0px 0px 1px #aaa;
+      box-sizing: border-box;
+      height: 32px;
+    }
+
+    option {
+      padding: 4px;
+    }
+
+    .result-block {
+      padding: 10px;
+      border-radius: 3px;
+      box-sizing: border-box;
+      font-size: 10pt;
+      margin: 2px 0;
+      width: 50%;
+      float: left;
+    }
+
+    .wholesaleResult {
+      color: #666;
+      background: #ddd;
+    }
+    .retailResult {
+      color: #f8f8f8;
+      background: #ef2b2d;
+    }
+
+    .result-price {
+      float: right;
+    }
+
+    .btn {
+      box-shadow: 0px 0px 1px #aaa;
+      color: #f8f8f8;
+      background: #036140;
+      padding: 12px;
+      text-align: center;
+      width: 100%;
+      display: inline-block;
+      box-sizing: border-box;
+      border-radius: 3px;
+      font-family: Roboto;
+      cursor: pointer;
+      font-size: 22px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 4px solid #012f1f;
+      &:after {
+        content: "";
+        position: absolute;
+        top: -110%;
+        left: -210%;
+        width: 200%;
+        height: 200%;
+        opacity: 0;
+        transform: rotate(30deg);
+
+        background: rgba(255, 255, 255, 0.13);
+        background: linear-gradient(
+          to right,
+          rgba(255, 255, 255, 0.13) 0%,
+          rgba(255, 255, 255, 0.13) 77%,
+          rgba(255, 255, 255, 0.5) 92%,
+          rgba(255, 255, 255, 0.0) 100%
+        );
+      }
+      &:hover {
+        background: #036140;
+        border-bottom-width: 2px;
+        margin-top: 2px;
+        text-decoration: none;
+      }
+      &:hover:after {
+        opacity: 1;
+        top: -30%;
+        left: 30%;
+        transition-property: left, top, opacity;
+        transition-duration: 0.7s, 0.7s, 0.15s;
+        transition-timing-function: ease;
+      }
+    }
+
+    /******************************************************************************
+    | Utilties
+    ******************************************************************************/
+    .right {
+      float: right;
+    }
+    .left {
+      float: left;
+    }
+
+    @media screen and (max-width: 600px) {
+      .input-block {
+        width: 100%;
+      }
+    }
+  }
+}
+
+/** Tablets -----------------------------------------------------------------*/
+@media screen and (max-width: $screen-md) {}
+
+/** Mobile ------------------------------------------------------------------*/
+@media screen and (max-width: $screen-sm) {
+  .tools-calculator-index {
+    .app-container {
+      .result-block {
+        width: 100%;
+        float: none;
+      }
+    }
+  }
+}

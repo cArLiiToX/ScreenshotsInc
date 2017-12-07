@@ -13,8 +13,11 @@
 			border-bottom: 0;
 		}
 
-		h3 {
-			margin: 0 0 10px 0;
+		h4 {
+			margin: 0 0 4px 0;
+			border-bottom: 1px solid $ss-red;
+			padding-bottom: 2px;
+			width: 100%;
 		}
 
 		.ss-block {

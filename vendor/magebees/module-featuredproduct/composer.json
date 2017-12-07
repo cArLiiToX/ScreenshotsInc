@@ -1,0 +1,27 @@
+{
+        "name": "magebees/module-featuredproduct",
+        "description": "A module for featuredproduct.",
+        "type": "magento2-module",
+        "version": "1.0.2",
+        "license": [
+            "OSL-3.0",
+            "AFL-3.0"
+        ],
+       "authors": [
+	{
+      "name": "Magebees",
+      "email": "support@magebees.com",
+      "homepage": "https://www.magebees.com",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Magebees\\Featuredproduct\\": ""
+    }
+  }
+
+}

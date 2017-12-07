@@ -4,10 +4,6 @@
 		display: none !important;
 	}
 
-  .product-add-form {
-  	//display: none;
-  }
-
   .product-options-bottom {
     display: none;
   }
@@ -53,6 +49,11 @@
 				}
 			}
 		}
+	}
+
+	/** Product page product images **/
+	.fotorama__stage {
+		cursor: zoom-in;
 	}
 }
 

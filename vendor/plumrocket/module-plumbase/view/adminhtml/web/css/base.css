@@ -29,3 +29,7 @@
 }
 
 .admin__menu #menu-plumrocket-base-elements:hover > a:before {opacity: 1;}
+
+.admin__menu #menu-plumrocket-base-elements>.submenu>ul>.level-1:only-of-type>.submenu-group-title {
+    display: block;
+}

@@ -6,13 +6,14 @@ button,
 .action {
   border-radius: 2px;
   &.primary {
-    background-color: #024930;
+    background-color: $ss-green;
     border-color: #013925;
     border-radius: 2px;
     color: #eee;
     transition: all 1.4s ease-in-out;
-    &:hover {
-      background-color: #035e3e;
+    &:hover,
+    &:active {
+      background-color: $ss-green-dark;
       border-color: #013925;
       color: #fff;
       text-decoration: none;

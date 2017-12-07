@@ -58,7 +58,6 @@ return array(
     'b2a251005c112dee4a8e7f7580a475f5' => $vendorDir . '/magento/module-cookie/registration.php',
     '47402ddfee46771bcf36e616cf38b137' => $vendorDir . '/magento/module-variable/registration.php',
     'fc5563a6d8ed33909f8031d05dec9433' => $vendorDir . '/magento/module-catalog-search/registration.php',
-    'decc78cc4436b1292c6c0d151b19445c' => $vendorDir . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
     '056cd8d2398ceabe9e3cff88f4cf877b' => $vendorDir . '/magento/theme-frontend-blank/registration.php',
     'cbc7f0674bf1ae1a1c481a581c6ca4fd' => $vendorDir . '/magento/module-review/registration.php',
     '73a8e4290482dda77755fd5545cb64f4' => $vendorDir . '/magento/module-webapi/registration.php',
@@ -66,6 +65,7 @@ return array(
     'f0a367f3327072458afd08ec8891b227' => $vendorDir . '/magento/module-google-analytics/registration.php',
     '8b48eeee7117a5637507d2216d9c896d' => $vendorDir . '/magento/module-bundle/registration.php',
     '1158fd4355efa1508f87cf82bdcd70ac' => $vendorDir . '/magento/module-admin-notification/registration.php',
+    'decc78cc4436b1292c6c0d151b19445c' => $vendorDir . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
     '87bb82aba4e6954227316088ec049d42' => $vendorDir . '/magento/module-translation/registration.php',
     '212190e3b4423a19a199def12317e1fc' => $vendorDir . '/magento/module-cms-url-rewrite/registration.php',
     '814a46999bb03138827ea41c6c97733f' => $vendorDir . '/magento/module-product-alert/registration.php',
@@ -132,5 +132,7 @@ return array(
     'b893c2ea9dcd3d1ddf2bf6b7e3baa2bc' => $vendorDir . '/mageplaza/magento-2-seo-extension/registration.php',
     'c2316bef0970cfeacc4e1c8304805c1b' => $vendorDir . '/sozodesign/magento2-jivochat/registration.php',
     '3aba46b4773a2dec2065789cdc18177f' => $vendorDir . '/weltpixel/m2-weltpixel-owl-carousel-slider/registration.php',
+    '2bc84be6462ddd4d8cc2407c44c3f2c1' => $vendorDir . '/vnecoms/module-delete-orders/registration.php',
+    '5ef349c838849af021cdd1a77d298d0c' => $vendorDir . '/magebees/module-featuredproduct/registration.php',
     'b4cf39431a4b949eea8aa69ebb3d39da' => $baseDir . '/app/etc/NonComposerComponentRegistration.php',
 );

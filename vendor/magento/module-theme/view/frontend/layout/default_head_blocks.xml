@@ -9,6 +9,10 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <css src="mage/calendar.css"/>
+
+        <!--  Include Custom stylesheet -->
+        <link rel="stylesheet" type="text/css" src="/pub/styles/style.css" src_type="url"/>
+        
         <script src="requirejs/require.js"/>
     </head>
     <body>

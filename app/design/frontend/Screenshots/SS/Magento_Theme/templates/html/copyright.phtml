@@ -1,0 +1,95 @@
+<?php
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+
+<div class="page-footer">
+  <div class="footer-content">
+    <div class="columns">
+      <div class="column main">
+        <div class="social-block">
+          <h5>Connect With Us</h5>
+          <ul class="social-list">
+            <li>
+              <a href="https://www.facebook.com/ScreenshotsPrinting" target="_blank"><img id="facebookIcon" src="/pub/images/trans.png" alt="Like us on Facebook" /></a>
+            </li>
+            <li>
+              <a href="https://twitter.com/screenshotsinc" target="_blank"><img id="twitterIcon" src="/pub/images/trans.png" alt="Follow us on Twitter" /></a>
+            </li>
+            <li>
+              <a href="https://www.linkedin.com/company/18250046/" target="_blank"><img id="linkedInIcon" src="/pub/images/trans.png" alt="Follow us on LinkedIn" /></a>
+            </li>
+            <li>
+              <a href="https://www.yelp.com/biz/screenshots-west-plains-2" target="_blank"><img id="yelpIcon" src="/pub/images/trans.png" alt="Review us on Yelp" /></a>
+            </li>
+            <li>
+              <span id="siteseal">
+                <script src="https://seal.godaddy.com/getSeal?sealID=oIFj4q1rihZtybdrIyoUTMVDbBslmoG2OjKahSsHmkeR46xhJz24kPj5eavd" async="" type="text/javascript" xml="space"></script>
+              </span>
+            </li>
+          </ul>
+
+          <div class="newsletter-signup">
+            <h5>Get Our Newsletter</h5>
+            <form class="form subscribe" method="post" id="newsletter-validate-detail"
+                novalidate
+                action="<?php /* @escapeNotVerified */ echo $block->getFormActionUrl() ?>"
+                data-mage-init='{"validation": {"errorClass": "mage-error"}}'>
+                <div class="field newsletter">
+                  <div class="control">
+                    <input name="email" type="email" id="newsletter"
+                          placeholder="<?php /* @escapeNotVerified */ echo __('Enter your email address') ?>"
+                          data-validate="{required:true, 'validate-email':true}"/>
+                  </div>
+                </div>
+                <div class="actions">
+                  <button class="action subscribe primary" title="<?php /* @escapeNotVerified */ echo __('Subscribe') ?>" type="submit">
+                    <span><?php /* @escapeNotVerified */ echo __('Subscribe') ?></span>
+                  </button>
+                </div>
+            </form>
+          </div>
+        </div><div class="footer-block">
+          <h5>Helpful Links</h5>
+          <ul class="link-list">
+            <li class="nav item"><a href="/art-guide">Art/Design Guide</a></li>
+            <li class="nav item"><a href="/CustomArt">Order Custom Artwork</a></li>
+            <li class="nav item"><a href="/faq">F.A.Q's</a></li>
+            <li class="nav item"><a href="/tos">Terms of Service</a></li>
+            <li class="nav item"><a href="/shipping">Shipping Policy</a></li>
+            <li class="nav item"><a href="/sitemap">Sitemap</a></li>
+          </ul>
+        </div><div class="footer-block">
+          <h5>&nbsp;</h5>
+          <ul class="link-list">
+            <li class="nav item"><a href="/privacy-policy-cookie-restriction-mode/">Privacy and Cookie Policy</a></li>
+            <li class="nav item"><a href="/search/term/popular/">Search Terms</a></li>
+            <li class="nav item"><a href="/contact/">Contact Us</a></li>
+            <li class="nav item"><a href="/sales/guest/form/">Orders and Returns</a></li>
+            <li class="nav item"><a href="/catalogsearch/advanced/" data-action="advanced-search">Advanced Search</a></li>
+            <li class="nav item"><a href="/blog/">Blog</a></li>
+          </ul>
+        </div><div class="contact-block">
+          <h5>ScreenShots Inc</h5>
+          <ul class="link-list">
+            <li>1616 Freedom Drive</li>
+            <li>West Plains, Missouri 65775</li>
+            <li>Phone: 417-255-1888</li>
+            <li>Fax: 417-255-1887</li>
+            <li>Email: sales@screenshotsinc.com</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="copyright">
+    <div class="columns">
+      <div class="column main">
+        <address><?php /* @escapeNotVerified */ echo $block->getCopyright() ?></address>
+      </div>
+    </div>
+  </div>
+</div>
