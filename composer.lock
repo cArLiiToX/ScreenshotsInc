@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "cb6781c5630297678241897d6371977b",
-    "content-hash": "6d5affdcd11eeed20d13f28eb830433e",
+    "hash": "259eb4f58e24e207a88f2af382e174e0",
+    "content-hash": "fbb2ce91d22d675fd1f05917498b5f23",
     "packages": [
         {
             "name": "aheadworks/module-rbslider",
@@ -548,6 +548,38 @@
                 "terminal"
             ],
             "time": "2015-01-18 14:31:58"
+        },
+        {
+            "name": "magebees/module-featuredproduct",
+            "version": "1.0.2",
+            "dist": {
+                "type": "zip",
+                "url": "https://repo.magento.com/archives/magebees/module-featuredproduct/magebees-module-featuredproduct-1.0.2.0.zip",
+                "reference": null,
+                "shasum": "d7c34fbff2fc0a01aabab89b5e834d05c3e879c3"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Magebees\\Featuredproduct\\": ""
+                }
+            },
+            "license": [
+                "OSL-3.0",
+                "AFL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "MageBees",
+                    "email": "support@magebees.com",
+                    "homepage": "https://www.magebees.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A module for featuredproduct."
         },
         {
             "name": "magento/composer",
@@ -6200,7 +6232,7 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.8.31",
+            "version": "v2.8.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
@@ -6260,16 +6292,16 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.8.31",
+            "version": "v2.8.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "10507c5f24577b0ad971b0d22097c823b2b45dd3"
+                "reference": "15ceb6736a9eebd0d99f9e05a62296ab6ce1cf2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/10507c5f24577b0ad971b0d22097c823b2b45dd3",
-                "reference": "10507c5f24577b0ad971b0d22097c823b2b45dd3",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/15ceb6736a9eebd0d99f9e05a62296ab6ce1cf2b",
+                "reference": "15ceb6736a9eebd0d99f9e05a62296ab6ce1cf2b",
                 "shasum": ""
             },
             "require": {
@@ -6305,11 +6337,11 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2017-11-07 14:08:47"
+            "time": "2017-11-19 18:39:05"
         },
         {
             "name": "symfony/finder",
-            "version": "v3.4.0",
+            "version": "v3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
@@ -6358,7 +6390,7 @@
         },
         {
             "name": "symfony/process",
-            "version": "v2.8.31",
+            "version": "v2.8.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
@@ -9232,7 +9264,7 @@
         },
         {
             "name": "symfony/config",
-            "version": "v2.8.31",
+            "version": "v2.8.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
@@ -9288,16 +9320,16 @@
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v2.8.31",
+            "version": "v2.8.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "bc845111480786a9a68b39578ecdf27d9a6a44ec"
+                "reference": "d3e81e5402c38500770eb5595d78a6d85ea9e412"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/bc845111480786a9a68b39578ecdf27d9a6a44ec",
-                "reference": "bc845111480786a9a68b39578ecdf27d9a6a44ec",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/d3e81e5402c38500770eb5595d78a6d85ea9e412",
+                "reference": "d3e81e5402c38500770eb5595d78a6d85ea9e412",
                 "shasum": ""
             },
             "require": {
@@ -9347,11 +9379,11 @@
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "https://symfony.com",
-            "time": "2017-11-07 14:08:47"
+            "time": "2017-11-23 11:13:33"
         },
         {
             "name": "symfony/stopwatch",
-            "version": "v3.4.0",
+            "version": "v3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/stopwatch.git",
@@ -9400,16 +9432,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.8.31",
+            "version": "v2.8.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "d819bf267e901727141fe828ae888486fd21236e"
+                "reference": "968ef42161e4bc04200119da473077f9e7015128"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/d819bf267e901727141fe828ae888486fd21236e",
-                "reference": "d819bf267e901727141fe828ae888486fd21236e",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/968ef42161e4bc04200119da473077f9e7015128",
+                "reference": "968ef42161e4bc04200119da473077f9e7015128",
                 "shasum": ""
             },
             "require": {
@@ -9445,7 +9477,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2017-11-05 15:25:56"
+            "time": "2017-11-29 09:33:18"
         },
         {
             "name": "theseer/fdomdocument",

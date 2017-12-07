@@ -171,6 +171,7 @@ return array(
     'Magento\\AdvancedPricingImportExport\\' => array($vendorDir . '/magento/module-advanced-pricing-import-export'),
     'Magento\\AdminNotification\\' => array($vendorDir . '/magento/module-admin-notification'),
     'Magento\\' => array($baseDir . '/app/code/Magento'),
+    'Magebees\\Featuredproduct\\' => array($vendorDir . '/magebees/module-featuredproduct'),
     'League\\CLImate\\' => array($vendorDir . '/league/climate/src'),
     'JsonSchema\\' => array($vendorDir . '/justinrainbow/json-schema/src/JsonSchema'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),

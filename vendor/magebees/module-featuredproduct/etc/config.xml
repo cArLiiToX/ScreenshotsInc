@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+	<default>
+		<featuredproduct>
+			<setting>
+				<enable>1</enable>
+				<show_heading>1</show_heading>
+				<heading>Featured Products</heading>
+				<featuredproduct>1</featuredproduct>
+				<categories>2</categories>
+				<sort_by>name</sort_by>
+				<sort_order>asc</sort_order>
+				<price>1</price>
+				<description>0</description>
+				<compare>1</compare>
+				<wishlist>1</wishlist>
+				<cart>1</cart>
+				<out_stock>0</out_stock>
+				<no_of_product>30</no_of_product>
+				<per_page_value>9,15,30</per_page_value>
+				<slider>1</slider>
+				<enable_ajaxscroll_page>0</enable_ajaxscroll_page>
+				<products_per_row>3</products_per_row>			
+			</setting>			
+			<slidersetting>
+				<autoscroll>1</autoscroll>
+				<!--<pagination>1</pagination>-->
+				<navarrow>1</navarrow>
+			</slidersetting>
+		</featuredproduct>
+    </default>
+</config>

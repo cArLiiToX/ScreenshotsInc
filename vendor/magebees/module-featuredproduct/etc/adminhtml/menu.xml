@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+ <menu>
+
+	<add id="Magebees_Featuredproduct::grid" title="MageBees Featured Products"  action="featuredproduct/manage" module="Magebees_Featuredproduct" sortOrder="30" parent="Magento_Catalog::inventory" resource="Magebees_Featuredproduct::featuredproduct"/>
+	
+ </menu>
+</config>
+
+
+

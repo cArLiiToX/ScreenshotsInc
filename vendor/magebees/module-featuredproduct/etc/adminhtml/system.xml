@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="magebees" translate="label" sortOrder="100">
+            <label>Magebees</label>
+        </tab>
+        <section id="featuredproduct" translate="label" type="text" sortOrder="40" showInDefault="1" 
+				 showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Featured Products</label>
+            <tab>magebees</tab>
+            <resource>Magebees_Featuredproduct::product_config</resource>
+
+ 	    <group id="code" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>Default Package Code</label>
+		    <field id="blockcode" translate="label comment" type="text" sortOrder="1" showInDefault="1" 
+		                showInWebsite="0" showInStore="0">
+				    <label>XML Tag Representation</label>
+				    <frontend_model>Magebees\Featuredproduct\Block\Adminhtml\DefaultXml</frontend_model>
+				    
+		    </field>
+		    <field id="temptag" translate="label comment" type="text" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="0">
+				    <label>Template Tag Representation</label>
+				    <frontend_model>Magebees\Featuredproduct\Block\Adminhtml\DefaultTemplate</frontend_model>
+				    
+		    </field>
+		    <field id="fronttag" translate="label comment" type="text" sortOrder="3" showInDefault="1" showInWebsite="0" showInStore="0">
+				    <label>Call Via Frontend Template File</label>
+				   <frontend_model>Magebees\Featuredproduct\Block\Adminhtml\DefaultFrontend</frontend_model>
+				  
+		    </field>
+	   </group>
+
+            <group id="setting" translate="label" type="text" sortOrder="2" showInDefault="1" 
+				   showInWebsite="1" showInStore="1">
+				<label>Settings</label>
+
+				<field id="enable" translate="label comment" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Enabled</label> 
+					<comment> Select Yes for display featured products on frontend.</comment> 
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model> 
+				 </field>
+
+				 <field id="show_heading" translate="label comment" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Display heading</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model> 
+					<comment>Select Yes for display page heading.</comment>
+				 </field>
+
+				<field id="heading" translate="label comment" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Heading</label>
+					<depends>
+						<field id="show_heading">1</field>
+					</depends>
+					<validate>required-entry</validate>  
+					<comment>Here we can set heading</comment>
+				</field>
+				<field id="slider" translate="label comment" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Add Slider For Product</label> 
+					<depends>
+				
+								<field id="template">2</field>
+					</depends>
+					<comment>Select Yes for display Slider</comment> 
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model> 
+				 </field>
+				
+				 <field id="products_per_row" translate="label comment" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Number of items per row in Main Block</label>
+					<depends>
+								<field id="slider">0</field>
+								
+					</depends>
+					<source_model>Magebees\Featuredproduct\Model\Rowselect</source_model>
+					<validate>validate-number</validate>
+					<comment>Show number of products per row in main block</comment>
+				</field>
+				<field id="no_of_product" translate="label comment" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Number of items in Main Block</label>
+					<validate>validate-number validate-greater-than-zero</validate>
+					<comment>Show number of products in main block</comment>
+				 </field>
+				<field id="per_page_value" translate="label comment" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Products per Page</label>	
+					<depends>
+						<field id="slider">0</field>								
+					</depends>
+					<comment>Comma-separated.(Default:9,15,30)
+					</comment>				
+				</field>
+				<field id="featuredproduct" translate="label comment" type="select" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Select Featured Products Type</label> 
+					<comment><![CDATA[You can display all products or display by categories]]></comment> 
+					<source_model>Magebees\Featuredproduct\Model\Showproduct</source_model> 
+				</field>
+				<field id="categories" translate="label comment" type="multiselect" sortOrder="8" showInDefault="1" showInWebsite="0" showInStore="0"> 
+					<label>Select Categories</label> 
+					<depends>
+						<field id="featuredproduct">2</field>
+					</depends>	
+					<validate>required-entry</validate>  					
+					<source_model>Magebees\Featuredproduct\Model\Categories</source_model> 
+				</field>
+				
+
+				<field id="sort_by" translate="label comment" type="select" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Sort By</label> 
+					<comment>Set attribute that is initially used to sort the featured products list.</comment> 
+					<source_model>Magebees\Featuredproduct\Model\Sortby</source_model> 
+				</field>
+				
+				<field id="sort_order" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Sort Order</label> 
+					<source_model>Magebees\Featuredproduct\Model\Sortorder</source_model> 
+				</field>
+
+				<field id="price" translate="label comment" type="select" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1"> 
+						<label>Display Product Price</label> 
+						<comment>Select Yes for display Product Price on frontend</comment> 
+						<source_model>Magento\Config\Model\Config\Source\Yesno</source_model> 
+				</field>
+				<field id="description" translate="label comment" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1"> 
+						<label>Display Short Description</label> 
+						<depends>
+								<field id="slider">0</field>
+								
+					</depends>
+						<comment>Select Yes for display Short Description on frontend</comment> 
+						<source_model>Magento\Config\Model\Config\Source\Yesno</source_model> 
+				</field>
+				 <field id="cart" translate="label comment" type="select" sortOrder="13" 
+						showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Display Add to Cart</label> 
+					<comment>Select Yes for display the Add to cart button on frontend.</comment> 
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model> 
+				</field>
+				<field id="compare" translate="label comment" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Display Add to Compare</label> 
+					<comment>Select Yes for display the Add to Compare Link on frontend.</comment> 
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model> 
+				</field>
+				
+				<field id="wishlist" translate="label comment" type="select" sortOrder="15" 
+					   showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Display Add to Wishlist</label> 
+					<comment>Select Yes for display the Add to Wishlist Link on frontend.</comment> 
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model> 
+				</field>
+				
+				
+				 <field id="out_stock" translate="label comment" type="select" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Display Out of Stock Product</label> 
+					<comment>Select Yes for display the out of stock items on frontend.</comment> 
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model> 
+				</field>	
+				
+ <field id="enable_ajaxscroll_page" translate="label comment" type="select" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Auto Load Next Page</label> 
+					 <comment><![CDATA[Select Yes for auto load next page content.<br>
+					 This option depends on Ajax Infinite Scroll Pro Extension.<br>
+					]]></comment> 
+					 <depends>
+						<field id="slider">0</field>								
+					</depends>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model> 
+				</field>
+				
+				
+			</group>
+			<group id="slidersetting" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+            	<label>Slider settings</label>
+				<field id="autoscroll" translate="label comment" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Auto scroll products</label> 
+					<comment>Select Yes for auto scroll featured products</comment> 
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model> 
+				 </field>
+				
+				<!--<field id="pagination" translate="label comment" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Show Pagination</label> 
+					<comment>Select Yes for show pagination for slider</comment> 
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model> 
+				 </field>-->
+				<field id="navarrow" translate="label comment" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1"> 
+					<label>Show navigation arrow</label> 
+					<comment>Select Yes for show navigation arrow for slider</comment> 
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model> 
+				 </field>
+			</group>
+            	<group id="support" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Info</label>
+					<field id="style" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1"> 
+						<label>Info</label> 
+						<frontend_model>Magebees\Featuredproduct\Model\Support</frontend_model>
+					</field>
+				</group>
+        </section>
+    </system>
+</config>
