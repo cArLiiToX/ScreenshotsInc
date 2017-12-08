@@ -2224,41 +2224,6 @@
         ]
     },
     {
-        "name": "aheadworks/module-rbslider",
-        "version": "1.1.3",
-        "version_normalized": "1.1.3.0",
-        "dist": {
-            "type": "zip",
-            "url": "https://repo.magento.com/archives/aheadworks/module-rbslider/aheadworks-module-rbslider-1.1.3.0.zip",
-            "reference": null,
-            "shasum": "430d5f80c0f53932f29a55d271c1bc985533d384"
-        },
-        "require": {
-            "magento/framework": ">100.0",
-            "magento/module-backend": ">100.0",
-            "magento/module-store": ">100.0"
-        },
-        "type": "magento2-module",
-        "extra": {
-            "x-magento-ext-title": "Rich Banner Slider",
-            "x-magento-ext-package-link": "https://marketplace.magento.com/aheadworks-module-rbslider.html",
-            "x-magento-ext-type": "Extension"
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "files": [
-                "registration.php"
-            ],
-            "psr-4": {
-                "Aheadworks\\Rbslider\\": ""
-            }
-        },
-        "license": [
-            "proprietary"
-        ],
-        "description": "N/A"
-    },
-    {
         "name": "magento/framework",
         "version": "100.1.7",
         "version_normalized": "100.1.7.0",
