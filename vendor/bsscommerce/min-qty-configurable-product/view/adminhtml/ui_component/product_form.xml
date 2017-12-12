@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * BSS Commerce Co.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://bsscommerce.com/Bss-Commerce-License.txt
+ *
+ * =================================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * =================================================================
+ * This package designed for Magento COMMUNITY edition
+ * BSS Commerce does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * BSS Commerce does not provide extension support in case of
+ * incorrect edition usage.
+ * =================================================================
+ *
+ * @category   BSS
+ * @package    Bss_MinQtyCP
+ * @author     Extension Team
+ * @copyright  Copyright (c) 2014-2105 BSS Commerce Co. ( http://bsscommerce.com )
+ * @license    http://bsscommerce.com/Bss-Commerce-License.txt
+ */
+-->
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">   
+    <modal name="advanced_inventory_modal">  
+        <fieldset name="stock_data">
+            <container name="container_minimum_qty_cp">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="formElement" xsi:type="string">container</item>
+                        <item name="component" xsi:type="string">Magento_Ui/js/form/components/group</item>
+                        <item name="label" xsi:type="string" translate="true">Manage Qty</item>
+                        <item name="sortOrder" xsi:type="number">100</item>
+                        <item name="dataScope" xsi:type="string">qty_data</item>
+                        <item name="scopeLabel" xsi:type="string">[GLOBAL]</item>
+                        <item name="visible" xsi:type="boolean">false</item>
+                    </item>
+                </argument>
+                <field name="bss_minimum_qty_configurable">
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="dataType" xsi:type="string">number</item>
+                            <item name="formElement" xsi:type="string">input</item>
+                            <item name="visible" xsi:type="boolean">true</item>
+                            <item name="label" xsi:type="string" translate="true">Minimum Qty of CP Allowed in Shopping Cart</item>
+                            <item name="dataScope" xsi:type="string">bss_minimum_qty_configurable</item>
+                            <item name="disabled" xsi:type="boolean">false</item>
+                            <item name="scopeLabel" xsi:type="string">[GLOBAL]</item>
+                            <item name="value" xsi:type="object">Bss\MinQtyCP\Model\Source\StockConfiguration</item>
+                        </item>
+                    </argument>
+                </field>
+                <field name="use_config_bss_minimum_qty_configurable">
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="description" xsi:type="string" translate="true">Use Config Settings</item>
+                            <item name="formElement" xsi:type="string">checkbox</item>
+                            <item name="dataScope" xsi:type="string">use_config_bss_minimum_qty_configurable</item>
+                            <item name="valueMap" xsi:type="array">
+                                <item name="true" xsi:type="string">1</item>
+                                <item name="false" xsi:type="string">0</item>
+                            </item>
+                            <item name="keyInConfiguration" xsi:type="string">bss_minimum_qty_configurable</item>
+                            <item name="component" xsi:type="string">Magento_CatalogInventory/js/components/use-config-settings</item>
+                            <item name="class" xsi:type="string">Magento\CatalogInventory\Ui\Component\Product\Form\Element\UseConfigSettings</item>
+                            <item name="links" xsi:type="array">
+                                <item name="linkedValue" xsi:type="string">${$.provider}:data.product.stock_data.bss_minimum_qty_configurable</item>
+                            </item>
+                            <item name="exports" xsi:type="array">
+                                <item name="checked" xsi:type="string">${$.parentName}.bss_minimum_qty_configurable:disabled</item>
+                            </item>
+                            <item name="sortOrder" xsi:type="string">2</item>
+                            <item name="value" xsi:type="object">Bss\MinQtyCP\Model\Source\StockConfiguration</item>
+                        </item>
+                    </argument>
+                </field> 
+            </container>  
+        </fieldset> 
+    </modal>
+</form>

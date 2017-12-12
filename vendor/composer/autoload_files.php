@@ -133,5 +133,6 @@ return array(
     '3aba46b4773a2dec2065789cdc18177f' => $vendorDir . '/weltpixel/m2-weltpixel-owl-carousel-slider/registration.php',
     '2bc84be6462ddd4d8cc2407c44c3f2c1' => $vendorDir . '/vnecoms/module-delete-orders/registration.php',
     '5ef349c838849af021cdd1a77d298d0c' => $vendorDir . '/magebees/module-featuredproduct/registration.php',
+    '9b5722d433eb5a121c41725d58e05f8c' => $vendorDir . '/bsscommerce/min-qty-configurable-product/registration.php',
     'b4cf39431a4b949eea8aa69ebb3d39da' => $baseDir . '/app/etc/NonComposerComponentRegistration.php',
 );

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "501d92e15e3818fea67b021f06dfea74",
-    "content-hash": "68f05b39e97291aae395c0f7454bdeb7",
+    "hash": "1c28b5b1c36f606fdd34171380de7d31",
+    "content-hash": "ef00a456a8762adbdbac7e8e6a0e3a15",
     "packages": [
         {
             "name": "braintree/braintree_php",
@@ -53,6 +53,33 @@
             ],
             "description": "Braintree PHP Client Library",
             "time": "2015-11-19 19:14:47"
+        },
+        {
+            "name": "bsscommerce/min-qty-configurable-product",
+            "version": "1.0.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://repo.magento.com/archives/bsscommerce/min-qty-configurable-product/bsscommerce-min-qty-configurable-product-1.0.0.0.zip",
+                "reference": null,
+                "shasum": "09e17a67113748de6001682dc70d30ef5e92a789"
+            },
+            "require": {
+                "php": "~5.5.0|~5.6.0|~7.0.0"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Bss\\MinQtyCP\\": ""
+                }
+            },
+            "license": [
+                "OSL-3.0",
+                "AFL-3.0"
+            ],
+            "description": "Bss Minimum Qty Configurable Product Allowed in Shopping Cart"
         },
         {
             "name": "colinmollenhour/cache-backend-file",

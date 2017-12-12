@@ -178,5 +178,6 @@ return array(
     'Composer\\Spdx\\' => array($vendorDir . '/composer/spdx-licenses/src'),
     'Composer\\Semver\\' => array($vendorDir . '/composer/semver/src'),
     'Composer\\' => array($vendorDir . '/composer/composer/src/Composer'),
+    'Bss\\MinQtyCP\\' => array($vendorDir . '/bsscommerce/min-qty-configurable-product'),
     'Braintree\\' => array($vendorDir . '/braintree/braintree_php/lib/Braintree'),
 );

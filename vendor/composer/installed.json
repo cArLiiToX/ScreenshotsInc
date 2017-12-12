@@ -9890,5 +9890,34 @@
             }
         ],
         "description": "A module for featuredproduct."
+    },
+    {
+        "name": "bsscommerce/min-qty-configurable-product",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
+        "dist": {
+            "type": "zip",
+            "url": "https://repo.magento.com/archives/bsscommerce/min-qty-configurable-product/bsscommerce-min-qty-configurable-product-1.0.0.0.zip",
+            "reference": null,
+            "shasum": "09e17a67113748de6001682dc70d30ef5e92a789"
+        },
+        "require": {
+            "php": "~5.5.0|~5.6.0|~7.0.0"
+        },
+        "type": "magento2-module",
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "registration.php"
+            ],
+            "psr-4": {
+                "Bss\\MinQtyCP\\": ""
+            }
+        },
+        "license": [
+            "OSL-3.0",
+            "AFL-3.0"
+        ],
+        "description": "Bss Minimum Qty Configurable Product Allowed in Shopping Cart"
     }
 ]
