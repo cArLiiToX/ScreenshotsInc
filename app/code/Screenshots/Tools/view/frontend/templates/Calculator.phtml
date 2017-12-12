@@ -174,7 +174,11 @@
  * Calculate order cost
  * @return {[type]} [description]
  */
-$('#calculateCosts').click(function() {
+
+/* Custom listener for Edge (you shitty piece if shit, you) */
+var listenType = (navigator.userAgent.toLowerCase().indexOf('edge') != -1) ? 'mouseup' : 'click';
+
+$('#calculateCosts').on(listenType, function() {
   var standardQuantity      = Number($('#quantity').val()),
       xlQuantity            = Number($('#xlQuantity').val()),
       xxlQuantity           = Number($('#xxlQuantity').val()),

@@ -159,7 +159,7 @@ class Cart extends \Magento\Framework\Model\AbstractModel implements CartInterfa
             $productByItem = $this->getProduct($productsData['product_id']);
         } else {
             $errors[] = "One item of products do not have identifier or sku";
-            //continue;
+            continue;
         }
         if ($productByItem->getData('type_id') == 'configurable') {
             $configProd = $this->_productModel->load($productByItem->getData('entity_id'));

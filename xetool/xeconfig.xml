@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <config_detail>
    <url_detail>
-	   <appname/>
-	   <base_url>http://screenshotsinc.com/</base_url>
+	   <appname></appname>
+	   <base_url></base_url>
    </url_detail>
    <Integration_detail>
-		<accessToken>s3l4lxjcrla6cg35i1pqerk3d8lvdoms</accessToken>
+		<accessToken></accessToken>
    </Integration_detail>
 	<designer_tool_dbconnection>
-		<host>localhost</host>
-		<dbuser>inkxe</dbuser>
-		<dbpass>inkxe2017!</dbpass>
-		<dbname>inkxe</dbname>
+		<host></host>
+		<dbuser></dbuser>
+		<dbpass></dbpass>
+		<dbname></dbname>
 	</designer_tool_dbconnection>
 </config_detail>
