@@ -31,6 +31,25 @@
         .authorization-link:after {
           margin: 0 5px;
         }
+
+        .support-link {
+          margin-left: 10px;
+          background: #ef2b2d;
+          color: #fff;
+          padding: 1px 10px;
+          float: right;
+          border-radius: 2px;
+          box-sizing: border-box;
+
+          a {
+            color: #fff !important;
+            display: block;
+            &:hover,&:active,&:visited {
+              color: #fff !important;
+              text-decoration: none;
+            }
+          }
+        }
       }
     }
   }

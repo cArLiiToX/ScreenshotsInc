@@ -1,4 +1,19 @@
 <div class="app-container">
+  <div class="downloads">
+    <h1>Order Calculator</h1>
+    <ul class="download-list">
+      <li>
+        <a href="/pub/apps/ss-calc.apk">
+          <img src="/pub/images/platforms/android_icon.png" alt="Download for Android" title="Download for Android" />
+        </a>
+      </li>
+      <li>
+        <a href="/pub/apps/SSCalc.app">
+          <img src="/pub/images/platforms/apple_icon.png" alt="Download for iOS" title="Download for iOS" />
+        </a>
+      </li>
+    </ul>
+  </div>
   <div class="input-section">
     <h3>Print Quantity</h3>
     <div class="input-block input-block--third">
@@ -170,14 +185,13 @@
   crossorigin="anonymous">
 </script>
 <script type="text/javascript">
+/* Custom listener for Edge (you shitty piece if shit, you) */
+var listenType = (navigator.userAgent.toLowerCase().indexOf('edge') != -1) ? 'mouseup' : 'click';
+
 /**
  * Calculate order cost
  * @return {[type]} [description]
  */
-
-/* Custom listener for Edge (you shitty piece if shit, you) */
-var listenType = (navigator.userAgent.toLowerCase().indexOf('edge') != -1) ? 'mouseup' : 'click';
-
 $('#calculateCosts').on(listenType, function() {
   var standardQuantity      = Number($('#quantity').val()),
       xlQuantity            = Number($('#xlQuantity').val()),

@@ -39,7 +39,7 @@
                         <item name="sortOrder" xsi:type="number">100</item>
                         <item name="dataScope" xsi:type="string">qty_data</item>
                         <item name="scopeLabel" xsi:type="string">[GLOBAL]</item>
-                        <item name="visible" xsi:type="boolean">false</item>
+                        <item name="visible" xsi:type="boolean">true</item>
                     </item>
                 </argument>
                 <field name="bss_minimum_qty_configurable">

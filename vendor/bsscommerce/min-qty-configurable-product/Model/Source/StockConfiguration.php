@@ -33,27 +33,29 @@ use Magento\CatalogInventory\Api\StockConfigurationInterface;
 class StockConfiguration implements ValueSourceInterface
 {
     private $request;
-    private $stockItemRepository;
     private $stockConfiguration;
     private $helper;
+    private $coreRegistry;
+    private $stockRegistry;
 
     public function __construct(
         StockConfigurationInterface $stockConfiguration,
         \Magento\Framework\App\Request\Http $request,
-        \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
-        \Bss\MinQtyCP\Helper\Data $helper
+        \Bss\MinQtyCP\Helper\Data $helper,
+        \Magento\Framework\Registry $coreRegistry,
+        \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry
     ) {
         $this->stockConfiguration = $stockConfiguration;
         $this->request = $request;
-        $this->stockItemRepository = $stockItemRepository;
         $this->helper = $helper;
+        $this->coreRegistry = $coreRegistry;
+        $this->stockRegistry = $stockRegistry;
     }
 
     public function getValue($name)
     {
-        $productId = $this->request->getParam('id');
         try {
-            $productStock  = $this->stockItemRepository->get($productId);
+            $productStock = $this->getStockItem();
             $useConfig = $productStock->getData('use_config_bss_minimum_qty_configurable');
 
             if ($useConfig) {
@@ -66,5 +68,18 @@ class StockConfiguration implements ValueSourceInterface
         }
         
         return is_numeric($value) ? (float) $value : 0;
+    }
+
+    protected function getProduct()
+    {
+        return $this->coreRegistry->registry('product');
+    }
+
+    protected function getStockItem()
+    {
+        return $this->stockRegistry->getStockItem(
+            $this->getProduct()->getId(),
+            $this->getProduct()->getStore()->getWebsiteId()
+        );
     }
 }

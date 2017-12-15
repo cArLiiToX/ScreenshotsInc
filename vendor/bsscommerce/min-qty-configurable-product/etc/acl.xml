@@ -29,16 +29,16 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
     <acl>
-        <resource>
+        <resources>
             <resource id="Magento_Backend::admin">
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
                         <resource id="Magento_Config::config">
-                            <resource id="Bss_MinQtyCP::MinQtyCP_configuration" title="Bss Min Qty Configurable Product" sortOrder="10" />
+                            <resource id="Bss_MinQtyCP::MinQtyCP_configuration" title="Bss Minimum Qty Configurable Product" sortOrder="10" />
                         </resource>
                     </resource>
                 </resource>
             </resource>
-        </resource>
+        </resources>
     </acl>
 </config>

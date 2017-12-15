@@ -22,8 +22,8 @@
     max-width: 1280px;
     width: 100%;
     padding: 0 20px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
+    float: none;
     box-sizing: border-box;
   }
 
@@ -184,6 +184,8 @@
   width: 100%;
   border-radius: 2px 2px 0 0;
   box-sizing: border-box;
+  max-width: 1280px;
+  margin: 0 auto;
 
   ul {
     width: 100%;

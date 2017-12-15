@@ -32,15 +32,20 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableT
 
 class StockData 
 {
-    protected $locator;
-    protected $stockItemRepository;
+    private $locator;
+    private $coreRegistry;
+    private $stockRegistry;
 
     public function __construct(
         LocatorInterface $locator,
-        \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository
+        \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
+        \Magento\Framework\Registry $coreRegistry,
+        \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry
     ) {
         $this->locator = $locator;
         $this->stockItemRepository = $stockItemRepository;
+        $this->coreRegistry = $coreRegistry;
+        $this->stockRegistry = $stockRegistry;
     }
 
     public function afterModifyMeta(
@@ -48,32 +53,45 @@ class StockData
         $meta
     ) {
         try {
-            $productStock  = $this->stockItemRepository->get($this->locator->getProduct()->getId());
+            $productStock  = $this->getStockItem();
             $useConfig = $productStock->getData('use_config_bss_minimum_qty_configurable');
 
             if ($this->locator->getProduct()->getTypeId() === ConfigurableType::TYPE_CODE) {
                 $config['children']['use_config_bss_minimum_qty_configurable']['arguments']['data']['config'] = [
                     'value' => $useConfig
                 ];
-
-                $config['arguments']['data']['config'] = [
-                    'visible' => '1',
-                ];
-
-                $meta['advanced_inventory_modal'] = [
-                    'children' => [
-                        'stock_data' => [
-                            'children' => [
-                                'container_minimum_qty_cp' => $config
-                            ],
-                        ],
-                    ],
-                ];
             }
         } catch (\Exception $e) {
-
+            if ($this->locator->getProduct()->getTypeId() === ConfigurableType::TYPE_CODE) {
+                $config['children']['use_config_bss_minimum_qty_configurable']['arguments']['data']['config'] = [
+                    'value' => '1'
+                ];
+            }
         }
 
+        $meta['advanced_inventory_modal'] = [
+            'children' => [
+                'stock_data' => [
+                    'children' => [
+                        'container_minimum_qty_cp' => $config
+                    ],
+                ],
+            ],
+        ];
+
         return $meta;
+    }
+
+    protected function getProduct()
+    {
+        return $this->coreRegistry->registry('product');
+    }
+
+    protected function getStockItem()
+    {
+        return $this->stockRegistry->getStockItem(
+            $this->getProduct()->getId(),
+            $this->getProduct()->getStore()->getWebsiteId()
+        );
     }
 }
