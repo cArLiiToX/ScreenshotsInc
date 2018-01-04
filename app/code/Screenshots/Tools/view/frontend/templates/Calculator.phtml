@@ -27,7 +27,7 @@
     <h3>Print Quantity</h3>
     <div class="input-block input-block--third">
       <label>S-XL</label>
-      <input type="number" name="quantity" id="quantity" min="0" max="3000" value="0" required/>
+      <input type="number" name="quantity" id="quantity" min="0" max="3000" value="1" required/>
     </div>
     <div class="input-block input-block--third">
       <label>XXL</label>
@@ -55,7 +55,7 @@
         <span class="label-help">?</span>
         <div class="label-help-panel">
           Base level is based on the given products base price.
-          <ul class="baseLevelTableApparel">
+          <ul>
             <li>Level 01 <span class="right">COG $01.00 - $03.00</span></li>
             <li>Level 02 <span class="right">COG $03.01 - $04.00</span></li>
             <li>Level 03 <span class="right">COG $04.01 - $05.00</span></li>
@@ -66,18 +66,6 @@
             <li>Level 08 <span class="right">COG $09.01 - $11.00</span></li>
             <li>Level 09 <span class="right">COG $11.01 - $13.00</span></li>
             <li>Level 10 <span class="right">COG $13.01 - $15.00</span></li>
-          </ul>
-          <ul class="baseLevelTableHeadwear" style="display: none;">
-            <li>Level 01 <span class="right">COG $0.00 - $2.00</span></li>
-            <li>Level 02 <span class="right">COG $2.01 - $2.50</span></li>
-            <li>Level 03 <span class="right">COG $2.51 - $3.00</span></li>
-            <li>Level 04 <span class="right">COG $3.01 - $3.50</span></li>
-            <li>Level 05 <span class="right">COG $3.51 - $4.00</span></span></li>
-            <li>Level 06 <span class="right">COG $4.01 - $4.50</span></li>
-            <li>Level 07 <span class="right">COG $4.51 - $5.00</span></li>
-            <li>Level 08 <span class="right">COG $5.01 - $5.50</span></li>
-            <li>Level 09 <span class="right">COG $5.51 - $6.00</span></li>
-            <li>Level 10 <span class="right">COG $6.01 - $6.50</span></li>
           </ul>
         </div>
       </label>
@@ -158,11 +146,11 @@
     </div>
 
     <div class="input-block input-block--third">
-      <label>1 Color #'s</label>
+      <label>1 Color #'s'</label>
       <input type="number" value="0" name="1colorNumbers" id="oneColorNumbers" min="0" max="3000" />
     </div>
     <div class="input-block input-block--third">
-      <label>2 Color #'s</label>
+      <label>2 Color #'s'</label>
       <input type="number" value="0" name="2colorNumbers" id="twoColorNumbers" min="0" max="3000" />
     </div>
   </div>
@@ -186,16 +174,16 @@
   <!-- Results -->
   <div class="results">
     <div class="result-block wholesaleCostPerItem">
-      Item Wholesale: <span class="result-price">$<span class="wholesaleCostPerItemDisplay"></span></span>
+      Cost Per Item: <span class="result-price">$<span class="wholesaleCostPerItemDisplay"></span></span>
     </div>
     <div class="result-block wholesaleResult">
       Wholesale Total: <span class="result-price">$<span class="wholesalePriceDisplay"></span></span>
     </div>
     <div class="result-block resaleCostPerItem">
-      Item Retail: <span class="result-price">$<span class="retailCostPerItemDisplay"></span></span>
+      Suggested Item Retail: <span class="result-price">$<span class="retailCostPerItemDisplay"></span></span>
     </div>
     <div class="result-block retailResult">
-      Retail Total: <span class="result-price">$<span class="retailPriceDisplay"></span></span>
+      Suggested Order Retail: <span class="result-price">$<span class="retailPriceDisplay"></span></span>
     </div>
   </div>
 </div>
@@ -289,257 +277,10 @@ var calc = {
   getScreenTotal: function() {
     calc.screenTotal = calc.numberOfPrintColors * calc.screenCharge;
   },
-  calculate: function() {
-    calc.standardQuantity      = Number($('#quantity').val()),
-    calc.xlQuantity            = Number($('#xlQuantity').val()),
-    calc.xxlQuantity           = Number($('#xxlQuantity').val()),
-    calc.standardQuantityTotal = 0,
-    calc.xlTotal               = 0,
-    calc.xxlTotal              = 0,
-    calc.prePurchaseStatus     = $('#prePurchasedOption').val(),
-    calc.baseLevelOption       = $('#baseLevelOption').val (),
-    calc.baseLevelPrice        = 0,
-    calc.printQuantity         = (calc.standardQuantity + calc.xlQuantity + calc.xxlQuantity),
-    calc.printZones            = 1,
-    calc.zone1price            = 0,
-    calc.zone2price            = 0,
-    calc.zone3price            = 0,
-    calc.zone4price            = 0,
-    calc.printZone1Colors      = Number($('#printArea1').val()),
-    calc.printZone2Colors      = Number($('#printArea2').val()),
-    calc.printZone3Colors      = Number($('#printArea3').val()),
-    calc.printZone4Colors      = Number($('#printArea4').val()),
-    calc.personalizations      = Number($('#personalizations').val()),
-    calc.personalizationTotal  = calc.personalizations * calc.personalizationCost,
-    calc.oneColorNumbers       = Number($('#oneColorNumbers').val()),
-    calc.oneColorNumberTotal   = calc.oneColorNumbers * calc.oneColorNumberCost,
-    calc.twoColorNumbers       = Number($('#twoColorNumbers').val()),
-    calc.twoColorNumberTotal   = calc.twoColorNumbers * calc.twoColorNumberCost,
-    calc.colorChanges          = Number($('#colorChanges').val()),
-    calc.colorChangeTotal      = calc.colorChanges * calc.colorChangeCost,
-    calc.transfers             = Number($('#transfers').val()),
-    calc.transferTotal         = calc.transfers * .25,
-    calc.screenQuantity        = 0,
-    calc.screenTotal           = 0,
-    calc.retailCharge          = 0,
-    calc.retailChargeTotal     = 0,
-    calc.costPerItem           = 0,
-    calc.retailCostPerItem     = 0,
-    calc.wholesalePrice        = 0,
-    calc.retailPrice           = 0;
-
-    /**
-     * Assign color costs (base and additional) based on printQuantity
-     */
-    if (calc.printQuantity <= 23) {
-      calc.baseColorCost = 2.90;
-      calc.additionalColorCost = 1;
-    } else if (calc.printQuantity >= 24 && calc.printQuantity <= 35) {
-      calc.baseColorCost = 2.30;
-      calc.additionalColorCost = 0.75;
-    } else if (calc.printQuantity >= 36 && calc.printQuantity <= 47) {
-      calc.baseColorCost = 1.70;
-      calc.additionalColorCost = 0.50;
-    } else if (calc.printQuantity >= 48 && calc.printQuantity <= 71) {
-      calc.baseColorCost = 1.50;
-      calc.additionalColorCost = 0.25;
-    } else if (calc.printQuantity >= 72 && calc.printQuantity <= 143) {
-      calc.baseColorCost = 1.20;
-      calc.additionalColorCost = 0.15;
-    } else if (calc.printQuantity >= 144 && calc.printQuantity <= 199) {
-      calc.baseColorCost = 1.05;
-      calc.additionalColorCost = 0.10;
-    } else if (calc.printQuantity >= 200 && calc.printQuantity <= 299) {
-      calc.baseColorCost = 0.95;
-    } else if (calc.printQuantity >= 300 && calc.printQuantity <= 499) {
-      calc.baseColorCost = 0.75;
-      calc.additionalColorCost = 0.05;
-    } else if (calc.printQuantity >= 500 && calc.printQuantity <= 749) {
-      calc.baseColorCost = 0.70;
-    } else if (calc.printQuantity >= 750 && calc.printQuantity <= 999) {
-      calc.baseColorCost = 0.65;
-    } else if (calc.printQuantity >= 1000 && calc.printQuantity <= 1999) {
-      calc.baseColorCost = 0.62;
-    } else if (calc.printQuantity >= 2000) {
-      calc.baseColorCost = 0.58;
-    }
-
-    if (!calc.hatMatrixEnabled) {
-      /**
-       * Assign apparel retail charge based on retail charge table
-       */
-      if (calc.printQuantity <= 23) {
-        calc.retailCharge = 4.10;
-      } else if (calc.printQuantity >= 24 && calc.printQuantity <= 35) {
-        calc.retailCharge = 3.70;
-      } else if (calc.printQuantity >= 36 && calc.printQuantity <= 47) {
-        calc.retailCharge = 3.30;
-      } else if (calc.printQuantity >= 48 && calc.printQuantity <= 71) {
-        calc.retailCharge = 2.50;
-      } else if (calc.printQuantity >= 72 && calc.printQuantity <= 143) {
-        calc.retailCharge = 1.80;
-      } else if (calc.printQuantity >= 144 && calc.printQuantity <= 199) {
-        calc.retailCharge = 0.95;
-      } else if (calc.printQuantity >= 200 && calc.printQuantity <= 299) {
-        calc.retailCharge = 0.85;
-      } else if (calc.printQuantity >= 300 && calc.printQuantity <= 499) {
-        calc.retailCharge = 0.75;
-      } else if (calc.printQuantity >= 500 && calc.printQuantity <= 749) {
-        calc.retailCharge = 0.65;
-      } else if (calc.printQuantity >= 750 && calc.printQuantity <= 999) {
-        calc.retailCharge = 0.55;
-      } else if (calc.printQuantity >= 1000 && calc.printQuantity <= 1999) {
-        calc.retailCharge = 0.45;
-      } else if (calc.printQuantity >= 2000) {
-        calc.retailCharge = 0.40;
-      }
-
-      /**
-       * Assign baseLevelPrice according to selected base level range
-       */
-      switch(calc.baseLevelOption) {
-        case '1':
-          calc.baseLevelPrice = 5.00;
-          break;
-        case '2':
-          calc.baseLevelPrice = 6.50;
-          break;
-        case '3':
-          calc.baseLevelPrice = 8.00;
-          break;
-        case '4':
-          calc.baseLevelPrice = 9.50;
-          break;
-        case '5':
-          calc.baseLevelPrice = 11.00;
-          break;
-        case '6':
-          calc.baseLevelPrice = 12.50;
-          break;
-        case '7':
-          calc.baseLevelPrice = 14.00;
-          break;
-        case '8':
-          calc.baseLevelPrice = 16.00;
-          break;
-        case '9':
-          calc.baseLevelPrice = 19.50;
-          break;
-        case '10':
-          calc.baseLevelPrice = 22.00;
-          break;
-      }
-
-      calc.getPrintZoneTotals();
-      calc.calculateQuantityTotals();
-      calc.getPrintColors();
-      calc.getPrintPrice();
-      calc.getProductTotal();
-      calc.getScreenTotal();
-
-      /**
-       * retailChargeTotal = printQuantity * retailCharge
-       * @var [type]
-       */
-      calc.retailChargeTotal = calc.printQuantity * calc.retailCharge;
-
-      /**
-       * Calculate Final Costs
-       */
-      calc.wholesalePrice    = calc.prePurchaseStatus == 0 ?
-                                calc.productTotal +
-                                calc.oneColorNumberTotal + calc.twoColorNumberTotal +
-                                calc.colorChangeTotal + calc.transferTotal +
-                                calc.personalizationTotal +
-                                (calc.printPrice * calc.printQuantity) + calc.screenTotal :
-                                calc.oneColorNumberTotal + calc.twoColorNumberTotal +
-                                calc.colorChangeTotal + calc.transferTotal +
-                                calc.personalizationTotal +
-                                (calc.printPrice * calc.printQuantity) + calc.screenTotal;
-
-      calc.retailPrice       = calc.prePurchaseStatus == 0 ?
-                                calc.wholesalePrice + calc.retailChargeTotal :
-                                calc.wholesalePrice + calc.retailChargeTotal + calc.productTotal;
-
-      calc.costPerItem       = calc.wholesalePrice / calc.printQuantity;
-      calc.retailCostPerItem = calc.retailPrice / calc.printQuantity;
-
-      calc.displayResults(calc.wholesalePrice, calc.retailPrice, calc.costPerItem, calc.retailCostPerItem);
-    } else {
-      calc.retailCharge = 0.2;
-      /**
-       * Assign baseLevelPrice according to selected base level range
-       */
-      switch(calc.baseLevelOption) {
-        case '1':
-          calc.baseLevelPrice = 3.00;
-          break;
-        case '2':
-          calc.baseLevelPrice = 3.75;
-          break;
-        case '3':
-          calc.baseLevelPrice = 4.50;
-          break;
-        case '4':
-          calc.baseLevelPrice = 5.25;
-          break;
-        case '5':
-          calc.baseLevelPrice = 6.00;
-          break;
-        case '6':
-          calc.baseLevelPrice = 6.75;
-          break;
-        case '7':
-          calc.baseLevelPrice = 7.50;
-          break;
-        case '8':
-          calc.baseLevelPrice = 8.25;
-          break;
-        case '9':
-          calc.baseLevelPrice = 9.00;
-          break;
-        case '10':
-          calc.baseLevelPrice = 9.75;
-          break;
-      }
-
-      calc.getPrintZoneTotals();
-      calc.calculateQuantityTotals();
-      calc.getPrintColors();
-      calc.getPrintPrice();
-      calc.getProductTotal();
-      calc.getScreenTotal();
-
-      /**
-       * Retail price must be calculated before wholesale in headwear matrix
-       */
-      calc.retailPrice = calc.prePurchaseStatus == 0 ?
-                          calc.productTotal +
-                          calc.oneColorNumberTotal + calc.twoColorNumberTotal +
-                          calc.colorChangeTotal + calc.transferTotal +
-                          calc.personalizationTotal +
-                          (calc.printPrice * calc.printQuantity) + calc.screenTotal :
-                          calc.oneColorNumberTotal + calc.twoColorNumberTotal +
-                          calc.colorChangeTotal + calc.transferTotal +
-                          calc.personalizationTotal +
-                          (calc.printPrice * calc.printQuantity) + calc.screenTotal;
-
-      /*
-       * retailChargeTotal == wholesaleDiscount in headwear matrix
-       * retailChargeTotal not applied to retailPrice in this instance
-       */
-      calc.retailChargeTotal = (calc.retailPrice - calc.screenTotal) * calc.retailCharge;
-      calc.wholesalePrice    = calc.prePurchaseStatus == 1 ? calc.retailPrice : calc.retailPrice - calc.retailChargeTotal;
-
-      calc.costPerItem       = calc.wholesalePrice / calc.printQuantity;
-      calc.retailCostPerItem = calc.retailPrice / calc.printQuantity;
-
-      calc.displayResults(calc.wholesalePrice, calc.retailPrice, calc.costPerItem, calc.retailCostPerItem);
-    }
-  },
   displayResults: function(wholesalePrice, retailPrice, costPerItem, retailCostPerItem) {
     /**
-     * Updates view with the calculated totals
+     * Update view with the calculated totals
+     * @var [type]
      */
     var wholesalePrice    = calc.wholesalePrice.toFixed(2),
         retailPrice       = calc.retailPrice.toFixed(2),
@@ -550,25 +291,6 @@ var calc = {
     $('.retailPriceDisplay').html(retailPrice);
     $('.wholesaleCostPerItemDisplay').html(costPerItem);
     $('.retailCostPerItemDisplay').html(retailCostPerItem);
-  },
-  getMatrixSettings: function(e) {
-    /**
-     * Hide/show headwear/apparel hints tables
-     */
-    calc.hatMatrixEnabled = $('#matrixSelect').val() == 1 ? true : false;
-
-    if (calc.hatMatrixEnabled) {
-      $('.baseLevelTableHeadwear').show();
-      $('.baseLevelTableApparel').hide();
-    } else {
-      $('.baseLevelTableHeadwear').hide();
-      $('.baseLevelTableApparel').show();
-    }
-
-    /**
-     * recalculate after change
-     */
-    calc.calculate();
   }
 };
 
@@ -576,14 +298,279 @@ var calc = {
  * Call calc function on click
  */
 $('#calculateCosts').on(calc.listenType, function() {
-  calc.calculate();
+  calculate();
 });
 
 /**
  * Watch for toggle between apparel and headwear matrix
+ * Hide/show headwear/apparel hints tables
+ * recalculate on change
  */
 $('#matrixSelect').on('change', function (e) {
-  calc.getMatrixSettings(e);
+  calc.hatMatrixEnabled = $('#matrixSelect').val() == 1 ? true : false;
+
+  if (calc.hatMatrixEnabled) {
+    $('.baseLevelTableHeadwear').show();
+    $('.baseLevelTableApparel').hide();
+  } else {
+    $('.baseLevelTableHeadwear').hide();
+    $('.baseLevelTableApparel').show();
+  }
+
+  calculate();
 });
+
+/**
+ * Calculate function
+ * @var [type]
+ */
+function calculate() {
+  calc.standardQuantity      = Number($('#quantity').val()),
+  calc.xlQuantity            = Number($('#xlQuantity').val()),
+  calc.xxlQuantity           = Number($('#xxlQuantity').val()),
+  calc.standardQuantityTotal = 0,
+  calc.xlTotal               = 0,
+  calc.xxlTotal              = 0,
+  calc.prePurchaseStatus     = $('#prePurchasedOption').val(),
+  calc.baseLevelOption       = $('#baseLevelOption').val (),
+  calc.baseLevelPrice        = 0,
+  calc.printQuantity         = (calc.standardQuantity + calc.xlQuantity + calc.xxlQuantity),
+  calc.printZones            = 1,
+  calc.zone1price            = 0,
+  calc.zone2price            = 0,
+  calc.zone3price            = 0,
+  calc.zone4price            = 0,
+  calc.printZone1Colors      = Number($('#printArea1').val()),
+  calc.printZone2Colors      = Number($('#printArea2').val()),
+  calc.printZone3Colors      = Number($('#printArea3').val()),
+  calc.printZone4Colors      = Number($('#printArea4').val()),
+  calc.personalizations      = Number($('#personalizations').val()),
+  calc.personalizationTotal  = calc.personalizations * calc.personalizationCost,
+  calc.oneColorNumbers       = Number($('#oneColorNumbers').val()),
+  calc.oneColorNumberTotal   = calc.oneColorNumbers * calc.oneColorNumberCost,
+  calc.twoColorNumbers       = Number($('#twoColorNumbers').val()),
+  calc.twoColorNumberTotal   = calc.twoColorNumbers * calc.twoColorNumberCost,
+  calc.colorChanges          = Number($('#colorChanges').val()),
+  calc.colorChangeTotal      = calc.colorChanges * calc.colorChangeCost,
+  calc.transfers             = Number($('#transfers').val()),
+  calc.transferTotal         = calc.transfers * .25,
+  calc.screenQuantity        = 0,
+  calc.screenTotal           = 0,
+  calc.retailCharge          = 0,
+  calc.retailChargeTotal     = 0,
+  calc.costPerItem           = 0,
+  calc.retailCostPerItem     = 0,
+  calc.wholesalePrice        = 0,
+  calc.retailPrice           = 0;
+
+  /**
+   * Assign color costs (base and additional) based on printQuantity
+   */
+  if (calc.printQuantity <= 23) {
+    calc.baseColorCost = 2.90;
+    calc.additionalColorCost = 1;
+  } else if (calc.printQuantity >= 24 && calc.printQuantity <= 35) {
+    calc.baseColorCost = 2.30;
+    calc.additionalColorCost = 0.75;
+  } else if (calc.printQuantity >= 36 && calc.printQuantity <= 47) {
+    calc.baseColorCost = 1.70;
+    calc.additionalColorCost = 0.50;
+  } else if (calc.printQuantity >= 48 && calc.printQuantity <= 71) {
+    calc.baseColorCost = 1.50;
+    calc.additionalColorCost = 0.25;
+  } else if (calc.printQuantity >= 72 && calc.printQuantity <= 143) {
+    calc.baseColorCost = 1.20;
+    calc.additionalColorCost = 0.15;
+  } else if (calc.printQuantity >= 144 && calc.printQuantity <= 199) {
+    calc.baseColorCost = 1.05;
+    calc.additionalColorCost = 0.10;
+  } else if (calc.printQuantity >= 200 && calc.printQuantity <= 299) {
+    calc.baseColorCost = 0.95;
+  } else if (calc.printQuantity >= 300 && calc.printQuantity <= 499) {
+    calc.baseColorCost = 0.75;
+    calc.additionalColorCost = 0.05;
+  } else if (calc.printQuantity >= 500 && calc.printQuantity <= 749) {
+    calc.baseColorCost = 0.70;
+  } else if (calc.printQuantity >= 750 && calc.printQuantity <= 999) {
+    calc.baseColorCost = 0.65;
+  } else if (calc.printQuantity >= 1000 && calc.printQuantity <= 1999) {
+    calc.baseColorCost = 0.62;
+  } else if (calc.printQuantity >= 2000) {
+    calc.baseColorCost = 0.58;
+  }
+
+  if (!calc.hatMatrixEnabled) {
+    /**
+     * Assign apparel retail charge based on retail charge table
+     */
+    if (calc.printQuantity <= 23) {
+      calc.retailCharge = 4.10;
+    } else if (calc.printQuantity >= 24 && calc.printQuantity <= 35) {
+      calc.retailCharge = 3.70;
+    } else if (calc.printQuantity >= 36 && calc.printQuantity <= 47) {
+      calc.retailCharge = 3.30;
+    } else if (calc.printQuantity >= 48 && calc.printQuantity <= 71) {
+      calc.retailCharge = 2.50;
+    } else if (calc.printQuantity >= 72 && calc.printQuantity <= 143) {
+      calc.retailCharge = 1.80;
+    } else if (calc.printQuantity >= 144 && calc.printQuantity <= 199) {
+      calc.retailCharge = 0.95;
+    } else if (calc.printQuantity >= 200 && calc.printQuantity <= 299) {
+      calc.retailCharge = 0.85;
+    } else if (calc.printQuantity >= 300 && calc.printQuantity <= 499) {
+      calc.retailCharge = 0.75;
+    } else if (calc.printQuantity >= 500 && calc.printQuantity <= 749) {
+      calc.retailCharge = 0.65;
+    } else if (calc.printQuantity >= 750 && calc.printQuantity <= 999) {
+      calc.retailCharge = 0.55;
+    } else if (calc.printQuantity >= 1000 && calc.printQuantity <= 1999) {
+      calc.retailCharge = 0.45;
+    } else if (calc.printQuantity >= 2000) {
+      calc.retailCharge = 0.40;
+    }
+
+    /**
+     * Assign baseLevelPrice according to selected base level range
+     */
+    switch(calc.baseLevelOption) {
+      case '1':
+        calc.baseLevelPrice = 5.00;
+        break;
+      case '2':
+        calc.baseLevelPrice = 6.50;
+        break;
+      case '3':
+        calc.baseLevelPrice = 8.00;
+        break;
+      case '4':
+        calc.baseLevelPrice = 9.50;
+        break;
+      case '5':
+        calc.baseLevelPrice = 11.00;
+        break;
+      case '6':
+        calc.baseLevelPrice = 12.50;
+        break;
+      case '7':
+        calc.baseLevelPrice = 14.00;
+        break;
+      case '8':
+        calc.baseLevelPrice = 16.00;
+        break;
+      case '9':
+        calc.baseLevelPrice = 19.50;
+        break;
+      case '10':
+        calc.baseLevelPrice = 22.00;
+        break;
+    }
+
+    calc.getPrintZoneTotals();
+    calc.calculateQuantityTotals();
+    calc.getPrintColors();
+    calc.getPrintPrice();
+    calc.getProductTotal();
+    calc.getScreenTotal();
+
+    /**
+     * retailChargeTotal = printQuantity * retailCharge
+     * @var [type]
+     */
+    calc.retailChargeTotal = calc.printQuantity * calc.retailCharge;
+
+    /**
+     * Calculate Final Costs
+     */
+    calc.wholesalePrice    = calc.prePurchaseStatus == 0 ?
+                              calc.productTotal +
+                              calc.oneColorNumberTotal + calc.twoColorNumberTotal +
+                              calc.colorChangeTotal + calc.transferTotal +
+                              calc.personalizationTotal +
+                              (calc.printPrice * calc.printQuantity) + calc.screenTotal :
+                              calc.oneColorNumberTotal + calc.twoColorNumberTotal +
+                              calc.colorChangeTotal + calc.transferTotal +
+                              calc.personalizationTotal +
+                              (calc.printPrice * calc.printQuantity) + calc.screenTotal;
+
+    calc.retailPrice       = calc.prePurchaseStatus == 0 ?
+                              calc.wholesalePrice + calc.retailChargeTotal :
+                              calc.wholesalePrice + calc.retailChargeTotal + calc.productTotal;
+
+    calc.costPerItem       = calc.wholesalePrice / calc.printQuantity;
+    calc.retailCostPerItem = calc.retailPrice / calc.printQuantity;
+
+    calc.displayResults(calc.wholesalePrice, calc.retailPrice, calc.costPerItem, calc.retailCostPerItem);
+  } else {
+    calc.retailCharge = 0.2;
+    /**
+     * Assign baseLevelPrice according to selected base level range
+     */
+    switch(calc.baseLevelOption) {
+      case '1':
+        calc.baseLevelPrice = 3.00;
+        break;
+      case '2':
+        calc.baseLevelPrice = 3.75;
+        break;
+      case '3':
+        calc.baseLevelPrice = 4.50;
+        break;
+      case '4':
+        calc.baseLevelPrice = 5.25;
+        break;
+      case '5':
+        calc.baseLevelPrice = 6.00;
+        break;
+      case '6':
+        calc.baseLevelPrice = 6.75;
+        break;
+      case '7':
+        calc.baseLevelPrice = 7.50;
+        break;
+      case '8':
+        calc.baseLevelPrice = 8.25;
+        break;
+      case '9':
+        calc.baseLevelPrice = 9.00;
+        break;
+      case '10':
+        calc.baseLevelPrice = 9.75;
+        break;
+    }
+
+    calc.getPrintZoneTotals();
+    calc.calculateQuantityTotals();
+    calc.getPrintColors();
+    calc.getPrintPrice();
+    calc.getProductTotal();
+    calc.getScreenTotal();
+
+    /**
+     * Retail price must be calculated before wholesale in headwear matrix
+     */
+    calc.retailPrice = calc.prePurchaseStatus == 0 ?
+                        calc.productTotal +
+                        calc.oneColorNumberTotal + calc.twoColorNumberTotal +
+                        calc.colorChangeTotal + calc.transferTotal +
+                        calc.personalizationTotal +
+                        (calc.printPrice * calc.printQuantity) + calc.screenTotal :
+                        calc.oneColorNumberTotal + calc.twoColorNumberTotal +
+                        calc.colorChangeTotal + calc.transferTotal +
+                        calc.personalizationTotal +
+                        (calc.printPrice * calc.printQuantity) + calc.screenTotal;
+
+    /*
+     * retailChargeTotal == wholesaleDiscount in headwear matrix
+     * retailChargeTotal not applied to retailPrice in this instance
+     */
+    calc.retailChargeTotal = (calc.retailPrice - calc.screenTotal) * calc.retailCharge;
+    calc.wholesalePrice    = calc.prePurchaseStatus == 1 ? calc.retailPrice : calc.retailPrice - calc.retailChargeTotal;
+
+    calc.costPerItem       = calc.wholesalePrice / calc.printQuantity;
+    calc.retailCostPerItem = calc.retailPrice / calc.printQuantity;
+
+    calc.displayResults(calc.wholesalePrice, calc.retailPrice, calc.costPerItem, calc.retailCostPerItem);
+  }
+}
 
 </script>
