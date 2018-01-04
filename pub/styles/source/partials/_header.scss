@@ -1,11 +1,12 @@
 .page-header {
   background: #f0f0f0;
   .panel.wrapper {
-    color: #aaa;
+    color: #f8f8f8;
     border-bottom: 1px solid #fff;
     box-shadow: 0px 1px 0px 0px #ccc;
     font-family: Roboto;
-    background: #f0f0f0;
+    background: #133d34;
+    font-weight: 200;
 
 
     .greet.welcome {
@@ -24,8 +25,11 @@
           line-height: 22px !important;
         }
 
-        a:visited {
-          color: #024930;
+        a {
+          color: #f8f8f8;
+          &:visited {
+            color: #f8f8f8
+          }
         }
 
         .authorization-link:after {
@@ -34,21 +38,11 @@
 
         .support-link {
           margin-left: 10px;
-          background: #ef2b2d;
-          color: #fff;
-          padding: 1px 10px;
+          padding: 0 0 0 8px;
+          border-left: 1px solid #1d5d4f;
           float: right;
           border-radius: 2px;
           box-sizing: border-box;
-
-          a {
-            color: #fff !important;
-            display: block;
-            &:hover,&:active,&:visited {
-              color: #fff !important;
-              text-decoration: none;
-            }
-          }
         }
       }
     }
@@ -73,10 +67,10 @@
   }
 
   a {
-      color: #33755e !important;
-      &:visited { color: #33755e !important; }
-      &:hover { color: #024930 !important; }
-      &:active { color: #024930 !important; }
+      color: #f8f8f8 !important;
+      &:visited { color: #f8f8f8 !important; }
+      &:hover { color: #f8f8f8 !important; }
+      &:active { color: #f8f8f8 !important; }
   }
 }
 

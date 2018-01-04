@@ -1,12 +1,11 @@
 @media screen and (min-width: $screen-md) {
   .nav-sections {
-    background: #024930;
     box-shadow: 0 1px 3px #666;
     font-size: 15px;
     font-weight: 400;
     margin-bottom: 0;
     border-top-style: groove;
-    border-top-width: 1px;
+    border-top-width: 0;
     border-color: #036c47;
     z-index: 10;
 
@@ -15,16 +14,17 @@
 
       .level0 > .level-top {
         line-height: 40px;
-        color: #f8f8f8;
+        color: #024930;
         font-weight: 300;
         font-family: Roboto;
         font-size: 14px;
         cursor: pointer;
 
         a {
-          color: #f8f8f8;
+          display: block;
+          color: #024930;
           &:hover {
-            color: #fff;
+            color: #024930;
           }
         }
       }
@@ -32,14 +32,14 @@
       .level0 {
         cursor: pointer;
         &:hover {
-          background: #023a26;
+          background: #ddd;
         }
 
         &.parent {
           &:after {
             content: "\f0d7";
             font-family: FontAwesome;
-            color: #f8f8f8;
+            color: #024930;
             position: relative;
             right: 9px;
             top: -1px;
@@ -53,7 +53,7 @@
       }
 
       .level0.active > .level-top, .navigation .level0.has-active > .level-top {
-        border-color: #fff;
+        border-color: #024930;
       }
     }
   }
