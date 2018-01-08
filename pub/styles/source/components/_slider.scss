@@ -1,8 +1,3 @@
-/** Ruby Slider -------------------------------------------------------------*/
-.aw-rbslider-container {
-  max-width: 1200px;
-}
-
 /** Owl Carousel - Main Banner ----------------------------------------------*/
 .owl-carousel.owl-carousel-custom-1 {
   padding: 0;
@@ -16,13 +11,28 @@
     margin: 0 !important;
 
     .content_slider {
+      font-family: Roboto;
+      top: auto;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      padding: 8px 0;
+      background: rgba(0,0,0,.5);
       &:after {
         visibility: hidden;
         display: block;
         font-size: 0;
-        content: " ";
+        content: "";
         clear: both;
         height: 0;
+      }
+
+      .banner-description {
+        font-size: 2.5vw;
+        text-shadow: 0px 1px 1px #555;
+        padding: 0;
+        margin: 0;
       }
 
       .buttons {
@@ -46,17 +56,26 @@
     /** ScreenShots Inc Banner **/
     &.banner-1 {
       .content_slider {
-        top: auto;
-        bottom: 0;
         .banner-description {
-          font-size: 2.5vw;
-          text-shadow: 0px 1px 1px #555;
-          padding: 0;
         }
+      }
+
+      .buttons {
+        display: none;
       }
     }
 
-    &.banner-2 {}
+    /** Here I Am Banner **/
+    &.banner-2 {
+      .content_slider {
+        .banner-description {
+        }
+      }
+
+      .buttons {
+        display: none;
+      }
+    }
 
     /** Baseball Season Banner **/
     &.banner-3 {
@@ -67,30 +86,47 @@
         float: right;
         text-align: left;
       }
+
+      .buttons {
+        display: none;
+      }
     }
 
-    &.banner-4 {}
 
-    /** Customizable Tshirts Banner **/
+    /** Volleyball Banner **/
+    &.banner-4 {
+      .buttons {
+        display: none;
+      }
+    }
+
+    /** Rooster Tshirts Banner **/
     &.banner-5 {
       .content_slider {
-        position: absolute;
-        left: 0;
-        top: 85%;
-        bottom: 0;
-        right: 0;
-        background: rgba(0,0,0,.5);
-        width: 100% !important;
-        font-size: 2vw;
-        font-family: Lobster;
+      }
+
+      .buttons {
+        display: none;
       }
     }
 
     /** Football Banner **/
     &.banner-6 {
       .content_slider {
-        bottom: 0;
-        top: auto;
+      }
+
+      .buttons {
+        display: none;
+      }
+    }
+
+    /** MSU Golf Cart Banner **/
+    &.banner-8 {
+      .content_slider {
+      }
+
+      .buttons {
+        display: none;
       }
     }
   }
