@@ -76,7 +76,7 @@
                                 <item name="checked" xsi:type="string">${$.parentName}.bss_minimum_qty_configurable:disabled</item>
                             </item>
                             <item name="sortOrder" xsi:type="string">2</item>
-                            <item name="value" xsi:type="object">Bss\MinQtyCP\Model\Source\StockConfiguration</item>
+                            <item name="value" xsi:type="string">1</item>
                         </item>
                     </argument>
                 </field> 

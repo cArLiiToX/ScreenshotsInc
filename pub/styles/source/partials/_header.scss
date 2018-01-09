@@ -25,13 +25,6 @@
           line-height: 22px !important;
         }
 
-        a {
-          color: #f8f8f8;
-          &:visited {
-            color: #f8f8f8
-          }
-        }
-
         .authorization-link:after {
           margin: 0 5px;
         }
@@ -44,6 +37,17 @@
           border-radius: 2px;
           box-sizing: border-box;
         }
+      }
+    }
+  }
+
+  .customer-menu {
+    .header.links {
+      a {
+        color: #024930 !important;
+        &:visited { color: #024930 !important; }
+        &:hover { color: #024930 !important; }
+        &:active { color: #024930 !important; }
       }
     }
   }
