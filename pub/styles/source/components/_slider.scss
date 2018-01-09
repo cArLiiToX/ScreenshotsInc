@@ -95,8 +95,22 @@
 
     /** Volleyball Banner **/
     &.banner-4 {
-      .buttons {
-        display: none;
+      .content_slider {
+        .banner-description {
+          display: inline-block;
+          width: 80%;
+          float: left;
+          text-align: center;
+          margin-top: 14px;
+        }
+
+        .buttons {
+          display: inline-block;
+          float: left;
+          width: 20%;
+          text-align: left;
+          clear: none;
+        }
       }
     }
 
