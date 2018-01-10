@@ -4,42 +4,9 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "259eb4f58e24e207a88f2af382e174e0",
-    "content-hash": "fbb2ce91d22d675fd1f05917498b5f23",
+    "hash": "1c28b5b1c36f606fdd34171380de7d31",
+    "content-hash": "ef00a456a8762adbdbac7e8e6a0e3a15",
     "packages": [
-        {
-            "name": "aheadworks/module-rbslider",
-            "version": "1.1.3",
-            "dist": {
-                "type": "zip",
-                "url": "https://repo.magento.com/archives/aheadworks/module-rbslider/aheadworks-module-rbslider-1.1.3.0.zip",
-                "reference": null,
-                "shasum": "430d5f80c0f53932f29a55d271c1bc985533d384"
-            },
-            "require": {
-                "magento/framework": ">100.0",
-                "magento/module-backend": ">100.0",
-                "magento/module-store": ">100.0"
-            },
-            "type": "magento2-module",
-            "extra": {
-                "x-magento-ext-title": "Rich Banner Slider",
-                "x-magento-ext-package-link": "https://marketplace.magento.com/aheadworks-module-rbslider.html",
-                "x-magento-ext-type": "Extension"
-            },
-            "autoload": {
-                "files": [
-                    "registration.php"
-                ],
-                "psr-4": {
-                    "Aheadworks\\Rbslider\\": ""
-                }
-            },
-            "license": [
-                "proprietary"
-            ],
-            "description": "N/A"
-        },
         {
             "name": "braintree/braintree_php",
             "version": "3.7.0",
@@ -86,6 +53,33 @@
             ],
             "description": "Braintree PHP Client Library",
             "time": "2015-11-19 19:14:47"
+        },
+        {
+            "name": "bsscommerce/min-qty-configurable-product",
+            "version": "1.0.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://repo.magento.com/archives/bsscommerce/min-qty-configurable-product/bsscommerce-min-qty-configurable-product-1.0.0.0.zip",
+                "reference": null,
+                "shasum": "09e17a67113748de6001682dc70d30ef5e92a789"
+            },
+            "require": {
+                "php": "~5.5.0|~5.6.0|~7.0.0"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Bss\\MinQtyCP\\": ""
+                }
+            },
+            "license": [
+                "OSL-3.0",
+                "AFL-3.0"
+            ],
+            "description": "Bss Minimum Qty Configurable Product Allowed in Shopping Cart"
         },
         {
             "name": "colinmollenhour/cache-backend-file",

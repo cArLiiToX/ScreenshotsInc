@@ -8,16 +8,15 @@ http://phpminiadmin.sourceforge.net
 
 Dual licensed: GPL v2 and MIT, see texts at http://opensource.org/licenses/
  */
-//var_dump(extension_loaded('mysql'));var_dump(extension_loaded('mysqli'));exit(0);
 
-$ACCESS_PWD = 'admin'; #!!!IMPORTANT!!! this is script access password, SET IT if you want to protect you DB from public access
+$ACCESS_PWD = '552#6VlK90&a#s'; #!!!IMPORTANT!!! this is script access password, SET IT if you want to protect you DB from public access
 
 #DEFAULT db connection settings
 # --- WARNING! --- if you set defaults - it's recommended to set $ACCESS_PWD to protect your db!
 $DBDEF = array(
-    'user' => "inkxe", #required
-    'pwd' => "inkxe2017!", #required
-    'db' => "inkxe", #optional, default DB
+    'user' => "custompr_riaxe", #required
+    'pwd' => "mVUSGLJK7Jh9", #required
+    'db' => "custompr_riaxe", #optional, default DB
     'host' => "", #optional
     'port' => "", #optional
     'chset' => "utf8", #optional, default charset

@@ -23,6 +23,9 @@ RewriteRule .* - [F]
 RewriteCond %{HTTP_USER_AGENT} 80legs [NC]
 RewriteRule ^ - [F]
 
+##### Redirect urls with old .html extension ##################################
+#### redirectMatch 301 ^(.*)\.html $1
+
 ##### Disable ETags ###########################################################
 #FileETag None
 
@@ -60,6 +63,7 @@ RewriteRule ^ - [F]
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME} !-l
   RewriteRule .* index.php [L]
+  RewriteRule ^index.php/?(.*).html$ /$1 [R=301,L]
 </IfModule>
 
 <Files *.php>
@@ -201,3 +205,102 @@ RewriteRule ^ - [F]
   SecFilterEngine Off
   SecFilterScanPOST Off
 </IfModule>
+
+##### Permanent 301 Redirects #################################################
+redirect 301 /design-studio.html /design-studio
+redirect 301 /shop/apparel.html /shop/apparel
+redirect 301 /unisex-jerset-short-sleev-t-shirt.html /unisex-jerset-short-sleev-t-shirt
+redirect 301 /shop.html /shop
+redirect 301 /shop/hats-caps.html /shop/hats-caps
+redirect 301 /ladies-the-favorite-t-shirt.html /ladies-the-favorite-t-shirt
+redirect 301 /shop/outdoor-wear.html /shop/outdoor-wear
+redirect 301 /j-america-adult-game-day-jersey-1.html /j-america-adult-game-day-jersey-1
+redirect 301 /design-studio.html /design-studio
+redirect 301 /sports-apparel/womens-sport-apparel.html /sports-apparel/womens-sport-apparel
+redirect 301 /apparel/women.html /apparel/women
+redirect 301 /sports-apparel/mens-sport-apparel.html /sports-apparel/mens-sport-apparel
+redirect 301 /signs-banners/vinyl-banners.html /signs-banners/vinyl-banners
+redirect 301 /custom-design-service /design-services
+redirect 301 /custom-design-service.html /design-services
+redirect 301 /gildan-adult-dryblend-50-50-t-shirt.html /gildan-adult-dryblend-50-50-t-shirt
+redirect 301 /gildan-adult-ultra-cotton-tank.html /gildan-adult-ultra-cotton-tank
+redirect 301 /next-level-unisex-triblend-3-4-sleeve-raglan-1.html /next-level-unisex-triblend-3-4-sleeve-raglan-1
+redirect 301 /next-level-unisex-triblend-3-4-sleeve-raglan.html /next-level-unisex-triblend-3-4-sleeve-raglan
+redirect 301 /signs-banners/signs.html /signs-banners/signs
+redirect 301 /shop.html?cat=3 /shop?cat=3
+redirect 301 /3x6-vinyl-banner.html /3x6-vinyl-banner
+redirect 301 /shop.html?price=5- /shop?price=5-
+redirect 301 /shop.html?cat=32 /shop?cat=32
+redirect 301 /3x8-vinyl-banner.html /3x8-vinyl-banner
+redirect 301 /shop.html?manufacturer=82 /shop?manufacturer=82
+redirect 301 /4x2-vinyl-banner.html /4x2-vinyl-banner
+redirect 301 /shop.html?price=4-5 /shop?price=4-5
+redirect 301 /2x4-vinyl-banner.html /2x4-vinyl-banner
+redirect 301 /shop/hats-caps.html?manufacturer=86 /shop/hats-caps?manufacturer=86
+redirect 301 /shop/hats-caps.html?manufacturer=98 /shop/hats-caps?manufacturer=98
+redirect 301 /shop.html?price=-10 /shop?price=-10
+redirect 301 /gildan-classic-t-shirt.html /gildan-classic-t-shirt
+redirect 301 /design-studio/t-shirts-apparel.html /design-studio/t-shirts-apparel
+redirect 301 /wholesale-application /Wholesaler
+redirect 301 /shop.html?price=10-20 /shop?price=10-20
+redirect 301 /design-studio.html?p=2 /design-studio?p=2
+redirect 301 /design-studio/pants-bottoms.html /design-studio/pants-bottoms
+redirect 301 /shop/apparel.html?price=7-10%2C7- /shop/apparel?price=7-10%2C7-
+redirect 301 /design-studio/work.html /design-studio/work
+redirect 301 /shop.html?price=40-50 /shop?price=40-50
+redirect 301 /shop.html?price=60- /shop?price=60-
+redirect 301 /shop.html?price=30-40 /shop?price=30-40
+redirect 301 /customer/account/login/referer/aHR0cHM6Ly93d3cuc2NyZWVuc2hvdHNpbmMuY29tL3Nob3AuaHRtbD9jYXQ9MjkmcHJpY2U9NDAtNTAlMkMxMC0lMkM1LQ,,/ /customer/account/login/
+redirect 301 /shop.html?p=2 /shop?p=2
+redirect 301 /design-studio/gildan-adult-ultra-cotton-sleeveless-t-shirt.html /design-studio/gildan-adult-ultra-cotton-sleeveless-t-shirt
+redirect 301 /shop.html?cat=29 /shop?cat=29
+redirect 301 /customer/account/login/referer/aHR0cHM6Ly93d3cuc2NyZWVuc2hvdHNpbmMuY29tL3Nob3AuaHRtbD9tYW51ZmFjdHVyZXI9MTc5JnByaWNlPTctMTAlMkM3LSUyQzUt/ /customer/account/login/
+redirect 301 /wholesaler-info-requests /wholesale
+redirect 301 /signs-banners/stickers-and-decals.html /signs-banners/stickers-and-decals
+redirect 301 /design-studio/gildan-ladies-heavy-blend-50-50-fleece-crew.html /design-studio/gildan-ladies-heavy-blend-50-50-fleece-crew
+redirect 301 /signs-banners/stickers-and-decals.html /signs-banners/stickers-and-decals
+redirect 301 /apparel/youth.html /apparel/youth
+redirect 301 /sports-apparel/mens-sport-apparel.html/ /sports-apparel/mens-sport-apparel
+redirect 301 /signs-banners.html/ /signs-banners
+redirect 301 /sports-apparel/youth-sport-apparel.html/ /sports-apparel/youth-sport-apparel
+redirect 301 /apparel/women.html/ /apparel/women
+redirect 301 /signs-banners/signs.html/ /signs-banners/signs
+redirect 301 /custom-design-service/ /design-services
+redirect 301 /signs-banners/vinyl-banners.html/ /signs-banners/vinyl-banners
+redirect 301 /ladies-favorite-t-shirt.html /ladies-favorite-t-shirt
+redirect 301 /gildan-classic-t-shirt.html/ /gildan-classic-t-shirt
+redirect 301 /wholesale-application/ /Wholesaler
+redirect 301 /gildan-adult-heavy-blend-8-oz-50-50-hood.html/ /gildan-adult-heavy-blend-8-oz-50-50-hood
+redirect 301 /design-studio.html/ /design-studio
+redirect 301 /next-level-ladies-triblend-crew.html /next-level-ladies-triblend-crew
+redirect 301 /next-level-mens-triblend-crew.html /next-level-mens-triblend-crew
+redirect 301 /4x8-vinyl-banner.html /4x8-vinyl-banner
+redirect 301 /gildan-adult-ultra-cotton-6-oz-long-sleeve-t-shirt.html /gildan-adult-ultra-cotton-6-oz-long-sleeve-t-shirt
+redirect 301 /shop/apparel.html?p=2 /shop/apparel?p=2
+redirect 301 /gildan-adult-heavy-blend-8-oz-50-50-fleece-crew.html/ /gildan-adult-heavy-blend-8-oz-50-50-fleece-crew
+redirect 301 /shop/hats-caps.html?manufacturer=222 /shop/hats-caps?manufacturer=222
+redirect 301 /gildan-adult-dryblend-50-50-t-shirt.html/ /gildan-adult-dryblend-50-50-t-shirt
+redirect 301 /shop/apparel.html?price=6-7%2C-10 /shop/apparel?price=6-7%2C-10
+redirect 301 /products/sports-apparel/mens-sport-apparel.html /products/sports-apparel/mens-sport-apparel
+redirect 301 /products/sports-apparel/mens-sport-apparel.html/?SID=p20am1g0acc1vlilskk1l7q5e3 /products/sports-apparel/mens-sport-apparel
+redirect 301 /inkxe/youth.html/?SID=8i41br7sodpboe0nk478iavh15 /inkxe/youth
+redirect 301 /test-pre-deco-template.html/?SID=pi9bpbjhkmki3eu3k59ojng9e2 /design-studio
+redirect 301 /inkxe/youth.html/?SID=novklpo6pnrqgdb2fasemaoka0 /inkxe/youth
+redirect 301 /signs-banners/stickers-and-decals.html/?SID=jd76o13dbh0bbaef9e6q2gb0m5 /signs-banners/stickers-and-decals
+redirect 301 /products/apparel/women.html/?SID=6lp84avcpg7n0d8k2sqcq1li42 /products/apparel/women
+redirect 301 /shop.html?cat=3&manufacturer=82&price=4-5 /shop?cat=3&manufacturer=82&price=4-5
+redirect 301 /signs-banners/stickers-and-decals.html/?SID=gmae1rv4qn1tnthkjord3cnf80 /signs-banners/stickers-and-decals
+redirect 301 /inkxe/youth.html/?SID=r5ju61jgtu21tbolpdph0bpf04 /inkxe/youth
+redirect 301 /test-pre-deco-template.html/ /design-studio
+redirect 301 /signs-banners/stickers-and-decals.html/?SID=vvqndj4l3mnde0j0pg4av63f07 /signs-banners/stickers-and-decals
+redirect 301 /sports-apparel/womens-sport-apparel.html/ /sports-apparel/womens-sport-apparel
+redirect 301 /sports-apparel/youth-sport-apparel.html/?SID=8vcc4vr20gholl5kh5rof044e7 /sports-apparel/youth-sport-apparel
+redirect 301 /products/sports-apparel/womens-sport-apparel.html/?SID=r3rdpn8obv0rp9ej4anggbj5s7 /products/sports-apparel/womens-sport-apparel
+redirect 301 /signs-banners/stickers-and-decals.html/?SID=bjq0ihah7fcs9gkgn8rrula1p3 /signs-banners/stickers-and-decals
+redirect 301 /products/sports-apparel/womens-sport-apparel.html/?SID=t0u0mul2eokdg439q4e5t9bce1 /products/sports-apparel/womens-sport-apparel
+redirect 301 /inkxe/youth.html/?SID=0tp2rda8khpa21hbgn0u586h25 /inkxe/youth
+redirect 301 /inkxe/youth.html/?SID=0ihv11i2ij07rsksho6nr8lh41 /inkxe/youth
+redirect 301 /products/signs-banners/stickers-and-decals.html/?SID=vr5a7maor6b2akkqctag3svfb1 /products/signs-banners/stickers-and-decals
+redirect 301 /products/sports-apparel/mens-sport-apparel.html/?SID=b1qkp90qcpl5o0kj3dtrahdgp0 /products/sports-apparel/mens-sport-apparel
+redirect 301 /signs-banners/stickers-and-decals.html/?SID=ri5uqu7c7tvvfibn59a129fqm3 /signs-banners/stickers-and-decals
+redirect 301 /shop.html?cat=32&price=4-5 /shop?cat=32&price=4-5

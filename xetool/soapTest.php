@@ -6,9 +6,7 @@ echo '<br />';
 echo (class_exists('SOAPServer')) ? 'SOAP Server Present' : 'SOAP Server Absent';
 echo '<br />';
 
-$apiUrl = 'http://screenshotsinc.com/';
-ini_set("soap.wsdl_cache_enabled", "0");
-
+$apiUrl = 'http://your-site.com/';
 try {
     $result = apiCall('Product', 'getProductInfo', $productInfo);
     $result = $result->result;

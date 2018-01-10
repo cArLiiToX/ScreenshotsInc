@@ -45,7 +45,7 @@ if (!empty($_POST) && !empty($_POST['db']) && !empty($_POST['user']) && !empty($
                 //$handler = $conn->query($chk_duplicate);
                 //$row = $handler->fetch_assoc();
                 //if(empty($row)){
-                /*try {
+                try {
                     include '../app/bootstrap.php';
                     $bootstrap = Bootstrap::create(BP, $_SERVER);
 
@@ -72,9 +72,9 @@ if (!empty($_POST) && !empty($_POST['db']) && !empty($_POST['user']) && !empty($
                     }
                 } catch (Exception $e) {
                     $msg = "Update your domain_store_rel table in your inkXE database.";
-                    xe_log("\n" . date("Y-m-d H:i:s") . ': Error in 5th Step : domain_store_rel update failed: ' . $e->getMessage() . ' : ' . $msg . "\n");
+                    xe_log("\n" . date("Y-m-d H:i:s") . ': Error in 5th Step : domain_store_rel update failed: ' . $conn->error . ' : ' . $msg . "\n");
                     echo $msg;die();
-                }*/
+                }
                 //}
 
                 ##########################################################
@@ -122,7 +122,7 @@ if (!empty($_POST) && !empty($_POST['db']) && !empty($_POST['user']) && !empty($
                 echo 1;die();
             } else {
                 $msg = "Please provide correct database connection info."; //"Enter an existing database name.";
-                xe_log("\n" . date("Y-m-d H:i:s") . ': Error in 5th Step : Error creating tables: ' . $e->getMessage() . ' : ' . $msg . "\n");
+                xe_log("\n" . date("Y-m-d H:i:s") . ': Error in 5th Step : Error creating tables: ' . $conn->error . ' : ' . $msg . "\n");
                 echo $msg;die();
             }
         }

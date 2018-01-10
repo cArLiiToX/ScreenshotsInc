@@ -1,9 +1,39 @@
 .tools-calculator-index {
+  .page-title-wrapper {
+    display: none !important;
+  }
+
   .app-container {
     box-sizing: border-box;
     padding: 10px;
     width: 100%;
     margin: 0 auto;
+
+    .downloads {
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      margin: 20px 0;
+      h1 {
+        display: inline-block;
+      }
+
+      .download-list {
+        display: inline-block;
+        float: right;
+        width: auto;
+        list-style: none;
+
+        li {
+          display: inline-block;
+          float: left;
+
+          img {
+            width: 32px;
+            height: auto;
+          }
+        }
+      }
+    }
 
     h3 {
       margin: 0 1%;

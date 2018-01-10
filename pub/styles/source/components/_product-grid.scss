@@ -1,3 +1,30 @@
+/** Featured products section **/
+.cwsFeatured {
+  .products {
+    margin: 0 !important;
+  }
+
+  .products.products-grid {
+    padding: 0 !important;
+  }
+
+  .product-item-inner {
+    display: none !important;
+  }
+
+  .item.product.product-item {
+    margin-bottom: 0 !important;
+  }
+
+  .products.list.items.product-item {
+    height: 320px !important;
+  }
+
+  .price-box.price-final_price {
+    margin: 0 !important;
+  }
+}
+
 .products-grid.grid {
   &.grid {
     .product-item {
@@ -7,7 +34,7 @@
           box-shadow: 0;
         }
       }
-      
+
       .product-item-link {
         overflow: hidden;
         text-overflow: ellipsis;

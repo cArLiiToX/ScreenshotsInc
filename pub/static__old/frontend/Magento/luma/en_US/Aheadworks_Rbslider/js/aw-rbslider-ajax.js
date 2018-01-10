@@ -1,0 +1,1 @@
+/var/www/html/vendor/aheadworks/module-rbslider/view/frontend/web/js/aw-rbslider-ajax.js

@@ -11,13 +11,13 @@
         "magento/product-community-edition": "2.1.7",
         "composer/composer": "@alpha",
         "plumrocket/module-psloginfree": "2.1.1",
-        "aheadworks/module-rbslider": "1.1.3",
         "mageplaza/magento-2-blog-extension": "2.4.0",
         "mageplaza/magento-2-seo-extension": "1.0.0",
         "sozodesign/magento2-jivochat": "1.0.2",
         "weltpixel/m2-weltpixel-owl-carousel-slider": "1.3.1",
         "vnecoms/module-delete-orders": "2.0.1",
-        "magebees/module-featuredproduct": "1.0.2"
+        "magebees/module-featuredproduct": "1.0.2",
+        "bsscommerce/min-qty-configurable-product": "1.0.1"
     },
     "require-dev": {
         "phpunit/phpunit": "4.1.0",

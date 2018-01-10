@@ -1,0 +1,10 @@
+.block-minicart {
+  .actions {
+    a {
+      color: #024930 !important;
+      &:visited, &:active, &:hover {
+        color: #024930 !important;
+      }
+    }
+  }
+}
