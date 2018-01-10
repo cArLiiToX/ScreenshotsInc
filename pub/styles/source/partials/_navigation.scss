@@ -55,6 +55,19 @@
       .level0.active > .level-top, .navigation .level0.has-active > .level-top {
         border-color: #024930;
       }
+
+      .level1 {
+        position: relative;
+      }
+
+      .level1.submenu {
+        display: inline-block;
+        left: 0px;
+        position: absolute;
+        top: 0 !important;
+        margin: 0;
+        padding: 0;
+      }
     }
   }
 

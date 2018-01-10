@@ -1,0 +1,20 @@
+.mpblog-post-index {
+  .post-list-container {
+    .post-image {
+      max-height: 200px;
+      overflow: hidden;
+      background-position: center center;
+      width: 100%;
+
+      a {
+        .img-responsive {
+          margin-top: -200px
+        }
+      }
+    }
+    .post-link-title {
+      font-family: Lobster;
+      font-size: 20pt;
+    }
+  }
+}
