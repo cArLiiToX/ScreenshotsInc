@@ -121,6 +121,7 @@
 
       #facebookIcon,
       #twitterIcon,
+      #pinterestIcon,
       #linkedInIcon,
       #yelpIcon {
         width: 32px;
@@ -132,15 +133,19 @@
       }
 
       #twitterIcon {
-        background: url('/pub/images/social/icons/spritesheet.png') 66px 0;
-      }
-
-      #linkedInIcon {
         background: url('/pub/images/social/icons/spritesheet.png') 99px 0;
       }
 
-      #yelpIcon {
+      #pinterestIcon {
         background: url('/pub/images/social/icons/spritesheet.png') 33px 0;
+      }
+
+      #linkedInIcon {
+        background: url('/pub/images/social/icons/spritesheet.png') 132px 0;
+      }
+
+      #yelpIcon {
+        background: url('/pub/images/social/icons/spritesheet.png') 66px 0;
       }
     }
 
