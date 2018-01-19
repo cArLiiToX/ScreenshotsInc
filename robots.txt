@@ -1,8 +1,18 @@
 User-agent: *
 Allow: /
-Allow: /customer/account/login/
-Allow: /customer/account/forgotpassword/
+Allow: /customer/account/login/*
+Allow: /customer/account/forgotpassword/*
 
-Disallow: /app/
-Disallow: /customer/
+Disallow: /app/*
+Disallow: /var/*
+Disallow: /lib/
+Disallow: /*.php$
+Disallow: /pkginfo/
+Disallow: /report/
 Disallow: /var/
+Disallow: /catalog/
+Disallow: /customer/
+Disallow: /sendfriend/
+Disallow: /review/
+Disallow: /*SID=
+Disallow: /tools/*

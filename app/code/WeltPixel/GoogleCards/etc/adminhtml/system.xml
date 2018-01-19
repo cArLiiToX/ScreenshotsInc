@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="weltpixel_google_cards" translate="label" type="text" sortOrder="190" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Google Cards &amp; Rich Snippets</label>
+            <tab>weltpixel</tab>
+            <resource>WeltPixel_GoogleCards::GoogleCardsSettings</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Google Cards General Settings</label>
+                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="description" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Description</label>
+                    <source_model>WeltPixel\GoogleCards\Model\Config\Source\Description</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="brand" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Brand</label>
+                    <source_model>WeltPixel\GoogleCards\Model\Config\Source\Brand</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="rich_snippet" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Rich Snippets General Settings</label>
+                <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>NOTE: Based on your template you might already have Rich Snippets enabled on your page</comment>
+                </field>
+                <field id="description" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Description</label>
+                    <source_model>WeltPixel\GoogleCards\Model\Config\Source\Description</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="wrap_with_div" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Wrap with div</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>(Helps prevent conflicts with SEO extensions)</comment>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+        <section id="weltpixel_schemas" translate="label" type="text" sortOrder="191" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Twitter Cards, Facebook Open Graph &amp; Pinterest Rich Pins</label>
+            <tab>weltpixel</tab>
+            <resource>WeltPixel_GoogleCards::SchemasSettings</resource>
+            <group id="twitter_cards" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Twitter Cards Settings</label>
+                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="card_type" translate="label" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Card Type</label>
+                    <source_model>WeltPixel\GoogleCards\Model\Config\Source\CardType</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+
+                <field id="description" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Description</label>
+                    <source_model>WeltPixel\GoogleCards\Model\Config\Source\Description</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="site" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Twitter Site</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="creator" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Twitter Creator</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="facebook_opengraph" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Facebook Open Graph Settings</label>
+                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="description" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Description</label>
+                    <source_model>WeltPixel\GoogleCards\Model\Config\Source\Description</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="site_name" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Site Name</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="pinterest_rich_pins" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Pinterest Rich Pins Settings</label>
+                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>it uses same tags as Facebook Open graph, make sure Facebook Open Graph is enabled as well</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
