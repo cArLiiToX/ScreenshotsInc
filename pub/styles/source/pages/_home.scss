@@ -121,18 +121,93 @@
     box-sizing: border-box;
     padding: 10px;
     text-align: center;
-
-    img {
-      max-width: 120px;
-      width: 100%;
-      height: auto;
-      &:hover{
-        -ms-animation: wiggle .3s 2;
-        -moz-animation:wiggle .3s 2;
-        -webkit-animation:wiggle .3s 2;
-        animation:wiggle .3s 2;
-      }
+    background-position: center center;
+    background-repeat: none;
+    background-size: 120px 54px;
+    &:hover {
+      background: #ccc;
     }
+
+    a {
+      display: block;
+      width: 120px;
+      height: 54px;
+      margin: 0 auto;
+    }
+  }
+
+  #brand-adidas {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 0 0;
+  }
+  #brand-anvil {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 484px 0;
+  }
+  #brand-augusta {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 363px 0;
+  }
+  #brand-badger {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 242px 0;
+  }
+  #brand-bellaCanvas {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 120px 0;
+  }
+
+  #brand-calvinKlein {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 0 220px;
+  }
+  #brand-champion {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 484px 220px;
+  }
+  #brand-comfortColors {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 363px 220px;
+  }
+  #brand-fotl {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 242px 220px;
+  }
+  #brand-gildan {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 120px 220px;
+  }
+
+  #brand-hanes {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 0 165px;
+  }
+  #brand-innerHarbor {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 484px 165px;
+  }
+  #brand-izod {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 363px 165px;
+  }
+  #brand-jAmerica {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 242px 165px;
+  }
+  #brand-jerzees {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 120px 165px;
+  }
+
+  #brand-oakley {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 0 110px;
+  }
+  #brand-outdoorCap {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 484px 110px;
+  }
+  #brand-rabbitSkins {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 363px 110px;
+  }
+  #brand-rawlings {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 242px 110px;
+  }
+  #brand-towelsPlus {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 120px 110px;
+  }
+
+  #brand-vanHeusen {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 0 55px;
+  }
+  #brand-weatherproof {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 484px 55px;
+  }
+  #brand-wrangler {
+    background: url('/pub/images/vendors/logos/vendor-sprite.png') 363px 55px;
   }
 }
 
@@ -156,7 +231,7 @@
 /** Mobile ------------------------------------------------------------------*/
 @media screen and (max-width: $screen-sm) {
   .cms-home, .cms-index-index {
-    .block-hype {  
+    .block-hype {
       .content-column {
         width: 100%;
       }
