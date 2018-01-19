@@ -15,7 +15,7 @@
       .level0 > .level-top {
         line-height: 40px;
         color: #024930;
-        font-weight: 300;
+        font-weight: 500;
         font-family: Roboto;
         font-size: 14px;
         cursor: pointer;
@@ -44,6 +44,7 @@
             right: 9px;
             top: -1px;
             font-size: 10px;
+            margin-left: 6px;
           }
         }
 
@@ -58,6 +59,18 @@
 
       .level1 {
         position: relative;
+      }
+
+      .level1.parent > a {
+        &:after {
+          content: "\f0da";
+          font-family: FontAwesome;
+          color: #024930;
+          position: relative;
+          right: -9px;
+          top: -1px;
+          font-size: 10px;
+        }
       }
 
       .level1.submenu {

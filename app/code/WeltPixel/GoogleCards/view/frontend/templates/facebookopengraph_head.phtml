@@ -1,0 +1,18 @@
+<?php
+$_product = $this->getProduct();
+$stock = 'out of stock';
+if ($_product->isAvailable()) :
+$stock = 'in stock';
+endif;
+?>
+<!--  facebook open graph -->
+<meta property="og:site_name" content="<?php /* @escapeNotVerified */ echo $block->getSiteName(); ?>" />
+<meta property="og:type" content="og:product" />
+<meta property="og:title" content="<?php /* @escapeNotVerified */ echo $block->stripTags($_product->getName()); ?>" />
+<meta property="og:image" content="<?php /* @escapeNotVerified */ echo $block->stripTags($block->getImage($_product, 'product_base_image')->getImageUrl()); ?>" />
+<meta property="og:description" content="<?php /* @escapeNotVerified */ echo $block->escapeQuote($block->stripTags($block->getDescription($_product))); ?>" />
+<meta property="og:url" content="<?php /* @escapeNotVerified */ echo $block->stripTags($block->getCurrentUrl($_product)); ?>" />
+<meta property="og:price:amount" content="<?php  echo $_product->getFinalPrice();   ?>" />
+<meta property="og:price:currency" content="<?php echo $block->getCurrencyCode()  ?>" />
+<meta property="og:availability" content="<?php echo $stock; ?>" />
+<!--  facebook open graph -->

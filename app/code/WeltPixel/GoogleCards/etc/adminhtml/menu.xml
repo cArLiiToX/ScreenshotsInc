@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add
+                id="WeltPixel_GoogleCards::GoogleCards_Label"
+                title="Rich Snippets and Cards"
+                module="WeltPixel_GoogleCards"
+                sortOrder="60"
+                parent="WeltPixel_Backend::WeltPixel"
+                resource="WeltPixel_GoogleCards::GoogleCards_Label"
+        />
+        <add
+                id="WeltPixel_GoogleCards::GoogleCards"
+                title="Rich Snippets &amp; Google Cards"
+                module="WeltPixel_GoogleCards"
+                action="adminhtml/system_config/edit/section/weltpixel_google_cards/"
+                sortOrder="10"
+                parent="WeltPixel_GoogleCards::GoogleCards_Label"
+                resource="WeltPixel_GoogleCards::GoogleCards"
+        />
+        <add
+                id="WeltPixel_GoogleCards::Schemas"
+                title="Twitter Cards, Facebook OG &amp; Pinterest Rich Pins"
+                module="WeltPixel_GoogleCards"
+                action="adminhtml/system_config/edit/section/weltpixel_schemas/"
+                sortOrder="20"
+                parent="WeltPixel_GoogleCards::GoogleCards_Label"
+                resource="WeltPixel_GoogleCards::Schemas"
+        />
+    </menu>
+</config>
