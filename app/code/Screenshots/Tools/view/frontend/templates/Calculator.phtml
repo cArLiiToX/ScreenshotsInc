@@ -221,10 +221,12 @@ var calc = {
   baseLevelPrice: 0,
   printQuantity: 0,
   printZones: 0,
-  zone1price: 0,
-  zone2price: 0,
-  zone3price: 0,
-  zone4price: 0,
+  baseColorCost: 0,
+  additionalColorCost: 0,
+  zone1Total: 0,
+  zone2Total: 0,
+  zone3Total: 0,
+  zone4Total: 0,
   printZone1Colors: 0,
   printZone2Colors: 0,
   printZone3Colors: 0,
@@ -317,10 +319,10 @@ var calc = {
     calc.baseLevelPrice        = 0,
     calc.printQuantity         = (calc.standardQuantity + calc.xlQuantity + calc.xxlQuantity),
     calc.printZones            = 1,
-    calc.zone1price            = 0,
-    calc.zone2price            = 0,
-    calc.zone3price            = 0,
-    calc.zone4price            = 0,
+    calc.zone1Total            = 0,
+    calc.zone2Total            = 0,
+    calc.zone3Total            = 0,
+    calc.zone4Total            = 0,
     calc.printZone1Colors      = Number($('#printArea1').val()),
     calc.printZone2Colors      = Number($('#printArea2').val()),
     calc.printZone3Colors      = Number($('#printArea3').val()),
@@ -336,13 +338,16 @@ var calc = {
     calc.transfers             = Number($('#transfers').val()),
     calc.transferTotal         = calc.transfers * .25,
     calc.screenQuantity        = 0,
+    calc.screenCharge          = 5,
     calc.screenTotal           = 0,
     calc.retailCharge          = 0,
     calc.retailChargeTotal     = 0,
     calc.costPerItem           = 0,
     calc.retailCostPerItem     = 0,
     calc.wholesalePrice        = 0,
-    calc.retailPrice           = 0;
+    calc.retailPrice           = 0,
+    calc.baseColorCost         = 0,
+    calc.additionalColorCost   = 0;
 
     /**
      * Assign color costs (base and additional) based on printQuantity
@@ -367,17 +372,22 @@ var calc = {
       calc.additionalColorCost = 0.10;
     } else if (calc.printQuantity >= 200 && calc.printQuantity <= 299) {
       calc.baseColorCost = 0.95;
+      calc.additionalColorCost = 0.10;
     } else if (calc.printQuantity >= 300 && calc.printQuantity <= 499) {
       calc.baseColorCost = 0.75;
       calc.additionalColorCost = 0.05;
     } else if (calc.printQuantity >= 500 && calc.printQuantity <= 749) {
       calc.baseColorCost = 0.70;
+      calc.additionalColorCost = 0.05;
     } else if (calc.printQuantity >= 750 && calc.printQuantity <= 999) {
       calc.baseColorCost = 0.65;
+      calc.additionalColorCost = 0.05;
     } else if (calc.printQuantity >= 1000 && calc.printQuantity <= 1999) {
       calc.baseColorCost = 0.62;
+      calc.additionalColorCost = 0.05;
     } else if (calc.printQuantity >= 2000) {
       calc.baseColorCost = 0.58;
+      calc.additionalColorCost = 0.05;
     }
 
     if (!calc.hatMatrixEnabled) {
@@ -446,12 +456,26 @@ var calc = {
           break;
       }
 
-      calc.getPrintZoneTotals();
       calc.calculateQuantityTotals();
       calc.getPrintColors();
+      calc.getPrintZoneTotals();
       calc.getPrintPrice();
       calc.getProductTotal();
       calc.getScreenTotal();
+
+      console.log(calc.printZone1Colors);
+      console.log(calc.numberOfPrintColors + '# of colors');
+      console.log(calc.zone1Total + ' zone1Total');
+      console.log(calc.printZone1Colors >= 2);
+
+      /**
+      console.log(calc.screenTotal + ' screenTotal');
+      console.log(calc.printPrice + ' printPrice');
+      console.log(calc.printPrice * calc.printQuantity + ' printTotal');
+      console.log(calc.numberOfPrintColors + ' print colors');
+      console.log(calc.productTotal + ' productTotal');
+      console.log(calc.zone1Total + ' zone1Total');
+      */
 
       /**
        * retailChargeTotal = printQuantity * retailCharge
@@ -519,9 +543,9 @@ var calc = {
           break;
       }
 
-      calc.getPrintZoneTotals();
       calc.calculateQuantityTotals();
       calc.getPrintColors();
+      calc.getPrintZoneTotals();
       calc.getPrintPrice();
       calc.getProductTotal();
       calc.getScreenTotal();
